@@ -1,24 +1,43 @@
 document.addEventListener('DOMContentLoaded', function () {
-	const avatarImages = document.querySelectorAll('.avatar-preview');
-	const resultContainer = document.getElementById('avatar-selection-result');
+	const presetAvatarInput = document.getElementById('preset-avatar');
+	const avatarInput = document.getElementById('avatar');
+	const avatarSelectionResult = document.getElementById('avatar-selection-result');
 
-	avatarImages.forEach(img => {
-		 img.addEventListener('click', function () {
-			  resultContainer.innerHTML = '';
-			  const successMessage = document.createElement('p');
-			  successMessage.textContent = 'Successful!';
-			  successMessage.classList.add('text-success');
-			  resultContainer.appendChild(successMessage);
-			  const avatarPreview = document.createElement('img');
-			  avatarPreview.src = this.getAttribute('data-avatar-src');
-			  avatarPreview.alt = 'Selected Avatar';
-			  avatarPreview.style.width = '50px';
-			  avatarPreview.style.height = 'auto';
-			  avatarPreview.style.marginTop = '10px';
-			  resultContainer.appendChild(avatarPreview);
-			  const avatarModal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
-			  avatarModal.hide();
-			  document.getElementById('avatar').value = ''; 
+	window.presetAvatarInput = presetAvatarInput;
+	window.avatarInput = avatarInput;
+
+	const avatarPreviews = document.querySelectorAll('.avatar-preview');
+	avatarPreviews.forEach(avatar => {
+		 avatar.addEventListener('click', () => {
+			  const avatarSrc = avatar.getAttribute('data-avatar-src');
+			  presetAvatarInput.value = avatarSrc;
+			  avatarSelectionResult.innerHTML = `<img src="${avatarSrc}" alt="Selected Avatar">`;
+			  const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
+			  modal.hide();
 		 });
 	});
+
+	avatarInput.addEventListener('change', (event) => {
+		 const file = event.target.files[0];
+		 if (file) {
+			  const fileReader = new FileReader();
+			  fileReader.onload = function (e) {
+					const imgSrc = e.target.result;
+					presetAvatarInput.value = '';
+					avatarSelectionResult.innerHTML = `<img src="${imgSrc}" alt="Uploaded Avatar">`;
+			  };
+			  fileReader.readAsDataURL(file);
+		 }
+	});
+
+	document.getElementById('register-form').addEventListener('submit', function (e) {
+		 if (!presetAvatarInput.value && !avatarInput.value) {
+			  alert('Please select or upload an avatar.');
+			  e.preventDefault();
+		 }
+	});
 });
+
+function isAvatarSelected() {
+	return window.presetAvatarInput.value || window.avatarInput.files.length > 0;
+}
