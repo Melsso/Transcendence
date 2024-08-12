@@ -1,0 +1,109 @@
+body, html {
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+}
+
+.container-fluid {
+	display: flex;
+	height: 100%;
+	padding: 0;
+}
+.sidebar {
+	width: 15%;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+	grid-template-rows: repeat(auto-fill, 40px);
+	background-color: #000000;
+	position: relative;
+	transition: background-color 0.5s ease;
+}
+.main-content {
+	flex-grow: 1;
+	background-color: #1a1a1a;
+	flex-direction: column;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+}
+.square {
+	border: 1px solid #FFFFFF;
+	background-color: #1a1a1a;
+	border-radius: 10px;
+	animation: squareAnimation 4s infinite;
+	animation-delay: var(--delay);
+}
+@keyframes squareAnimation {
+	0% {
+		 opacity: 0;
+		 transform: scale(0.5);
+	}
+	50% {
+		 opacity: 1;
+		 transform: scale(1);
+	}
+	100% {
+		 opacity: 0;
+		 transform: scale(0.5);
+	}
+}
+.hide {
+	background-color: #000000 ;
+	transition: background-color 0.5s ease;
+}
+.hide .square {
+	display: none;
+}
+.hide-button {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	z-index: 1000;
+}
+
+.btn-login,
+.btn-register {
+	display: flex;
+	background-color:rgb(49, 0, 135);
+	color: #FFFFFF;
+	width: 400px;
+	height: 50px;
+	font-size: 1.25rem;
+	justify-content: center;
+	border: 2px solid #000000;
+}
+
+.btn-group {
+	margin-top: 20px;
+}
+.btn-login:hover,
+.btn-register:hover {
+	color:#FFFFFF;
+	border-color: #eeeeee;
+}
+
+.btn-login:focus,
+.btn-register:focus {
+	color:#FFFFFF;
+	background-color: rgb(42, 0, 113);
+	border: 1px solid #eeeeee;
+	box-shadow: none;
+}
+
+.my-form {
+	color: #FFFFFF;
+	background-color: rgb(49, 0, 135);
+	width: 80%; /* Use a percentage width to make it responsive */
+	max-width: 800px; /* Ensure it doesn't get too wide */
+	height: 50%; /* Let the height adjust automatically */
+	max-height: 90vh; /* Set a maximum height relative to the viewport height */
+	border: 3px solid #000000;
+	position: fixed; /* Use fixed positioning to stay in place */
+	top: 50%; /* Center vertically relative to the viewport */
+	left: 50%; /* Center horizontally relative to the viewport */
+	transform: translate(-55%, -50%); /* Center the form */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: for some shadow effect */
+	padding: 20px; /* Add some padding for better appearance */
+	box-sizing: border-box; 
+}
