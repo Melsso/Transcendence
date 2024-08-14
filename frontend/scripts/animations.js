@@ -1,39 +1,24 @@
-function fillSidebarWithSquares(sidebarId) {
-	const sidebar = document.getElementById(sidebarId);
-	const sidebarHeight = sidebar.clientHeight;
-	const sidebarWidth = sidebar.clientWidth;
-	const squareSize = 40;
-	const cols = Math.floor(sidebarWidth / squareSize);
-	const rows = Math.floor(sidebarHeight / squareSize);
-	const totalSquares = cols * rows;
+document.addEventListener('DOMContentLoaded', function () {
+	const loginBtn = document.getElementById('login-btn');
+	const registerBtn = document.getElementById('register-btn');
 
-	for (let i = 0; i < totalSquares; i++) {
-		 const square = document.createElement('div');
-		 square.classList.add('square');
-		 const randomDelay = Math.random() * 2;
-		 square.style.setProperty('--delay', `${randomDelay}s`);
-		 sidebar.appendChild(square);
+	// Function to set one button as active and the other as inactive
+	function toggleActiveButton(activeButton, inactiveButton) {
+		 activeButton.classList.add('active');
+		 activeButton.classList.remove('inactive');
+		 inactiveButton.classList.add('inactive');
+		 inactiveButton.classList.remove('active');
 	}
-}
 
-function setupButtonClick(sidebarId, buttonId) {
-	const sidebar = document.getElementById(sidebarId);
-	const button = document.getElementById(buttonId);
-	
-	button.addEventListener('click', () => {
-		 sidebar.classList.toggle('hide');
+	// Initially set the register button as active
+	toggleActiveButton(registerBtn, loginBtn);
+
+	// Add event listeners to switch active/inactive state when clicked
+	loginBtn.addEventListener('click', function () {
+		 toggleActiveButton(loginBtn, registerBtn);
 	});
-}
 
-fillSidebarWithSquares('leftSidebar');
-fillSidebarWithSquares('rightSidebar');
-
-setupButtonClick('leftSidebar', 'hideLeftButton');
-setupButtonClick('rightSidebar', 'hideRightButton');
-
-window.addEventListener('resize', () => {
-	document.getElementById('leftSidebar').innerHTML = '';
-	document.getElementById('rightSidebar').innerHTML = '';
-	fillSidebarWithSquares('leftSidebar');
-	fillSidebarWithSquares('rightSidebar');
+	registerBtn.addEventListener('click', function () {
+		 toggleActiveButton(registerBtn, loginBtn);
+	});
 });
