@@ -94,17 +94,17 @@ body, html {
 .my-form {
 	color: #FFFFFF;
 	background-color: rgb(49, 0, 135);
-	width: 80%; /* Use a percentage width to make it responsive */
-	max-width: 800px; /* Ensure it doesn't get too wide */
-	height: 50%; /* Let the height adjust automatically */
-	max-height: 90vh; /* Set a maximum height relative to the viewport height */
+	width: 80%;
+	max-width: 800px;
+	height: 60%;
+	max-height: 90vh;
 	border: 3px solid #000000;
-	position: fixed; /* Use fixed positioning to stay in place */
-	top: 40%; /* Center vertically relative to the viewport */
-	left: 50%; /* Center horizontally relative to the viewport */
-	transform: translate(-55%, -50%); /* Center the form */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: for some shadow effect */
-	padding: 20px; /* Add some padding for better appearance */
+	position: fixed;
+	top: 40%; 
+	left: 50%; 
+	transform: translate(-55%, -50%); 
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+	padding: 20px; 
 	box-sizing: border-box; 
 }
 
@@ -115,10 +115,9 @@ body, html {
 }
 
 .input-smaller {
-    width: 40%;
+    width: 50%;
 }
 
 ::placeholder {
-    color: grey;
-	text-align: center;
+    color: grey;;
 }
