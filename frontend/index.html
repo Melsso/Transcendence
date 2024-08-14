@@ -18,7 +18,7 @@
         <!-- <div class="sidebar left-sidebar" id="leftSidebar">
         </div> -->
         <div class="main-content">
-            <div class="d-flex justify-content-center align-items-cente vh-100 p-5">
+            <div class="button-container">
                 <div class="btn-group" role="group" aria-labelledby="Basic toggle button group">
                     <button type="button" class="btn btn-login btn-lg btn-active" id="login-btn">LOGIN</button>
                     <button type="button" class="btn btn-register btn-lg" id="register-btn">REGISTER</button>
@@ -43,46 +43,50 @@
                     </form>
                 </div>
             </div>
-            <div class="form-container reg-box">
-                <div class="fst-italic rounded text-center my-form" id="register-form-container">
-                    <h1>Register</h1>
-                    <p>Welcome to the Pong Game! Please fill out the neccessary information to register.</p>
+            <div class="form-container">
+                <div class="fst-italic rounded m-5 p-3 text-center my-form" id="register-form-container">
+                    <h1 class="p-3">Register</h1>
+                    <p class="p-3">Welcome to the Pong Game! Please fill out the neccessary information to register.</p>
                     <form id="register-form">
-                        <div class="input-container mb-3">
+                        <div class="input-container mb-2">
                             <label for="username" class="form-label">Username:</label>
                             <input type="text" id="username" name="username" class="form-control input-w" placeholder="Username" required>
                         </div>
-                        <div class="input-container mb-3">
+                        <div class="input-container mb-2">
                             <label for="email" class="form-label">Email:</label>
                             <input type="email" id="email" name="email" class="form-control input-c" placeholder="username123@email.com" required>
                         </div>
-                        <div class="input-container mb-3">
+                        <div class="input-container mb-2">
                             <label for="password" class="form-label">Password:</label>
                             <input type="password" id="password" name="password" class="form-control input-w" placeholder="Password" required>
                         </div>
-                        <div class="input-container mb-3">
+                        <div class="input-container mb-2">
                             <label for="confirm-password" class="form-label">Confirm Password:</label>
                             <input type="password" id="confirm-password" name="confirm-password" class="form-control input-w" placeholder="Password" required>
                         </div>
-                        <div class="button-container">
-                            <button type="submit" class="btn btn-primary input-left" id="next-btn">Next</button>
+                        <button type="submit" class="btn btn-primary input-left" id="next-btn">Next</button>
                         </div>
                     </form>    
                 </div>
             </div>
-            <div class="form-container reg-plus">
+            <div class="form-container">
                 <div class="fst-italic rounded text-center my-form" id="second-reg-container">
-                    <p>To Continue your Registration Please fill out the needed information></p>
+                    <p>To Continue your Registration Please fill out the needed information</p>
                     <form id="second-reg-form">
-                        <div class="mb-3">
+                        <div class="input-container mb-3">
+                            <label for="verification-code" class="form-label">Enter the verification code sent to your email:</label>
+                            <input type="text" id="verification-code" name="verification-code" class="form-control input-w" placeholder="Enter code here" required>
+                        </div>                        
+                        <div class="input-container mb-3">
                             <label for="avatar" class="form-label">Upload an avatar image:</label>
                             <input class="form-control w-50" type="file" id="avatar" name="avatar" accept="image/*"">
                         </div>
-                        <div class="input-left mb-3 avatar-wrapper">
+                        <div class="mb-3">
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#avatarModal">Choose a preset avatar instead</button>
                             <div id="avatar-selection-result" class="avatar-selection"></div>
                             <input type="hidden" id="preset-avatar" name="preset-avatar">
                         </div>
+                        <button type="submit" class="btn btn-primary" id="register">Register</button>
                     </form>
                 </div>
             </div>
