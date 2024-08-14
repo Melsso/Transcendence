@@ -91,18 +91,29 @@ body, html {
 	box-shadow: none;
 }
 
+.reg-box {
+	transform: translateY(-30%);
+}
+
+.form-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+
 .my-form {
 	color: #FFFFFF;
 	background-color: rgb(49, 0, 135);
 	width: 80%;
 	max-width: 800px;
-	height: 60%;
+	height: auto;
 	max-height: 90vh;
 	border: 3px solid #000000;
-	position: fixed;
-	top: 40%; 
-	left: 50%; 
-	transform: translate(-55%, -50%); 
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 	padding: 20px; 
 	box-sizing: border-box; 
@@ -120,4 +131,33 @@ body, html {
 
 ::placeholder {
     color: grey;;
+}
+
+@media (max-width: 600px) {
+	.my-form {
+		 width: 100%;
+	}
+}
+
+.avatar-preview {
+	width: 50px;
+	cursor: pointer;
+	height: auto;
+}
+.avatar-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+.modal-body {
+	display: flex;
+	flex-wrap: nowrap;
+	justify-content: center;
+}
+#avatar-selection-result img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	margin-top: 10px;
 }
