@@ -100,10 +100,25 @@ body, html {
 	max-height: 90vh; /* Set a maximum height relative to the viewport height */
 	border: 3px solid #000000;
 	position: fixed; /* Use fixed positioning to stay in place */
-	top: 50%; /* Center vertically relative to the viewport */
+	top: 40%; /* Center vertically relative to the viewport */
 	left: 50%; /* Center horizontally relative to the viewport */
 	transform: translate(-55%, -50%); /* Center the form */
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: for some shadow effect */
 	padding: 20px; /* Add some padding for better appearance */
 	box-sizing: border-box; 
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-smaller {
+    width: 40%;
+}
+
+::placeholder {
+    color: grey;
+	text-align: center;
 }
