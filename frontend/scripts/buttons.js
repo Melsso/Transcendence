@@ -34,5 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function showLoginForm(logButton, regButton) {
     document.getElementById('register-form-container').style.display = 'none';
+    document.getElementById('second-reg-container').style.display = 'none';
     document.getElementById('login-form-container').style.display = 'block';
 }

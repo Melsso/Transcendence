@@ -41,9 +41,8 @@ body, html {
 }
 
 .button-container {
-    display: flex;
-	top: 20%;
-	transform: translateY(-400%);
+   display: flex;
+	transform: translateY(-350%);
     justify-content: center;
     align-items: flex-start;
     position: relative;
@@ -59,6 +58,7 @@ body, html {
     font-size: 1.25rem;
     border: 2px solid #000000;
     padding: 10px 20px;
+	 box-shadow: 0 10px 20px rgb(43, 2, 79);
     margin: 10px;
     width: 200px;
     position: relative;
@@ -80,7 +80,7 @@ body, html {
 	color:#FFFFFF;
 	background-color: rgba(28, 1, 74, 0.8);
 	border: 1px solid #eeeeee;
-	box-shadow: none;
+	box-shadow: 0 10px 20px rgb(43, 2, 79);
 }
 
 
@@ -98,6 +98,7 @@ body, html {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	transform: translateY(400%);
 	width: 80%;
 	height: 40%;
 	padding: 20px;
@@ -116,6 +117,17 @@ body, html {
 	box-shadow: 0 10px 20px rgb(43, 2, 79); 
 	padding: 20px; 
 	box-sizing: border-box; 
+}
+
+.reg-plus {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 80%;
+	height: 40%;
+	padding: 20px;
+	box-sizing: border-box;
+	z-index: 20;
 }
 
 .input-container {
