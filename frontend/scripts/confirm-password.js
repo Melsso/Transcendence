@@ -12,3 +12,20 @@ document.getElementById('register-form').addEventListener('submit', function(eve
 		 event.preventDefault();
 	}
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+	const sidebar = document.querySelector('.sidebar');
+	const accordionBodies = document.querySelectorAll('.accordion-body');
+	
+	function setAccordionMaxHeight() {
+		 const sidebarHeight = sidebar.clientHeight;
+		 const maxHeight = sidebarHeight * 0.455; // 50% of sidebar height
+		 
+		 accordionBodies.forEach(body => {
+			  body.style.maxHeight = `${maxHeight}px`;
+		 });
+	}
+
+	setAccordionMaxHeight();
+	window.addEventListener('resize', setAccordionMaxHeight); // Adjust on window resize
+});

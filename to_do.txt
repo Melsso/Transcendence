@@ -25,5 +25,3 @@ MINOR:
 - Designing the Backend as Microservices. YYYYYYYY
 - Expanding Browser Compatibility YYYYYYYY
 - Multiple language supports YYYYYYYY
--
--
