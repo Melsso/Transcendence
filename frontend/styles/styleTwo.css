@@ -192,5 +192,56 @@
 }
 
 .profile-username {
-	
+	position: absolute;
+	top: 20%;
+	left: 45%;
+	color: #9da5cf;
+	text-decoration: solid;
+	font:italic;
+}
+
+.my-bar {
+	background-color: #7982b2;
+	position: absolute;
+	top: 70%;
+	left: 18%;
+	width: 75%;
+}
+
+.my-tabs {
+	position: absolute;
+	top: 35%;
+	left: 5%;
+	width: 90%;
+	height: 60%;
+	background-color: #0000006f;
+}
+
+.nav-tabs .nav-link {
+	color:Black;
+	background-color: #9da5cf;
+	border: 2px solid black;
+}
+
+.nav-tabs {
+	border-bottom: 1px solid #9da5cf;
+}
+
+.nav-tabs .nav-link.active {
+	color: black; /* White for active tab */
+	background-color: #7982b2; /* Background color of active tab */
+}
+
+.nav-tabs .nav-link:hover {
+	color: #7982b2; /* Blue on hover */
+}
+
+.tab-content {
+	background-color: #f0f0f0; /* Light gray background */
+	border: 1px solid #dee2e6; /* Border around the content area */
+	padding: 15px; /* Padding inside the content area */
+}
+
+.tab-pane.active {
+	background-color: #e9ecef; /* Slightly darker gray for active tab content */
 }

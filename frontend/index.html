@@ -129,7 +129,23 @@
                 <div class="profile-info" id="profile-info">
                     <div id="profile-avatar" class="avatar-profile">
                     </div>
-                    <h1 id="username" class="profile-username"></h1>
+                    <h1 id="username" class="profile-username">John Doe</h1>
+                    <div class="progress my-bar" id="exp-bar">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 75%; background-color: rgb(56, 4, 102);" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Level 1 - 75%</div>
+                    </div>
+                </div>
+                <div class="my-tabs" id="profile-tabs">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="History" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="History" aria-selected="true">Match History</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">Stats</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <!-- TODO games go here -->
