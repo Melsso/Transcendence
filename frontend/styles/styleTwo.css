@@ -178,8 +178,7 @@
 	background-color: transparent;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-size: 100% 100%;
-	background-image: url("../assets/avatar1.svg");
+	background-size: cover;
 }
 
 .profile-info {
