@@ -169,10 +169,10 @@
 
 .avatar-profile {
 	position: absolute;
-	top: 50px;
-	left: 50px;
-	width: 200px;
-	height: 200px;
+	top: 30%;
+	left: 27%;
+	width: 45%;
+	height: 45%;
 	border-radius: 50%;
 	border: 2px solid grey;
 	background-color: transparent;
@@ -181,30 +181,60 @@
 	background-size: cover;
 }
 
-.profile-info {
-	top: 5%;
+.my-banner {
 	position: absolute;
-	left: 5%;
-	width: 90%;
+	top: 6%;
+	left: 10%;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	height: 25%; 
+	width: 20%;
+	background-image: url("../assets/banner.png");
+}
+
+.profile-info {
+	top: 7%;
+	position: absolute;
+	left: 40%;
+	width: 50%;
 	height: 25%;
 	background-color: #0000006f;
 }
 
 .profile-username {
 	position: absolute;
-	top: 20%;
-	left: 45%;
+	top: 7%;
+	left:40%;
 	color: #9da5cf;
 	text-decoration: solid;
 	font:italic;
 }
 
+.my-bio {
+	position: absolute;
+	top: 35%;
+	color: #7982b2;
+	left: 10%;
+}
+
 .my-bar {
 	background-color: #7982b2;
 	position: absolute;
-	top: 70%;
-	left: 18%;
-	width: 75%;
+	top: 60%;
+	left: 10%;
+	height: 10%;
+	width: 80%;
+}
+
+.my-bar-two {
+	background-color: #7982b2;
+	position: absolute;
+	top: 80%;
+	left: 10%;
+	height: 10%;
+	width: 80%;
 }
 
 .my-tabs {
@@ -227,20 +257,20 @@
 }
 
 .nav-tabs .nav-link.active {
-	color: black; /* White for active tab */
-	background-color: #7982b2; /* Background color of active tab */
+	color: black;
+	background-color: #7982b2;
 }
 
 .nav-tabs .nav-link:hover {
-	color: #7982b2; /* Blue on hover */
+	color: #7982b2; 
 }
 
 .tab-content {
-	background-color: #f0f0f0; /* Light gray background */
-	border: 1px solid #dee2e6; /* Border around the content area */
-	padding: 15px; /* Padding inside the content area */
+	background-color: #f0f0f0;
+	border: 1px solid #dee2e6;
+	padding: 15px;
 }
 
 .tab-pane.active {
-	background-color: #e9ecef; /* Slightly darker gray for active tab content */
+	background-color: #e9ecef;
 }
