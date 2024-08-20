@@ -9,6 +9,18 @@ services:
     networks:
       - app-network
 
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    # depends_on:
+      # - db
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
