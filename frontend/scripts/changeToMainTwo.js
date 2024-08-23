@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
 
+	
 	// Add click event listener to the login button
 	loginButton.addEventListener('click', function () {
 		 mainOne.style.display = 'none';
