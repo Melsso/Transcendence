@@ -13,19 +13,36 @@ document.getElementById('register-form').addEventListener('submit', function(eve
 	}
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-	const sidebar = document.querySelector('.sidebar');
-	const accordionBodies = document.querySelectorAll('.accordion-body');
-	
-	function setAccordionMaxHeight() {
-		 const sidebarHeight = sidebar.clientHeight;
-		 const maxHeight = sidebarHeight * 0.455; // 50% of sidebar height
-		 
-		 accordionBodies.forEach(body => {
-			  body.style.maxHeight = `${maxHeight}px`;
-		 });
-	}
+	document.addEventListener('DOMContentLoaded', function() {
+		const accordionButtons = document.querySelectorAll('.accordion-button');
 
-	setAccordionMaxHeight();
-	window.addEventListener('resize', setAccordionMaxHeight); // Adjust on window resize
-});
+		function setAccordionMaxHeight() {
+			const sidebar = document.querySelector('.sidebar');
+			const sidebarHeight = sidebar.clientHeight;
+			const maxHeight = sidebarHeight * 0.455;
+			document.documentElement.style.setProperty('--accordion-height', `${maxHeight}px`);
+		}
+
+		function adjustAccordionHeight() {
+			document.querySelectorAll('.accordion-collapse').forEach(collapse => {
+				if (collapse.classList.contains('show')) {
+						collapse.style.height = 'auto';
+						collapse.offsetHeight; 
+						collapse.style.height = `var(--accordion-height)`;
+				} else {
+						collapse.style.height = '0px';
+				}
+			});
+		}
+
+		setAccordionMaxHeight();
+		adjustAccordionHeight();
+
+		window.addEventListener('resize', () => {
+			setAccordionMaxHeight();
+			adjustAccordionHeight();
+		});
+		accordionButtons.forEach(button => {
+			button.addEventListener('click', adjustAccordionHeight);
+		});
+	});

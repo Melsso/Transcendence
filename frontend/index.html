@@ -20,11 +20,224 @@
         <div class="sidebar right-sidebar" id="right-sidebar">
             <div class="btn-group down-btns" role="group" aria-label="sidebar-btns">
                 <button type="button" class="btn logout-btn" id="logout">Logout</button>
+                <button type="button" class="btn profile-btn" id="to-profile"></button>
                 <button type="button" class="btn setting-btn"></button>
             </div>
             <div class="search-container">
                 <input type="text" class="search-bar" placeholder="Search...">
                 <button type="button" class="btn search-btn"></button>
+            </div>
+            <div class="container settings mt-4">
+                <div class="mb-3">
+                    <button class="btn btn-primary game-setting" type="button" data-bs-toggle="collapse" data-bs-target="#Game-1-settings" aria-expanded="false" aria-controls="Game-1-settings">
+                        PONG GAME
+                    </button>
+                    <div class="collapse settings-container-1 mt-2" id="Game-1-settings">
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Choose Attack mode:</label>
+                            <div class="d-flex justify-content-center">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="attackMode" id="mode1" value="option1" checked>
+                                    <label class="form-check-label" for="mode1">
+                                        Breaker
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="attackMode" id="mode2" value="option2">
+                                    <label class="form-check-label" for="mode2">
+                                        Freezer
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Choose Different Power-ups/Debufs:</label>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting1" value="setting1">
+                                            <label class="form-check-label" for="setting1">
+                                                Setting 1
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting2" value="setting2">
+                                            <label class="form-check-label" for="setting2">
+                                                Setting 2
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting3" value="setting3">
+                                            <label class="form-check-label" for="setting3">
+                                                Setting 3
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting4" value="setting4">
+                                            <label class="form-check-label" for="setting4">
+                                                Setting 4
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting5" value="setting5">
+                                            <label class="form-check-label" for="setting5">
+                                                Setting 5
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting6" value="setting6">
+                                            <label class="form-check-label" for="setting6">
+                                                Setting 6
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Choose A Map:</label>
+                            <div class="d-flex justify-content-center">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="mapSelection" id="map1" value="map1" checked>
+                                    <label class="form-check-label" for="map1">
+                                        Map 1
+                                    </label>
+                                </div>
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="mapSelection" id="map2" value="map2">
+                                    <label class="form-check-label" for="map2">
+                                        Map 2
+                                    </label>
+                                </div>
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="mapSelection" id="map3" value="map3">
+                                    <label class="form-check-label" for="map3">
+                                        Map 3
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary mx-auto" type="button">Play Game</button>
+                        </div>
+                    </div>  
+                </div>
+                <div class="">
+                    <button class="btn btn-primary game-setting-2" type="button" data-bs-toggle="collapse" data-bs-target="#Game-2-settings" aria-expanded="false" aria-controls="Game-2-settings">
+                        Snakes & Ladders
+                    </button>
+                    <div class="collapse settings-container-2 mt-2" id="Game-2-settings">
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Choose Attack mode:</label>
+                            <div class="d-flex justify-content-center">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="attackMode-2" id="mode1" value="option1" checked>
+                                    <label class="form-check-label" for="mode1">
+                                        Breaker
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="attackMode-2" id="mode2" value="option2">
+                                    <label class="form-check-label" for="mode2">
+                                        Freezer
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Choose Different Power-ups/Debufs:</label>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting1" value="setting1">
+                                            <label class="form-check-label" for="setting1">
+                                                Setting 1
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting2" value="setting2">
+                                            <label class="form-check-label" for="setting2">
+                                                Setting 2
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting3" value="setting3">
+                                            <label class="form-check-label" for="setting3">
+                                                Setting 3
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting4" value="setting4">
+                                            <label class="form-check-label" for="setting4">
+                                                Setting 4
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting5" value="setting5">
+                                            <label class="form-check-label" for="setting5">
+                                                Setting 5
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="setting6" value="setting6">
+                                            <label class="form-check-label" for="setting6">
+                                                Setting 6
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Choose A Map:</label>
+                            <div class="d-flex justify-content-center">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="mapSelection-2" id="map1" value="map1" checked>
+                                    <label class="form-check-label" for="map1">
+                                        Map 1
+                                    </label>
+                                </div>
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="mapSelection-2" id="map2" value="map2">
+                                    <label class="form-check-label" for="map2">
+                                        Map 2
+                                    </label>
+                                </div>
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="mapSelection-2" id="map3" value="map3">
+                                    <label class="form-check-label" for="map3">
+                                        Map 3
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary mx-auto" type="button">Play Game</button>
+                        </div>
+                    </div>  
+                </div>
             </div>
         </div>
         <div class="sidebar left-sidebar" id="left-sidebar">
@@ -34,36 +247,7 @@
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Friends</button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="Friends-header" data-bs-parent="#friend-accordion">
-                        <div class="accordion-body">
-                            <ul>
-                                <li>Friend 1</li>
-                                <li>Friend 2</li>
-                                <li>Friend 3</li>
-                                <li>Friend 4</li>
-                                <li>Friend 5</li>
-                                <li>Friend 6</li>
-                                <li>Friend 7</li>
-                                <li>Friend 8</li>
-                                <li>Friend 9</li>
-                                <li>Friend 10</li>
-                                <li>Friend 11</li>
-                                <li>Friend 12</li>
-                                <li>Friend 13</li>
-                                <li>Friend 14</li>
-                                <li>Friend 15</li>
-                                <li>Friend 16</li>
-                                <li>Friend 17</li>
-                                <li>Friend 18</li>
-                                <li>Friend 19</li>
-                                <li>Friend 20</li>
-                                <li>Friend 21</li>
-                                <li>Friend 22</li>
-                                <li>Friend 23</li>
-                                <li>Friend 24</li>
-                                <li>Friend 25</li>
-                            </ul>
-                            <p>Test Example</p>
-                            <button type="button" class="btn btn-warning">TEST BUTTON</button>
+                        <div class="accordion-body" id="friends-list">        
                         </div>
                     </div>
                 </div>
@@ -75,50 +259,6 @@
                     </h2>
                     <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="Chats-header" data-bs-parent="#chat-accordion">
                         <div class="accordion-body">
-                            <div class="chat-message">
-                                <p><strong>User 1:</strong> Hello! How are you?</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 2:</strong> I'm good, thanks! How about you?</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 1:</strong> I'm doing well. Just checking in.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 2:</strong> That's great to hear. Anything new?</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 1:</strong> Not much, just working on some projects.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 2:</strong> Sounds interesting! Tell me more.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 1:</strong> Sure, I'm currently working on a web application.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 2:</strong> Awesome! Is it for a client or a personal project?</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 1:</strong> It's a personal project. I'm excited about it.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 2:</strong> That's great! Keep up the good work!</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 1:</strong> Thanks! I appreciate the support.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 2:</strong> No problem. If you need any help, feel free to ask.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 1:</strong> Will do! Thanks again.</p>
-                            </div>
-                            <div class="chat-message">
-                                <p><strong>User 2:</strong> Anytime!</p>
-                            </div>
-                            <p>Test</p>
-                            <button type="button" class="btn btn-warning">TEST BUTTON</button>
                         </div>
                     </div>
                 </div>
@@ -154,6 +294,9 @@
                 <ul class="nav nav-tabs">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="History" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="History" aria-selected="true">Match History</button>
+                            <div classs="won-match">
+
+                            </div>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">Stats</button>

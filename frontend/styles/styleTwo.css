@@ -52,6 +52,14 @@
 	color: rgb(0, 0, 0);
 }
 
+.accordion-body {
+	padding: 1rem; /* Adjust padding as needed */
+}
+
+.dropdown-menu {
+	min-width: 150px; /* Adjust the width of the dropdown menu */
+}
+
 .two-container-bg {
 	position: absolute;
 	top: 2.5%;
@@ -81,19 +89,28 @@
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
-	padding: 0;
-	color: rgb(29, 9, 34);
-}
-.logout-btn{
-	width: 80%;
-	color: rgb(29, 9, 34);
-	border:2px solid #00000059;
+	border: 2px solid black;
 }
 
+.profile-btn {
+	width: 20%;
+	background-image: url(../assets/profile.png);
+	background-size: 50%;
+	background-repeat: no-repeat;
+	background-position: center;
+	border: 2px solid black;
+}
+
+.profile-btn:hover,
 .setting-btn:hover,
 .logout-btn:hover {
-	color:#FFFFFF;
-	border-color: #00000059;
+	border-color: #dee2e6;
+}
+
+.logout-btn{
+	width: 60%;
+	color: rgb(29, 9, 34);
+	border: 2px solid black;
 }
 
 .setting-btn:focus,
@@ -103,14 +120,18 @@
 	box-shadow: none;
 }
 
-.accordion-collapse.upward-expand {
-	transform-origin: bottom;
-	transform: scaleY(0);
+.accordion-collapse {
+	transition: height 0.5s ease;
+	height: 0;
+	overflow: hidden;
 }
 
-.accordion-collapse.upward-expand.show {
-	height: auto;
-	transform: scaleY(1);
+.accordion-collapse.show {
+	height: var(--accordion-height);
+}
+
+.accordion-body {
+	overflow-y: auto;
 }
 
 .accordion.down {
@@ -119,25 +140,17 @@
 	width: 100%;
 }
 
-
 #chat-accordion .accordion-button:not(.collapsed)::after {
-	transform: rotate(0deg); /* Rotate to point upwards */
+	transform: rotate(0deg);
 }
 
 #chat-accordion .accordion-button.collapsed::after {
 	transform: rotate(180deg);
 }
 
-#chat-accordion .accordion-body,
-#friend-accordion .accordion-body {
-    max-height: 500px;
-    overflow-y: auto;
-}
-
 .search-container {
 	width: 100%;
 	display: flex;
-	/* margin-left: 15%; */
 	justify-content: center;
 	margin-top: 40px;
 }
@@ -273,4 +286,49 @@
 
 .tab-pane.active {
 	background-color: #e9ecef;
+}
+
+.won-match {
+	position: absolute;
+	width: 100%;
+	height: 20%;
+	background-color: #000000;
+}
+
+.Game-2-btn,
+.Game-1-btn {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+.settings {
+	height: 100%;
+	width: 100%;
+}
+
+.game-setting {
+	background-color: #7982b2;
+	margin: 40px auto;
+	width: 60%;
+	height: 4%;
+	border: 2px solid black;
+	display: block;
+}
+
+.game-setting-2 {
+	background-color: #7982b2;
+	margin: 20px auto;
+	width: 60%;
+	height: 4%;
+	border: 2px solid black;
+	display: block;
+}
+
+.settings-container-1, .settings-container-2 {
+	width: 90%;
+	background-color: #0000003a;
+	color: white;
+	margin: 20px auto;
+	padding: 20px;
 }
