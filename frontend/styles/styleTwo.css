@@ -120,6 +120,10 @@
 	border-top: 1px solid #ddd;
 }
 
+.message-container .message.left img {
+	order: -1;
+}
+
 #chat-input {
 	flex: 1;
 	left: 0;
