@@ -167,6 +167,8 @@
 	min-width: 150px;
 }
 
+.two-container-game-2,
+.two-container-settings,
 .two-container-bg {
 	position: absolute;
 	top: 2.5%;

@@ -121,7 +121,7 @@ body, html {
 	z-index: 20;
 }
 
-.input-container {
+.input-container-main {
     display: flex;
     flex-direction: column;
     align-items: center;
