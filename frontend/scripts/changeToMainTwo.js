@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-	// Get the mainOne element
 	const mainOne = document.getElementById('mainOne');
 	const mainTwo = document.getElementById('mainTwo');
 	const mainBody = document.getElementById('mainTwo-body');
@@ -11,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainBody.style.display = 'none'
 	mainSettings.style.display = 'flex';
 
-	// Get the login and register buttons
+
 	const loginButton = document.getElementById('login');
 	const profileButton = document.getElementById('to-profile');
 	const registerButton = document.getElementById('register');
@@ -20,13 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	const settingButton = document.getElementById('to-settings');
 
 	
-	// Add click event listener to the login button
+	
 	loginButton.addEventListener('click', function () {
 		 mainOne.style.display = 'none';
 		 mainTwo.style.display = 'flex';
 	});
 
-	// Add click event listener to the register button
+	
 	registerButton.addEventListener('click', function () {
 		 mainOne.style.display = 'none';
 		 mainTwo.style.display = 'flex';

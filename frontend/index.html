@@ -318,9 +318,42 @@
                 </ul>
             </div>
             </div>
-            <!-- TODO games go here -->
         </div>
-        <div class="two-container-settings" id="setting-page">            
+        <div class="two-container-settings" id="setting-page">
+            <div class="settings-form-container">
+                <h2 class="settings-title">Account Settings</h2>
+                
+                <form id="username-form" class="settings-form">
+                    <label for="username">Change Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter new username" required>
+                    <button type="submit" class="btn btn-primary">Update Username</button>
+                </form>
+                
+                <form id="password-form" class="settings-form">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" name="current-password" placeholder="Enter current password" required>
+                    
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" name="new-password" placeholder="Enter new password" required>
+                    
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password" required>
+                    
+                    <button type="submit" class="btn btn-primary">Update Password</button>
+                </form>
+                
+                <form id="email-form" class="settings-form">
+                    <label for="email">Change Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter new email" required>
+                    <button type="submit" class="btn btn-primary">Update Email</button>
+                </form>
+                
+                <form id="avatar-form" class="settings-form">
+                    <label for="avatar">Change Avatar</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*" required>
+                    <button type="submit" class="btn btn-primary">Update Avatar</button>
+                </form>
+            </div>
         </div>
         <div class="two-container-game-2" id="S&L-page">
         </div>
