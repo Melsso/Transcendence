@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="styles/styleOne.css">
     <link rel="stylesheet" href="styles/styleTwo.css">
     <link rel="stylesheet" href="styles/styleBg.css">
+    <link rel="stylesheet" href="styles/stylePONG.css">
 </head>
 <body>
     <div class="background-container">
@@ -129,7 +130,7 @@
                             </div>
                         </div>
                         <div class="d-grid">
-                            <button class="btn btn-primary mx-auto" type="button">Play Game</button>
+                            <button class="btn btn-primary mx-auto" type="button" id="PONG-button">Play Game</button>
                         </div>
                     </div>  
                 </div>
@@ -351,12 +352,16 @@
                 <form id="avatar-form" class="settings-form">
                     <label for="avatar">Change Avatar</label>
                     <input type="file" id="avatar" name="avatar" accept="image/*" required>
-                    <button type="submit" class="btn btn-primary">Update Avatar</button>
+                    <button type="submit" class="btn btn-p  rimary">Update Avatar</button>
                 </form>
             </div>
         </div>
         <div class="two-container-game-2" id="S&L-page">
         </div>
+        <div class="two-container-game-2" id="PONG-game">
+            <div class="gameContainer">
+                <canvas id="pongCanvas"></canvas>
+            </div>
     </div>
     <div class="container-fluid" id="mainOne">
         <div class="main-content">
@@ -459,6 +464,7 @@
             </div>
         </div>
     </div>
+    <script src="scripts/pong.js"></script>
     <script src="scripts/chat.js"></script>
     <script src="scripts/fetch.js"></script>
     <script src="scripts/changeToMainTwo.js"></script>

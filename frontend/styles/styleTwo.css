@@ -182,6 +182,7 @@
 	box-shadow: 0 10px 20px rgb(38, 1, 70);
 	border: 1px solid #000000;
 	z-index: 1;
+	overflow: hidden; /* Ensure content doesn't overflow */
 }
 
 .down-btns {

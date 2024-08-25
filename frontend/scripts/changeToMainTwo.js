@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainBody = document.getElementById('mainTwo-body');
 	const mainSettings = document.getElementById('setting-page');
 	const mainSLgame = document.getElementById('S&L-page');
+	const mainPONGgame = document.getElementById('PONG-game');
+	mainPONGgame.style.display = 'flex';
 	mainSLgame.style.display = 'none';
 	mainOne.style.display = 'none';
 	mainTwo.style.display = 'flex';
 	mainBody.style.display = 'none'
-	mainSettings.style.display = 'flex';
+	mainSettings.style.display = 'none';
 
 
 	const loginButton = document.getElementById('login');
@@ -17,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const logoutButon = document.getElementById('logout');
 	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
+	const PONGButton = document.getElementById('PONG-button');
 
 	
 	
@@ -26,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	
+	PONGButton.addEventListener('click', function () {
+		mainBody.style.display = 'none';
+		mainSettings.style.display = 'none';
+		mainSLgame.style.display = 'none';
+		mainPONGgame.style.display = 'flex';
+	});
+
 	registerButton.addEventListener('click', function () {
 		 mainOne.style.display = 'none';
 		 mainTwo.style.display = 'flex';
@@ -41,17 +51,21 @@ document.addEventListener('DOMContentLoaded', function () {
 	settingButton.addEventListener('click', function() {
 		mainSettings.style.display = 'flex';
 		mainBody.style.display = 'none';
+		mainPONGgame.style.display = 'none';
+		mainSLgame.style.display = 'none';
 	});
 
 	profileButton.addEventListener('click', function () {
 		mainBody.style.display = 'flex';
 		mainSettings.style.display = 'none';
 		mainSLgame.style.display = 'none';
+		mainPONGgame.style.display = 'none';
 	});
 
 	SLButton.addEventListener('click', function() {
 		mainBody.style.display = 'none';
 		mainSettings.style.display = 'none';
+		mainPONGgame.style.display = 'none';
 		mainSLgame.style.display = 'flex';
 	});
 });
