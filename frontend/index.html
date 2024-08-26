@@ -309,9 +309,7 @@
                 <div class="my-tabs" id="profile-tabs">
                     <ul class="nav nav-tabs">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="History" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="History" aria-selected="true">Match History</button>
-                                <div classs="won-match">
-                                </div>
+                            <button class="nav-link active" id="History" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="true">Match History</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pong" type="button" role="tab" aria-controls="stats-pong" aria-selected="false">Stats-PONG</button>
@@ -320,6 +318,16 @@
                             <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#stats-snake" type="button" role="tab" aria-controls="stats-snake" aria-selected="false">Stats-S&L</button>
                         </li>
                     </ul>
+            
+                    <div class="tab-content mt-4">
+                        <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="History">
+                            <div class="match-history-container"></div>
+                        </div>
+                        <div class="tab-pane fade" id="stats-pong" role="tabpanel" aria-labelledby="stats-tab">
+                        </div>
+                        <div class="tab-pane fade" id="stats-snake" role="tabpanel" aria-labelledby="contact-tab">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -329,13 +337,13 @@
                 
                 <form id="username-form" class="settings-form">
                     <label for="username">Change Username</label>
-                    <input type="text" id="username" name="username" placeholder="Enter new username" required>
+                    <input type="text" id="new-username" name="username" placeholder="Enter new username" required>
                     <button type="submit" class="btn btn-primary">Update Username</button>
                 </form>
                 
                 <form id="bio-form" class="settings-form">
                     <label for="Bio">Change Bio</label>
-                    <input type="text" id="Bio" name="Bio" placeholder="Enter new Bio" required>
+                    <input type="text" id="new-Bio" name="Bio" placeholder="Enter new Bio" required>
                     <button type="submit" class="btn btn-primary">Update Bio</button>
                 </form>
 
@@ -347,20 +355,20 @@
                     <input type="password" id="new-password" name="new-password" placeholder="Enter new password" required>
                     
                     <label for="confirm-password">Confirm New Password</label>
-                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password" required>
+                    <input type="password" id="new-confirm-password" name="confirm-password" placeholder="Confirm new password" required>
                     
                     <button type="submit" class="btn btn-primary">Update Password</button>
                 </form>
                 
                 <form id="email-form" class="settings-form">
                     <label for="email">Change Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter new email" required>
+                    <input type="email" id="new-email" name="email" placeholder="Enter new email" required>
                     <button type="submit" class="btn btn-primary">Update Email</button>
                 </form>
                 
                 <form id="avatar-form" class="settings-form">
                     <label for="avatar">Change Avatar</label>
-                    <input type="file" id="avatar" name="avatar" accept="image/*" required>
+                    <input type="file" id="new-avatar" name="avatar" accept="image/*" required>
                     <button type="submit" class="btn btn-p  rimary">Update Avatar</button>
                 </form>
             </div>
@@ -474,6 +482,7 @@
             </div>
         </div>
     </div>
+    <script src="scripts/match.js"></script>
     <script src="scripts/pong.js"></script>
     <script src="scripts/chat.js"></script>
     <script src="scripts/fetch.js"></script>
