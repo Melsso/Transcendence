@@ -26,7 +26,77 @@ document.addEventListener('DOMContentLoaded', function () {
 					"Player2": "Jake Johnson",
 					"Score": "20-18",
 					"Winner": "John Doe"
-			  }
+			  },
+			  {
+				"GAMEID": "#0237da",
+				"Player1": "John Doe",
+				"Player2": "Jane Smith",
+				"Score": "13-14",
+				"Winner": "Jane Smith"
+		  		},
+		  	   {
+				"GAMEID": "#0298db",
+				"Player1": "John Doe",
+				"Player2": "Jake Johnson",
+				"Score": "20-18",
+				"Winner": "John Doe"
+		  },
+		  {
+			"GAMEID": "#0237da",
+			"Player1": "John Doe",
+			"Player2": "Jane Smith",
+			"Score": "13-14",
+			"Winner": "Jane Smith"
+	  },
+	  {
+			"GAMEID": "#0298db",
+			"Player1": "John Doe",
+			"Player2": "Jake Johnson",
+			"Score": "20-18",
+			"Winner": "John Doe"
+	  },
+	  {
+		"GAMEID": "#0237da",
+		"Player1": "John Doe",
+		"Player2": "Jane Smith",
+		"Score": "13-14",
+		"Winner": "Jane Smith"
+  },
+  {
+		"GAMEID": "#0298db",
+		"Player1": "John Doe",
+		"Player2": "Jake Johnson",
+		"Score": "20-18",
+		"Winner": "John Doe"
+  },
+  {
+	"GAMEID": "#0237da",
+	"Player1": "John Doe",
+	"Player2": "Jane Smith",
+	"Score": "13-14",
+	"Winner": "Jane Smith"
+},
+{
+	"GAMEID": "#0298db",
+	"Player1": "John Doe",
+	"Player2": "Jake Johnson",
+	"Score": "20-18",
+	"Winner": "John Doe"
+},
+{
+	"GAMEID": "#0237da",
+	"Player1": "John Doe",
+	"Player2": "Jane Smith",
+	"Score": "13-14",
+	"Winner": "Jane Smith"
+},
+{
+	"GAMEID": "#0298db",
+	"Player1": "John Doe",
+	"Player2": "Jake Johnson",
+	"Score": "20-18",
+	"Winner": "John Doe"
+}			  
 		 ];
 
 		 const playerAvatars = {
