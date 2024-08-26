@@ -1,0 +1,114 @@
+.Game-2-btn,
+.Game-1-btn {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+.settings {
+	height: 100%;
+	width: 100%;
+}
+
+.game-setting {
+	background-color: #7982b2;
+	margin: 40px auto;
+	width: 60%;
+	height: 4%;
+	border: 2px solid black;
+	display: block;
+}
+
+.game-setting-2 {
+	background-color: #7982b2;
+	margin: 20px auto;
+	width: 60%;
+	height: 4%;
+	border: 2px solid black;
+	display: block;
+}
+
+.settings-container-1, .settings-container-2 {
+	width: 90%;
+	height: auto;
+	max-height: 90vh;
+	background-color: #0000003a;
+	color: white;
+	margin: 20px auto;
+	padding: 20px;
+}
+
+.container.settings {
+	max-height: 80vh;
+	overflow-y: auto;
+}
+
+.settings-form-container {
+	width: 80%;
+	background-color: rgba(255, 255, 255, 0.9);
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+	overflow-y: auto;
+	max-height: 90%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.settings-title {
+	text-align: center;
+	color: #333;
+	margin-bottom: 20px;
+	width: 100%;
+}
+
+.settings-form {
+	margin-bottom: 20px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.settings-form label {
+	display: block;
+	margin-bottom: 5px;
+	color: #555;
+	font-weight: 500;
+	width: 50%;
+	text-align: left;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="email"],
+.settings-form input[type="password"],
+.settings-form input[type="file"] {
+	width: 50%;
+	padding: 10px;
+	margin-bottom: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-sizing: border-box;
+	text-align: left;
+}
+
+.settings-form button {
+	width: 20%;
+	padding: 10px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+	transition: background-color 0.3s ease;
+	margin-top: 10px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.settings-form button:hover {
+	background-color: #0056b3;
+}

@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="icon" href="assets/logo.jpg" type="image/x-icon">
     <link rel="stylesheet" href="styles/styleOne.css">
+    <link rel="stylesheet" href="styles/styleSettings.css">
+    <link rel="stylesheet" href="styles/styleSidebars.css">
+    <!-- <link rel="stylesheet" href="styles/styleOne.css"> -->
     <link rel="stylesheet" href="styles/styleTwo.css">
     <link rel="stylesheet" href="styles/styleBg.css">
+    <link rel="stylesheet" href="styles/styleChat.css">
     <link rel="stylesheet" href="styles/stylePONG.css">
 </head>
 <body>
@@ -302,22 +306,21 @@
                              aria-valuemax="100">Loading...</div>
                     </div>
                 </div>
-            <div class="my-tabs" id="profile-tabs">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="History" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="History" aria-selected="true">Match History</button>
-                            <div classs="won-match">
-
-                            </div>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pong" type="button" role="tab" aria-controls="stats-pong" aria-selected="false">Stats-PONG</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#stats-snake" type="button" role="tab" aria-controls="stats-snake" aria-selected="false">Stats-S&L</button>
-                    </li>
-                </ul>
-            </div>
+                <div class="my-tabs" id="profile-tabs">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="History" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="History" aria-selected="true">Match History</button>
+                                <div classs="won-match">
+                                </div>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pong" type="button" role="tab" aria-controls="stats-pong" aria-selected="false">Stats-PONG</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#stats-snake" type="button" role="tab" aria-controls="stats-snake" aria-selected="false">Stats-S&L</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="two-container-settings" id="setting-page">
@@ -330,6 +333,12 @@
                     <button type="submit" class="btn btn-primary">Update Username</button>
                 </form>
                 
+                <form id="bio-form" class="settings-form">
+                    <label for="Bio">Change Bio</label>
+                    <input type="text" id="Bio" name="Bio" placeholder="Enter new Bio" required>
+                    <button type="submit" class="btn btn-primary">Update Bio</button>
+                </form>
+
                 <form id="password-form" class="settings-form">
                     <label for="current-password">Current Password</label>
                     <input type="password" id="current-password" name="current-password" placeholder="Enter current password" required>

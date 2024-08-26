@@ -1,0 +1,158 @@
+.sidebar {
+	position: absolute;
+	width: 17.5%;
+	height: 95vh;
+	background-color: rgba(0, 0, 0, 0.4);
+	box-shadow: 0 10px 20px rgb(38, 1, 70);
+	border: 1px solid #000000;
+	z-index: 2;
+}
+
+.left-sidebar {
+	transform: translate(2.5%, 2.5%);
+	left: 0;
+}
+
+.right-sidebar {
+	transform: translate(-2.5%, 2.5%);
+	right: 0;
+}
+
+.accordion-collapse {
+	transition: height 0.35s ease;
+	overflow: hidden;
+}
+
+.accordion {
+	position: relative;
+	z-index: 3;
+}
+
+.accordion-button {
+	background-color: #9da5cf;
+	color: rgb(29, 9, 34);
+}
+.accordion-button:not(.collapsed) {
+	background-color: #7982b2;
+	color:rgb(29, 9, 34);
+}
+
+.accordion-button:focus {
+	box-shadow: none;
+}
+
+.accordion-collapse {
+	background-color: #f4e3f8e1;
+	color: rgb(0, 0, 0);
+	transition: height 0.3s ease;
+}
+
+.accordion-body {
+	padding: 1rem;
+}
+
+.accordion-body::-webkit-scrollbar {
+	width: 0;
+}
+
+.dropdown-menu {
+	min-width: 150px;
+}
+.down-btns {
+	position: absolute;
+	background-color: #9da5cf;
+	bottom: 0;
+	height: 5%;
+	width: 100%;
+}
+
+.setting-btn {
+	width: 20%;
+	background-image: url(../assets/settings.png);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	border: 2px solid black;
+}
+
+.profile-btn {
+	width: 20%;
+	background-image: url(../assets/profile.png);
+	background-size: 50%;
+	background-repeat: no-repeat;
+	background-position: center;
+	border: 2px solid black;
+}
+
+.profile-btn:hover,
+.setting-btn:hover,
+.logout-btn:hover {
+	border-color: #dee2e6;
+}
+
+.logout-btn{
+	width: 60%;
+	color: rgb(29, 9, 34);
+	border: 2px solid black;
+}
+
+.setting-btn:focus,
+.logout-btn:focus {
+	color:#FFFFFF;
+	border: 2px solid #00000059;
+	box-shadow: none;
+}
+
+.accordion-collapse {
+	transition: height 0.5s ease;
+	height: 0;
+	overflow: hidden;
+}
+
+.accordion-collapse.show {
+	height: var(--accordion-height);
+}
+
+.accordion-body {
+	overflow-y: auto;
+}
+
+.accordion.down {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+}
+
+#chat-accordion .accordion-button:not(.collapsed)::after {
+	transform: rotate(0deg);
+}
+
+#chat-accordion .accordion-button.collapsed::after {
+	transform: rotate(180deg);
+}
+
+.search-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	margin-top: 40px;
+}
+
+.search-bar {
+	width: 70%;
+	font-size: 16px;
+	border: none;
+	color: white;
+	border-bottom: 2px solid #9d9d9d;
+	outline: none;
+	background-color: transparent;
+	text-align: center;
+}
+
+.search-btn {
+	background-size: 110%;
+	background-repeat: no-repeat;
+	background-position: center;
+	transform: translateX(90%);
+	background-image: url("../assets/search-logo.png");
+}
