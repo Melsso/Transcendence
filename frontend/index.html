@@ -317,18 +317,92 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#stats-snake" type="button" role="tab" aria-controls="stats-snake" aria-selected="false">Stats-S&L</button>
                         </li>
-                    </ul>
-            
+                    </ul>                
                     <div class="tab-content mt-4">
                         <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="History">
                             <div class="match-history-container"></div>
                         </div>
                         <div class="tab-pane fade" id="stats-pong" role="tabpanel" aria-labelledby="stats-tab">
+                            <div class="stats-container d-flex justify-content-between">
+                                <div class="stats-right">
+                                    <div class="stat-item">
+                                        <label for="pve-winrate">Winrate PVE:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="pve-winrate" style="width: 0;">0%</div>
+                                        </div>
+                                        <div class="win-loss">
+                                            Wins: 0 | Losses: 0
+                                        </div>
+                                    </div>
+                                    <div class="win-loss-graph">
+                                        <canvas id="winLossChartPVE"></canvas>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label for="pvp-winrate">Winrate PVP:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="pvp-winrate" style="width: 0;">0%</div>
+                                        </div>
+                                        <div class="win-loss">
+                                            Wins: 0 | Losses: 0
+                                        </div>
+                                    </div>
+                                    <div class="win-loss-graph">
+                                        <canvas id="winLossChartPVP"></canvas>
+                                    </div>
+                                </div>
+                
+                                <div class="stats-left">
+                                    <div class="stat-item">
+                                        <label for="avg-success-history">Average Amount of Successful History:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="avg-success-history" style="width: 0;">0%</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label for="attack1-accuracy">Accuracy with Attack 1:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="attack1-accuracy" style="width: 0;">0%</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label for="attack2-accuracy">Accuracy with Attack 2:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="attack2-accuracy" style="width: 0;">0%</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label for="map1-winrate">Winrate on Map 1:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="map1-winrate" style="width: 0;">0%</div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="stat-item">
+                                        <label for="map2-winrate">Winrate on Map 2:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="map2-winrate" style="width: 0;">0%</div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="stat-item">
+                                        <label for="map3-winrate">Winrate on Map 3:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="map3-winrate" style="width: 0;">0%</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <label for="most-used-powerup">Most Used Power-up:</label>
+                                        <div class="progress">
+                                            <div class="progress-bar" id="most-used-powerup" style="width: 0;">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="stats-snake" role="tabpanel" aria-labelledby="contact-tab">
                         </div>
                     </div>
-                </div>
+                </div>               
             </div>
         </div>
         <div class="two-container-settings" id="setting-page">
@@ -482,6 +556,8 @@
             </div>
         </div>
     </div>
+    <script src="scripts/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="scripts/match.js"></script>
     <script src="scripts/pong.js"></script>
     <script src="scripts/chat.js"></script>
