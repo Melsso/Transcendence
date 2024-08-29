@@ -6,7 +6,7 @@ const playerPaddle = {
     y: 0,
     width: 0,
     height: 0,
-    dy: 5
+    dy: 7
 };
 
 const aiPaddle = {
@@ -14,7 +14,7 @@ const aiPaddle = {
     y: 0,
     width: 0,
     height: 0,
-    dy: 5
+    dy: 7
 };
 
 const ball = {
@@ -22,8 +22,8 @@ const ball = {
     y: 0,
     radius: 0,
     speed: 5,
-    dx: 5,
-    dy: 4
+    dx: 10,
+    dy: 6
 };
 
 function resizeCanvas() {

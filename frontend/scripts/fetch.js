@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		 });
 });
 
-
 document.addEventListener("DOMContentLoaded", function() {
 	fetch('friends.json')
 		.then(response => {
@@ -51,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function() {
 					const friendDiv = document.createElement('div');
 					friendDiv.className = 'd-flex align-items-center mb-3';
 					
-					// Create the image element
 					const avatarImg = document.createElement('img');
 					avatarImg.src = friend.avatarUrl;
 					avatarImg.alt = friend.Friendname;
@@ -78,13 +76,13 @@ document.addEventListener("DOMContentLoaded", function() {
 					dropdownButton.id = `dropdownMenuButton${friend.friendID}`;
 					dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
 					dropdownButton.setAttribute('aria-expanded', 'false');
-					dropdownButton.textContent = 'Actions'; // Added text for button
+					dropdownButton.textContent = ''; // Added text for button
 					
 					const dropdownMenu = document.createElement('ul');
 					dropdownMenu.className = 'dropdown-menu';
 					dropdownMenu.setAttribute('aria-labelledby', dropdownButton.id);
 					
-					const actions = ['Action 1', 'Action 2', 'Action 3']; // Example actions
+					const actions = ['View Profile', 'Send a Message', 'Unfriend', 'Invite To Game']; // Example actions
 					actions.forEach(action => {
 						 const li = document.createElement('li');
 						 const a = document.createElement('a');

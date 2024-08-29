@@ -27,7 +27,7 @@
 	justify-content: center;
 	background-color: #f8f9fa;
 	z-index: 1;
-	display: none; /* Hide by default */
+	display: none;
 }
 
 .message-container .message {

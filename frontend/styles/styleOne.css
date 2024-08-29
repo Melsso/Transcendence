@@ -135,7 +135,7 @@ body, html {
 }
 
 .btn-primary {
-	margin-left: auto; /* Method 3 */
+	margin-left: auto;
 	margin-right: 0;
 }
 
