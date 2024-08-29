@@ -1,5 +1,9 @@
 const canvas = document.getElementById('pongCanvas');
 const ctx = canvas.getContext('2d');
+const aibutton = document.getElementById('start-pong-ai');
+const gameModal = document.getElementById('gameModal');
+const gameContainer = document.querySelector('.gameContainer');
+const menu = document.getElementById('menuuu');
 
 const playerPaddle = {
     x: 0,
@@ -128,7 +132,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+// gameLoop();
 
 function drawPaddle(x, y, width, height) {
     ctx.fillStyle = 'white';
@@ -142,3 +146,36 @@ function drawBall(x, y, radius) {
     ctx.fill();
     ctx.closePath();
 }
+
+aibutton.addEventListener('click', function () {
+    aibutton.style.display = 'none';
+    menuuu.style.display = 'none';
+    gameLoop();
+});
+
+
+function applyBlurEffect() {
+    const gameContainer = document.querySelector('.gameContainer');
+
+    const mainTwo = document.getElementById('mainTwo');
+    const allElements = mainTwo.children;
+
+    for (let i = 0; i < allElements.length; i++) {
+        if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
+            allElements[i].classList.add('blur-effect');
+        }
+    }
+}
+
+function removeBlurEffect() {
+    const mainTwo = document.getElementById('mainTwo');
+    const allElements = mainTwo.children;
+
+    for (let i = 0; i < allElements.length; i++) {
+        allElements[i].classList.remove('blur-effect');
+        allElements[i].classList.remove('no-blur');
+        allElements[i].style.zIndex = '';  // Reset z-index
+    }
+}
+
+document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);

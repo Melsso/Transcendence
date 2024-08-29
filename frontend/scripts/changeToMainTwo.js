@@ -5,11 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainSettings = document.getElementById('setting-page');
 	const mainSLgame = document.getElementById('S&L-page');
 	const mainPONGgame = document.getElementById('PONG-game');
-	mainPONGgame.style.display = 'none';
+	mainPONGgame.style.display = 'flex';
 	mainSLgame.style.display = 'none';
 	mainOne.style.display = 'none';
 	mainTwo.style.display = 'flex';
-	mainBody.style.display = 'flex'
+	mainBody.style.display = 'none'
 	mainSettings.style.display = 'none';
 
 
