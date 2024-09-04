@@ -1,0 +1,18 @@
+#game-board {
+	display: grid;
+	grid-template-columns: repeat(16, 40px); /* 16 columns, each 40px wide */
+	grid-template-rows: repeat(16, 40px);    /* 16 rows, each 40px high */
+	gap: 0px;
+	z-index: 100;
+	background-color: antiquewhite;
+}
+
+.tile {
+	width: 40px;
+	height: 40px;
+	background-size: cover;
+	background-color: aqua;
+	cursor: pointer;
+	border: solid 1px black;
+	z-index: 101;
+}
