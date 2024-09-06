@@ -5,22 +5,22 @@ var yellowRobot = { row: 4, col: 4, src: "assets/YellowRobot.png"};
 
 var map =
 [
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "GM", "0 ", "0 ", "0 ", "0 ", "0 ", "RS", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "BM", "0 ", "0 ", "0 "],
-    ["R ", "L ", "0 ", "D ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "GU", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "U ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "YU", "0 ", "0 ", "V ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "BS", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "YW", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "1 ", "1 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "1 ", "1 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "YM", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "BU", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "GS", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "BW", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "RM", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "YS", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "RU", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "GW", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
+    ["LU", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "RU"],
+    ["L ", "X", "X", "", "", "", "", "", "", "", "D", "", "", "", "", "R"],
+    ["L ", "X", "X", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "X", "L ", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "U ", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "", "L", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "1 ", "1 ", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "1 ", "1 ", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "XD", "", "", "", "RU", "", "", "", "", "", "", "", "", "", "R"],
+    ["LD", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "DR"],
 ];
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -30,13 +30,64 @@ document.addEventListener('DOMContentLoaded', function () {
 	SLButton.addEventListener('click', function() {
         printMap(document.getElementById('game-board'));
         var gameMap = document.getElementById('game-board');
-        placeimg(blueRobot);
-        placeimg(redRobot);
-        placeimg(yellowRobot);
-        placeimg(greenRobot);
+        getRandomItemInOrder();
+        printItems(itemQueue);
+        console.log(itemQueue);
+        // placeimg(blueRobot);
+        // placeimg(redRobot);
+        // placeimg(yellowRobot);
+        // placeimg(greenRobot);
         // removeimg(0, 0);
 	});
 });
+
+var itemCoordinates = [];
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; 
+    }
+    return array;
+}
+
+var items = [
+    "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", 
+    "M9", "M10", "M11", "M12", "M13", "M14", "M15", "M16", "M17"
+];
+
+var itemQueue = shuffleArray(items.slice()); 
+
+function getRandomItemInOrder() {
+    return itemQueue.length > 0 ? itemQueue[0] : null;
+}
+
+function printItems(itemQueue) {
+    var itemIndex = 0; 
+
+    for (var i = 0; i < map.length; i++) {
+        for (var j = 0; j < map[i].length; j++) {
+            var cellValue = map[i][j].trim();
+            if (cellValue.includes("X") && itemIndex < itemQueue.length) {
+                var gameBoard = document.getElementById('game-board'); 
+                var cellIndex = i * map[i].length + j;
+                var cell = gameBoard.children[cellIndex];
+
+                var img = document.createElement('img');
+                img.src = 'assets/' + itemQueue[itemIndex] + '.png';
+                img.alt = itemQueue[itemIndex];
+                img.className = 'token';
+
+                cell.appendChild(img);
+                itemCoordinates.push({
+                    name: itemQueue[itemIndex],
+                    coordinates: { x: j, y: i }
+                });
+                itemIndex++;
+            }
+        }
+    }
+}
 
 
 function removeimg(row, col) {
@@ -66,12 +117,12 @@ function placeimg(robot) {
 
 var imageMap =
 {
-    "GM": "assets/GreenToken1.png",
-    "RS": "assets/RedToken1.png",
-    "BM": "assets/BlueToken1.png",
-    "RW": "assets/RW.jpg",
+    "M1": "assets/GreenToken1.png",
+    "M2": "assets/RedToken1.png",
+    "M3": "assets/BlueToken1.png",
+    // "M4": "assets/RW.jpg",
     "GU": "assets/GU.jpg",
-    "YU": "assets/YellowToken1.png",
+    "M4": "assets/YellowToken1.png",
     "V ": "assets/V.jpg",
     "BS": "assets/BS.jpg",
     "YW": "assets/YW.jpg",
@@ -99,21 +150,18 @@ function printMap(gameMap) {
             var cell = document.createElement('div');
             cell.className = 'tile';
             var value = map[i][j].trim();
-            if (imageMap[value]) {
-                var img = document.createElement('img');
-                img.src = imageMap[value];
-                img.alt = value;
-                img.className = 'token';
-                cell.appendChild(img);
+            if (value.includes("U")) {
+                cell.classList.add('U');
             }
-            if (value == "U")
-                cell.className = 'U tile';
-            if (value == "R")
-                cell.className = 'R tile';
-            if (value == "L")
-                cell.className = 'L tile';
-            if (value == "D")
-                cell.className = 'D tile';
+            if (value.includes("R")) {
+                cell.classList.add('R');
+            }
+            if (value.includes("L")) {
+                cell.classList.add('L');
+            }
+            if (value.includes("D")) {
+                cell.classList.add('D');
+            }
             gameMap.appendChild(cell);
         }
     }

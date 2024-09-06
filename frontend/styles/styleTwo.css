@@ -4,8 +4,6 @@
 	width: 100vw;
 }
 
-
-.two-container-game-2,
 .two-container-settings,
 .two-container-bg {
 	position: absolute;
@@ -31,7 +29,7 @@ height: 95%;
 display: flex;
 align-items: center;
 justify-content: center;
-background-color: rgb(0, 0, 0);
+background-color: rgb(255, 255, 255);
 box-shadow: 0 10px 20px rgb(38, 1, 70);
 border: 1px solid #000000;
 z-index: 1;
