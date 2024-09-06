@@ -1,38 +1,15 @@
-document.addEventListener('DOMContentLoaded', function () {
-
-	const mainSLgame = document.getElementById('S&L-page');
-	const SLButton = document.getElementById('S&L-play');
-
-	SLButton.addEventListener('click', function() {
-		makeboard();
-
-	});
-});
-
-function makeboard() {
-
-	const board = document.getElementById('game-board');
-	for (let i = 0; i < 16 * 16; i++) {
-		const tiles = document.createElement('div');
-		tiles.classList.add('tile');
-		board.appendChild(tiles); 
-	}
-}
-
-
-
-var blueRobot   = { row: 0, col: 0 };
-var redRobot    = { row: 4, col: 0 };
-var greenRobot  = { row: 0, col: 4 };
-var yellowRobot = { row: 4, col: 4 };
+var blueRobot   = { row: 0, col: 0, src: "assets/BlueRobot.png"};
+var redRobot    = { row: 4, col: 0, src: "assets/RedRobot.png"};
+var greenRobot  = { row: 0, col: 4, src: "assets/GreenRobot.png"};
+var yellowRobot = { row: 4, col: 4, src: "assets/YellowRobot.png"};
 
 var map =
 [
     ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
     ["0 ", "0 ", "0 ", "0 ", "GM", "0 ", "0 ", "0 ", "0 ", "0 ", "RS", "0 ", "0 ", "0 ", "0 ", "0 "],
     ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "BM", "0 ", "0 ", "0 "],
-    ["0 ", "RW", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "GU", "0 ", "0 ", "0 "],
-    ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
+    ["R ", "L ", "0 ", "D ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "GU", "0 ", "0 ", "0 "],
+    ["0 ", "0 ", "0 ", "U ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
     ["0 ", "0 ", "0 ", "0 ", "0 ", "YU", "0 ", "0 ", "V ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
     ["0 ", "0 ", "0 ", "BS", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "YW", "0 ", "0 "],
     ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "1 ", "1 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
@@ -45,15 +22,56 @@ var map =
     ["0 ", "0 ", "0 ", "0 ", "0 ", "RU", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "GW", "0 ", "0 ", "0 "],
     ["0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 ", "0 "],
 ];
+document.addEventListener('DOMContentLoaded', function () {
+
+	const mainSLgame = document.getElementById('S&L-page');
+	const SLButton = document.getElementById('S&L-play');
+
+	SLButton.addEventListener('click', function() {
+        printMap(document.getElementById('game-board'));
+        var gameMap = document.getElementById('game-board');
+        placeimg(blueRobot);
+        placeimg(redRobot);
+        placeimg(yellowRobot);
+        placeimg(greenRobot);
+        // removeimg(0, 0);
+	});
+});
+
+
+function removeimg(row, col) {
+    var index = row * 16 + col;
+    var gameBoard = document.getElementById('game-board');
+    var tile = gameBoard.children[index];
+    var img = tile.querySelector('img');
+    
+    if (img) {
+        tile.removeChild(img);
+    }
+}
+
+function placeimg(robot) {
+    var index = robot.row * 16 + robot.col;
+    
+    var gameBoard = document.getElementById('game-board');
+    
+    var tile = gameBoard.children[index];
+    var img = document.createElement('img');
+    img.src = robot.src;
+    img.alt = 'Robot';
+    img.className = 'token';
+
+    tile.appendChild(img);
+}
 
 var imageMap =
 {
-    "GM": "assets/GM.jpg",
-    "RS": "assets/RS.jpg",
-    "BM": "assets/BM.jpg",
+    "GM": "assets/GreenToken1.png",
+    "RS": "assets/RedToken1.png",
+    "BM": "assets/BlueToken1.png",
     "RW": "assets/RW.jpg",
     "GU": "assets/GU.jpg",
-    "YU": "assets/YU.jpg",
+    "YU": "assets/YellowToken1.png",
     "V ": "assets/V.jpg",
     "BS": "assets/BS.jpg",
     "YW": "assets/YW.jpg",
@@ -65,53 +83,42 @@ var imageMap =
     "YS": "assets/YS.jpg",
     "RU": "assets/RU.jpg",
     "GW": "assets/GW.jpg",
-    "B": "assets/GW.jpg",
-    "R": "assets/GW.jpg",
-    "G": "assets/GW.jpg",
-    "Y": "assets/GW.jpg",
-    "1 ": "assets/wall.jpg"
+    // "B": "assets/BlueRobot.png",
+    // "R": "assets/RedRobot.png",
+    // "G": "assets/GreenRobot.png",
+    // "Y": "assets/YellowRobot.png",
+    // "1 ": "assets/wall.jpg"
 };
 
-window.onload = function()
-{
-    var gameMap = document.getElementById('game-map');
-    var table = document.createElement('table');
 
-    printMap(gameMap);
+function printMap(gameMap) {
+    gameMap.innerHTML = '';
 
-    // tests
-    test(map, "RS");
-
-};
-
-function printMap(gameMap)
-{
-    var table = document.createElement('table');
-    for (var i = 0; i < map.length; i++)
-    {
-        var row = document.createElement('tr');
-        for (var j = 0; j < map[i].length; j++)
-        {
-            var cell = document.createElement('td');
+    for (var i = 0; i < map.length; i++) {
+        for (var j = 0; j < map[i].length; j++) {
+            var cell = document.createElement('div');
             cell.className = 'tile';
             var value = map[i][j].trim();
-
-            if (imageMap[value])
-            {
+            if (imageMap[value]) {
                 var img = document.createElement('img');
                 img.src = imageMap[value];
                 img.alt = value;
-                img.style.width = "50px";
-                img.style.height = "50px";
+                img.className = 'token';
                 cell.appendChild(img);
             }
-
-            row.appendChild(cell);
+            if (value == "U")
+                cell.className = 'U tile';
+            if (value == "R")
+                cell.className = 'R tile';
+            if (value == "L")
+                cell.className = 'L tile';
+            if (value == "D")
+                cell.className = 'D tile';
+            gameMap.appendChild(cell);
         }
-        table.appendChild(row);
     }
-    gameMap.appendChild(table);
 }
+
 
 function getRandomItem()
 {
@@ -122,46 +129,6 @@ function getRandomItem()
     ];
     var randomIndex = Math.floor(Math.random() * items.length);
     return items[randomIndex];
-}
-
-function changeImage(row, col, newValue, map)
-{
-    var gameMap = document.getElementById('game-map');
-    var table = gameMap.getElementsByTagName('table')[0];
-    
-    if (table)
-    {
-        var cell = table.rows[row].cells[col];
-        var value = newValue.trim();
-
-        if (imageMap[value])
-        {
-            if (cell.firstChild)
-                cell.removeChild(cell.firstChild);
-            var img = document.createElement('img');
-            img.src = imageMap[value];
-            img.alt = value;
-            img.style.width = "50px";
-            img.style.height = "50px";
-            cell.appendChild(img);
-        }
-    }
-    map[row][col] = newValue;
-}
-
-function deleteImage(row, col, map)
-{
-    var gameMap = document.getElementById('game-map');
-    var table = gameMap.getElementsByTagName('table')[0];
-    
-    if (table)
-    {
-        var cell = table.rows[row].cells[col];
-        if (cell.firstChild)
-            cell.removeChild(cell.firstChild);
-    }
-    
-    map[row][col] = "0 ";
 }
 
 function getRowIndex(map, target)
@@ -191,19 +158,3 @@ function getTarget(col, row, map)
 
 function isTarget(row, col, target, map)
 { return getTarget(col, row, map) === target; }
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-function test(map, target)
-{
-    var newItem= getRandomItem();
-    var newRow = getRowIndex(map, newItem);
-    var newCol = getColIndex(map, newItem);
-    var oldRow = getRowIndex(map, target);
-    var oldCol = getColIndex(map, target);
-    deleteImage(newRow, newCol, map);
-    deleteImage(oldRow, oldCol, map);
-    changeImage(oldRow, oldCol, newItem, map);
-}
