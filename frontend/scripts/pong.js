@@ -26,9 +26,20 @@ const ball = {
     y: 0,
     radius: 0,
     speed: 5,
-    dx: 10,
+    dx: 0,
     dy: 6
+    
 };
+
+function mediumDifficultyAI() {
+    
+}
+
+let gameStartTime = Date.now();
+const speedIncreaseInterval = 5000;
+const initialSpeed = 5;
+const speedIncrement = 0.22;
+
 
 function resizeCanvas() {
     canvas.width = canvas.clientWidth;
@@ -57,6 +68,22 @@ function setGameDimensions() {
     ball.y = canvas.height / 2;
 }
 
+let ResetTime = Date.now();
+
+function restartGame() {
+    playerPaddle.x = 0;
+    playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
+    aiPaddle.x = canvas.width - aiPaddle.width;
+    aiPaddle.y = canvas.height / 2 - aiPaddle.height / 2;
+}
+
+function drawTimer() {
+    ctx.font = '20px Arial';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
+}
+
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
@@ -67,8 +94,18 @@ function movePlayerPaddle() {
         playerPaddle.y += playerPaddle.dy;
     }
 }
+let aistop;
+function switchOffAI() {
+    aistop = true;
+}
+function switchOnAI() {
+    if (aistop = true)
+        aistop = false;
+}
 
 function moveAIPaddle() {
+    if (aistop)
+        return;
     if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
         aiPaddle.y -= aiPaddle.dy;
     } else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
@@ -77,6 +114,12 @@ function moveAIPaddle() {
 }
 
 function moveBall() {
+    const elapsedTime = Date.now() - gameStartTime;
+
+    const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
+    ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+    ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+
     ball.x += ball.dx;
     ball.y += ball.dy;
 
@@ -89,7 +132,17 @@ function moveBall() {
         ball.y > playerPaddle.y &&
         ball.y < playerPaddle.y + playerPaddle.height
     ) {
-        ball.dx *= -1;
+        var relativeIntersectY = (playerPaddle.y + playerPaddle.height / 2) - ball.y;
+        var normrelIntersectY = relativeIntersectY / (playerPaddle.height / 2);
+        var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+
+        ball.dx = ball.speed * Math.cos(bounceAngle);
+        ball.dy = -ball.speed * Math.sin(bounceAngle);
+        
+        ball.x = playerPaddle.x + playerPaddle.width + ballRadius + 1;
+        
+        ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
+        switchOnAI();
     }
 
     if (
@@ -97,15 +150,29 @@ function moveBall() {
         ball.y > aiPaddle.y &&
         ball.y < aiPaddle.y + aiPaddle.height
     ) {
-        ball.dx *= -1;
+        var relativeIntersectY = (aiPaddle.y + aiPaddle.height / 2) - ball.y;
+        var normrelIntersectY = relativeIntersectY / (aiPaddle.height / 2);
+        var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+        ball.dx = - ball.speed * Math.cos(bounceAngle);
+        ball.dy = - ball.speed * Math.sin(bounceAngle);
+        ball.x = aiPaddle.x - ballRadius -1;
+        ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
+        switchOffAI();
     }
 
     if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
+        ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+        ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+        gameStartTime = Date.now();
+        ResetTime = Date.now();
+        switchOnAI();
+        restartGame();
     }
 }
+
 
 let upPressed = false;
 let downPressed = false;
@@ -122,6 +189,7 @@ document.addEventListener('keyup', (e) => {
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
     drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
@@ -129,10 +197,13 @@ function gameLoop() {
     moveAIPaddle();
     moveBall();
 
+    drawTimer();
+
+
     requestAnimationFrame(gameLoop);
 }
 
-// gameLoop();
+
 
 function drawPaddle(x, y, width, height) {
     ctx.fillStyle = 'white';
