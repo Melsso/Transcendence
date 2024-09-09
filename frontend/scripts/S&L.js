@@ -1,27 +1,28 @@
-var blueRobot   = { row: 0, col: 0, src: "assets/BlueRobot.png", name: "blue"};
-var redRobot    = { row: 4, col: 0, src: "assets/RedRobot.png", name: "red"};
-var greenRobot  = { row: 0, col: 4, src: "assets/GreenRobot.png", name: "green"};
-var yellowRobot = { row: 4, col: 4, src: "assets/YellowRobot.png", name: "yellow"};
-var grayRobot   = { row: 5, col: 5, src: "assets/GrayRobot.png", name: "gray"};
+var blueRobot   = { row: 0, col: 0, src: "assets/Riccochet Robots/Robots/BlueRobot.png", name: "blue"};
+var redRobot    = { row: 4, col: 0, src: "assets/Riccochet Robots/Robots/RedRobot.png", name: "red"};
+var greenRobot  = { row: 0, col: 4, src: "assets/Riccochet Robots/Robots/GreenRobot.png", name: "green"};
+var yellowRobot = { row: 4, col: 4, src: "assets/Riccochet Robots/Robots/YellowRobot.png", name: "yellow"};
+var grayRobot   = { row: 7, col: 4, src: "assets/Riccochet Robots/Robots/GrayRobot.png", name: "gray"};
+var robots = [blueRobot, redRobot, greenRobot, yellowRobot, grayRobot];
 
 var map =
 [
-    ["LU", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "U", "RU"],
-    ["L ", "X", "X", "", "", "", "", "", "", "", "D", "", "", "", "", "R"],
-    ["L ", "X", "X", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "X", "L ", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "UR ", "L", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "", "L", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "1 ", "1 ", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "1 ", "1 ", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "XD", "", "", "", "RU", "", "", "", "", "", "", "", "", "", "R"],
-    ["LD", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "DR"],
+    ["LU ", "U  ", "UD ", "U  ", "RU ", "LU ", "U  ", "U  ", "U  ", "RU ", "LU ", "U  ", "U  ", "U  ", "UD ", "RU "],
+    ["L  ", "R  ", "LUX", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "R  ", "LUX", "R  "],
+    ["L  ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "R  ", "DLX", "   ", "   ", "   ", "R  "],
+    ["L  ", "   ", "   ", "   ", "   ", "R  ", "DLX", "   ", "   ", "   ", "   ", "U  ", "   ", "   ", "   ", "RD "],
+    ["LD ", "   ", "   ", "   ", "D  ", "   ", "U  ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "RU "],
+    ["LU ", "   ", "   ", "   ", "RUX", "L  ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "R  "],
+    ["L  ", "DRX", "L  ", "   ", "   ", "   ", "   ", " D ", " D ", "   ", "D  ", "   ", "   ", "XDR", "L  ", "R  "],
+    ["L  ", "U  ", "   ", "   ", "   ", "   ", "  R", "LU1", "1RU", "L  ", "RUX", "L  ", "  D", "  U", "   ", "R  "],
+    ["L  ", "   ", "   ", "  D", "   ", "   ", "  R", "LD1", "1RD", "L  ", "   ", "  R", "ULX", "   ", "   ", "R  "],
+    ["L  ", "   ", "   ", "URX", "L  ", "   ", "   ", " U ", " U ", "  R", "XDL", "   ", "   ", "   ", "   ", "R  "],
+    ["L  ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "U  ", "   ", "   ", "   ", "   ", "RD "],
+    ["L R", "LXD", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "XDR", "L  ", "   ", "   ", "   ", "  D", "RU "],
+    ["L  ", "  U", "   ", "   ", "   ", "   ", "XDR", "L  ", "   ", "  U", "   ", "   ", "   ", "   ", "XRU", "RL "],
+    ["LD ", "   ", "  D", "   ", "   ", "   ", "  U", "   ", "   ", "   ", "   ", "   ", "   ", "  D", "   ", "R  "],
+    ["LU ", "  R", "LUX", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "  R", "LUX", "   ", "R  "],
+    ["LD ", "D  ", "D  ", "D  ", "D  ", "DR ", "DL ", "D  ", "D  ", "D  ", "D R", "DL ", "D  ", "D  ", "D  ", "DR "],
 ];
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var gameMap = document.getElementById('game-board');
         getRandomItemInOrder();
         printItems(itemQueue);
+        printRobots(robots);
         // console.log(itemQueue);
         // let Locations = getPossibleLocations(yellowRobot, map);
         // console.log("HELLO");
@@ -57,7 +59,7 @@ function shuffleArray(array) {
 
 var items = [
     "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", 
-    "M9", "M10", "M11", "M12", "M13", "M14", "M15", "M16", "M17"
+    "M9", "M10", "M11", "M12", "M13", "M14", "M15", "M16", "V"
 ];
 
 var itemQueue = shuffleArray(items.slice()); 
@@ -78,7 +80,7 @@ function printItems(itemQueue) {
                 var cell = gameBoard.children[cellIndex];
 
                 var img = document.createElement('img');
-                img.src = 'assets/' + itemQueue[itemIndex] + '.png';
+                img.src = 'assets/Riccochet Robots/Tokens/' + itemQueue[itemIndex] + '.png';
                 img.alt = itemQueue[itemIndex];
                 img.className = 'token';
 
@@ -91,6 +93,22 @@ function printItems(itemQueue) {
             }
         }
     }
+}
+
+function printRobots(robotArray) {
+    robotArray.forEach(function(robot) {
+        var gameBoard = document.getElementById('game-board');
+        var cellIndex = robot.row * 16 + robot.col;  // Assuming a 16x16 grid
+        var cell = gameBoard.children[cellIndex];
+
+        // Create and append robot image
+        var img = document.createElement('img');
+        img.src = robot.src;
+        img.alt = robot.name;
+        img.className = 'robot';
+
+        cell.appendChild(img);
+    });
 }
 
 
