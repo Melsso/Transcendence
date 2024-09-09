@@ -2,6 +2,7 @@ var blueRobot   = { row: 0, col: 0, src: "assets/BlueRobot.png"};
 var redRobot    = { row: 4, col: 0, src: "assets/RedRobot.png"};
 var greenRobot  = { row: 0, col: 4, src: "assets/GreenRobot.png"};
 var yellowRobot = { row: 4, col: 4, src: "assets/YellowRobot.png"};
+var grayRobot   = { row: 5, col: 5, src: "assets/GrayRobot.png"};
 
 var map =
 [
@@ -277,8 +278,86 @@ function getPossibleLocations(robot, map)
     {
         var tmpRobot = getLocation(1, 0, robot, map);
         locations.push(tmpRobot);
-    }
-    console.log('RIGHT', locations[3]);
+        }
+        console.log('RIGHT', locations[3]);
+        
+        return locations;
+        }
+        
+document.getElementById('green-robot-button').addEventListener('click', selectGreenRobot);
+document.getElementById('yellow-robot-button').addEventListener('click', selectYellowRobot);
+document.getElementById('gray-robot-button').addEventListener('click', selectGrayRobot);
+document.getElementById('blue-robot-button').addEventListener('click', selectBlueRobot);
+document.getElementById('red-robot-button').addEventListener('click', selectRedRobot);
 
-    return locations;
+document.addEventListener('keydown', function(event) {
+    switch(event.key) {
+        case 'q':
+            selectGreenRobot();
+            break;
+        case 'w':
+            selectYellowRobot();
+            break;
+        case 'e':
+            selectGrayRobot();
+            break;
+        case 'r':
+            selectBlueRobot();
+            break;
+        case 'f':
+            selectRedRobot();
+            break;
+        default:
+            break;
+        }
+});
+
+var currentRobot = null;
+
+function selectGreenRobot() {
+    currentRobot = greenRobot;
+    updateSelectedButton('green-robot-button');
+    onRobotSelected(currentRobot);
+}
+
+function selectYellowRobot() {
+    currentRobot = yellowRobot;
+    updateSelectedButton('yellow-robot-button');
+    onRobotSelected(currentRobot);
+}
+
+function selectGrayRobot() {
+    currentRobot = grayRobot;
+    updateSelectedButton('gray-robot-button');
+    onRobotSelected(currentRobot);
+}
+
+function selectBlueRobot() {
+    currentRobot = blueRobot;
+    updateSelectedButton('blue-robot-button');
+    onRobotSelected(currentRobot);
+}
+
+function selectRedRobot() {
+    currentRobot = redRobot;
+    updateSelectedButton('red-robot-button');
+    onRobotSelected(currentRobot);
+}
+
+function updateSelectedButton(buttonId) {
+    document.querySelectorAll('#robot-buttons button').forEach(function(button) {
+        button.classList.remove('selected');
+    });
+    document.getElementById(buttonId).classList.add('selected');
+}
+
+function onRobotSelected(robot) {
+    if (!robot) {
+        console.log('No robot selected');
+        return;
+    }
+    else {
+        console.log('Khnishou no9ch');
+        return;
+    }
 }
