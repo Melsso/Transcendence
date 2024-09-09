@@ -63,3 +63,8 @@
 #robot-buttons .btn:hover {
 	background-color: #45a049; /* Darker green on hover */
 }
+
+.highlight {
+	background-color: yellow;
+	border: 2px solid red; 
+}

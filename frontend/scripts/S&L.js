@@ -10,7 +10,7 @@ var map =
     ["L ", "X", "X", "", "", "", "", "", "", "", "D", "", "", "", "", "R"],
     ["L ", "X", "X", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
     ["L ", "X", "X", "L ", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "R", "UR ", "L", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "", "UR ", "L", "", "", "", "", "", "", "", "", "", "", "R"],
     ["L ", "X", "", "", "", "", "", "", "L", "", "", "", "", "", "", "R"],
     ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
     ["L ", "X", "", "", "", "", "", "1 ", "1 ", "", "", "", "", "", "", "R"],
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
         getRandomItemInOrder();
         printItems(itemQueue);
         // console.log(itemQueue);
-        let Locations = getPossibleLocations(yellowRobot, map);
+        // let Locations = getPossibleLocations(yellowRobot, map);
         // console.log("HELLO");
         console.log(Locations);
         // console.log(yellowRobot);
@@ -231,7 +231,7 @@ function getLocation(dCol, dRow, robot, map)
     var numCols = map[0].length;
     var tmpRobot = JSON.parse(JSON.stringify(robot));;
 
-    while (tmpRobot.row > 0 && tmpRobot.col > 0 && tmpRobot.row < numRows - 1 && tmpRobot.col < numCols - 1)
+    while (1)
     {
         var bool = positionCheck(map[tmpRobot.row][tmpRobot.col], dCol, dRow);
         tmpRobot.row += dRow * bool;
@@ -356,8 +356,18 @@ function onRobotSelected(robot) {
         console.log('No robot selected');
         return;
     }
-    else {
-        console.log('Khnishou no9ch');
-        return;
-    }
+    document.querySelectorAll('.highlight').forEach(function(tile) {
+        tile.classList.remove('highlight');
+    });
+
+    var locations = getPossibleLocations(robot, map);
+    console.log(locations);
+    locations.forEach(function(location) {
+        var index = location.row * 16 + location.col;
+        var gameBoard = document.getElementById('game-board');
+        var tile = gameBoard.children[index];
+        if (tile) {
+            tile.classList.add('highlight');
+        }
+    });
 }
