@@ -25,17 +25,17 @@
 }
 
 .U {
-	border-top: solid 5px black;
+	border-top: solid 3px black;
 }
 
 .L {
-	border-left: solid 5px black;
+	border-left: solid 3px black;
 }
 
 .R {
-	border-right: solid 5px black;
+	border-right: solid 3px black;
 }
 
 .D {
-	border-bottom: 5px solid black;
+	border-bottom: 3px solid black;
 }

@@ -9,7 +9,7 @@ var map =
     ["L ", "X", "X", "", "", "", "", "", "", "", "D", "", "", "", "", "R"],
     ["L ", "X", "X", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
     ["L ", "X", "X", "L ", "", "", "", "", "", "", "", "", "", "", "", "R"],
-    ["L ", "X", "", "U ", "", "", "", "", "", "", "", "", "", "", "", "R"],
+    ["L ", "X", "R", "UR ", "L", "", "", "", "", "", "", "", "", "", "", "R"],
     ["L ", "X", "", "", "", "", "", "", "L", "", "", "", "", "", "", "R"],
     ["L ", "X", "", "", "", "", "", "", "", "", "", "", "", "", "", "R"],
     ["L ", "X", "", "", "", "", "", "1 ", "1 ", "", "", "", "", "", "", "R"],
@@ -32,7 +32,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var gameMap = document.getElementById('game-board');
         getRandomItemInOrder();
         printItems(itemQueue);
-        console.log(itemQueue);
+        // console.log(itemQueue);
+        let Locations = getPossibleLocations(yellowRobot, map);
+        // console.log("HELLO");
+        console.log(Locations);
+        // console.log(yellowRobot);
         // placeimg(blueRobot);
         // placeimg(redRobot);
         // placeimg(yellowRobot);
@@ -206,3 +210,99 @@ function getTarget(col, row, map)
 
 function isTarget(row, col, target, map)
 { return getTarget(col, row, map) === target; }
+
+function idkCheck(position, dCol, dRow)
+{
+    if (dRow == 1 && position.includes("D")) // check add more conditions later
+        return (false);
+    if (dRow == -1 && position.includes("U")) // check add more conditions later
+        return (false);
+    if (dCol == 1 && position.includes("R")) // check add more conditions later
+        return (false);
+    if (dCol == -1 && position.includes("L")) // check add more conditions later
+        return (false);
+    return (true);
+}
+
+// function getLocation(dCol, dRow, robot, map)
+// {
+//     // if ((x && y) || (!x && !y))
+//     //     ; // error
+
+//     var numRows = map.length;
+//     var numCols = map[0].length;
+//     var tmpRobot = JSON.parse(JSON.stringify(robot));;
+
+//     while (tmpRobot.row > 0 && tmpRobot.col > 0 && tmpRobot.row < numRows - 1 && tmpRobot.col < numCols - 1)
+//     {
+//         if (idkCheck(map[tmpRobot.row + dRow][tmpRobot.col + dCol], dCol, dRow))
+//         {       
+//             tmpRobot.row += dRow;
+//             tmpRobot.col += dCol;
+//             break ;
+//         }
+//         tmpRobot.row += dRow;
+//         tmpRobot.col += dCol;
+//     }
+//     return (tmpRobot);
+// }
+
+function getLocation(dCol, dRow, robot, map)
+{
+    var numRows = map.length;
+    var numCols = map[0].length;
+    var tmpRobot = JSON.parse(JSON.stringify(robot));;
+
+    while (tmpRobot.row > 0 && tmpRobot.col > 0 && tmpRobot.row < numRows - 1 && tmpRobot.col < numCols - 1)
+    {
+        var bool = idkCheck(map[tmpRobot.row][tmpRobot.col], dCol, dRow);
+        tmpRobot.row += dRow * bool;
+        tmpRobot.col += dCol * bool;
+        if (!bool)
+            break ;
+    }
+    return (tmpRobot);
+}
+
+function getPossibleLocations(robot, map)
+{
+    var locations = [];
+    var numRows = map.length;
+    var numCols = map[0].length;
+    
+
+    console.log('this0->', yellowRobot);
+    if ((robot.row > 0)) // Up
+    {
+        var tmpRobot = getLocation(0, -1, robot, map);
+        locations.push(tmpRobot);
+    }
+    console.log('UP', locations[0]);
+
+        
+    if (robot.row < numRows - 1) // Down
+    {
+        var tmpRobot = getLocation(0, 1, robot, map);
+        locations.push(tmpRobot);
+    }
+    console.log('DOWN', locations[1]);
+
+
+    if (robot.col > 0) // Left
+    {
+        var tmpRobot = getLocation(-1, 0, robot, map);
+        locations.push(tmpRobot);
+    }
+    console.log('LEFT', locations[2]);
+
+
+    if (robot.col < numCols - 1) // Right
+    {
+        var tmpRobot = getLocation(1, 0, robot, map);
+        locations.push(tmpRobot);
+    }
+    console.log('RIGHT', locations[3]);
+
+    return locations;
+}
+                
