@@ -1,8 +1,8 @@
-var blueRobot   = { row: 0, col: 0, src: "assets/BlueRobot.png"};
-var redRobot    = { row: 4, col: 0, src: "assets/RedRobot.png"};
-var greenRobot  = { row: 0, col: 4, src: "assets/GreenRobot.png"};
-var yellowRobot = { row: 4, col: 4, src: "assets/YellowRobot.png"};
-var grayRobot   = { row: 5, col: 5, src: "assets/GrayRobot.png"};
+var blueRobot   = { row: 0, col: 0, src: "assets/BlueRobot.png", name: "blue"};
+var redRobot    = { row: 4, col: 0, src: "assets/RedRobot.png", name: "red"};
+var greenRobot  = { row: 0, col: 4, src: "assets/GreenRobot.png", name: "green"};
+var yellowRobot = { row: 4, col: 4, src: "assets/YellowRobot.png", name: "yellow"};
+var grayRobot   = { row: 5, col: 5, src: "assets/GrayRobot.png", name: "gray"};
 
 var map =
 [
@@ -250,39 +250,25 @@ function getPossibleLocations(robot, map)
     
 
     console.log('this0->', yellowRobot);
-    if ((robot.row > 0)) // Up
-    {
-        var tmpRobot = getLocation(0, -1, robot, map);
-        locations.push(tmpRobot);
-    }
+    var tmpRobot = getLocation(0, -1, robot, map);
+    locations.push(tmpRobot);
     console.log('UP', locations[0]);
 
         
-    if (robot.row < numRows - 1) // Down
-    {
-        var tmpRobot = getLocation(0, 1, robot, map);
-        locations.push(tmpRobot);
-    }
+    var tmpRobot = getLocation(0, 1, robot, map);
+    locations.push(tmpRobot);
     console.log('DOWN', locations[1]);
 
 
-    if (robot.col > 0) // Left
-    {
-        var tmpRobot = getLocation(-1, 0, robot, map);
-        locations.push(tmpRobot);
-    }
+    var tmpRobot = getLocation(-1, 0, robot, map);
+    locations.push(tmpRobot);
     console.log('LEFT', locations[2]);
 
-
-    if (robot.col < numCols - 1) // Right
-    {
-        var tmpRobot = getLocation(1, 0, robot, map);
-        locations.push(tmpRobot);
-        }
-        console.log('RIGHT', locations[3]);
-        
-        return locations;
-        }
+    var tmpRobot = getLocation(1, 0, robot, map);
+    locations.push(tmpRobot);
+    console.log('RIGHT', locations[3]);
+    return locations;
+}
         
 document.getElementById('green-robot-button').addEventListener('click', selectGreenRobot);
 document.getElementById('yellow-robot-button').addEventListener('click', selectYellowRobot);
