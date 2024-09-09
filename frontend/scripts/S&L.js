@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // console.log(itemQueue);
         // let Locations = getPossibleLocations(yellowRobot, map);
         // console.log("HELLO");
-        console.log(Locations);
         // console.log(yellowRobot);
         // placeimg(blueRobot);
         // placeimg(redRobot);
@@ -212,28 +211,45 @@ function getTarget(col, row, map)
 function isTarget(row, col, target, map)
 { return getTarget(col, row, map) === target; }
 
-function positionCheck(position, dCol, dRow)
+
+function isRobot(row, col, robotName)
 {
-    if (dRow == 1 && position.includes("D")) // check add more conditions later
+    if (robotName != redRobot.name && row == redRobot.row && col == redRobot.col)
+        return (true);
+    if (robotName != blueRobot.name && row == blueRobot.row && col == blueRobot.col)
+        return (true);
+    if (robotName != yellowRobot.name && row == yellowRobot.row && col == yellowRobot.col)
+        return (true);
+    if (robotName != greenRobot.name && row == greenRobot.row && col == greenRobot.col)
+        return (true);
+    if (robotName != grayRobot.name && row == grayRobot.row && col == grayRobot.col)
+        return (true);
+    return (false);
+}
+
+function positionCheck(map, robot, dCol, dRow)
+{
+    if (dRow == 1 && map[robot.row][robot.col].includes("D")) // check add more conditions later
         return (false);
-    if (dRow == -1 && position.includes("U")) // check add more conditions later
+    if (dRow == -1 && map[robot.row][robot.col].includes("U")) // check add more conditions later
         return (false);
-    if (dCol == 1 && position.includes("R")) // check add more conditions later
+    if (dCol == 1 && map[robot.row][robot.col].includes("R")) // check add more conditions later
         return (false);
-    if (dCol == -1 && position.includes("L")) // check add more conditions later
+    if (dCol == -1 && map[robot.row][robot.col].includes("L")) // check add more conditions later
         return (false);
     return (true);
 }
 
 function getLocation(dCol, dRow, robot, map)
 {
-    var numRows = map.length;
-    var numCols = map[0].length;
     var tmpRobot = JSON.parse(JSON.stringify(robot));;
 
     while (1)
     {
-        var bool = positionCheck(map[tmpRobot.row][tmpRobot.col], dCol, dRow);
+        if (isRobot(tmpRobot.row + dRow, tmpRobot.col + dCol, tmpRobot.name))
+            break ;
+        console.log("TESTT");
+        var bool = positionCheck(map, tmpRobot, dCol, dRow);
         tmpRobot.row += dRow * bool;
         tmpRobot.col += dCol * bool;
         if (!bool)
@@ -249,24 +265,27 @@ function getPossibleLocations(robot, map)
     var numCols = map[0].length;
     
 
-    console.log('this0->', yellowRobot);
     var tmpRobot = getLocation(0, -1, robot, map);
-    locations.push(tmpRobot);
-    console.log('UP', locations[0]);
+    if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
+        locations.push(tmpRobot);
+    // console.log('UP', locations[0]);
 
         
     var tmpRobot = getLocation(0, 1, robot, map);
-    locations.push(tmpRobot);
-    console.log('DOWN', locations[1]);
+    if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
+        locations.push(tmpRobot);
+    // console.log('DOWN', locations[1]);
 
 
     var tmpRobot = getLocation(-1, 0, robot, map);
-    locations.push(tmpRobot);
-    console.log('LEFT', locations[2]);
+    if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
+        locations.push(tmpRobot);
+    // console.log('LEFT', locations[2]);
 
     var tmpRobot = getLocation(1, 0, robot, map);
-    locations.push(tmpRobot);
-    console.log('RIGHT', locations[3]);
+    if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
+        locations.push(tmpRobot);
+    // console.log('RIGHT', locations[3]);
     return locations;
 }
         
