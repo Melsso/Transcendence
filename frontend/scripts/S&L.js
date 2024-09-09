@@ -211,7 +211,7 @@ function getTarget(col, row, map)
 function isTarget(row, col, target, map)
 { return getTarget(col, row, map) === target; }
 
-function idkCheck(position, dCol, dRow)
+function positionCheck(position, dCol, dRow)
 {
     if (dRow == 1 && position.includes("D")) // check add more conditions later
         return (false);
@@ -224,29 +224,6 @@ function idkCheck(position, dCol, dRow)
     return (true);
 }
 
-// function getLocation(dCol, dRow, robot, map)
-// {
-//     // if ((x && y) || (!x && !y))
-//     //     ; // error
-
-//     var numRows = map.length;
-//     var numCols = map[0].length;
-//     var tmpRobot = JSON.parse(JSON.stringify(robot));;
-
-//     while (tmpRobot.row > 0 && tmpRobot.col > 0 && tmpRobot.row < numRows - 1 && tmpRobot.col < numCols - 1)
-//     {
-//         if (idkCheck(map[tmpRobot.row + dRow][tmpRobot.col + dCol], dCol, dRow))
-//         {       
-//             tmpRobot.row += dRow;
-//             tmpRobot.col += dCol;
-//             break ;
-//         }
-//         tmpRobot.row += dRow;
-//         tmpRobot.col += dCol;
-//     }
-//     return (tmpRobot);
-// }
-
 function getLocation(dCol, dRow, robot, map)
 {
     var numRows = map.length;
@@ -255,7 +232,7 @@ function getLocation(dCol, dRow, robot, map)
 
     while (tmpRobot.row > 0 && tmpRobot.col > 0 && tmpRobot.row < numRows - 1 && tmpRobot.col < numCols - 1)
     {
-        var bool = idkCheck(map[tmpRobot.row][tmpRobot.col], dCol, dRow);
+        var bool = positionCheck(map[tmpRobot.row][tmpRobot.col], dCol, dRow);
         tmpRobot.row += dRow * bool;
         tmpRobot.col += dCol * bool;
         if (!bool)
@@ -305,4 +282,3 @@ function getPossibleLocations(robot, map)
 
     return locations;
 }
-                
