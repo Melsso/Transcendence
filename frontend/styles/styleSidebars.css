@@ -6,6 +6,7 @@
 	box-shadow: 0 10px 20px rgb(38, 1, 70);
 	border: 1px solid #000000;
 	z-index: 2;
+	overflow: visible;
 }
 
 .left-sidebar {
@@ -18,14 +19,13 @@
 	right: 0;
 }
 
-.accordion-collapse {
+/* .accordion-collapse {
 	transition: height 0.35s ease;
-	overflow: hidden;
-}
+} */
 
 .accordion {
 	position: relative;
-	z-index: 3;
+	z-index: 10;
 }
 
 .accordion-button {
@@ -44,7 +44,7 @@
 .accordion-collapse {
 	background-color: #f4e3f8e1;
 	color: rgb(0, 0, 0);
-	transition: height 0.3s ease;
+	transition: height 0.35s ease;
 }
 
 .accordion-body {

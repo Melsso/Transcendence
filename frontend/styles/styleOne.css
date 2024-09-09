@@ -1,4 +1,4 @@
-body, html {
+/* body, html {
 	height: 100%;
 	margin: 0;
 	overflow: hidden;
@@ -190,11 +190,11 @@ body, html {
 	width: 80px;
 	height: 80px;
 	border-radius: 50%;
-}
+} */
 
 
 
-/* 
+
 body, html {
 	height: 100%;
 	margin: 0;
@@ -232,7 +232,6 @@ body, html {
 	align-items: center;
 	width: 100%;
 	padding-top: 20px;
-	transform: translateY(-50%);
 }
 
 .btn-login,
@@ -312,15 +311,15 @@ body, html {
 .input-container-main {
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
-	width: 100%;
+	align-items: center;
+	/* width: 100%; */
 	margin-bottom: 15px;
 }
 
 .input-left {
 	display: flex;
 	justify-content: flex-end;
-	width: 100%;
+	/* width: 100%; */
 }
 
 .btn-primary {
@@ -330,7 +329,7 @@ body, html {
 
 .input-w,
 .input-c {
-	width: 100%;
+	width: 60%;
 	max-width: 400px;
 }
 
@@ -382,13 +381,11 @@ body, html {
 }
 
 #avatar-selection-result {
-	position: absolute;
-	left: 50%; 
-	transform: translateX(-50%);
+	transform: translateY(10%);
 }
 
 #avatar-selection-result img {
 	width: 80px;
 	height: 80px;
 	border-radius: 50%;
-} */
+}
