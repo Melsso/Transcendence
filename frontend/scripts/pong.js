@@ -31,6 +31,26 @@ const ball = {
     
 };
 
+function Prediction() {
+    let predictedY = ball.y;
+    let predictedX = ball.x;
+    let predictedDX = ball.dx;
+    let predictedDY = ball.dy;
+
+    while (predictedX + ball.radius < aiPaddle.x && predictedDX > 0) {
+        predictedX += predictedDX;
+        predictedY += predictedDY;
+        if (predictedY - ball.radius < 0 || predictedY + ball.radius > canvas.height)
+            predictedDY = -predictedDY;
+    }
+    if (predictedDX <= 0) {
+        return ball.y; 
+    }
+    return predictedY;
+}
+
+
+
 function mediumDifficultyAI() {
     
 }
@@ -103,12 +123,28 @@ function switchOnAI() {
         aistop = false;
 }
 
-function moveAIPaddle() {
+function moveAIPaddlehard() {
     if (aistop)
-        return;
-    if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
+        return ;
+    let predictedY = Prediction();
+    if (predictedY < aiPaddle.y + aiPaddle.height / 2)
         aiPaddle.y -= aiPaddle.dy;
-    } else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
+     else if (predictedY >= aiPaddle.y + aiPaddle.height / 2) {
+        aiPaddle.y += aiPaddle.dy;
+    }
+}
+function moveAIPaddlemid() {
+    let predictedY = Prediction();
+    if (predictedY < aiPaddle.y + aiPaddle.height / 2)
+        aiPaddle.y -= aiPaddle.dy;
+     else if (predictedY >= aiPaddle.y + aiPaddle.height / 2) {
+        aiPaddle.y += aiPaddle.dy;
+    }
+}
+function moveAIPaddleEasy() {
+    if (predictedY < aiPaddle.y + aiPaddle.height / 2)
+        aiPaddle.y -= aiPaddle.dy;
+     else if (predictedY >= aiPaddle.y + aiPaddle.height / 2) {
         aiPaddle.y += aiPaddle.dy;
     }
 }
@@ -194,7 +230,7 @@ function gameLoop() {
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
     movePlayerPaddle();
-    moveAIPaddle();
+    moveAIPaddlehard();
     moveBall();
 
     drawTimer();
