@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         getRandomItemInOrder();
         printItems(itemQueue);
         printRobots(robots);
+        gameLogic();
         // console.log(itemQueue);
         // let Locations = getPossibleLocations(yellowRobot, map);
         // console.log("HELLO");
@@ -305,6 +306,37 @@ function getPossibleLocations(robot, map)
         locations.push(tmpRobot);
     // console.log('RIGHT', locations[3]);
     return locations;
+}
+
+function shuffleArray(array)
+{
+    var currentIndex = array.length;
+    var randomIndex;
+
+    while (currentIndex !== 0)
+    {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+
+function gameLogic()
+{
+    var items = [1, 2, 3, 4];
+    var index = items.length - 1;
+    items = shuffleArray(items);
+    while (index !== -1)
+        highlightItem(items[index--]);
+    // console.log(items);
+}
+
+function highlightItem(item)
+{
+    // console.log("item ---->>>", item);
+    // create a highlight on a the item selected
 }
         
 document.getElementById('green-robot-button').addEventListener('click', selectGreenRobot);
