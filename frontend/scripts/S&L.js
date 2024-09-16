@@ -5,6 +5,9 @@ var yellowRobot = { row: 4, col: 4, src: "assets/Riccochet Robots/Robots/YellowR
 var grayRobot   = { row: 7, col: 4, src: "assets/Riccochet Robots/Robots/GrayRobot.png", name: "gray"};
 var robots = [blueRobot, redRobot, greenRobot, yellowRobot, grayRobot];
 
+var direction = {row: 0, col: 0};
+var SelectedRobot;
+
 var map =
 [
     ["LU ", "U  ", "UD ", "U  ", "RU ", "LU ", "U  ", "U  ", "U  ", "RU ", "LU ", "U  ", "U  ", "U  ", "UD ", "RU "],
@@ -261,13 +264,13 @@ function positionCheck(map, robot, dCol, dRow)
 
 function getLocation(dCol, dRow, robot, map)
 {
-    var tmpRobot = JSON.parse(JSON.stringify(robot));;
+    var tmpRobot = JSON.parse(JSON.stringify(robot));
 
     while (1)
     {
         if (isRobot(tmpRobot.row + dRow, tmpRobot.col + dCol, tmpRobot.name))
             break ;
-        console.log("TESTT");
+        // console.log("TESTT");
         var bool = positionCheck(map, tmpRobot, dCol, dRow);
         tmpRobot.row += dRow * bool;
         tmpRobot.col += dCol * bool;
@@ -323,30 +326,193 @@ function shuffleArray(array)
     return array;
 }
 
-function gameLogic()
+function waitForKeyPress() {
+    return new Promise((resolve) => {
+        function onKeyPress(event) {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                // Set the direction based on the key pressed
+                switch (event.key) {
+                    case 'ArrowUp':
+                        direction.row = -1;
+                        direction.col = 0;
+                        break;
+                    case 'ArrowDown':
+                        direction.row = 1;
+                        direction.col = 0;
+                        break;
+                    case 'ArrowLeft':
+                        direction.row = 0;
+                        direction.col = -1;
+                        break;
+                    case 'ArrowRight':
+                        direction.row = 0;
+                        direction.col = 1;
+                        break;
+                }
+
+                // Clean up the event listener
+                document.removeEventListener('keydown', onKeyPress);
+                resolve(); // Resolve the promise to continue the game loop
+            }
+        }
+
+        document.addEventListener('keydown', onKeyPress);
+    });
+}
+
+async function gameLogic()
 {
-    var items = [1, 2, 3, 4];
     var index = items.length - 1;
     items = shuffleArray(items);
-    while (index !== -1)
-        highlightItem(items[index--]);
-    // console.log(items);
+    console.log(items);
+    while (index !== -1) //items loop
+    {
+        highlightItem(items[index]);
+        // while (!isFound(items[index])) //main game loop
+        while (1) // tmp loop since isfound() is not made yet
+        {
+            await waitForKeyPress();
+            if (SelectedRobot && (direction.col || direction.row))
+            {
+                var tmpRobo = getLocation(direction.col, direction.row, SelectedRobot, map);
+                updateRobot(tmpRobo);
+                console.log(greenRobot); // 
+            }
+            resetVars();
+        }
+        greyOutItem(items[index]);
+        index--;
+    }
+    console.log(items);
+}
+
+function removerobot(robot)
+{
+        var gameBoard = document.getElementById('game-board');
+        var cellIndex = robot.row * 16 + robot.col;
+        var cell = gameBoard.children[cellIndex];
+    
+        var images = cell.getElementsByTagName('img');
+        console.log(images);
+        for (var i = 0; i < images.length; i++) {
+            if (images[i].alt == "Robot") {
+                cell.removeChild(images[i]);
+                break; 
+            }
+        }
+}
+
+function updateRobot(tmpRobo)
+{
+    if (tmpRobo.name == "blue")
+    {
+        removeimg(blueRobot.row, blueRobot.col);
+        blueRobot.col = tmpRobo.col;
+        blueRobot.row = tmpRobo.row;
+        placeimg(blueRobot);
+        selectBlueRobot();
+    }
+    if (tmpRobo.name == "red")
+    {
+        removeimg(redRobot.row, redRobot.col);
+        redRobot.col = tmpRobo.col;
+        redRobot.row = tmpRobo.row;
+        placeimg(redRobot);
+        selectRedRobot();
+    }
+    if (tmpRobo.name == "green")
+    {
+        removeimg(greenRobot.row, greenRobot.col);
+        greenRobot.col = tmpRobo.col;
+        greenRobot.row = tmpRobo.row;
+        placeimg(greenRobot);
+        selectGreenRobot();
+    }
+    if (tmpRobo.name == "yellow")
+    {
+        removeimg(yellowRobot.row, yellowRobot.col);
+        yellowRobot.col = tmpRobo.col;
+        yellowRobot.row = tmpRobo.row;
+        placeimg(yellowRobot);
+        selectYellowRobot();
+    }
+    if (tmpRobo.name == "gray")
+    {
+        removeimg(grayRobot.row, grayRobot.col);
+        grayRobot.col = tmpRobo.col;
+        grayRobot.row = tmpRobo.row;
+        placeimg(grayRobot);
+        selectGrayRobot();
+    }
 }
 
 function highlightItem(item)
 {
-    // console.log("item ---->>>", item);
+    console.log("highlight ---->>>", item);
     // create a highlight on a the item selected
 }
-        
+
+function greyOutItem(item)
+{
+    console.log("greyOut ---->>>", item);
+    // create a highlight on a the item selected
+}
+
+function resetVars()
+{
+    direction.col = 0;
+    direction.row = 0;
+    // SelectedRobot = null;
+}
+
 document.getElementById('green-robot-button').addEventListener('click', selectGreenRobot);
 document.getElementById('yellow-robot-button').addEventListener('click', selectYellowRobot);
 document.getElementById('gray-robot-button').addEventListener('click', selectGrayRobot);
 document.getElementById('blue-robot-button').addEventListener('click', selectBlueRobot);
 document.getElementById('red-robot-button').addEventListener('click', selectRedRobot);
 
-document.addEventListener('keydown', function(event) {
-    switch(event.key) {
+// document.addEventListener('keydown', function(event) {
+//     switch(event.key) {
+//         case 'q':
+//             selectGreenRobot();
+//             break;
+//         case 'w':
+//             selectYellowRobot();
+//             break;
+//         case 'e':
+//             selectGrayRobot();
+//             break;
+//         case 'r':
+//             selectBlueRobot();
+//             break;
+//         case 'f':
+//             selectRedRobot();
+//             break;
+//             case 'ArrowUp': // check might put them in a function 
+//             direction.row = -1;
+//             direction.col = 0;
+//             break;
+//         case 'ArrowDown': // check might put them in a function
+//             direction.row = 1;
+//             direction.col = 0;
+//             break;
+//         case 'ArrowLeft': // check might put them in a function
+//             direction.row = 0;
+//             direction.col = -1;
+//             break;
+//         case 'ArrowRight': // check might put them in a function
+//             direction.row = 0;
+//             direction.col = 1;
+//             break;
+//         default:
+//             break;
+//         }
+// });
+
+function selectRobot(key)
+{
+    switch(key)
+    {
         case 'q':
             selectGreenRobot();
             break;
@@ -364,7 +530,38 @@ document.addEventListener('keydown', function(event) {
             break;
         default:
             break;
-        }
+    }
+}
+
+// function setDirection(key)
+// {
+//     switch(key)
+//     {
+//         case 'ArrowUp':
+//             direction.row = -1;
+//             direction.col = 0;
+//             break;
+//         case 'ArrowDown':
+//             direction.row = 1;
+//             direction.col = 0;
+//             break;
+//         case 'ArrowLeft':
+//             direction.row = 0;
+//             direction.col = -1;
+//             break;
+//         case 'ArrowRight':
+//             direction.row = 0;
+//             direction.col = 1;
+//             break;
+//         default:
+//             break;
+//     }
+// }
+
+document.addEventListener('keydown', function(event)
+{
+    selectRobot(event.key);
+    // setDirection(event.key);
 });
 
 var currentRobot = null;
@@ -411,6 +608,7 @@ function onRobotSelected(robot) {
         console.log('No robot selected');
         return;
     }
+    SelectedRobot = robot;
     document.querySelectorAll('.highlight').forEach(function(tile) {
         tile.classList.remove('highlight');
     });
