@@ -1,43 +1,43 @@
-#game-board {
+/* #game-board {
 	display: grid;
-	grid-template-columns: repeat(16, 1fr);  /* Creates a 16-column grid */
-	grid-template-rows: repeat(16, 1fr);     /* Creates a 16-row grid */
+	grid-template-columns: repeat(16, 1fr); 
+	grid-template-rows: repeat(16, 1fr);  
 	gap: 0px;
-	width: 70%;  /* Adjust based on your design needs */
-	height: 90%; /* Adjust based on your design needs */
+	width: 70%; 
+	height: 90%; 
 	background-color: rgb(38, 38, 38);
 }
 
 .tile {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	z-index: 0 !important;
 	width: 100%;
 	height: 100%;
 	background-color: rgb(0, 0, 0);
 	border: solid 1px rgb(152, 152, 152);
+	position: relative !important;
 }
 
 .token {
 	width: 100%;
 	height: 100%;
-	object-fit: cover; /* Ensures the image fits the cell without distortion */
-}
+	object-fit: cover;
+	z-index: 3;
+} */
 
 .U {
-	border-top: solid 3px white;
+	border-top: solid 3px #808000 !important;
 }
 
 .L {
-	border-left: solid 3px white;
+	border-left: solid 3px #808000 !important;
 }
 
 .R {
-	border-right: solid 3px white;
+	border-right: solid 3px #808000 !important;
 }
 
 .D {
-	border-bottom: 3px solid white;
+	border-bottom: solid 3px #808000 !important;
 }
 
 #robot-buttons {
@@ -64,15 +64,75 @@
 	background-color: #45a049; /* Darker green on hover */
 }
 
-.highlight {
-	background-color: rgb(255, 255, 0);
-	/* box-shadow: rgb(255, 255, 255) solid; */
+/* .highlight {
+	background-color: rgb(255, 255, 255);
 	border-radius: 100%;
-	border-color: antiquewhite;
+	z-index: 101 !important;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
 }
 
 .robot {
-	width: 100%;   /* Adjust to fit the grid cell */
-	height: 100%;  /* Adjust to fit the grid cell */
-	object-fit: cover;  /* Ensures the image fits nicely */
+	width: 100%;  
+	height: 100%;  
+	object-fit: cover; 
+} */
+
+#game-board {
+	display: grid;
+	grid-template-columns: repeat(16, 1fr); 
+	grid-template-rows: repeat(16, 1fr);  
+	gap: 0px;
+	width: 70%; 
+	height: 90%; 
+	background-color: rgb(83, 83, 83);
+}
+
+.tile {
+	z-index: 0 !important; /* Ensure tiles are at the base layer */
+	position: relative; /* Required for absolute positioning of children */
+	width: 100%;
+	height: 100%;
+	background-color: #2F4F4F;
+	border: solid 1px #708090;
+}
+.token, .robot, .highlight {
+	position: absolute;  /* Ensure all elements are positioned absolutely */
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.token {
+	z-index: 1;  /* Token should be below the highlight */
+}
+
+.robot {
+	z-index: 2;  /* Robot should also be below the highlight */
+}
+
+.highlight {
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(211, 211, 211, 0) 50%);
+	width: 100%;
+	height: 100%;
+	border-radius: 0;  /* No border radius to make it fill the entire square */
+	z-index: 3 !important;  /* Ensure highlight is on top */
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.robot-highlight {
+	position: absolute;
+	border: 2px solid rgba(255, 255, 0, 0.8); /* Yellow border with some transparency */
+	border-radius: 50%; /* Round border for a highlight effect */
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	pointer-events: none; /* Ensure it doesn’t interfere with interactions */
 }

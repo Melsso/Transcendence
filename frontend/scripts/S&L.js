@@ -1,7 +1,7 @@
 var blueRobot   = { row: 0, col: 0, src: "assets/Riccochet Robots/Robots/BlueRobot.png", name: "blue"};
 var redRobot    = { row: 4, col: 0, src: "assets/Riccochet Robots/Robots/RedRobot.png", name: "red"};
 var greenRobot  = { row: 0, col: 4, src: "assets/Riccochet Robots/Robots/GreenRobot.png", name: "green"};
-var yellowRobot = { row: 4, col: 4, src: "assets/Riccochet Robots/Robots/YellowRobot.png", name: "yellow"};
+var yellowRobot = { row: 5, col: 3, src: "assets/Riccochet Robots/Robots/YellowRobot.png", name: "yellow"};
 var grayRobot   = { row: 7, col: 4, src: "assets/Riccochet Robots/Robots/GrayRobot.png", name: "gray"};
 var robots = [blueRobot, redRobot, greenRobot, yellowRobot, grayRobot];
 
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         getRandomItemInOrder();
         printItems(itemQueue);
         printRobots(robots);
-        gameLogic();
+        // gameLogic();
         // console.log(itemQueue);
         // let Locations = getPossibleLocations(yellowRobot, map);
         // console.log("HELLO");
@@ -69,6 +69,7 @@ function getRandomItemInOrder() {
     return itemQueue.length > 0 ? itemQueue[0] : null;
 }
 
+
 function printItems(itemQueue) {
     var itemIndex = 0; 
 
@@ -79,6 +80,11 @@ function printItems(itemQueue) {
                 var gameBoard = document.getElementById('game-board'); 
                 var cellIndex = i * map[i].length + j;
                 var cell = gameBoard.children[cellIndex];
+
+                var existingToken = cell.querySelector('.token');
+                if (existingToken) {
+                    cell.removeChild(existingToken);
+                }
 
                 var img = document.createElement('img');
                 img.src = 'assets/Riccochet Robots/Tokens/' + itemQueue[itemIndex] + '.png';
@@ -102,6 +108,12 @@ function printRobots(robotArray) {
         var cellIndex = robot.row * 16 + robot.col;  // Assuming a 16x16 grid
         var cell = gameBoard.children[cellIndex];
 
+        // Remove existing robot if any (avoid duplicates)
+        var existingRobot = cell.querySelector('.robot');
+        if (existingRobot) {
+            cell.removeChild(existingRobot);
+        }
+
         // Create and append robot image
         var img = document.createElement('img');
         img.src = robot.src;
@@ -111,6 +123,7 @@ function printRobots(robotArray) {
         cell.appendChild(img);
     });
 }
+
 
 
 function removeimg(row, col) {
@@ -165,14 +178,17 @@ var imageMap =
 };
 
 
+
 function printMap(gameMap) {
-    gameMap.innerHTML = '';
+    gameMap.innerHTML = ''; // Clear the game map
 
     for (var i = 0; i < map.length; i++) {
         for (var j = 0; j < map[i].length; j++) {
             var cell = document.createElement('div');
             cell.className = 'tile';
+
             var value = map[i][j].trim();
+
             if (value.includes("U")) {
                 cell.classList.add('U');
             }
@@ -189,7 +205,6 @@ function printMap(gameMap) {
         }
     }
 }
-
 
 function getRandomItem()
 {
@@ -248,13 +263,13 @@ function isRobot(row, col, robotName)
 
 function positionCheck(map, robot, dCol, dRow)
 {
-    if (dRow == 1 && map[robot.row][robot.col].includes("D")) // check add more conditions later
+    if (dRow == 1 && map[robot.row][robot.col].includes("D")) 
         return (false);
-    if (dRow == -1 && map[robot.row][robot.col].includes("U")) // check add more conditions later
+    if (dRow == -1 && map[robot.row][robot.col].includes("U")) 
         return (false);
-    if (dCol == 1 && map[robot.row][robot.col].includes("R")) // check add more conditions later
+    if (dCol == 1 && map[robot.row][robot.col].includes("R")) 
         return (false);
-    if (dCol == -1 && map[robot.row][robot.col].includes("L")) // check add more conditions later
+    if (dCol == -1 && map[robot.row][robot.col].includes("L")) 
         return (false);
     return (true);
 }
@@ -328,7 +343,7 @@ function gameLogic()
     var items = [1, 2, 3, 4];
     var index = items.length - 1;
     items = shuffleArray(items);
-    while (index !== -1)
+    while (index != -1)
         highlightItem(items[index--]);
     // console.log(items);
 }
@@ -406,23 +421,48 @@ function updateSelectedButton(buttonId) {
     document.getElementById(buttonId).classList.add('selected');
 }
 
+
 function onRobotSelected(robot) {
     if (!robot) {
         console.log('No robot selected');
         return;
     }
+    
+
     document.querySelectorAll('.highlight').forEach(function(tile) {
-        tile.classList.remove('highlight');
+        tile.remove();
+    });
+
+
+    document.querySelectorAll('.robot-highlight').forEach(function(robotHighlight) {
+        robotHighlight.remove();
     });
 
     var locations = getPossibleLocations(robot, map);
     console.log(locations);
+
     locations.forEach(function(location) {
         var index = location.row * 16 + location.col;
         var gameBoard = document.getElementById('game-board');
         var tile = gameBoard.children[index];
+
+
         if (tile) {
-            tile.classList.add('highlight');
+            var highlightDiv = tile.querySelector('.highlight');
+            if (!highlightDiv) {
+                highlightDiv = document.createElement('div');
+                highlightDiv.className = 'highlight';
+                tile.appendChild(highlightDiv);
+            }
         }
     });
+
+
+    var robotImage = document.querySelector(`img[src="${robot.src}"]`);
+    if (robotImage) {
+    
+        var robotHighlightDiv = document.createElement('div');
+        robotHighlightDiv.className = 'robot-highlight';
+        robotImage.parentElement.appendChild(robotHighlightDiv);
+    }
 }
