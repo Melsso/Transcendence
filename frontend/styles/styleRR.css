@@ -1,43 +1,18 @@
-#game-board {
-	display: grid;
-	grid-template-columns: repeat(16, 1fr);  /* Creates a 16-column grid */
-	grid-template-rows: repeat(16, 1fr);     /* Creates a 16-row grid */
-	gap: 0px;
-	width: 70%;  /* Adjust based on your design needs */
-	height: 90%; /* Adjust based on your design needs */
-	background-color: rgb(38, 38, 38);
-}
-
-.tile {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-	background-color: rgb(0, 0, 0);
-	border: solid 1px rgb(152, 152, 152);
-}
-
-.token {
-	width: 100%;
-	height: 100%;
-	object-fit: cover; /* Ensures the image fits the cell without distortion */
-}
 
 .U {
-	border-top: solid 3px white;
+	border-top: solid 3px #808000 !important;
 }
 
 .L {
-	border-left: solid 3px white;
+	border-left: solid 3px #808000 !important;
 }
 
 .R {
-	border-right: solid 3px white;
+	border-right: solid 3px #808000 !important;
 }
 
 .D {
-	border-bottom: 3px solid white;
+	border-bottom: solid 3px #808000 !important;
 }
 
 #robot-buttons {
@@ -52,8 +27,8 @@
 #robot-buttons .btn {
 	padding: 10px 20px;
 	margin-bottom: 40px;
-	background-color: #000000; /* Green background */
-	color: white; /* White text */
+	background-color: #000000; 
+	color: white; 
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
@@ -61,18 +36,62 @@
 }
 
 #robot-buttons .btn:hover {
-	background-color: #45a049; /* Darker green on hover */
+	background-color: #45a049; 
 }
 
-.highlight {
-	background-color: rgb(255, 255, 0);
-	/* box-shadow: rgb(255, 255, 255) solid; */
-	border-radius: 100%;
-	border-color: antiquewhite;
+
+#game-board {
+	display: grid;
+	grid-template-columns: repeat(16, 1fr); 
+	grid-template-rows: repeat(16, 1fr);  
+	gap: 0px;
+	width: 70%; 
+	height: 90%; 
+	background-color: rgb(83, 83, 83);
+}
+
+.tile {
+	z-index: 0 !important; 
+	position: relative; 
+	width: 100%;
+	height: 100%;
+	background-color: #2F4F4F;
+	border: solid 1px #708090;
+}
+.token, .robot, .highlight {
+	position: absolute;  
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.token {
+	z-index: 1;  
 }
 
 .robot {
-	width: 100%;   /* Adjust to fit the grid cell */
-	height: 100%;  /* Adjust to fit the grid cell */
-	object-fit: cover;  /* Ensures the image fits nicely */
+	z-index: 2;  
+}
+
+.highlight {
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(211, 211, 211, 0) 50%);
+	width: 100%;
+	height: 100%;
+	border-radius: 0;  
+	z-index: 3 !important;  
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.robot-highlight {
+	position: absolute;
+	border: 2px solid rgba(255, 255, 0, 0.8); 
+	border-radius: 50%; 
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	pointer-events: none; 
 }
