@@ -1,28 +1,3 @@
-/* #game-board {
-	display: grid;
-	grid-template-columns: repeat(16, 1fr); 
-	grid-template-rows: repeat(16, 1fr);  
-	gap: 0px;
-	width: 70%; 
-	height: 90%; 
-	background-color: rgb(38, 38, 38);
-}
-
-.tile {
-	z-index: 0 !important;
-	width: 100%;
-	height: 100%;
-	background-color: rgb(0, 0, 0);
-	border: solid 1px rgb(152, 152, 152);
-	position: relative !important;
-}
-
-.token {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	z-index: 3;
-} */
 
 .U {
 	border-top: solid 3px #808000 !important;
@@ -52,8 +27,8 @@
 #robot-buttons .btn {
 	padding: 10px 20px;
 	margin-bottom: 40px;
-	background-color: #000000; /* Green background */
-	color: white; /* White text */
+	background-color: #000000; 
+	color: white; 
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
@@ -61,25 +36,9 @@
 }
 
 #robot-buttons .btn:hover {
-	background-color: #45a049; /* Darker green on hover */
+	background-color: #45a049; 
 }
 
-/* .highlight {
-	background-color: rgb(255, 255, 255);
-	border-radius: 100%;
-	z-index: 101 !important;
-	position: relative;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-}
-
-.robot {
-	width: 100%;  
-	height: 100%;  
-	object-fit: cover; 
-} */
 
 #game-board {
 	display: grid;
@@ -92,15 +51,15 @@
 }
 
 .tile {
-	z-index: 0 !important; /* Ensure tiles are at the base layer */
-	position: relative; /* Required for absolute positioning of children */
+	z-index: 0 !important; 
+	position: relative; 
 	width: 100%;
 	height: 100%;
 	background-color: #2F4F4F;
 	border: solid 1px #708090;
 }
 .token, .robot, .highlight {
-	position: absolute;  /* Ensure all elements are positioned absolutely */
+	position: absolute;  
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -109,19 +68,19 @@
 }
 
 .token {
-	z-index: 1;  /* Token should be below the highlight */
+	z-index: 1;  
 }
 
 .robot {
-	z-index: 2;  /* Robot should also be below the highlight */
+	z-index: 2;  
 }
 
 .highlight {
 	background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(211, 211, 211, 0) 50%);
 	width: 100%;
 	height: 100%;
-	border-radius: 0;  /* No border radius to make it fill the entire square */
-	z-index: 3 !important;  /* Ensure highlight is on top */
+	border-radius: 0;  
+	z-index: 3 !important;  
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -129,10 +88,10 @@
 
 .robot-highlight {
 	position: absolute;
-	border: 2px solid rgba(255, 255, 0, 0.8); /* Yellow border with some transparency */
-	border-radius: 50%; /* Round border for a highlight effect */
+	border: 2px solid rgba(255, 255, 0, 0.8); 
+	border-radius: 50%; 
 	width: 100%;
 	height: 100%;
 	box-sizing: border-box;
-	pointer-events: none; /* Ensure it doesn’t interfere with interactions */
+	pointer-events: none; 
 }
