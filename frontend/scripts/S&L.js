@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         getRandomItemInOrder();
         printItems(itemQueue);
         printRobots(robots);
-        // gameLogic();
+        gameLogic();
         // console.log(itemQueue);
         // let Locations = getPossibleLocations(yellowRobot, map);
         // console.log("HELLO");
@@ -379,57 +379,57 @@ async function gameLogic()
 {
     var index = items.length - 1;
     items = shuffleArray(items);
-    console.log(items);
-    while (index !== -1) //items loop
+    // console.log(items);
+    while (index !== -1)
     {
         highlightItem(items[index]);
-        // while (!isFound(items[index])) //main game loop
-        while (1) // tmp loop since isfound() is not made yet
+        // while (!isFound(items[index])) // check main game loop
+        while (1) // check tmp loop since isfound() is not made yet
         {
             await waitForKeyPress();
             if (SelectedRobot && (direction.col || direction.row))
             {
                 var tmpRobo = getLocation(direction.col, direction.row, SelectedRobot, map);
                 updateRobot(tmpRobo);
-                console.log(greenRobot); // 
+                // console.log(greenRobot);
             }
             resetVars();
         }
         greyOutItem(items[index]);
         index--;
     }
-    console.log(items);
+    // console.log(items);
 }
 
-function removerobot(robot)
-{
-        var gameBoard = document.getElementById('game-board');
-        var cellIndex = robot.row * 16 + robot.col;
-        var cell = gameBoard.children[cellIndex];
-    
-        var images = cell.getElementsByTagName('img');
-        console.log(images);
-        for (var i = 0; i < images.length; i++) {
-            if (images[i].alt == "Robot") {
-                cell.removeChild(images[i]);
-                break; 
-            }
+function removeRobotImage(robot) {
+    var gameBoard = document.getElementById('game-board');
+    var cellIndex = robot.row * 16 + robot.col;
+    var cell = gameBoard.children[cellIndex];
+
+    var images = cell.getElementsByTagName('img');
+
+    for (var i = 0; i < images.length; i++) {
+        if (images[i].alt === "Robot" || images[i].src === robot.src || images[i].alt === robot.name) {
+            cell.removeChild(images[i]);
+            break;
         }
+    }
 }
 
 function updateRobot(tmpRobo)
 {
     if (tmpRobo.name == "blue")
     {
-        removeimg(blueRobot.row, blueRobot.col);
+        removeRobotImage(blueRobot);
         blueRobot.col = tmpRobo.col;
         blueRobot.row = tmpRobo.row;
         placeimg(blueRobot);
+        console.log(blueRobot);
         selectBlueRobot();
     }
     if (tmpRobo.name == "red")
     {
-        removeimg(redRobot.row, redRobot.col);
+        removeRobotImage(redRobot);
         redRobot.col = tmpRobo.col;
         redRobot.row = tmpRobo.row;
         placeimg(redRobot);
@@ -437,7 +437,7 @@ function updateRobot(tmpRobo)
     }
     if (tmpRobo.name == "green")
     {
-        removeimg(greenRobot.row, greenRobot.col);
+        removeRobotImage(greenRobot);
         greenRobot.col = tmpRobo.col;
         greenRobot.row = tmpRobo.row;
         placeimg(greenRobot);
@@ -445,7 +445,7 @@ function updateRobot(tmpRobo)
     }
     if (tmpRobo.name == "yellow")
     {
-        removeimg(yellowRobot.row, yellowRobot.col);
+        removeRobotImage(yellowRobot);
         yellowRobot.col = tmpRobo.col;
         yellowRobot.row = tmpRobo.row;
         placeimg(yellowRobot);
@@ -453,7 +453,7 @@ function updateRobot(tmpRobo)
     }
     if (tmpRobo.name == "gray")
     {
-        removeimg(grayRobot.row, grayRobot.col);
+        removeRobotImage(grayRobot);
         grayRobot.col = tmpRobo.col;
         grayRobot.row = tmpRobo.row;
         placeimg(grayRobot);
@@ -635,7 +635,6 @@ function onRobotSelected(robot) {
     });
 
     var locations = getPossibleLocations(robot, map);
-    console.log(locations);
 
     locations.forEach(function(location) {
         var index = location.row * 16 + location.col;
