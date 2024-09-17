@@ -123,14 +123,22 @@ function switchOnAI() {
         aistop = false;
 }
 
-function moveAIPaddlehard() {
-    if (aistop)
-        return ;
+let aiTargetY = null; // Storing the target Y for the AI
+
+function moveAIPaddleHard() {
+
     let predictedY = Prediction();
-    if (predictedY < aiPaddle.y + aiPaddle.height / 2)
-        aiPaddle.y -= aiPaddle.dy;
-     else if (predictedY >= aiPaddle.y + aiPaddle.height / 2) {
-        aiPaddle.y += aiPaddle.dy;
+    if (aistop)
+        return ;    
+
+    const tolerance = 3;
+
+    if (Math.abs(aiPaddle.y + aiPaddle.height / 2 - predictedY) > tolerance) {
+        if (predictedY < aiPaddle.y + aiPaddle.height / 2) {
+            aiPaddle.y -= aiPaddle.dy;
+        } else if (predictedY > aiPaddle.y + aiPaddle.height / 2) {
+            aiPaddle.y += aiPaddle.dy;
+        }
     }
 }
 function moveAIPaddlemid() {
@@ -230,7 +238,7 @@ function gameLoop() {
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
     movePlayerPaddle();
-    moveAIPaddlehard();
+    moveAIPaddleHard();
     moveBall();
 
     drawTimer();

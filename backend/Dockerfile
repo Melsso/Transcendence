@@ -1,14 +1,15 @@
 FROM python:3.9-slim-buster
 
-WORKDIR /transcendent
+WORKDIR /app
 
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+COPY . /app
 
-COPY . /transcendent/
+RUN python -m pip install --upgrade pip
 
+RUN pip install --no-cache-dir -r app/requirements.txt
 
 EXPOSE 8000
 
-RUN bash /transcendent/script.sh
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN python3 app/manage.py migrate
+
+CMD ["python", "app/manage.py", "runserver", "0.0.0.0:8000"]
