@@ -6,10 +6,10 @@ COPY . /app
 
 RUN python -m pip install --upgrade pip
 
-RUN pip install --no-cache-dir -r Transcendence/requirements.txt
+RUN pip install --no-cache-dir -r app/requirements.txt
 
 EXPOSE 8000
 
-RUN python3 Transcendence/manage.py migrate
+RUN python3 app/manage.py migrate
 
-CMD ["python", "Transcendence/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "app/manage.py", "runserver", "0.0.0.0:8000"]
