@@ -95,9 +95,12 @@ function printItems(itemQueue) {
                 img.className = 'token';
 
                 cell.appendChild(img);
+
+                var color = getColor(itemQueue[itemIndex]);
                 itemCoordinates.push({
                     name: itemQueue[itemIndex],
-                    coordinates: { x: j, y: i }
+                    coordinates: { x: j, y: i },
+                    color: color
                 });
                 itemIndex++;
             }
@@ -377,12 +380,13 @@ function waitForKeyPress() {
 
 async function gameLogic()
 {
-    var index = items.length - 1;
-    items = shuffleArray(items);
+    var index = itemCoordinates.length - 1;
+    itemCoordinates = shuffleArray(itemCoordinates);
     // console.log(items);
     while (index !== -1)
     {
-        highlightItem(items[index]);
+        console.log(itemCoordinates[index]);
+        highlightItem(itemCoordinates[index]);
         // while (!isFound(items[index])) // check main game loop
         while (1) // check tmp loop since isfound() is not made yet
         {
@@ -660,4 +664,28 @@ function onRobotSelected(robot) {
         robotHighlightDiv.className = 'robot-highlight';
         robotImage.parentElement.appendChild(robotHighlightDiv);
     }
+}
+
+function getColor(input)
+{
+    if (input === "V")
+        return "default";
+    var number = parseInt(input.slice(1), 10);
+    switch (number % 4)
+    {
+        case 0:
+            return "green";
+        case 1:
+            return "red";
+        case 2:
+            return "blue";
+        case 3:
+            return "yellow";
+    }
+}
+
+function isFound(item)
+{
+    var robot;
+    
 }
