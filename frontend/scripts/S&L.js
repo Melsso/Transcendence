@@ -531,44 +531,6 @@ document.getElementById('gray-robot-button').addEventListener('click', selectGra
 document.getElementById('blue-robot-button').addEventListener('click', selectBlueRobot);
 document.getElementById('red-robot-button').addEventListener('click', selectRedRobot);
 
-// document.addEventListener('keydown', function(event) {
-//     switch(event.key) {
-//         case 'q':
-//             selectGreenRobot();
-//             break;
-//         case 'w':
-//             selectYellowRobot();
-//             break;
-//         case 'e':
-//             selectGrayRobot();
-//             break;
-//         case 'r':
-//             selectBlueRobot();
-//             break;
-//         case 'f':
-//             selectRedRobot();
-//             break;
-//             case 'ArrowUp': // check might put them in a function 
-//             direction.row = -1;
-//             direction.col = 0;
-//             break;
-//         case 'ArrowDown': // check might put them in a function
-//             direction.row = 1;
-//             direction.col = 0;
-//             break;
-//         case 'ArrowLeft': // check might put them in a function
-//             direction.row = 0;
-//             direction.col = -1;
-//             break;
-//         case 'ArrowRight': // check might put them in a function
-//             direction.row = 0;
-//             direction.col = 1;
-//             break;
-//         default:
-//             break;
-//         }
-// });
-
 function selectRobot(key)
 {
     switch(key)
@@ -592,31 +554,6 @@ function selectRobot(key)
             break;
     }
 }
-
-// function setDirection(key)
-// {
-//     switch(key)
-//     {
-//         case 'ArrowUp':
-//             direction.row = -1;
-//             direction.col = 0;
-//             break;
-//         case 'ArrowDown':
-//             direction.row = 1;
-//             direction.col = 0;
-//             break;
-//         case 'ArrowLeft':
-//             direction.row = 0;
-//             direction.col = -1;
-//             break;
-//         case 'ArrowRight':
-//             direction.row = 0;
-//             direction.col = 1;
-//             break;
-//         default:
-//             break;
-//     }
-// }
 
 document.addEventListener('keydown', function(event)
 {
