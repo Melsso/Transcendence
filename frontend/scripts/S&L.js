@@ -350,7 +350,7 @@ function shuffleArray(array)
 function directionKey() {
     return new Promise((resolve) => {
         function onKeyPress(event) {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) {
                 // Set the direction based on the key pressed
                 switch (event.key) {
                     case 'ArrowUp':
@@ -369,6 +369,9 @@ function directionKey() {
                         direction.row = 0;
                         direction.col = 1;
                         break;
+                    case ' ':
+                        reset_status();
+                        break;
                 }
 
                 // Clean up the event listener
@@ -380,6 +383,28 @@ function directionKey() {
         document.addEventListener('keydown', onKeyPress);
     });
 }
+// const reset = document.getElementById('reset-robot-button');
+function reset_status() 
+{
+
+    for (var i = 0;copyRobots[i]; i++)
+        {
+            removeRobotImage(copyRobots[i]);
+        }
+    printRobots(robots);
+    document.querySelectorAll('.highlight').forEach(function(tile) {
+        tile.remove();
+    });
+    SelectedRobot = null;
+    copyRobots = JSON.parse(JSON.stringify(robots));
+    document.querySelectorAll('.robot-highlight').forEach(function(robotHighlight) {
+        robotHighlight.remove();
+    });
+    document.querySelectorAll('#robot-buttons button').forEach(function(button) {
+        button.classList.remove('selected');
+    });
+}
+
 
 async function gameLogic()
 {
