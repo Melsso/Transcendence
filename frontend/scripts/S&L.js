@@ -4,7 +4,7 @@ var greenRobot  = { row: 0, col: 4, src: "assets/Riccochet Robots/Robots/GreenRo
 var yellowRobot = { row: 5, col: 3, src: "assets/Riccochet Robots/Robots/YellowRobot.png", name: "yellow"};
 var grayRobot   = { row: 7, col: 4, src: "assets/Riccochet Robots/Robots/GrayRobot.png", name: "gray"};
 var robots = [blueRobot, redRobot, greenRobot, yellowRobot, grayRobot];
-
+var TTokens = {name: "MT1"}
 var direction = {row: 0, col: 0};
 var SelectedRobot;
 
@@ -98,8 +98,10 @@ function printItems(itemQueue) {
 
                 var color = getColor(itemQueue[itemIndex]);
                 itemCoordinates.push({
+                    src: img.src,
                     name: itemQueue[itemIndex],
-                    coordinates: { x: j, y: i },
+                    col: j,
+                    row: i,
                     color: color
                 });
                 itemIndex++;
@@ -385,7 +387,7 @@ async function gameLogic()
     // console.log(items);
     while (index !== -1)
     {
-        console.log(itemCoordinates[index]);
+        // console.log(itemCoordinates[index]);
         highlightItem(itemCoordinates[index]);
         // while (!isFound(items[index])) // check main game loop
         while (1) // check tmp loop since isfound() is not made yet
@@ -467,13 +469,30 @@ function updateRobot(tmpRobo)
 
 function highlightItem(item)
 {
-    console.log("highlight ---->>>", item);
+    // console.log("highlight ---->>>", item);
+
+    console.log(item);
+    console.log("AIUNS");
+    var gameBoard = document.getElementById('game-board');
+    var cellIndex = item.row * 16 + item.col;
+    var cell = gameBoard.children[cellIndex];
+
+    var images = cell.getElementsByTagName('img');
+
+    for (var i = 0; i < images.length; i++) {
+        if (images[i].alt === item.name) {
+            cell.removeChild(images[i]);
+            break;
+        }
+    }
+
     // create a highlight on a the item selected
 }
 
 function greyOutItem(item)
 {
-    console.log("greyOut ---->>>", item);
+    // console.log("greyOut ---->>>", item);
+
     // create a highlight on a the item selected
 }
 
