@@ -4,7 +4,13 @@ var greenRobot  = { row: 0, col: 4, src: "assets/Riccochet Robots/Robots/GreenRo
 var yellowRobot = { row: 5, col: 3, src: "assets/Riccochet Robots/Robots/YellowRobot.png", name: "yellow"};
 var grayRobot   = { row: 7, col: 4, src: "assets/Riccochet Robots/Robots/GrayRobot.png", name: "gray"};
 var robots = [blueRobot, redRobot, greenRobot, yellowRobot, grayRobot];
-var TTokens = {name: "MT1"}
+var TTokens = [
+    { name: "MT1", src: "assets/Riccochet Robots/Tokens/MT1.png" },
+    { name: "MT2", src: "assets/Riccochet Robots/Tokens/MT2.png" },
+    { name: "MT3", src: "assets/Riccochet Robots/Tokens/MT3.png" },
+    { name: "MT4", src: "assets/Riccochet Robots/Tokens/MT4.png" },
+    { name: "MT5", src: "assets/Riccochet Robots/Tokens/M5.png" } // check change later
+];
 var direction = {row: 0, col: 0};
 var SelectedRobot;
 
@@ -143,6 +149,20 @@ function removeimg(row, col) {
     if (img) {
         tile.removeChild(img);
     }
+}
+
+function placetoken(token, row, col) {
+    var index = row * 16 + col;
+    
+    var gameBoard = document.getElementById('game-board');
+    
+    var tile = gameBoard.children[index];
+    var img = document.createElement('img');
+    img.src = token.src;
+    img.alt = token.name;
+    img.className = 'token';
+
+    tile.appendChild(img);
 }
 
 function placeimg(robot) {
@@ -469,10 +489,13 @@ function updateRobot(tmpRobo)
 
 function highlightItem(item)
 {
-    // console.log("highlight ---->>>", item);
+    console.log("highlight ---->>>", item);
 
-    console.log(item);
-    console.log("AIUNS");
+    // create a highlight on a the item selected
+}
+
+function greyOutItem(item)
+{
     var gameBoard = document.getElementById('game-board');
     var cellIndex = item.row * 16 + item.col;
     var cell = gameBoard.children[cellIndex];
@@ -486,14 +509,12 @@ function highlightItem(item)
         }
     }
 
-    // create a highlight on a the item selected
-}
-
-function greyOutItem(item)
-{
-    // console.log("greyOut ---->>>", item);
-
-    // create a highlight on a the item selected
+    var newItem = getTItem(item.name);
+    for (var i = 0; i < TTokens.length; i++)
+        if (TTokens[i].name === newItem)
+            break ;
+    console.log("tItem >>>> ", TTokens[i]);
+    placetoken(TTokens[i], item.row, item.col);
 }
 
 function resetVars()
@@ -700,6 +721,26 @@ function getColor(input)
             return "blue";
         case 3:
             return "yellow";
+    }
+}
+
+function getTItem(input)
+{
+    if (input === "V")
+        return ("MT5"); // check change later
+    console.log("tname >>>> ", input);
+    var number = parseInt(input.slice(1), 10) - 1;
+    console.log("tnumb >>>> ", Math.floor(number / 4));
+    switch (Math.floor(number / 4))
+    {
+        case 0:
+            return "MT1";
+        case 1:
+            return "MT2";
+        case 2:
+            return "MT3";
+        case 3:
+            return "MT4";
     }
 }
 
