@@ -18,4 +18,4 @@ COPY . /app
 
 RUN python3 app/manage.py migrate
 
-CMD ["python", "app/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "api/manage.py", "runserver", "0.0.0.0:8000"]
