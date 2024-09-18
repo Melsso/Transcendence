@@ -33,6 +33,9 @@ var map =
     ["LU ", "  R", "LUX", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "   ", "  R", "LUX", "   ", "R  "],
     ["LD ", "D  ", "D  ", "D  ", "D  ", "DR ", "DL ", "D  ", "D  ", "D  ", "D R", "DL ", "D  ", "D  ", "D  ", "DR "],
 ];
+
+var itemCoordinates = [];
+
 document.addEventListener('DOMContentLoaded', function () {
 
 	const mainSLgame = document.getElementById('S&L-page');
@@ -56,8 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // removeimg(0, 0);
 	});
 });
-
-var itemCoordinates = [];
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
