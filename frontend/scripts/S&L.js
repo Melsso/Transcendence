@@ -424,7 +424,7 @@ async function gameLogic()
                 SelectedRobot = copyRobots[getRobotIndex(SelectedRobot)];
                 var tmpRobot = getLocation(direction.col, direction.row, SelectedRobot, map);
                 updateRobot(tmpRobot, copyRobots[getRobotIndex(SelectedRobot)]);
-            }
+                }
             resetVars();
         }
         greyOutItem(items[index]);
