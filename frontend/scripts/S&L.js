@@ -14,6 +14,8 @@ var TTokens = [
 var direction = {row: 0, col: 0};
 var SelectedRobot;
 
+var copyRobots = JSON.parse(JSON.stringify(robots));
+
 var map =
 [
     ["LU ", "U  ", "UD ", "U  ", "RU ", "LU ", "U  ", "U  ", "U  ", "RU ", "LU ", "U  ", "U  ", "U  ", "UD ", "RU "],
@@ -274,19 +276,13 @@ function isTarget(row, col, target, map)
 
 function isRobot(row, col, robotName)
 {
-    if (robotName != redRobot.name && row == redRobot.row && col == redRobot.col)
-        return (true);
-    if (robotName != blueRobot.name && row == blueRobot.row && col == blueRobot.col)
-        return (true);
-    if (robotName != yellowRobot.name && row == yellowRobot.row && col == yellowRobot.col)
-        return (true);
-    if (robotName != greenRobot.name && row == greenRobot.row && col == greenRobot.col)
-        return (true);
-    if (robotName != grayRobot.name && row == grayRobot.row && col == grayRobot.col)
-        return (true);
-    return (false);
+    for (var i = 0; i < copyRobots.length; i++){
+        if (robotName !== copyRobots[i].name && row === copyRobots[i].row && col === copyRobots[i].col){
+            return true;
+        }
+    }
+    return false;
 }
-
 function positionCheck(map, robot, dCol, dRow)
 {
     if (dRow == 1 && map[robot.row][robot.col].includes("D")) 
@@ -400,9 +396,9 @@ async function gameLogic()
             await directionKey();
             if (SelectedRobot && (direction.col || direction.row))
             {
-                var tmpRobo = getLocation(direction.col, direction.row, SelectedRobot, map);
-                updateRobot(tmpRobo);
-                // console.log(greenRobot);
+                SelectedRobot = copyRobots[getRobotIndex(SelectedRobot)];
+                var tmpRobot = getLocation(direction.col, direction.row, SelectedRobot, map);
+                updateRobot(tmpRobot, copyRobots[getRobotIndex(SelectedRobot)]);
             }
             resetVars();
         }
@@ -427,49 +423,22 @@ function removeRobotImage(robot) {
     }
 }
 
-function updateRobot(tmpRobo)
+function updateRobot(tmpRobo, robot)
 {
+    removeRobotImage(robot);
+    robot.col = tmpRobo.col;
+    robot.row = tmpRobo.row;
+    placeimg(robot);
     if (tmpRobo.name == "blue")
-    {
-        removeRobotImage(blueRobot);
-        blueRobot.col = tmpRobo.col;
-        blueRobot.row = tmpRobo.row;
-        placeimg(blueRobot);
-        console.log(blueRobot);
         selectBlueRobot();
-    }
     if (tmpRobo.name == "red")
-    {
-        removeRobotImage(redRobot);
-        redRobot.col = tmpRobo.col;
-        redRobot.row = tmpRobo.row;
-        placeimg(redRobot);
         selectRedRobot();
-    }
     if (tmpRobo.name == "green")
-    {
-        removeRobotImage(greenRobot);
-        greenRobot.col = tmpRobo.col;
-        greenRobot.row = tmpRobo.row;
-        placeimg(greenRobot);
         selectGreenRobot();
-    }
     if (tmpRobo.name == "yellow")
-    {
-        removeRobotImage(yellowRobot);
-        yellowRobot.col = tmpRobo.col;
-        yellowRobot.row = tmpRobo.row;
-        placeimg(yellowRobot);
         selectYellowRobot();
-    }
     if (tmpRobo.name == "gray")
-    {
-        removeRobotImage(grayRobot);
-        grayRobot.col = tmpRobo.col;
-        grayRobot.row = tmpRobo.row;
-        placeimg(grayRobot);
         selectGrayRobot();
-    }
 }
 
 function highlightItem(item)
@@ -541,31 +510,31 @@ document.addEventListener('keydown', function(event)
 var currentRobot = null;
 
 function selectGreenRobot() {
-    currentRobot = greenRobot;
+    currentRobot = copyRobots[2];
     updateSelectedButton('green-robot-button');
     onRobotSelected(currentRobot);
 }
 
 function selectYellowRobot() {
-    currentRobot = yellowRobot;
+    currentRobot = copyRobots[3];
     updateSelectedButton('yellow-robot-button');
     onRobotSelected(currentRobot);
 }
 
 function selectGrayRobot() {
-    currentRobot = grayRobot;
+    currentRobot = copyRobots[4];
     updateSelectedButton('gray-robot-button');
     onRobotSelected(currentRobot);
 }
 
 function selectBlueRobot() {
-    currentRobot = blueRobot;
+    currentRobot = copyRobots[0];
     updateSelectedButton('blue-robot-button');
     onRobotSelected(currentRobot);
 }
 
 function selectRedRobot() {
-    currentRobot = redRobot;
+    currentRobot = copyRobots[1];
     updateSelectedButton('red-robot-button');
     onRobotSelected(currentRobot);
 }
@@ -657,7 +626,22 @@ function getTItem(input)
     }
 }
 
-function isFound(item)
+function getRobotIndex(robot)
+{
+    if (robot.name === "blue")
+        return (0);
+    if (robot.name === "red")
+        return (1);
+    if (robot.name === "green")
+        return (2);
+    if (robot.name === "yellow")
+        return (3);
+    if (robot.name === "gray")
+        return (4);
+    return (-1);
+}
+
+function isFound(item, robots)
 {
     var robot;
     
