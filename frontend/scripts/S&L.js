@@ -48,10 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         printItems(itemQueue);
         printRobots(robots);
         gameLogic();
-        // console.log(itemQueue);
         // let Locations = getPossibleLocations(yellowRobot, map);
-        // console.log("HELLO");
-        // console.log(yellowRobot);
         // placeimg(blueRobot);
         // placeimg(redRobot);
         // placeimg(yellowRobot);
@@ -311,7 +308,6 @@ function getLocation(dCol, dRow, robot, map)
     {
         if (isRobot(tmpRobot.row + dRow, tmpRobot.col + dCol, tmpRobot.name))
             break ;
-        // console.log("TESTT");
         var bool = positionCheck(map, tmpRobot, dCol, dRow);
         tmpRobot.row += dRow * bool;
         tmpRobot.col += dCol * bool;
@@ -324,31 +320,19 @@ function getLocation(dCol, dRow, robot, map)
 function getPossibleLocations(robot, map)
 {
     var locations = [];
-    var numRows = map.length;
-    var numCols = map[0].length;
-    
 
     var tmpRobot = getLocation(0, -1, robot, map);
     if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
         locations.push(tmpRobot);
-    // console.log('UP', locations[0]);
-
-        
     var tmpRobot = getLocation(0, 1, robot, map);
     if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
         locations.push(tmpRobot);
-    // console.log('DOWN', locations[1]);
-
-
     var tmpRobot = getLocation(-1, 0, robot, map);
     if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
         locations.push(tmpRobot);
-    // console.log('LEFT', locations[2]);
-
     var tmpRobot = getLocation(1, 0, robot, map);
     if (!(tmpRobot.row == robot.row && tmpRobot.col == robot.col))
         locations.push(tmpRobot);
-    // console.log('RIGHT', locations[3]);
     return locations;
 }
 
@@ -367,7 +351,7 @@ function shuffleArray(array)
     return array;
 }
 
-function waitForKeyPress() {
+function directionKey() {
     return new Promise((resolve) => {
         function onKeyPress(event) {
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
@@ -405,15 +389,15 @@ async function gameLogic()
 {
     var index = itemCoordinates.length - 1;
     itemCoordinates = shuffleArray(itemCoordinates);
-    // console.log(items);
     while (index !== -1)
     {
-        // console.log(itemCoordinates[index]);
-        highlightItem(itemCoordinates[index]);
         // while (!isFound(items[index])) // check main game loop
-        while (1) // check tmp loop since isfound() is not made yet
+        // reset.addEventListener('click', function() {
+        //     reset_status(copyRobots);
+        // });
+        while (true)
         {
-            await waitForKeyPress();
+            await directionKey();
             if (SelectedRobot && (direction.col || direction.row))
             {
                 var tmpRobo = getLocation(direction.col, direction.row, SelectedRobot, map);
@@ -425,8 +409,8 @@ async function gameLogic()
         greyOutItem(items[index]);
         index--;
     }
-    // console.log(items);
 }
+
 
 function removeRobotImage(robot) {
     var gameBoard = document.getElementById('game-board');
@@ -514,7 +498,6 @@ function greyOutItem(item)
     for (var i = 0; i < TTokens.length; i++)
         if (TTokens[i].name === newItem)
             break ;
-    console.log("tItem >>>> ", TTokens[i]);
     placetoken(TTokens[i], item.row, item.col);
 }
 
@@ -531,9 +514,9 @@ document.getElementById('gray-robot-button').addEventListener('click', selectGra
 document.getElementById('blue-robot-button').addEventListener('click', selectBlueRobot);
 document.getElementById('red-robot-button').addEventListener('click', selectRedRobot);
 
-function selectRobot(key)
+document.addEventListener('keydown', function(event)
 {
-    switch(key)
+    switch(event.key)
     {
         case 'q':
             selectGreenRobot();
@@ -553,12 +536,6 @@ function selectRobot(key)
         default:
             break;
     }
-}
-
-document.addEventListener('keydown', function(event)
-{
-    selectRobot(event.key);
-    // setDirection(event.key);
 });
 
 var currentRobot = null;
@@ -666,9 +643,7 @@ function getTItem(input)
 {
     if (input === "V")
         return ("MT5"); // check change later
-    console.log("tname >>>> ", input);
     var number = parseInt(input.slice(1), 10) - 1;
-    console.log("tnumb >>>> ", Math.floor(number / 4));
     switch (Math.floor(number / 4))
     {
         case 0:
