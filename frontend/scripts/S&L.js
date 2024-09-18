@@ -643,6 +643,16 @@ function getRobotIndex(robot)
 
 function isFound(item, robots)
 {
+    if (item.color === "red")
+        robot
+    if (item.color === "blue")
+
+    if (item.color === "yellow")
+
+    if (item.color === "green")
+
+    if (item.color === "default")
+
     var robot;
     
 }
