@@ -405,18 +405,15 @@ function reset_status()
     });
 }
 
-
 async function gameLogic()
 {
     var index = itemCoordinates.length - 1;
     itemCoordinates = shuffleArray(itemCoordinates);
     while (index !== -1)
     {
-        // while (!isFound(items[index])) // check main game loop
-        // reset.addEventListener('click', function() {
-        //     reset_status(copyRobots);
-        // });
-        while (true)
+        highlightItem(itemCoordinates[index]);
+        // console.log("item", itemCoordinates);
+        while (!isFound(itemCoordinates[index]))
         {
             await directionKey();
             if (SelectedRobot && (direction.col || direction.row))
@@ -427,7 +424,7 @@ async function gameLogic()
                 }
             resetVars();
         }
-        greyOutItem(items[index]);
+        greyOutItem(itemCoordinates[index]);
         index--;
     }
 }
