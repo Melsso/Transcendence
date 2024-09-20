@@ -663,18 +663,15 @@ function getRobotIndex(robot)
     return (-1);
 }
 
-function isFound(item, robots)
+function isFound(item)
 {
-    if (item.color === "red")
-        robot
-    if (item.color === "blue")
+    for (var it = 0; it < 4; it++)
+    {
 
-    if (item.color === "yellow")
-
-    if (item.color === "green")
-
-    if (item.color === "default")
-
-    var robot;
-    
+        if (item.color === copyRobots[it].name && item.row === copyRobots[it].row && item.col === copyRobots[it].col)
+        {
+            return (true);
+        }
+    }
+    return (false);
 }
