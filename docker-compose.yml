@@ -1,26 +1,56 @@
-version: '3'
+version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./frontend
-    ports:
-      - '80:80'
-    networks:
-      - app-network
-
+  # Backend service
   backend:
     build:
       context: ./backend
+    container_name: pong-backend-container
+    command: python3 api/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
-    # depends_on:
-      # - db
+    depends_on:
+      - database
+    env_file:
+      - .env
     networks:
-      - app-network
+      - pong-network
+    restart: on-failure
+
+  # Database service
+  database:
+    build:
+      context: ./database
+    container_name: pong-database-container
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - pong-network
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+    container_name: pong-frontend-container
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - pong-network
+
+volumes:
+  postgres_data: 
 
 networks:
-  app-network:
+  pong-network:
     driver: bridge
+

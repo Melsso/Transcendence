@@ -1,6 +1,6 @@
 MAJOR:
 
-- use a framework for the backend. YYYYYYYY
+- use a framework for the backend. done
 - store the score of a tourni in the blockchain YYYYYYYY
 - Standard user management, authentication, users across tournaments. YYYYYYYY
 - Implementing a remote authentication YYYYYYYY
@@ -9,20 +9,20 @@ MAJOR:
 - Add Another Game with User History and Matchmaking  YYYYYYYY
 - Live chat YYYYYYYY
 - Introduce an AI Opponent YYYYYYYY
-- Implement WAF/ModSecurity with Hardened Configuration and HashiCorp Vault for Secrets Management. ?????????
-- Implement Two-Factor Authentication (2FA) and JWT ????????
+- Implement WAF/ModSecurity with Hardened Configuration and HashiCorp Vault for Secrets Management. YYYYYYYYY
+- Implement Two-Factor Authentication (2FA) and JWT YYYYYYYYYY
 -  Infrastructure Setup for Log Management. YYYYYYYY
 
 
 MINOR:
 
 - use a framework for the frontend YYYYYYYY
-- use a database for the backend YYYYYYYY
+- use a database for the backend done
 - Game Customization Options YYYYYYYY
 - User and Game Stats Dashboards YYYYYYYY
-- GDPR Compliance Options with User Anonymization, Local Data Management, and Account Deletion ??????????
+- GDPR Compliance Options with User Anonymization, Local Data Management, and Account Deletion YYYYYYYYY
 - Monitoring system. YYYYYYYY
-- Designing the Backend as Microservices. YYYYYYYY
+- Designing the Backend as Microservices. in-progress
 - Expanding Browser Compatibility YYYYYYYY
 - Multiple language supports YYYYYYYY
 
