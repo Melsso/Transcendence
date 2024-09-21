@@ -1,3 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
+# The following is the User Model we are going with.
+
+class UserProfile(AbstractUser):
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    bar_exp_game1 = models.PositiveIntegerField(default=0)
+    bar_exp_game2 = models.PositiveIntegerField(default=0)
+    # username, email, password as well as userid are already inherited from AbstractUser
+
+    def __str__(self):
+        return self.username
+
+    # The following class is just for easier visualisation done by the admin
+    class Meta:
+        verbose_name = 'User Profile'
+        verbose_name_plural = 'User Profiles'
+    

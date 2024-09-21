@@ -3,3 +3,5 @@ djangorestframework
 environs
 channels
 psycopg2
+Pillow>=9.0.0
+djangorestframework-simplejwt
