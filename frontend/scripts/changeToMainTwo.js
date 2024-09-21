@@ -86,12 +86,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	loginButton.addEventListener('click', async function () {
 		
-		const username = document.getElementById('username').value;
-		const password = document.getElementById('password').value;
-		
-		// console.log("user: ", username);
-		// console.log("password: ", password);
-		
+		const username = document.getElementById('username-login').value;
+		const password = document.getElementById('password-login').value;
+
 		try {
 			const result = await loginUser(username, password);
 			console.log('Login successful:', result);

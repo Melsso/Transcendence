@@ -81,14 +81,17 @@ class LoginSerializer(serializers.Serializer):
         if '@' in username_or_email and '.' in username_or_email:
             user = UserProfile.objects.filter(email=username_or_email).first()
             if user:
-                username_or_email = user.username
+                if user.is_verified:
+                    username_or_email = user.username
+                else:
+                    raise serializers.ValidationError('Email not verified.')
             else:
                 raise serializers.ValidationError('Invalid email address.')
         
         user = authenticate(username=username_or_email, password=password)
 
         if user is None:
-            raise serializers.ValidationError("Invalid credentials. PLease try again")
+            raise serializers.ValidationError("Invalid credentials. PLease try again.")
 
         attrs['user'] = user
         return attrs
