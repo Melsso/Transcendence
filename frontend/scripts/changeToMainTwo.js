@@ -58,8 +58,48 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	loginButton.addEventListener('click', function () {
-		navigateTo('profile');
+	// This function will attempt to fetch a response from the backend with posted data
+	// Note; there will be a token used for further auth returned on success, decide where
+	// to store that token and when, can be done in the loginUser func or in the event 
+	// listener
+	async function loginUser(usernameOrEmail, password) {
+		const response = await fetch('http://localhost:8000/login/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				username_or_email: usernameOrEmail,
+				password: password,
+			}),
+		});
+
+		if (!response.ok) {
+			const errorResponse = await response.json();
+			console.log("Following error happened: ", response);
+			throw new Error(errorResponse.detail || 'Login failed');
+		}
+
+		const data = await response.json();
+		return data;
+	}
+
+	loginButton.addEventListener('click', async function () {
+		
+		const username = document.getElementById('username').value;
+		const password = document.getElementById('password').value;
+		
+		// console.log("user: ", username);
+		// console.log("password: ", password);
+		
+		try {
+			const result = await loginUser(username, password);
+			console.log('Login successful:', result);
+			navigateTo('profile');
+
+		} catch (error) {
+			console.error('Login error:', error.message);
+		}
 	});
 
 	registerButton.addEventListener('click', function () {

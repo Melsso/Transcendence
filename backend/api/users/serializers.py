@@ -16,7 +16,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'bar_exp_game2',
             'biography',
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'email']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -32,7 +32,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        user = UserProfile(**validated_data)
+        user = UserProfile(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            avatar=validated_data.get('avatar'),
+            bar_exp_game1=0,
+            bar_exp_game2=0,
+            biography='',
+        )
         user.set_password(validated_data['password'])
         user.save()
         return user
@@ -41,12 +48,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = attrs.get('password')
         if not password:
             raise serializers.ValidationError({'password': 'This field is required.'})
-        
+
         try:
             validate_password(password)
         except ValidationError as e:
             raise serializers.ValidationError({'password': list(e.messages)})
         
+        email_val = attrs.get('email')
+        if not email_val:
+            raise serializers.ValidationError({'email': 'This field is required.'})
+        
+        if UserProfile.objects.filter(email=email_val).exists():
+            raise serializers.ValidationError("This email is already registered.")        
         
         return attrs
 
@@ -60,8 +73,17 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         username_or_email = attrs.get('username_or_email')
         password = attrs.get('password')
+        
         if not password:
             raise serializers.ValidationError({'password': 'This field is required.'})
+        
+        user = None
+        if '@' in username_or_email and '.' in username_or_email:
+            user = UserProfile.objects.filter(email=username_or_email).first()
+            if user:
+                username_or_email = user.username
+            else:
+                raise serializers.ValidationError('Invalid email address.')
         
         user = authenticate(username=username_or_email, password=password)
 
