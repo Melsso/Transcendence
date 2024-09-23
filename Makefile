@@ -31,6 +31,6 @@ list:
 
 fclean: stop
 	@echo "Removing all stopped containers..."
-	$(DOCKER)-compose down
+	$(DOCKER)-compose down -v
 
 re: fclean run
