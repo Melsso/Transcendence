@@ -170,3 +170,6 @@ class VerifyCodeView(generics.GenericAPIView):
                 return Response({"detail": "Invalid verification code."}, status=HTTP_400_BAD_REQUEST)
         except UserProfile.DoesNotExist:
             return Response({"detail": "User not found."}, status=HTTP_404_NOT_FOUND)
+        
+
+# class ProfileView(generics.GenericAPIView):

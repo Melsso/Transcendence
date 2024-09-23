@@ -6,7 +6,9 @@ services:
     build:
       context: ./backend
     container_name: pong-backend-container
-    command: python3 api/manage.py runserver 0.0.0.0:8000
+    command: >
+        sh -c "python3 api/manage.py migrate &&
+              python3 api/manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
       - ./backend/media:/app/media
