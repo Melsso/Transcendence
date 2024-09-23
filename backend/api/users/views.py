@@ -1,11 +1,21 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_201_CREATED, \
+    HTTP_200_OK, \
+    HTTP_400_BAD_REQUEST, \
+    HTTP_404_NOT_FOUND, \
+    HTTP_401_UNAUTHORIZED, \
+    HTTP_500_INTERNAL_SERVER_ERROR, \
+    HTTP_409_CONFLICT \
+
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
-from .utils import generate_verification_code, send_verification_email
+from .utils import generate_verification_code
 from .models import UserProfile
+from django.conf import settings
+from django.core.mail import send_mail
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -13,18 +23,62 @@ class RegisterView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        try:
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save()
+            verification_code = generate_verification_code()
 
-        verification_code = generate_verification_code()
-        send_verification_email(user.email, verification_code)
+            subject = 'Your Verification Code'
+            message = f'Your verification code is: {verification_code}'
+    
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
+            print('after mail sending')
 
-        user.verification_code = verification_code
-        user.save()
+            user.verification_code = verification_code
+            user.save()
+            user_data = UserProfileSerializer(user).data
 
-        user_data = UserProfileSerializer(user).data
+            return Response({"user": user_data}, status=HTTP_201_CREATED)
 
-        return Response({"user": user_data}, status=HTTP_201_CREATED)
+        except ValidationError as e:
+            error_detail = e.detail.get('detail', '')
+            
+            if 'Username' in error_detail:
+                return Response(
+                    {'error': e.detail},
+                    status=HTTP_400_BAD_REQUEST
+                )
+    
+            if 'Password' in error_detail:
+                return Response(
+                    {'error': e.detail},
+                    status=HTTP_400_BAD_REQUEST
+                )
+            
+            if 'Email' in error_detail:
+                return Response(
+                    {'error': e.detail},
+                    status=HTTP_400_BAD_REQUEST
+                )
+            
+            if 'Rmail' in error_detail:
+                return Response(
+                    {'error': e.detail},
+                    status=HTTP_401_UNAUTHORIZED
+                )
+            print('e: ', e.detail)
+            
+            return Response(
+                {'error': str(e.detail)},
+                status=HTTP_400_BAD_REQUEST
+            )
+        
+        except Exception as e:
+            print('e: ', e.detail)
+            return Response(
+                {'error': 'An unexpected error occured: ' + str(e)},
+                status=HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -43,18 +97,61 @@ class LoginView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
 
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        user = serializer.validated_data['user']
         
-        tokens = self.generate_tokens(user)
+        try:
+            serializer.is_valid(raise_exception=True)
+            user = serializer.validated_data['user']
+            tokens = self.generate_tokens(user)
+            user_data = UserProfileSerializer(user).data
+            return Response(
+                {
+                    "user": user_data, 
+                    "tokens": tokens
+                },
+                status=HTTP_200_OK)
 
-        user_data = UserProfileSerializer(user).data
+        except ValidationError as e:
+            error_detail = e.detail.get('detail', '')
 
-        return Response({
-                "user": user_data, 
-                "tokens": tokens
-            }, status=HTTP_200_OK)
+            if 'nopassword' in error_detail:
+                return Response(
+                    {'error': 'No password provided'},
+                    status=HTTP_400_BAD_REQUEST
+                )
+            
+            if 'nousername' in error_detail:
+                return Response(
+                    {'error': 'No username provided'},
+                    status=HTTP_400_BAD_REQUEST
+                )
+
+            if 'unverifiedemail' in error_detail:
+                return Response(
+                    {'error': 'Email is not verified'},
+                    status=HTTP_401_UNAUTHORIZED
+                )
+            
+            if 'invalidusername' in error_detail:
+                return Response(
+                    {'error': 'User does not exist'},
+                    status=HTTP_404_NOT_FOUND
+                )
+            return Response(
+                {'error': e.detail},
+                status=HTTP_400_BAD_REQUEST
+            )
+
+        except AuthenticationFailed as e:
+            return Response(
+                {'error': str(e)},
+                status=HTTP_401_UNAUTHORIZED
+            )
+        
+        except Exception as e:
+            return Response(
+                {'error': 'An unexpected error occured: ' + str(e)},
+                status=HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class VerifyCodeView(generics.GenericAPIView):

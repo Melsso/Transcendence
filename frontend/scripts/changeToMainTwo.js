@@ -43,7 +43,7 @@ async function loginUser(usernameOrEmail, password) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		// console.log("Following error happened: ", response);
+		console.log("Following error happened: ", response);
 		throw new Error(errorResponse.detail || 'Login failed');
 	}
 
