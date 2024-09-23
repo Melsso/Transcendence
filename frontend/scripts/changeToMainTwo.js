@@ -75,6 +75,9 @@ async function verifyEmail(verification_code, email) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+	const reg1 = document.getElementById('register-form-container');
+    const log1 = document.getElementById('login-form-container');
+    const reg2 = document.getElementById('second-reg-container');
 	const mainOne = document.getElementById('mainOne');
 	const mainTwo = document.getElementById('mainTwo');
 	const mainBody = document.getElementById('mainTwo-body');
@@ -99,6 +102,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const PONGButton = document.getElementById('PONG-button');
 
 	function showView(view) {
+		reg1.style.display = 'none';
+		log1.style.display = 'none';
+		reg2.style.display = 'none';
 		mainOne.style.display = 'none';
 		mainTwo.style.display = 'none';
 		mainBody.style.display = 'none';
@@ -107,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		mainPONGgame.style.display = 'none';
 
 		if (view === 'login') {
+			log1.style.display = 'block';
 			mainOne.style.display = 'flex';
 			mainTwo.style.display = 'none';
 		} else if (view === 'profile') {
