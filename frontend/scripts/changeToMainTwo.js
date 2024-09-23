@@ -166,10 +166,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			let chunk = result['user'];
 			userEmail = chunk['email'];
 			console.log('Registration successful.');
-			// here i have no clue how to take it to the second code confirmation page
-			// token wont be returned on register functions, only login
+			document.getElementById('login-form-container').style.display = 'none';
+			document.getElementById('register-form-container').style.display = 'none';
+			document.getElementById('second-reg-container').style.display = 'block';
 		} catch (error) {
 			console.error('Registration error: ', error.message);
+			document.getElementById('login-form-container').style.display = 'none';
+			document.getElementById('register-form-container').style.display = 'block';
+			document.getElementById('second-reg-container').style.display = 'none';
 		}
 	});
 

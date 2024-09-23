@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
         regButton.classList.add('btn-active');
     });
 
-    document.getElementById('next-btn').addEventListener('click', function() {
-        document.getElementById('login-form-container').style.display = 'none';
-        document.getElementById('register-form-container').style.display = 'none';
-        document.getElementById('second-reg-container').style.display = 'block';
-    });
+    // document.getElementById('next-btn').addEventListener('click', function() {
+//         document.getElementById('login-form-container').style.display = 'none';
+//         document.getElementById('register-form-container').style.display = 'none';
+//         document.getElementById('second-reg-container').style.display = 'block';
+//     });
 });
 
 function showLoginForm(logButton, regButton) {
