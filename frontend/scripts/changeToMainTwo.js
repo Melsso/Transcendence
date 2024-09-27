@@ -16,14 +16,13 @@ async function registerUser(username, password, email) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		// console.log("Following error happened: ", response);
+		console.log("Following error happened: ", response);
 		throw new Error(errorResponse.detail || 'Registration failed');
 	}
 
 	const data = await response.json();
 	return data;
 }
-
 
 // This function will attempt to fetch a response from the backend with posted data
 // Note; there will be a token used for further auth returned on success, decide where

@@ -3,7 +3,7 @@
 COMPOSE_FILE = docker-compose.yml
 # DOCKER = docker
 
-DOCKER = sudo docker
+DOCKER = docker
 
 
 all: run
@@ -31,6 +31,6 @@ list:
 
 fclean: stop
 	@echo "Removing all stopped containers..."
-	$(DOCKER)-compose down -v
+	$(DOCKER)-compose down --rmi all --volumes --remove-orphans
 
 re: fclean run
