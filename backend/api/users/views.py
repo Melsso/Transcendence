@@ -126,8 +126,7 @@ class LoginView(generics.GenericAPIView):
                 )
 
             if 'unverifiedemail' in error_detail:
-                return Response(
-                    {'error': 'Email is not verified'},
+                return Response(x
                     status=HTTP_401_UNAUTHORIZED
                 )
             

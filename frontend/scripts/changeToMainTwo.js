@@ -148,10 +148,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await loginUser(username, password);
 			console.log('Login successful.');
-			userData = {
-				user: result['user'],
-				tokens: result['tokens'],
-			};
+
+			userData = result.user;
+			const tokens = result.user;
+			
+			localStorage.setItem('accessToken', tokens.access)
+			localStorage.setItem('refreshToken', tokens.refresh)
+			
 			navigateTo('profile');
 		} catch (error) {
 			console.error('Login error:', error.message);
@@ -165,9 +168,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			const result = await registerUser(username, password, email);
-			let chunk = result['user'];
-			userEmail = chunk['email'];
+			let chunk = result.user;
+			userEmail = chunk.email;
 			console.log('Registration successful.');
+
 			document.getElementById('login-form-container').style.display = 'none';
 			document.getElementById('register-form-container').style.display = 'none';
 			document.getElementById('second-reg-container').style.display = 'block';
