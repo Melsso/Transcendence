@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, \
@@ -14,6 +13,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
 from .utils import generate_verification_code
 from .models import UserProfile
+
 from django.conf import settings
 from django.core.mail import send_mail
 

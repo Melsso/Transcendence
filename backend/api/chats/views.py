@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from .models import Chat, Message
-from .serializers import MessageSerializer
+from .models import Chat, Message, Friend
+from .serializers import MessageSerializer, FriendSerializer
 from django.conf import settings
 # Create your views here.
 
@@ -52,3 +52,11 @@ class MarkMessageAsReadView(generics.UpdateAPIView):
         message.is_read = True
         message.save()
         return Response({"success": "Message marked as read."})
+
+
+class FriendListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = FriendSerializer
+
+    def get_queryset(self):
+        return Friend.objects.filter(user=self.request.user)
