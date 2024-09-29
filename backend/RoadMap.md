@@ -80,3 +80,4 @@ Game Invitations: Allow users to invite friends to play Pong or other games dire
 Notification System: Implement a notification system to alert users of new messages, friend requests, or game challenges.
 Forgotten password functionality
 NOTIFICATIONS WILL ALSO USE WEBSOCKETS, it seems there is no running away from them
+Implement functionality in the frontend to create chats, send messages, fetch message lists, mark messages as read, and list friends.

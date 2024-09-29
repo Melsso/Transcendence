@@ -13,7 +13,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
 from .utils import generate_verification_code
 from .models import UserProfile
-
 from django.conf import settings
 from django.core.mail import send_mail
 
@@ -38,7 +37,10 @@ class RegisterView(generics.CreateAPIView):
             user.save()
             user_data = UserProfileSerializer(user).data
 
-            return Response({"user": user_data}, status=HTTP_201_CREATED)
+            return Response(
+                {"user": user_data}, 
+                status=HTTP_201_CREATED
+                )
 
         except ValidationError as e:
             error_detail = e.detail.get('detail', '')
@@ -126,7 +128,7 @@ class LoginView(generics.GenericAPIView):
                 )
 
             if 'unverifiedemail' in error_detail:
-                return Response(x
+                return Response({'error': 'Email not verified'},
                     status=HTTP_401_UNAUTHORIZED
                 )
             
