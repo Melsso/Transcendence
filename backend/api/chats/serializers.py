@@ -1,11 +1,5 @@
 from rest_framework import serializers
-from .models import Message, Friend
-from users.models import UserProfile
-
-class MessageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Message
-        fields = ['id', 'chat', 'sender', 'content', 'timestamp', 'is_read']
+from .models import Friend
 
 class FriendSerializer(serializers.ModelSerializer):
     friend_data = serializers.SerializerMethodField()
