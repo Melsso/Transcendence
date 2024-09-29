@@ -148,7 +148,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await loginUser(username, password);
 			console.log('Login successful.');
-			userData = result['user'];
+			userData = {
+				user: result['user'],
+				tokens: result['tokens'],
+			};
 			navigateTo('profile');
 		} catch (error) {
 			console.error('Login error:', error.message);

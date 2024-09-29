@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+/*document.addEventListener("DOMContentLoaded", function() {
 	const jsonUrl = 'profile.json'; // Adjust this path based on where your JSON file is located
 
 	fetch(jsonUrl)
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			  console.error('Error fetching profile data:', error);
 		 });
 });
-
+*/
 document.addEventListener("DOMContentLoaded", function() {
 	fetch('friends.json')
 		.then(response => {
