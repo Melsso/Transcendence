@@ -24,12 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
         logButton.classList.remove('btn-active');
         regButton.classList.add('btn-active');
     });
-
-    // document.getElementById('next-btn').addEventListener('click', function() {
-//         document.getElementById('login-form-container').style.display = 'none';
-//         document.getElementById('register-form-container').style.display = 'none';
-//         document.getElementById('second-reg-container').style.display = 'block';
-//     });
 });
 
 function showLoginForm(logButton, regButton) {
