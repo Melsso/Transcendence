@@ -376,13 +376,34 @@
             </div>
         </div>
         <div class="two-container-game-2" id="S&L-page">
+            <div id="rr-mover-counter" class="rr-mover">Moves: <span id="move-count">0</span></div>
             <div id="robot-buttons" class="buttons-rr-container">
+                <div id="rr-timer" class="timer-display">00:00</div> <!-- Timer display -->
+                <div id="highlighted-item" class="highlighted-item">
+                    <img id="highlighted-img" src="" alt="Highlighted Robot" style="display:none; width: 100px; height: auto;">
+                </div>
                 <button id="reset-robot-button" class="btn rbt-btn">Reset</button>
                 <button id="green-robot-button" class="btn rbt-btn">Green Robot</button>
                 <button id="yellow-robot-button" class="btn rbt-btn">Yellow Robot</button>
                 <button id="gray-robot-button" class="btn rbt-btn">Gray Robot</button>
                 <button id="blue-robot-button" class="btn rbt-btn">Blue Robot</button>
                 <button id="red-robot-button" class="btn rbt-btn">Red Robot</button>
+            </div>
+            <div id="rr-players" class="rr-container-players">
+                <div class="rr-player">
+                    <div class="rr-player-header">
+                        <img src="assets/avatar1.svg" alt="Avatar" class="rr-player-avatar">
+                        <span class="rr-player-name">Player 1</span>
+                    </div>
+                    <span class="rr-player-points">Points: 10</span>
+                </div>
+                <div class="rr-player">
+                    <div class="rr-player-header">
+                        <img src="assets/avatar2.svg" alt="Avatar" class="rr-player-avatar">
+                        <span class="rr-player-name">Player 2</span>
+                    </div>
+                    <span class="rr-player-points">Points: 20</span>
+                </div>
             </div>
             <div id="game-board"></div>
         </div>

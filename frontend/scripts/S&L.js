@@ -356,18 +356,22 @@ function directionKey() {
                     case 'ArrowUp':
                         direction.row = -1;
                         direction.col = 0;
+                        updateMoveCounter();
                         break;
                     case 'ArrowDown':
                         direction.row = 1;
                         direction.col = 0;
+                        updateMoveCounter();
                         break;
                     case 'ArrowLeft':
                         direction.row = 0;
                         direction.col = -1;
+                        updateMoveCounter();
                         break;
                     case 'ArrowRight':
                         direction.row = 0;
                         direction.col = 1;
+                        updateMoveCounter();
                         break;
                     case ' ':
                         reset_status();
@@ -405,14 +409,48 @@ function reset_status()
     });
 }
 
+let seconds = 0;
+let timerInterval;
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        seconds--;
+        document.getElementById("rr-timer").textContent = formatTime(seconds);
+
+        if (seconds <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up!");
+        }
+    }, 1000);
+}
+
+// Format the time in mm:ss format
+function formatTime(s) {
+    const minutes = Math.floor(s / 60);
+    const secondsRemaining = s % 60;
+    return `${minutes < 10 ? '0' : ''}${minutes}:${secondsRemaining < 10 ? '0' : ''}${secondsRemaining}`;
+}
+
+// Reset the timer
+function resetTimer() {
+    clearInterval(timerInterval);
+    seconds = 120;
+    document.getElementById("rr-timer").textContent = formatTime(seconds);
+    startTimer();
+}
+
+// Stop the timer
+function stopTimer() {
+    clearInterval(timerInterval);
+}
 async function gameLogic()
 {
     var index = itemCoordinates.length - 1;
     itemCoordinates = shuffleArray(itemCoordinates);
     while (index !== -1)
     {
+        resetMoveCounter();
         highlightItem(itemCoordinates[index]);
-        // console.log("item", itemCoordinates);
         while (!isFound(itemCoordinates[index]))
         {
             await directionKey();
@@ -421,14 +459,27 @@ async function gameLogic()
                 SelectedRobot = copyRobots[getRobotIndex(SelectedRobot)];
                 var tmpRobot = getLocation(direction.col, direction.row, SelectedRobot, map);
                 updateRobot(tmpRobot, copyRobots[getRobotIndex(SelectedRobot)]);
-                }
+            }
             resetVars();
+            console.log(!isFound(itemCoordinates[index]));
         }
+        startTimer();
+        // sleep(5);
+        unhighlightItem();
         greyOutItem(itemCoordinates[index]);
         index--;
     }
 }
 
+let moveCount = 0; 
+function updateMoveCounter() {
+    moveCount++; 
+    document.getElementById("move-count").textContent = moveCount; 
+}
+function resetMoveCounter() {
+    moveCount = 0;
+    document.getElementById("move-count").textContent = moveCount;
+}
 
 function removeRobotImage(robot) {
     var gameBoard = document.getElementById('game-board');
@@ -463,11 +514,16 @@ function updateRobot(tmpRobo, robot)
         selectGrayRobot();
 }
 
+function unhighlightItem()
+{
+    document.getElementById('highlighted-img').style.display = 'none';
+}
+
 function highlightItem(item)
 {
-    console.log("highlight ---->>>", item);
-
-    // create a highlight on a the item selected
+    const imgElement = document.getElementById("highlighted-img");
+    imgElement.src = 'assets/Riccochet Robots/Tokens/' + item.name + '.png';
+    imgElement.style.display = 'block';
 }
 
 function greyOutItem(item)

@@ -15,22 +15,104 @@
 	border-bottom: solid 3px #808000 !important;
 }
 
+.rr-container-players {
+	display:flex;
+	background-color: #000000;
+	flex-direction: column;
+	position: absolute;
+	align-items: center;
+	justify-content: center;
+	width: 15%;
+	height: 90%;
+	left: 0;
+	top: 5%;
+	overflow-y: auto;
+}
+
+.rr-player {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	background-color: #1e1e1e;
+	border: 1px solid #333;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	padding: 10px;
+	color: white;
+	width: 90%;
+}
+
+.rr-player-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+.rr-player-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	margin-right: 10px;
+}
+
+.rr-player-name {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.rr-player-points {
+	font-size: 14px;
+	color: #aaa;
+	justify-content: center;
+	align-items: center;
+}
+
+.rr-player:hover {
+	background-color: #333;
+}
+
 .buttons-rr-container {
 	display:flex;
 	background-color: #000000;
 	flex-direction: column;
 	position: absolute;
+	align-items: center;
 	justify-self: space-between;
+	justify-content: flex-start;
 	width: 15%;
 	height: 90%;
 	right: 0;
 	top: 5%;
 }
 
+.timer-display {
+	/* position: absolute; */
+	left: 34%;
+	top: 3%;
+	color: white;
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 100px;
+}
+
+.rr-mover {
+	position: absolute;
+	top: 2%;
+	color: white;
+	font-weight: bold;
+}
+
+
+.highlighted-item {
+	/* position: absolute; */
+	left: 20%;
+	top: 20%;
+	margin-bottom: 100px;
+	text-align: center;
+}
 
 .rbt-btn {
 	color: white;
-	transform: translate(5%, 800%);
 	padding: 10px;
 	width: 90%;
 	border-radius: 5px;
