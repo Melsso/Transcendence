@@ -208,7 +208,7 @@ var imageMap =
 
 
 function printMap(gameMap) {
-    gameMap.innerHTML = ''; // Clear the game map
+    gameMap.innerHTML = '';
 
     for (var i = 0; i < map.length; i++) {
         for (var j = 0; j < map[i].length; j++) {
