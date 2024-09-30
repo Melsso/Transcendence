@@ -15,29 +15,33 @@
 	border-bottom: solid 3px #808000 !important;
 }
 
-#robot-buttons {
-	display: flex;
+.buttons-rr-container {
+	display:flex;
+	background-color: #000000;
 	flex-direction: column;
-	justify-content: space-between;
 	position: absolute;
-	right: 40px;
-	top: 10;
+	justify-self: space-between;
+	width: 15%;
+	height: 90%;
+	right: 0;
+	top: 5%;
 }
 
-#robot-buttons .btn {
-	padding: 10px 20px;
-	margin-bottom: 40px;
-	background-color: #000000; 
-	color: white; 
-	border: none;
+
+.rbt-btn {
+	color: white;
+	transform: translate(5%, 800%);
+	padding: 10px;
+	width: 90%;
 	border-radius: 5px;
-	cursor: pointer;
-	font-size: 16px;
+	margin-bottom: 30px;
+	font-size: small;
+	background-color: rgb(90, 0, 0);
 }
 
 #robot-buttons .btn:hover {
 	background-color: #45a049; 
-}
+} 
 
 
 #game-board {
@@ -46,8 +50,9 @@
 	grid-template-rows: repeat(16, 1fr);  
 	gap: 0px;
 	width: 70%; 
-	height: 90%; 
-	background-color: rgb(83, 83, 83);
+	height: 90%;
+	position: absolute;
+	background-color: #1e3434;
 }
 
 .tile {
