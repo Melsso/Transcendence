@@ -8,7 +8,7 @@ services:
     container_name: pong-backend-container
     command: >
         sh -c "python3 api/manage.py migrate &&
-              python3 api/manage.py runserver 0.0.0.0:8000"
+              daphne -p 8000 api.asgi:application"
     volumes:
       - ./backend:/app
       - ./backend/media:/app/media
@@ -16,6 +16,7 @@ services:
       - "8000:8000"
     depends_on:
       - database
+      - redis
     env_file:
       - .env
     networks:
@@ -47,6 +48,15 @@ services:
       - "80:80"
     depends_on:
       - backend
+    networks:
+      - pong-network
+  
+  # Redis service
+  redis:
+    image: redis:alpine
+    container_name: pong-redis-container
+    ports:
+      - "6379:6379"
     networks:
       - pong-network
 

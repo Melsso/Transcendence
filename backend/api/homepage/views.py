@@ -4,11 +4,11 @@ from rest_framework.response import Response
 
 from users.serializers import UserProfileSerializer
 
-from game.models import PongGame, RrGame
-from game.serializers import PongGameSerializer, RrGameSerializer
+from games.models import PongGame, RrGame
+from games.serializers import PongGameSerializer, RrGameSerializer
 
-from chat.models import Friend
-from chat.serializers import FriendSerializer
+from chats.models import Friend
+from chats.serializers import FriendSerializer
 
 # Create your views here.
 class HomePageView(generics.RetrieveAPIView):
