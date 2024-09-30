@@ -350,7 +350,7 @@ function shuffleArray(array)
 function directionKey() {
     return new Promise((resolve) => {
         function onKeyPress(event) {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'l'].includes(event.key)) {
                 // Set the direction based on the key pressed
                 switch (event.key) {
                     case 'ArrowUp':
@@ -373,8 +373,9 @@ function directionKey() {
                         direction.col = 1;
                         updateMoveCounter();
                         break;
-                    case ' ':
+                    case 'l':
                         reset_status();
+                        resetMoveCounter();
                         break;
                 }
 
@@ -409,8 +410,9 @@ function reset_status()
     });
 }
 
-let seconds = 0;
 let timerInterval;
+
+let seconds = 120; // Initialize seconds to 120
 
 function startTimer() {
     timerInterval = setInterval(() => {
@@ -424,14 +426,14 @@ function startTimer() {
     }, 1000);
 }
 
-// Format the time in mm:ss format
+
 function formatTime(s) {
     const minutes = Math.floor(s / 60);
     const secondsRemaining = s % 60;
     return `${minutes < 10 ? '0' : ''}${minutes}:${secondsRemaining < 10 ? '0' : ''}${secondsRemaining}`;
 }
 
-// Reset the timer
+
 function resetTimer() {
     clearInterval(timerInterval);
     seconds = 120;
@@ -461,10 +463,8 @@ async function gameLogic()
                 updateRobot(tmpRobot, copyRobots[getRobotIndex(SelectedRobot)]);
             }
             resetVars();
-            console.log(!isFound(itemCoordinates[index]));
         }
-        startTimer();
-        // sleep(5);
+        // startTimer();
         unhighlightItem();
         greyOutItem(itemCoordinates[index]);
         index--;
@@ -552,7 +552,6 @@ function resetVars()
 {
     direction.col = 0;
     direction.row = 0;
-    // SelectedRobot = null;
 }
 
 document.getElementById('green-robot-button').addEventListener('click', selectGreenRobot);
@@ -729,5 +728,6 @@ function isFound(item)
             return (true);
         }
     }
+    // add conditon for void!
     return (false);
 }
