@@ -25,7 +25,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('homepage.urls')),
     path('', include('chats.urls')),
-    path('', include('games.urls')),
+    # path('', include('games.urls')),
 ]
 
 if settings.DEBUG:

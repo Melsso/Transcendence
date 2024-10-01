@@ -44,12 +44,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'channels',
     'corsheaders',
+    'channels',
     'users',
-    'chats',
+    'chats.apps.ChatsConfig',
     'games',
-    'game_channels',
+    'homepage',
 ]
 
 REST_FRAMEWORK = {
@@ -116,7 +116,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'database',
+        'HOST': '0.0.0.0',
         'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
@@ -162,6 +162,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 ASGI_APPLICATION = "api.asgi.application"
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',

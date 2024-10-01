@@ -8,3 +8,4 @@ psycopg2
 Pillow>=9.0.0
 djangorestframework-simplejwt
 django-cors-headers
+asgiref>=3.4.0

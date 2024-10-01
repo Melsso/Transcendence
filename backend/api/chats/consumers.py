@@ -1,14 +1,12 @@
-import json
-import jwt
-import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
-from asgiref import database_sync_to_async
+from channels.db import database_sync_to_async
+import jwt
+import json
+import logging
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 from .models import Chat, Message
 
-User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
@@ -35,7 +33,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         chat, created = await database_sync_to_async(self.create_or_get_chat)(self.user.id, user2_id)
         await database_sync_to_async(Message.objects.create)(chat=chat, sender=self.user, content=message)
-
+        
         await self.channel_layer.group_send(
             f'chat_{chat.id}',
             {
@@ -65,7 +63,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
             user_id = payload.get("user_id")
 
-            user = User.objects.get(id=user_id)
+            user = settings.AUTH_USER_MODEL.objects.get(id=user_id)
             return user
         except jwt.ExpiredSignatureError:
             logger.warning("Expired token.")
@@ -73,7 +71,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except jwt.InvalidTokenError:
             logger.warning("Invalid token.")
             return None
-        except User.DoesNotExist:
+        except settings.AUTH_USER_MODEL.DoesNotExist:
             logger.warning("User does not exist.")
             return None
 
