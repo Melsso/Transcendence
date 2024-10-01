@@ -16,7 +16,7 @@ services:
       python3 api/manage.py makemigrations && 
       python3 api/manage.py migrate && 
       echo 'Starting Daphne...';
-      daphne -p 8000 api.api.asgi:application"     
+      cd api && daphne -b 0.0.0.0 -p 8000 api.asgi:application"     
     volumes:
       - ./backend:/app
       - ./backend/media:/app/media

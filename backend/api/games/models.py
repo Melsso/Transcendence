@@ -28,3 +28,5 @@ class PongGame(Game):
     shield_powerup = models.IntegerField(default=0)
 class RrGame(Game):
     score = models.IntegerField(default=0)
+    average_moves = models.IntegerField(default=0, null=True)
+    

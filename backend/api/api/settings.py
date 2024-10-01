@@ -30,6 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['0.0.0.0',
     'localhost',
     '127.0.0.1',
+    'backend',
 ]
 
 
@@ -47,7 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'channels',
     'users',
-    'chats.apps.ChatsConfig',
+    'chats',
     'games',
     'homepage',
 ]
@@ -116,7 +117,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': '0.0.0.0',
+        'HOST': os.getenv('POSTGRES_HOST'),
         'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
