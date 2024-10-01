@@ -6,9 +6,17 @@ services:
     build:
       context: ./backend
     container_name: pong-backend-container
-    command: >
-        sh -c "python3 api/manage.py migrate &&
-              daphne -p 8000 api.asgi:application"
+    command: > 
+      sh -c "
+      while ! nc -z database 5432; do 
+        echo 'Waiting for db...';
+        sleep 1; 
+      done; 
+      echo 'Db is up, running migrations...';
+      python3 api/manage.py makemigrations && 
+      python3 api/manage.py migrate && 
+      echo 'Starting Daphne...';
+      daphne -p 8000 api.api.asgi:application"     
     volumes:
       - ./backend:/app
       - ./backend/media:/app/media
@@ -50,6 +58,7 @@ services:
       - backend
     networks:
       - pong-network
+    restart: on-failure
   
   # Redis service
   redis:
