@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
-CMD ["daphne", "-p", "8000", "api.api.asgi:application"]
+CMD ["python3", "api/manage.py", "runserver", "8000"]

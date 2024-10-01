@@ -96,5 +96,8 @@ class LoginSerializer(serializers.Serializer):
         if user is None:
             raise AuthenticationFailed('Invalid username or password')
 
+        if not user.is_verified:
+            raise ValidationError({'detail': 'unverifiedemail'})
+
         attrs['user'] = user
         return attrs
