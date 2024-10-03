@@ -109,10 +109,12 @@ async function verifyEmail(verification_code, email) {
 // This is the function that will make sure the tokens are removed in the backend and front
 async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
+	const access_token = localStorage.getItem('accessToken');
 
 	const response = await fetch('http://localhost:800/logout/', {
 		method: 'POST',
 		headers: {
+			'Authorization': `Bearer ${access_token}`,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
