@@ -39,7 +39,7 @@ class RegisterView(generics.CreateAPIView):
             user_data = UserProfileSerializer(user).data
 
             return Response(
-                {"user": user_data}, 
+                {"user_email": user_data['email']}, 
                 status=HTTP_201_CREATED
                 )
 

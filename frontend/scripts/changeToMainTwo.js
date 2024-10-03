@@ -149,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await loginUser(username, password);
 			console.log('Login successful.');
 
-			userData = result.user;
 			const tokens = result.user;
 			
 			localStorage.setItem('accessToken', tokens.access)
@@ -168,8 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			const result = await registerUser(username, password, email);
-			let chunk = result.user;
-			userEmail = chunk.email;
+			userEmail = result.user_email;
 			console.log('Registration successful.');
 
 			document.getElementById('login-form-container').style.display = 'none';
