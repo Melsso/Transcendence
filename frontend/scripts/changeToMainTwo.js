@@ -1,6 +1,11 @@
+// This variable is used to store user data
 let userData = {};
+
+// This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
 
+
+// This is the function that fetches user data on homepage access
 async function homepageData() {
 	
 	const access_token = localStorage.getItem('accessToken');
@@ -30,6 +35,8 @@ async function homepageData() {
 	return data;
 }
 
+
+// This is the function that fetches user data on register
 async function registerUser(username, password, email) {
 	const response = await fetch('http://localhost:8000/register/', {
 		method: 'POST',
@@ -53,10 +60,7 @@ async function registerUser(username, password, email) {
 	return data;
 }
 
-// This function will attempt to fetch a response from the backend with posted data
-// Note; there will be a token used for further auth returned on success, decide where
-// to store that token and when, can be done in the loginUser func or in the event 
-// listener
+// This is the function that fetches user data on login
 async function loginUser(usernameOrEmail, password) {
 	const response = await fetch('http://localhost:8000/login/', {
 		method: 'POST',
@@ -79,6 +83,7 @@ async function loginUser(usernameOrEmail, password) {
 	return data;
 }
 
+// This is the function that fetches user data on email verification step
 async function verifyEmail(verification_code, email) {
 	const response = await fetch('http://localhost:8000/verify-code/', {
 		method: 'POST',
