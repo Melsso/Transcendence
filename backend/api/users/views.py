@@ -93,9 +93,6 @@ class LoginView(generics.GenericAPIView):
             "refresh": str(refresh),
             "access": str(refresh.access_token)
         }
-    
-    def get(self, request, *args, **kwargs):
-        return 
 
     def post(self, request, *args, **kwargs):
 
@@ -107,10 +104,7 @@ class LoginView(generics.GenericAPIView):
             tokens = self.generate_tokens(user)
             user_data = UserProfileSerializer(user).data
             return Response(
-                {
-                    "user": user_data, 
-                    "tokens": tokens
-                },
+                {"tokens": tokens},
                 status=HTTP_200_OK)
 
         except ValidationError as e:
