@@ -1,6 +1,35 @@
 let userData = {};
 let userEmail;
 
+async function homepageData() {
+	
+	const access_token = localStorage.getItem('accessToken');
+	const refresh_token = localStorage.getItem('refreshToken');
+
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+
+	const response = await fetch('http:localhost:8000/home', {
+		method: 'GET',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Homepage error: ", response);
+		console.log("Err details: ", errorResponse.detail);
+		throw new Error(errorResponse.detail || "Fetching homepage failed");
+	}
+
+	const data = await response.json();
+	return data;
+}
+
 async function registerUser(username, password, email) {
 	const response = await fetch('http://localhost:8000/register/', {
 		method: 'POST',
