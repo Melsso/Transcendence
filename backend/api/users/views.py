@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_200_OK,
+    HTTP_205_RESET_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_401_UNAUTHORIZED,
@@ -168,4 +169,15 @@ class VerifyCodeView(generics.GenericAPIView):
             return Response({"detail": "User not found."}, status=HTTP_404_NOT_FOUND)
         
 
-# class ProfileView(generics.GenericAPIView):
+class LogoutView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(status=HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=HTTP_400_BAD_REQUEST)

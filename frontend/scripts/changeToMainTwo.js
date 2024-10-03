@@ -106,6 +106,33 @@ async function verifyEmail(verification_code, email) {
 	return data;
 }
 
+// This is the function that will make sure the tokens are removed in the backend and front
+async function logoutUser() {
+	const refresh_token = localStorage.getItem('refreshToken');
+
+	const response = await fetch('http://localhost:800/logout/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			refresh: refresh_token,
+		}),
+	});
+
+	if (response.ok) {
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('refreshToken');
+		userData = {};
+		userEmail = "";
+	}
+	else {
+		const errorResponse = await response.json();
+		alert('Logout failed: ${errorResponse}');
+
+		// here will have to handle depending on error encountered, probably redirect to login anyway
+	}
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 	const reg1 = document.getElementById('register-form-container');
@@ -181,16 +208,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			const result = await loginUser(username, password);
-			console.log('Login successful.');
+			alert('Login successful.');
 
-			const tokens = result.user;
-			
+			// Here we are getting our access tokens and storing them locally
+			const tokens = result.tokens;
 			localStorage.setItem('accessToken', tokens.access)
 			localStorage.setItem('refreshToken', tokens.refresh)
 			
+			// We redirect to home page
 			navigateTo('profile');
 		} catch (error) {
-			console.error('Login error:', error.message);
+			alert('Login error: ${error.message}');
 		}
 	});
 
@@ -201,14 +229,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			const result = await registerUser(username, password, email);
+			// Here we get the email that we need for the verification step
 			userEmail = result.user_email;
-			console.log('Registration successful.');
+			alert('Registration successful.');
 
+			// We update the things we need to render
 			document.getElementById('login-form-container').style.display = 'none';
 			document.getElementById('register-form-container').style.display = 'none';
 			document.getElementById('second-reg-container').style.display = 'block';
 		} catch (error) {
-			console.error('Registration error: ', error.message);
+			alert('Registration error: ${error.message}');
+
+			// We update the things we need to render
 			document.getElementById('login-form-container').style.display = 'none';
 			document.getElementById('register-form-container').style.display = 'block';
 			document.getElementById('second-reg-container').style.display = 'none';
@@ -221,18 +253,22 @@ document.addEventListener('DOMContentLoaded', function () {
 		
 		try {
 			const result = await verifyEmail(verification_code, userEmail);
-			console.log('Email verified successfuly.');
+			alert('Email verified successfuly.');
 			navigateTo('login');
 		} catch (error) {
-			console.error('Registration error:', error.message);
+			alert('Registration error:, ${error.message}');
 			navigateTo('register'); 
 		}
 	});
 
-	logoutButton.addEventListener('click', function () {
+	logoutButton.addEventListener('click', async function () {
+
+		await logoutUser();
+
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
 		document.getElementById('login-form-container').style.display = 'block';
+
 		navigateTo('login'); 
 	});
 
