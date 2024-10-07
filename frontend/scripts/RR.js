@@ -9,7 +9,7 @@ var TTokens = [
     { name: "MT2", src: "assets/Riccochet Robots/Tokens/MT2.png" },
     { name: "MT3", src: "assets/Riccochet Robots/Tokens/MT3.png" },
     { name: "MT4", src: "assets/Riccochet Robots/Tokens/MT4.png" },
-    { name: "MT5", src: "assets/Riccochet Robots/Tokens/M5.png" } // check change later
+    { name: "MT5", src: "assets/Riccochet Robots/Tokens/M5.png" }
 ];
 var direction = {row: 0, col: 0};
 var SelectedRobot;
@@ -40,16 +40,22 @@ var itemCoordinates = [];
 
 document.addEventListener('DOMContentLoaded', function () {
 
+    document.getElementById('robot-buttons').style.display = 'none';
+    document.getElementById('rr-mover-counter').style.display = 'none';
+    document.getElementById('rr-players').style.display = 'none';
+    document.getElementById('game-board').style.display = 'none';
+    document.getElementById('rr-menu').style.display = 'none';
 	const mainSLgame = document.getElementById('S&L-page');
 	const SLButton = document.getElementById('S&L-play');
 
 	SLButton.addEventListener('click', function() {
-        printMap(document.getElementById('game-board'));
-        var gameMap = document.getElementById('game-board');
-        getRandomItemInOrder();
-        printItems(itemQueue);
-        printRobots(robots);
-        gameLogic();
+        showRRmenu();
+        // printMap(document.getElementById('game-board'));
+        // var gameMap = document.getElementById('game-board');
+        // getRandomItemInOrder();
+        // printItems(itemQueue);
+        // printRobots(robots);
+        // gameLogic();
         // let Locations = getPossibleLocations(yellowRobot, map);
         // placeimg(blueRobot);
         // placeimg(redRobot);
@@ -58,6 +64,19 @@ document.addEventListener('DOMContentLoaded', function () {
         // removeimg(0, 0);
 	});
 });
+
+function showRRmenu() {
+    var menu = document.getElementById('menu');
+    
+
+}
+
+function showButtons() {
+    document.getElementById('robot-buttons').style.display = 'flex';
+    document.getElementById('rr-mover-counter').style.display = 'flex';
+    document.getElementById('rr-players').style.display = 'flex';
+    document.getElementById('game-board').style.display = 'grid';
+};
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
