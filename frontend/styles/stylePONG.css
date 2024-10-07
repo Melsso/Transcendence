@@ -81,7 +81,7 @@ canvas {
 
 .blur-effect {
 	filter: blur(8px);
-	pointer-events: none; /* Optional: Prevent interaction with blurred elements */
+	pointer-events: none;
 }
 
 .no-blur {

@@ -65,10 +65,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 });
 
-// function showRRmenu() {
+function showRRmenu() {
+    const main_menu = document.getElementById('rr-main-menu');
+    const invite_bar = document.getElementById('rr-inv-menu');
+    document.getElementById('rr-menu').style.display = 'flex';
+    main_menu.style.display = 'flex';
+    invite_bar.style.display = 'none'
     
-
-// }
+}
 
 function showButtons() {
     document.getElementById('robot-buttons').style.display = 'flex';
