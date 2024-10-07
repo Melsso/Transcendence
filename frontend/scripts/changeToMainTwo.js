@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainPONGgame = document.getElementById('PONG-game');
 	
 	mainOne.style.display = 'none';
-	mainTwo.style.display = 'none';
+	mainTwo.style.display = 'flex';
 	mainBody.style.display = 'none';
 	mainSettings.style.display = 'none';
 	mainSLgame.style.display = 'none';
