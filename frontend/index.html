@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="styles/styleBg.css">
     <link rel="stylesheet" href="styles/styleChat.css">
     <link rel="stylesheet" href="styles/stylePONG.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="background-container">
@@ -429,6 +430,23 @@
             <div class="gameContainer">
                 <div class="pong-menu" id="menuuu">
                     <button type="button" class="btn btn-primary btn-play" id="start-pong-ai">Play vs AI</button>
+                    <button type="button" class="btn btn-primary btn-play" id="send-invite">Send Invite</button>
+                    <button type="button" class="btn btn-primary btn-play" id="matchmaking">Queue up!</button>
+                </div>
+                <div class="invite-menu" id="inv-menu">
+                    <button type="button" class="btn btn-primary btn-play" id="1v1">1 vs 1</button>
+                    <button type="button" class="btn btn-primary btn-play" id="tournament">Start Tournament!</button>
+                    <button type="button" class="btn btn-primary btn-return-2" id="return-to-menu">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="ai-menu" id="ai-menu">
+                    <button type="button" class="btn btn-primary btn-play" id="PongEasy">Easy</button>
+                    <button type="button" class="btn btn-primary btn-play" id="PongMedium">Medieum</button>
+                    <button type="button" class="btn btn-primary btn-play" id="PongHard">Hard</button>
+                    <button type="button" class="btn btn-primary btn-return" id="return-to-menu-ai">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
                 </div>
                 <canvas id="pongCanvas"></canvas>
             </div>

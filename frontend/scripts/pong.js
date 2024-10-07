@@ -1,9 +1,16 @@
 const canvas = document.getElementById('pongCanvas');
 const ctx = canvas.getContext('2d');
-const aibutton = document.getElementById('start-pong-ai');
 const gameModal = document.getElementById('gameModal');
 const gameContainer = document.querySelector('.gameContainer');
 const menu = document.getElementById('menuuu');
+const aibutton = document.getElementById('start-pong-ai');
+const inv_btn = document.getElementById('send-invite');
+const q_up = document.getElementById('matchmaking');
+const inv_menu = document.getElementById('inv-menu');
+const ai_menu = document.getElementById('ai-menu');
+const ai_easy = document.getElementById('PongEasy');
+const ai_medium = document.getElementById('PongMedium');
+const ai_hard = document.getElementById('PongHard');
 
 const playerPaddle = {
     x: 0,
@@ -231,22 +238,6 @@ document.addEventListener('keyup', (e) => {
     if (e.key === 'ArrowDown') downPressed = false;
 });
 
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
-    drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
-    drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
-    drawBall(ball.x, ball.y, ball.radius);
-    movePlayerPaddle();
-    moveAIPaddleHard();
-    moveBall();
-
-    drawTimer();
-
-
-    requestAnimationFrame(gameLoop);
-}
-
 
 
 function drawPaddle(x, y, width, height) {
@@ -262,35 +253,85 @@ function drawBall(x, y, radius) {
     ctx.closePath();
 }
 
-aibutton.addEventListener('click', function () {
-    aibutton.style.display = 'none';
-    menuuu.style.display = 'none';
-    gameLoop();
+inv_btn.addEventListener('click', function () {
+    menu.style.display = 'none';
+    inv_menu.style.display = 'flex';
 });
 
+aibutton.addEventListener('click', function () {
+    menu.style.display = 'none';
+    ai_menu.style.display = 'flex';
 
-function applyBlurEffect() {
-    const gameContainer = document.querySelector('.gameContainer');
+    const selectDifficulty = (difficulty) => {
+        gameLoop(difficulty)
+    };
 
-    const mainTwo = document.getElementById('mainTwo');
-    const allElements = mainTwo.children;
+    ai_easy.addEventListener('click', () => selectDifficulty('easy'));
+    ai_medium.addEventListener('click', () => selectDifficulty('medium'));
+    ai_hard.addEventListener('click', () => selectDifficulty('hard'));
+});
 
-    for (let i = 0; i < allElements.length; i++) {
-        if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
-            allElements[i].classList.add('blur-effect');
-        }
+function gameLoop(difficulty) {
+    ai_menu.style.display = 'none';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
+
+    drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
+    drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+    drawBall(ball.x, ball.y, ball.radius);
+    
+    movePlayerPaddle();
+    
+    switch (difficulty) {
+        case 'easy':
+            moveAIPaddleEasy();
+            break;
+        case 'medium':
+            moveAIPaddleMid();
+            break;
+        case 'hard':
+            moveAIPaddleHard();
+            break;
     }
+
+    moveBall();
+    drawTimer();
+
+    requestAnimationFrame(() => gameLoop(difficulty));
 }
 
-function removeBlurEffect() {
-    const mainTwo = document.getElementById('mainTwo');
-    const allElements = mainTwo.children;
+document.getElementById('return-to-menu').addEventListener('click', () => {
+    inv_menu.style.display = 'none';
+    menu.style.display = 'flex';
+});
 
-    for (let i = 0; i < allElements.length; i++) {
-        allElements[i].classList.remove('blur-effect');
-        allElements[i].classList.remove('no-blur');
-        allElements[i].style.zIndex = '';  // Reset z-index
-    }
-}
+document.getElementById('return-to-menu-ai').addEventListener('click', () => {
+    ai_menu.style.display = 'none';
+    menu.style.display = 'flex';
+});
 
-document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);
+// function applyBlurEffect() {
+//     const gameContainer = document.querySelector('.gameContainer');
+
+//     const mainTwo = document.getElementById('mainTwo');
+//     const allElements = mainTwo.children;
+
+//     for (let i = 0; i < allElements.length; i++) {
+//         if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
+//             allElements[i].classList.add('blur-effect');
+//         }
+//     }
+// }
+
+// function removeBlurEffect() {
+//     const mainTwo = document.getElementById('mainTwo');
+//     const allElements = mainTwo.children;
+
+//     for (let i = 0; i < allElements.length; i++) {
+//         allElements[i].classList.remove('blur-effect');
+//         allElements[i].classList.remove('no-blur');
+//         allElements[i].style.zIndex = '';  // Reset z-index
+//     }
+// }
+
+// document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);

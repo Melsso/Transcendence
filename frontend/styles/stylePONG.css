@@ -16,24 +16,63 @@ canvas {
 
 
 .btn-play {
-	position: absolute;
-	width: 20%;
-	height: 5%;
-	left: 40%;
-	top: 47.5%;
-	background-color:grey;
+	/* position: absolute; */
+	width: 100%;
+	height: 40%;
+	font-size: medium;
 	z-index: 100;
 }
 
+.btn-return {
+	position: absolute;
+	transform: translate(-1350%, -1100%);
+}
+
+.btn-return-2 {
+	position: absolute;
+	transform: translate(-1350%, -1250%);
+}
+
+.ai-menu {
+	width: 30%;
+	position: absolute;
+	right: 35%;
+	top:40%;
+	height: 20%;
+	flex-direction: column;
+	display: none;
+	justify-content: flex-start;
+	align-items: center;
+	z-index: 1;
+	gap: 10%;
+}
+
+.invite-menu {
+	width: 30%;
+	position: absolute;
+	right: 35%;
+	top:45%;
+	height: 10%;
+	flex-direction: column;
+	display: none;
+	justify-content: flex-start;
+	align-items: center;
+	z-index: 1;
+	gap: 10%;
+}
 
 .pong-menu {
-	width: 100%;
-	height: 100%;
+	width: 30%;
+	position: absolute;
+	right: 35%;
+	top:40%;
+	height: 20%;
+	flex-direction: column;
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
 	align-items: center;
-	position: relative;
-	z-index: 1; 
+	z-index: 1;
+	gap: 10%;
 }
 
 .blur-effect {
