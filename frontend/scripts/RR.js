@@ -65,11 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 });
 
-function showRRmenu() {
-    var menu = document.getElementById('menu');
+// function showRRmenu() {
     
 
-}
+// }
 
 function showButtons() {
     document.getElementById('robot-buttons').style.display = 'flex';

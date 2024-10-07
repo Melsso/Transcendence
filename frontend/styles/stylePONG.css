@@ -25,12 +25,16 @@ canvas {
 
 .btn-return {
 	position: absolute;
-	transform: translate(-1350%, -1100%);
+	/* transform: translate(-1350%, -1100%); */
+	left: -100%;
+	top: -175%;
 }
 
 .btn-return-2 {
 	position: absolute;
-	transform: translate(-1350%, -1250%);
+	left: -100%;
+	top: -400%;
+	/* transform: translate(-1350%, -1250%); */
 }
 
 .ai-menu {
