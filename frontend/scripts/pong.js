@@ -157,9 +157,11 @@ function moveAIPaddlemid() {
     }
 }
 function moveAIPaddleEasy() {
-    if (predictedY < aiPaddle.y + aiPaddle.height / 2)
+    if (aistop)
+        return;
+    if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
         aiPaddle.y -= aiPaddle.dy;
-     else if (predictedY >= aiPaddle.y + aiPaddle.height / 2) {
+    } else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
         aiPaddle.y += aiPaddle.dy;
     }
 }
