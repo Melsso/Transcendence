@@ -45,17 +45,13 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('rr-players').style.display = 'none';
     document.getElementById('game-board').style.display = 'none';
     document.getElementById('rr-menu').style.display = 'none';
+    document.getElementById('rr-main-menu').style.display = 'none';
+    document.getElementById('rr-inv-menu').style.display = 'none';
 	const mainSLgame = document.getElementById('S&L-page');
 	const SLButton = document.getElementById('S&L-play');
 
 	SLButton.addEventListener('click', function() {
         showRRmenu();
-        // printMap(document.getElementById('game-board'));
-        // var gameMap = document.getElementById('game-board');
-        // getRandomItemInOrder();
-        // printItems(itemQueue);
-        // printRobots(robots);
-        // gameLogic();
         // let Locations = getPossibleLocations(yellowRobot, map);
         // placeimg(blueRobot);
         // placeimg(redRobot);
@@ -71,7 +67,26 @@ function showRRmenu() {
     document.getElementById('rr-menu').style.display = 'flex';
     main_menu.style.display = 'flex';
     invite_bar.style.display = 'none'
-    
+    const play_ai_btn = document.getElementById('rr-ai-btn');
+
+    play_ai_btn.addEventListener('click', function() {
+        showButtons();
+        hideRRmenu();
+        printMap(document.getElementById('game-board'));
+        var gameMap = document.getElementById('game-board');
+        getRandomItemInOrder();
+        printItems(itemQueue);
+        printRobots(robots);
+        gameLogic();
+    });
+}
+
+function hideRRmenu() {
+    const main_menu = document.getElementById('rr-main-menu');
+    const invite_bar = document.getElementById('rr-inv-menu');
+    document.getElementById('rr-menu').style.display = 'none';
+    main_menu.style.display = 'none';
+    invite_bar.style.display = 'none'
 }
 
 function showButtons() {
