@@ -1,4 +1,4 @@
-import { loadProfile } from "./populatePageHelpers";
+import { loadProfile } from "./populatePageHelpers.js";
 
 // This variable is used to store user data
 let userData = {};
@@ -17,7 +17,7 @@ async function homepageData() {
 		throw new Error("No access token found.");
 	}
 
-	const response = await fetch('http:localhost:8000/home', {
+	const response = await fetch('http://localhost:8000/home/', {
 		method: 'GET',
 		headers: {
 			'Authorization': `Bearer ${access_token}`,
@@ -28,7 +28,6 @@ async function homepageData() {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Homepage error: ", response);
 		console.log("Err details: ", errorResponse.detail);
 		throw new Error(errorResponse.detail || "Fetching homepage failed");
 	}
@@ -38,12 +37,12 @@ async function homepageData() {
 }
 
 async function userLookUp(searchTerm) {
-	const access_token = localStorage.getItem('access_Token');
+	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
 
-	const url = `/search-users/?search-user-input=${encodeURIComponent(searchTerm)}`;
+	const url = `http://localhost:8000/home/search-users/?search-user-input=${encodeURIComponent(searchTerm)}`;
 
 	const response = await fetch(url, {
 		method: 'GET',
@@ -137,7 +136,7 @@ async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
 	const access_token = localStorage.getItem('accessToken');
 
-	const response = await fetch('http://localhost:800/logout/', {
+	const response = await fetch('http://localhost:8000/logout/', {
 		method: 'POST',
 		headers: {
 			'Authorization': `Bearer ${access_token}`,
@@ -209,12 +208,12 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				const result = await homepageData();
 				loadProfile(result);
+				mainTwo.style.display = 'flex';
+				mainBody.style.display = 'flex';
 
 			} catch (error) {
 				console.log("Error: ", error.message);
 			}
-			mainTwo.style.display = 'flex';
-			mainBody.style.display = 'flex';
 		} else if (view === 'settings') {
 			mainTwo.style.display = 'flex';
 			mainSettings.style.display = 'flex';
@@ -296,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	logoutButton.addEventListener('click', async function () {
 
-		await logoutUser();
+		// await logoutUser();
 
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
@@ -305,12 +304,19 @@ document.addEventListener('DOMContentLoaded', function () {
 		navigateTo('login'); 
 	});
 
+	// need to create a new function like loadProfile that gets you everything about a user except the friendlist, loadProfile is misused here and should only be used for hte original user
+	// need 2 call navigate as well, but keep in mind it will cause problems, so add flag to know if its searching or smth
 	searchButton.addEventListener('click', async function () {
 		const uname = document.getElementById('search-user-input').value;
 
 		try {
 			const result = await userLookUp(uname);
-			// here add functiont to display search results
+			if (result['user'] !== null) {
+				loadProfile(result);
+			}
+			else {
+				alert('No such user');
+			}
 		} catch (error) {
 			console.log("Error: ", error.message);
 		}

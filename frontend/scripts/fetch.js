@@ -20,8 +20,8 @@
 
 // 			  const progressBarElement1 = document.querySelector('#exp-bar .progress-bar');
 // 			  progressBarElement1.style.width = `${data.game1.expPercentage}%`;
-// 			  progressBarElement1.textContent = `Game 1 - Level ${data.game1.level} - ${data.game1.expPercentage}%`;
-// 			  progressBarElement1.setAttribute('aria-valuenow', data.game1.expPercentage);
+			//   progressBarElement1.textContent = `Game 1 - Level ${data.game1.level} - ${data.game1.expPercentage}%`;
+			//   progressBarElement1.setAttribute('aria-valuenow', data.game1.expPercentage);
 
 // 			  const progressBarElement2 = document.querySelector('.my-bar-two .progress-bar');
 // 			  progressBarElement2.style.width = `${data.game2.expPercentage}%`;

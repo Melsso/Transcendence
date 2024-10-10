@@ -5,7 +5,7 @@ from django.conf import settings
 
 class Game(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    opponenet = models.ForeignKey(
+    opponent = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
@@ -15,7 +15,7 @@ class Game(models.Model):
     date_played = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}: {self.user.username} vs {self.opponenet.username if self.opponenet else 'AI'}"
+        return f"{self.__class__.__name__} {self.id}: {self.user.username} vs {self.opponent.username if self.opponent else 'AI'}"
 
     class Meta:
         abstract = True
