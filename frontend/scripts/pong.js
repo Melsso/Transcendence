@@ -136,29 +136,28 @@ function moveAIPaddleHard() {
 
     let predictedY = Prediction();
     if (aistop)
-        return ;    
+        return ;
 
     const tolerance = 3;
 
-    if (Math.abs(aiPaddle.y + aiPaddle.height / 2 - predictedY) > tolerance) {
-        if (predictedY < aiPaddle.y + aiPaddle.height / 2) {
-            aiPaddle.y -= aiPaddle.dy;
-        } else if (predictedY > aiPaddle.y + aiPaddle.height / 2) {
-            aiPaddle.y += aiPaddle.dy;
-        }
+        if (Math.abs(aiPaddle.y + aiPaddle.height / 2 - predictedY) > tolerance) {
+            if (predictedY < aiPaddle.y + aiPaddle.height / 2) {
+                aiPaddle.y -= aiPaddle.dy;
+            } else if (predictedY > aiPaddle.y + aiPaddle.height / 2) {
+                aiPaddle.y += aiPaddle.dy;
+            }
     }
 }
 function moveAIPaddlemid() {
-    let predictedY = Prediction();
-    if (predictedY < aiPaddle.y + aiPaddle.height / 2)
-        aiPaddle.y -= aiPaddle.dy;
-     else if (predictedY >= aiPaddle.y + aiPaddle.height / 2) {
-        aiPaddle.y += aiPaddle.dy;
-    }
-}
-function moveAIPaddleEasy() {
     if (aistop)
         return;
+        if (ball.y < aiPaddle.y + aiPaddle.height / 2)
+            aiPaddle.y -= aiPaddle.dy;
+        else if (ball.y >= aiPaddle.y + aiPaddle.height / 2)
+            aiPaddle.y += aiPaddle.dy;
+}
+
+function moveAIPaddleEasy() {
     if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
         aiPaddle.y -= aiPaddle.dy;
     } else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
@@ -289,7 +288,7 @@ function gameLoop(difficulty) {
             moveAIPaddleEasy();
             break;
         case 'medium':
-            moveAIPaddleMid();
+            moveAIPaddlemid();
             break;
         case 'hard':
             moveAIPaddleHard();
