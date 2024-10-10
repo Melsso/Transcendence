@@ -1,3 +1,5 @@
+import { loadProfile } from "./populatePageHelpers";
+
 // This variable is used to store user data
 let userData = {};
 
@@ -9,7 +11,7 @@ let userEmail;
 async function homepageData() {
 	
 	const access_token = localStorage.getItem('accessToken');
-	const refresh_token = localStorage.getItem('refreshToken');
+	// const refresh_token = localStorage.getItem('refreshToken');
 
 	if (!access_token) {
 		throw new Error("No access token found.");
@@ -35,6 +37,31 @@ async function homepageData() {
 	return data;
 }
 
+async function userLookUp(searchTerm) {
+	const access_token = localStorage.getItem('access_Token');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+
+	const url = `/search-users/?search-user-input=${encodeURIComponent(searchTerm)}`;
+
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			"Authorization": `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Homepage: Search User error: ", errorResponse.detail);
+		throw new Error(errorResponse.detail || "User search error");
+	}
+
+	const data = await response.json();
+	return data;
+}
 
 // This is the function that fetches user data on register
 async function registerUser(username, password, email) {
@@ -98,7 +125,6 @@ async function verifyEmail(verification_code, email) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		// console.log("Following error happened: ", response);
 		throw new Error(errorResponse.detail || 'Verification failed');
 	}
 
@@ -159,11 +185,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	const registerButton = document.getElementById('register');
 	const nextButton = document.getElementById('next-btn');
 	const logoutButton = document.getElementById('logout');
+	const searchButton = document.getElementById('search-user');
 	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
 
-	function showView(view) {
+	async function showView(view) {
 		reg1.style.display = 'none';
 		log1.style.display = 'none';
 		reg2.style.display = 'none';
@@ -179,6 +206,13 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainOne.style.display = 'flex';
 			mainTwo.style.display = 'none';
 		} else if (view === 'profile') {
+			try {
+				const result = await homepageData();
+				loadProfile(result);
+
+			} catch (error) {
+				console.log("Error: ", error.message);
+			}
 			mainTwo.style.display = 'flex';
 			mainBody.style.display = 'flex';
 		} else if (view === 'settings') {
@@ -210,8 +244,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			const result = await loginUser(username, password);
-			alert('Login successful.');
-
 			// Here we are getting our access tokens and storing them locally
 			const tokens = result.tokens;
 			localStorage.setItem('accessToken', tokens.access)
@@ -255,7 +287,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		
 		try {
 			const result = await verifyEmail(verification_code, userEmail);
-			alert('Email verified successfuly.');
 			navigateTo('login');
 		} catch (error) {
 			alert('Registration error:, ${error.message}');
@@ -272,6 +303,17 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('login-form-container').style.display = 'block';
 
 		navigateTo('login'); 
+	});
+
+	searchButton.addEventListener('click', async function () {
+		const uname = document.getElementById('search-user-input').value;
+
+		try {
+			const result = await userLookUp(uname);
+			// here add functiont to display search results
+		} catch (error) {
+			console.log("Error: ", error.message);
+		}
 	});
 
 	settingButton.addEventListener('click', function () {
