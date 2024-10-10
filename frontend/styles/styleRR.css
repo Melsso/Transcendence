@@ -139,10 +139,11 @@
 }
 
 .rr-add-btn {
-	border-radius: 100%;
+	border-radius: 50%;
 	background-color: #000000;
 	height: 90%;
-	width: 25%;
+	aspect-ratio: 1 / 1;
+	width: 20%;
 	padding: 10px;
 	font-size: 3rem;        
 	color: white;           
