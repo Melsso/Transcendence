@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const SLButton = document.getElementById('S&L-play');
 
 	SLButton.addEventListener('click', function() {
-        showRRmenu();
+        // showRRmenu();
         // let Locations = getPossibleLocations(yellowRobot, map);
         // placeimg(blueRobot);
         // placeimg(redRobot);
@@ -578,11 +578,11 @@ function greyOutItem(item)
         }
     }
 
-    var newItem = getTItem(item.name);
-    for (var i = 0; i < TTokens.length; i++)
-        if (TTokens[i].name === newItem)
-            break ;
-    placetoken(TTokens[i], item.row, item.col);
+    // var newItem = getTItem(item.name);
+    // for (var i = 0; i < TTokens.length; i++)
+    //     if (TTokens[i].name === newItem)
+    //         break ;
+    // placetoken(TTokens[i], item.row, item.col);
 }
 
 function resetVars()
