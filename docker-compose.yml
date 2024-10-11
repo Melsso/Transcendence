@@ -13,8 +13,8 @@ services:
         sleep 1; 
       done; 
       echo 'Db is up, running migrations...';
-      python3 api/manage.py makemigrations && 
-      python3 api/manage.py migrate && 
+      python3 api/manage.py makemigrations; 
+      python3 api/manage.py migrate;
       echo 'Starting Daphne...';
       cd api && daphne -b 0.0.0.0 -p 8000 api.asgi:application"     
     volumes:

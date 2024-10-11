@@ -15,4 +15,15 @@ class Migration(migrations.Migration):
             name='average_moves',
             field=models.IntegerField(default=0, null=True),
         ),
+        migrations.RenameField(
+            model_name='PongGame',
+            old_name='opponenet',
+            new_name='opponent',
+        ),
+
+        migrations.RenameField(
+            model_name='RrGame',
+            old_name='opponenet',
+            new_name='opponent',
+        ),
     ]

@@ -13,10 +13,11 @@ from rest_framework.status import (
 
 from games.models import PongGame, RrGame
 from games.serializers import PongGameSerializer, RrGameSerializer
-from users.models import Users
+from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 from chats.models import Friend
 from chats.serializers import FriendSerializer
+import logging
 
 # Create your views here.
 class HomePageView(generics.RetrieveAPIView):
@@ -36,15 +37,15 @@ class HomePageView(generics.RetrieveAPIView):
             game['game_type'] = 'rr'
         
         combined_history = pong_data + rr_data
-        sorted_history = sorted(combined_history, key=lambda x: x['date_played'], reverse=True)
+        sorted_history = sorted(combined_history, key=lambda x: x.get('date_played', datetime.min), reverse=True)
 
         friends = Friend.objects.filter(user=request.user)
         friends_data = FriendSerializer(friends, many=True).data
 
         return Response({
-            'user': user_data,
-            'match_history': sorted_history,
-            'friends': friends_data,
+            "user": user_data,
+            "match_history": sorted_history,
+            "friends": friends_data,
             },
             status=HTTP_200_OK
         )
@@ -56,9 +57,12 @@ class SearchUserView(generics.RetrieveAPIView):
     def get(self, request):
         query = request.GET.get('search-user-input')
 
-    if not query:
-        return Response({'results': []}, status=HTTP_200_OK)
-    
-    results = UserProfile.objects.filter(username__icontains=query)
-    serializer = self.serializer_class(results, many=True)
-    return Response({'results': serializer.data,}, status=HTTP_200_OK)
+        if not query:
+            return Response({'results': None}, status=HTTP_200_OK)
+        
+        result = UserProfile.objects.filter(username__iexact=query).first()
+        if result:
+            serializer = self.serializer_class(result)
+            return Response({'user': serializer.data}, status=HTTP_200_OK)
+        else:
+            return Response({'user': None}, status=HTTP_200_OK)
