@@ -33,6 +33,7 @@ async function homepageData() {
 	}
 
 	const data = await response.json();
+	userData = data["user"];
 	return data;
 }
 
@@ -104,7 +105,6 @@ async function loginUser(usernameOrEmail, password) {
 		console.log("Following error happened: ", response);
 		throw new Error(errorResponse.detail || 'Login failed');
 	}
-
 	const data = await response.json();
 	return data;
 }
@@ -209,9 +209,24 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
+					const addFriendBtn = document.getElementById('add-friend');
+					console.log('kasud', addFriendBtn);
+					console.log('salam');
+					addFriendBtn.style.display = 'none';
 					loadProfile(result);
 				}
 				else {
+					const calleruser = data['user'];
+					console.log(calleruser);
+					if (userData["username"] !== calleruser['username']) {
+						const addFriendBtn = document.getElementById('add-friend');
+						addFriendBtn.style.display = 'flex';
+					}
+					else {
+						const addFriendBtn = document.getElementById('add-friend');
+						addFriendBtn.style.display = 'none';
+					}
+					
 					loadProfile(data);
 				}
 			
