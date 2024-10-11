@@ -38,6 +38,18 @@ var map =
 
 var itemCoordinates = [];
 
+function openModal(modalId) {
+    // Show the modal and overlay
+    document.getElementById(`rr-modal-${modalId}`).classList.add('active');
+    document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal(modalId) {
+    // Hide the modal and overlay
+    document.getElementById(`rr-modal-${modalId}`).classList.remove('active');
+    document.getElementById('modal-overlay').classList.remove('active');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('robot-buttons').style.display = 'none';
@@ -47,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('rr-menu').style.display = 'none';
     document.getElementById('rr-main-menu').style.display = 'none';
     document.getElementById('rr-inv-menu').style.display = 'none';
+    document.getElementById('rr-inv-container').style.display = 'flex';
 	const mainSLgame = document.getElementById('S&L-page');
 	const SLButton = document.getElementById('S&L-play');
 

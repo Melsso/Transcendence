@@ -102,6 +102,7 @@ overflow: hidden; /* Ensure content doesn't overflow */
 	left: 10%;
 	height: 10%;
 	width: 80%;
+	color: black;
 }
 
 .my-bar-two {
@@ -111,6 +112,7 @@ overflow: hidden; /* Ensure content doesn't overflow */
 	left: 10%;
 	height: 10%;
 	width: 80%;
+	color: black;
 }
 
 .my-tabs {

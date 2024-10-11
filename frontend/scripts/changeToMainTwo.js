@@ -1,3 +1,5 @@
+import { loadProfile } from "./populatePageHelpers.js";
+
 // This variable is used to store user data
 let userData = {};
 
@@ -9,13 +11,13 @@ let userEmail;
 async function homepageData() {
 	
 	const access_token = localStorage.getItem('accessToken');
-	const refresh_token = localStorage.getItem('refreshToken');
+	// const refresh_token = localStorage.getItem('refreshToken');
 
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
 
-	const response = await fetch('http:localhost:8000/home', {
+	const response = await fetch('http://localhost:8000/home/', {
 		method: 'GET',
 		headers: {
 			'Authorization': `Bearer ${access_token}`,
@@ -26,7 +28,6 @@ async function homepageData() {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Homepage error: ", response);
 		console.log("Err details: ", errorResponse.detail);
 		throw new Error(errorResponse.detail || "Fetching homepage failed");
 	}
@@ -35,6 +36,31 @@ async function homepageData() {
 	return data;
 }
 
+async function userLookUp(searchTerm) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+
+	const url = `http://localhost:8000/home/search-users/?search-user-input=${encodeURIComponent(searchTerm)}`;
+
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			"Authorization": `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Homepage: Search User error: ", errorResponse.detail);
+		throw new Error(errorResponse.detail || "User search error");
+	}
+
+	const data = await response.json();
+	return data;
+}
 
 // This is the function that fetches user data on register
 async function registerUser(username, password, email) {
@@ -98,7 +124,6 @@ async function verifyEmail(verification_code, email) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		// console.log("Following error happened: ", response);
 		throw new Error(errorResponse.detail || 'Verification failed');
 	}
 
@@ -111,7 +136,7 @@ async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
 	const access_token = localStorage.getItem('accessToken');
 
-	const response = await fetch('http://localhost:800/logout/', {
+	const response = await fetch('http://localhost:8000/logout/', {
 		method: 'POST',
 		headers: {
 			'Authorization': `Bearer ${access_token}`,
@@ -159,11 +184,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	const registerButton = document.getElementById('register');
 	const nextButton = document.getElementById('next-btn');
 	const logoutButton = document.getElementById('logout');
+	const searchButton = document.getElementById('search-user');
 	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
 
-	function showView(view) {
+	async function showView(view) {
 		reg1.style.display = 'none';
 		log1.style.display = 'none';
 		reg2.style.display = 'none';
@@ -179,8 +205,15 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainOne.style.display = 'flex';
 			mainTwo.style.display = 'none';
 		} else if (view === 'profile') {
-			mainTwo.style.display = 'flex';
-			mainBody.style.display = 'flex';
+			try {
+				const result = await homepageData();
+				loadProfile(result);
+				mainTwo.style.display = 'flex';
+				mainBody.style.display = 'flex';
+
+			} catch (error) {
+				console.log("Error: ", error.message);
+			}
 		} else if (view === 'settings') {
 			mainTwo.style.display = 'flex';
 			mainSettings.style.display = 'flex';
@@ -210,8 +243,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			const result = await loginUser(username, password);
-			alert('Login successful.');
-
 			// Here we are getting our access tokens and storing them locally
 			const tokens = result.tokens;
 			localStorage.setItem('accessToken', tokens.access)
@@ -255,7 +286,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		
 		try {
 			const result = await verifyEmail(verification_code, userEmail);
-			alert('Email verified successfuly.');
 			navigateTo('login');
 		} catch (error) {
 			alert('Registration error:, ${error.message}');
@@ -265,13 +295,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	logoutButton.addEventListener('click', async function () {
 
-		await logoutUser();
+		// await logoutUser();
 
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
 		document.getElementById('login-form-container').style.display = 'block';
 
 		navigateTo('login'); 
+	});
+
+	// need to create a new function like loadProfile that gets you everything about a user except the friendlist, loadProfile is misused here and should only be used for hte original user
+	// need 2 call navigate as well, but keep in mind it will cause problems, so add flag to know if its searching or smth
+	searchButton.addEventListener('click', async function () {
+		const uname = document.getElementById('search-user-input').value;
+
+		try {
+			const result = await userLookUp(uname);
+			if (result['user'] !== null) {
+				loadProfile(result);
+			}
+			else {
+				alert('No such user');
+			}
+		} catch (error) {
+			console.log("Error: ", error.message);
+		}
 	});
 
 	settingButton.addEventListener('click', function () {
