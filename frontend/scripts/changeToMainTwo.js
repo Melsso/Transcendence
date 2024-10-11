@@ -1,5 +1,5 @@
 import { loadProfile } from "./populatePageHelpers.js";
-
+import { loadFriends, getFriends } from "./populateFriends.js";
 // This variable is used to store user data
 let userData = {};
 
@@ -188,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
+	const friendButton = document.getElementById('friend-list-btn');
 
 	async function showView(view, data) {
 		reg1.style.display = 'none';
@@ -321,6 +322,16 @@ document.addEventListener('DOMContentLoaded', function () {
 			else {
 				alert('No such user');
 			}
+		} catch (error) {
+			console.log("Error: ", error.message);
+		}
+	});
+
+	friendButton.addEventListener('click', async function () {
+		try {
+			const result = await getFriends();
+			loadFriends(result);
+
 		} catch (error) {
 			console.log("Error: ", error.message);
 		}

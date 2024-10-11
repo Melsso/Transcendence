@@ -35,8 +35,3 @@ export function loadProfile(requestData) {
         console.error("Error: No Match History Found!");
     }
 }
-
-export function loadOtherProfile(requestData) {
-    let user;
-
-}
