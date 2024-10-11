@@ -39,7 +39,18 @@ class HomePageView(generics.RetrieveAPIView):
         combined_history = pong_data + rr_data
         sorted_history = sorted(combined_history, key=lambda x: x.get('date_played', datetime.min), reverse=True)
 
-        friends = Friend.objects.filter(user=request.user)
+        pending_friends = Friend.objects.filter(
+            user=request.user,
+            status='PENDING'
+        )
+
+        accepted_friends = Friend.objects.filter(
+            friend=request.user,
+            status='FRIENDS'
+        )
+
+        friends = pending_friends | accepted_friends
+        friends = friends.distinct()
         friends_data = FriendSerializer(friends, many=True).data
 
         return Response({

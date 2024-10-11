@@ -26,3 +26,6 @@ class FriendListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
 
         return Response({'friends': serializer.data}, status=HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        

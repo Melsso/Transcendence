@@ -44,16 +44,28 @@ class Message(models.Model):
         ordering = ['timestamp']
     
 class Friend(models.Model):
-    
+    FRIEND_STATUS_CHOICES = [
+        ('FRIENDS', 'Friends'),
+        ('PENDING', 'Pending'),
+        ('BLOCKED', 'Blocked'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
         related_name="friends",
         on_delete=models.CASCADE
     )
+    
     friend = models.ForeignKey(settings.AUTH_USER_MODEL,
         related_name="friend_of",
         on_delete=models.CASCADE
     )
+    
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10,
+        choices=FRIEND_STATUS_CHOICES,
+        default='PENDING'
+    )
 
     def __str__(self):
         return f"{self.user.username} is friends with {self.friend.username}"
