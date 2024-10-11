@@ -38,6 +38,53 @@ const ball = {
     
 };
 
+let crossCount = 0;
+let sbVisible = false;
+let sbvFirstround = false;
+
+function drawSpeedBuff() {
+    const rectWidth = 20;
+    const rectHeight = 100;
+    
+    // Calculate the middle position of the canvas
+    const rectX = (canvas.width / 2) - (rectWidth / 2);
+    const rectY = (canvas.height / 2) - (rectHeight / 2);
+    
+    // Set the fill color and opacity (0.5 is 50% transparent)
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = "red";
+    
+    // Draw the rectangle only if it's visible
+    if (sbVisible) {
+        ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+    }
+    
+    // Reset globalAlpha to 1.0 to avoid affecting other drawings
+    ctx.globalAlpha = 1.0;
+
+    // Check if the ball crosses the rectangle
+    if ((sbVisible) &&
+        ball.x + ball.radius > rectX && 
+        ball.x - ball.radius < rectX + rectWidth && 
+        ball.y + ball.radius > rectY && 
+        ball.y - ball.radius < rectY + rectHeight) {
+        crossCount += 1;
+        console.log(`The ball has crossed the hue ${crossCount} times!`);
+
+        // Check if the ball has crossed twice
+        if (crossCount == 10) {
+            console.log('The green hue has disappeared!');
+            sbVisible = false;
+        }
+    }
+}
+let ResetTime;
+function startHueTimer() {
+    hueTimeout = setTimeout(() => {
+        sbvFirstround = true;
+    }, 5000);
+}
+
 function Prediction() {
     let predictedY = ball.y;
     let predictedX = ball.x;
@@ -62,7 +109,7 @@ function mediumDifficultyAI() {
     
 }
 
-let gameStartTime = Date.now();
+let gameStartTime;
 const speedIncreaseInterval = 5000;
 const initialSpeed = 5;
 const speedIncrement = 0.22;
@@ -95,13 +142,19 @@ function setGameDimensions() {
     ball.y = canvas.height / 2;
 }
 
-let ResetTime = Date.now();
 
 function restartGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     playerPaddle.x = 0;
     playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
     aiPaddle.x = canvas.width - aiPaddle.width;
     aiPaddle.y = canvas.height / 2 - aiPaddle.height / 2;
+    crossCount = 0;
+    sbVisible = false;
+    sbvFirstround = false;
+    setTimeout(() => {
+        sbVisible = true; // Set hue to visible
+    }, elapsedTime + 5000); // 5000 milliseconds = 5 seconds
 }
 
 function drawTimer() {
@@ -166,8 +219,7 @@ function moveAIPaddleEasy() {
 }
 
 function moveBall() {
-    const elapsedTime = Date.now() - gameStartTime;
-
+    const elapsedTime = Date.now() - ResetTime;
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
     ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
     ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
@@ -218,7 +270,7 @@ function moveBall() {
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
-        gameStartTime = Date.now();
+        // gameStartTime = Date.now();
         ResetTime = Date.now();
         switchOnAI();
         restartGame();
@@ -273,9 +325,14 @@ aibutton.addEventListener('click', function () {
 });
 
 function gameLoop(difficulty) {
+    if (!ResetTime) {
+        // Set ResetTime only when the game starts
+        ResetTime = Date.now();
+    }
     ai_menu.style.display = 'none';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
+//    startHueTimer();
 
     drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
@@ -295,6 +352,7 @@ function gameLoop(difficulty) {
             break;
     }
 
+    drawSpeedBuff();
     moveBall();
     drawTimer();
 
@@ -302,37 +360,37 @@ function gameLoop(difficulty) {
 }
 
 document.getElementById('return-to-menu').addEventListener('click', () => {
-    inv_menu.style.display = 'none';
+    inv_menu.style.display = 'flex';
     menu.style.display = 'flex';
 });
 
 document.getElementById('return-to-menu-ai').addEventListener('click', () => {
-    ai_menu.style.display = 'none';
+    ai_menu.style.display = 'flex';
     menu.style.display = 'flex';
 });
 
-// function applyBlurEffect() {
-//     const gameContainer = document.querySelector('.gameContainer');
+function applyBlurEffect() {
+    const gameContainer = document.querySelector('.gameContainer');
 
-//     const mainTwo = document.getElementById('mainTwo');
-//     const allElements = mainTwo.children;
+    const mainTwo = document.getElementById('mainTwo');
+    const allElements = mainTwo.children;
 
-//     for (let i = 0; i < allElements.length; i++) {
-//         if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
-//             allElements[i].classList.add('blur-effect');
-//         }
-//     }
-// }
+    for (let i = 0; i < allElements.length; i++) {
+        if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
+            allElements[i].classList.add('blur-effect');
+        }
+    }
+}
 
-// function removeBlurEffect() {
-//     const mainTwo = document.getElementById('mainTwo');
-//     const allElements = mainTwo.children;
+function removeBlurEffect() {
+    const mainTwo = document.getElementById('mainTwo');
+    const allElements = mainTwo.children;
 
-//     for (let i = 0; i < allElements.length; i++) {
-//         allElements[i].classList.remove('blur-effect');
-//         allElements[i].classList.remove('no-blur');
-//         allElements[i].style.zIndex = '';  // Reset z-index
-//     }
-// }
+    for (let i = 0; i < allElements.length; i++) {
+        allElements[i].classList.remove('blur-effect');
+        allElements[i].classList.remove('no-blur');
+        allElements[i].style.zIndex = '';  // Reset z-index
+    }
+}
 
-// document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);
+document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);

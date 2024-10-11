@@ -33,97 +33,179 @@
 // 		 });
 // });
 
-document.addEventListener("DOMContentLoaded", function() {
-		fetch('friends.json')
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Failed to load JSON file: ' + response.statusText);
-				}
-				return response.json();
-			})
-		  .then(data => {
-			const friendsListContainer = document.getElementById('friends-list');
-			friendsListContainer.innerHTML = ''; // Clear any existing content
+// document.addEventListener("DOMContentLoaded", function() {
+// 		fetch('friends.json')
+// 			.then(response => {
+// 				if (!response.ok) {
+// 					throw new Error('Failed to load JSON file: ' + response.statusText);
+// 				}
+// 				return response.json();
+// 			})
+// 		  .then(data => {
+// 			const friendsListContainer = document.getElementById('friends-list');
+// 			friendsListContainer.innerHTML = ''; // Clear any existing content
 	  
-			data.forEach(friend => {
-				 // Create a div for each friend
-				 const friendDiv = document.createElement('div');
-				 friendDiv.className = 'd-flex align-items-center mb-3';
+// 			data.forEach(friend => {
+// 				 // Create a div for each friend
+// 				 const friendDiv = document.createElement('div');
+// 				 friendDiv.className = 'd-flex align-items-center mb-3';
 	  
-				 const avatarImg = document.createElement('img');
-				 avatarImg.src = friend.avatarUrl;
-				 avatarImg.alt = friend.Friendname;
-				 avatarImg.className = 'rounded-circle me-3';
-				 avatarImg.style.width = '50px';
-				 avatarImg.style.height = '50px';
+// 				 const avatarImg = document.createElement('img');
+// 				 avatarImg.src = friend.avatarUrl;
+// 				 avatarImg.alt = friend.Friendname;
+// 				 avatarImg.className = 'rounded-circle me-3';
+// 				 avatarImg.style.width = '50px';
+// 				 avatarImg.style.height = '50px';
 	  
-				 // Create the name and dropdown
-				 const nameDropdownDiv = document.createElement('div');
-				 nameDropdownDiv.className = 'd-flex justify-content-between w-100';
+// 				 // Create the name and dropdown
+// 				 const nameDropdownDiv = document.createElement('div');
+// 				 nameDropdownDiv.className = 'd-flex justify-content-between w-100';
 	  
-				 // Name span
-				 const nameSpan = document.createElement('span');
-				 nameSpan.className = 'fw-bold';
-				 nameSpan.textContent = friend.Friendname;
+// 				 // Name span
+// 				 const nameSpan = document.createElement('span');
+// 				 nameSpan.className = 'fw-bold';
+// 				 nameSpan.textContent = friend.Friendname;
 	  
-				 // Dropdown button and menu
-				 const dropdownDiv = document.createElement('div');
-				 dropdownDiv.className = 'dropdown dropend';
+// 				 // Dropdown button and menu
+// 				 const dropdownDiv = document.createElement('div');
+// 				 dropdownDiv.className = 'dropdown dropend';
 				
-				 const uniqueDropdownId = `dropdownMenuButton${friend.friendID}`;
-				 const uniqueDropdownMenuId = `dropdownMenu${friend.friendID}`;
+// 				 const uniqueDropdownId = `dropdownMenuButton${friend.friendID}`;
+// 				 const uniqueDropdownMenuId = `dropdownMenu${friend.friendID}`;
 
-				const dropdownButton = document.createElement('button');
-					dropdownButton.className = 'btn btn-friends';  
-					dropdownButton.type = 'button';
-					dropdownButton.id = uniqueDropdownId;  // Assign unique ID
-					dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
-					dropdownButton.setAttribute('aria-expanded', 'false');
-					dropdownButton.innerHTML = '&#8226;&#8226;&#8226;'; // Use three dots
+// 				const dropdownButton = document.createElement('button');
+// 					dropdownButton.className = 'btn btn-friends';  
+// 					dropdownButton.type = 'button';
+// 					dropdownButton.id = uniqueDropdownId;  // Assign unique ID
+// 					dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+// 					dropdownButton.setAttribute('aria-expanded', 'false');
+// 					dropdownButton.innerHTML = '&#8226;&#8226;&#8226;'; // Use three dots
 							
-					const dropdownMenu = document.createElement('ul');
-					dropdownMenu.className = 'dropdown-menu';
-					dropdownMenu.id = uniqueDropdownMenuId;  // Assign unique ID
-					dropdownMenu.setAttribute('aria-labelledby', dropdownButton.id);
+// 					const dropdownMenu = document.createElement('ul');
+// 					dropdownMenu.className = 'dropdown-menu';
+// 					dropdownMenu.id = uniqueDropdownMenuId;  // Assign unique ID
+// 					dropdownMenu.setAttribute('aria-labelledby', dropdownButton.id);
 							
-					const actions = ['View Profile', 'Send a Message', 'Unfriend', 'Invite To Game']; // Example actions
-					actions.forEach(action => {
-						 const li = document.createElement('li');
-						 const a = document.createElement('a');
-						 a.className = 'dropdown-item';
-						 a.href = '#';
-						 a.textContent = action;
-						 li.appendChild(a);
-						 dropdownMenu.appendChild(li);
-				 });
+// 					const actions = ['View Profile', 'Send a Message', 'Unfriend', 'Invite To Game']; // Example actions
+// 					actions.forEach(action => {
+// 						 const li = document.createElement('li');
+// 						 const a = document.createElement('a');
+// 						 a.className = 'dropdown-item';
+// 						 a.href = '#';
+// 						 a.textContent = action;
+// 						 li.appendChild(a);
+// 						 dropdownMenu.appendChild(li);
+// 				 });
 	  
-				 // Assemble the friend item
-				 dropdownDiv.appendChild(dropdownButton);
-				 dropdownDiv.appendChild(dropdownMenu);
+// 				 // Assemble the friend item
+// 				 dropdownDiv.appendChild(dropdownButton);
+// 				 dropdownDiv.appendChild(dropdownMenu);
 	  
-				 nameDropdownDiv.appendChild(nameSpan);
-				 nameDropdownDiv.appendChild(dropdownDiv);
+// 				 nameDropdownDiv.appendChild(nameSpan);
+// 				 nameDropdownDiv.appendChild(dropdownDiv);
 	  
-				 friendDiv.appendChild(avatarImg);
-				 friendDiv.appendChild(nameDropdownDiv);
+// 				 friendDiv.appendChild(avatarImg);
+// 				 friendDiv.appendChild(nameDropdownDiv);
 	  
-				 friendsListContainer.appendChild(friendDiv);
+// 				 friendsListContainer.appendChild(friendDiv);
+// 			});
+// 	  })
+// 		 .catch(error => {
+// 			  console.error('Error fetching friends data:', error);
+// 		 });
+// });
+
+async function getFriends() {
+	const access_token = localStorage.getItem('access_Token');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+
+	const url = `https://localhost:8000/friends`
+
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			"Authorization": `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+	});
+	if (!response.ok){
+		const errorResponse = await response.json();
+		throw new Error(errorResponse.detail || "Friend List error");
+	}
+
+	const data = await response.json();
+	return data;
+
+};
+
+async function loadFriends() {
+	const results = await getFriends();
+	if (results && results.lenght() > 0){
+		const friendsListContainer = document.getElementById('friends-list');
+		friendsListContainer.innerHTML = '';
+		results.forEach(user =>{
+			const FriendDiv = document.createElement('div');
+			FriendDiv.className = 'd-flex align-items-center mb-3';
+			FriendDiv.id = user.id;
+
+			const avatarImg = document.createElement('img');
+			avatarImg.src = user.avatarUrl;
+			avatarImg.alt = user.userName;
+			avatarImg.className = 'rounded-circle me-3';
+			avatarImg.style.width = '50px';
+			avatarImg.style.height = '50px';
+
+			const nameDropdownDiv = document.createElement('div');
+			nameDropdownDiv.className =- 'd-flex justify-content-between w-100';
+
+			const nameSpan = document.createElement('div');
+			nameSpan.className = 'fw-bold';
+			nameSpan.textContent = friend.userName;
+
+			const dropdownDiv = document.createElement('div');
+			dropdownDiv.className = 'dropdown dropend';
+
+			const uniqueDropdownId = `dropdownMenuButton${user.userID}`;
+			const uniqueDropdownMenuId = `dropDownMenu${user.userID}`;
+
+			const dropdownButton = document.createElement('button');
+			dropdownButton.className = 'btn btn-friends';
+			dropdownButton.type = 'button';
+			dropdownButton.id = uniqueDropdownId;
+			dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+			dropdownButton.setAttribute('aria-expanded', 'false');
+			dropdownButton.innerHTML = '&#8226;&#8226;&#8226;';
+
+			const dropdownMenu = document.createElement('ul');
+			dropdownMenu.className = 'dropdown-menu';
+			dropdownMenu.id = uniqueDropdownMenuId;
+			dropdownMenu.setAttribute('aria-labelledby', dropdownButton.id);
+
+			const actions = ['View Profile', 'Send a Message', 'Unfriend', 'Invite To Game'];
+			actions.forEach(action => {
+				const li = document.createElement('li');
+				const a = document.createElement('a');
+				a.className = 'dropdown-item';
+				a.href = '#';
+				a.textContent = action;
+				li.appendChild(a);
+				dropdownMenu.appendChild(li);
 			});
-	  })
-		 .catch(error => {
-			  console.error('Error fetching friends data:', error);
-		 });
-});
 
-// const friendsData = [
-// 	{
-// 		 "friendID": "#0122",
-// 		 "Friendname": "John Doe",
-// 		 "avatarUrl": "assets/avatar1.svg"
-// 	},
-// 	{
-// 		 "friendID": "#0456",
-// 		 "Friendname": "Jane Smith",
-// 		 "avatarUrl": "assets/avatar2.svg"
-// 	}
-// ];
+			dropdownDiv.appendChild(dropdownButton);
+			dropdownDiv.appendChild(dropdownMenu);
+
+			nameDropdownDiv.appendChild(nameSpan);
+			nameDropdownDiv.appendChild(dropdownDiv);
+
+			FriendDiv.appendChild(avatarImg);
+			FriendDiv.appendChild(nameDropdownDiv);
+
+			friendsListContainer.appendChild(FriendDiv);
+		});
+	}else {
+		console.log('Empty, l9a7t');
+	}
+};
