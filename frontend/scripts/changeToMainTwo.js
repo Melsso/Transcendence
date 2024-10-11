@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
 
-	async function showView(view) {
+	async function showView(view, data) {
 		reg1.style.display = 'none';
 		log1.style.display = 'none';
 		reg2.style.display = 'none';
@@ -206,8 +206,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainTwo.style.display = 'none';
 		} else if (view === 'profile') {
 			try {
-				const result = await homepageData();
-				loadProfile(result);
+				if (data === null) {
+					const result = await homepageData();
+					loadProfile(result);
+				}
+				else {
+					loadProfile(data);
+				}
+			
 				mainTwo.style.display = 'flex';
 				mainBody.style.display = 'flex';
 
@@ -226,9 +232,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	function navigateTo(view) {
+	function navigateTo(view, data) {
 		history.pushState({ view: view }, null, `#${view}`);
-		showView(view);
+		showView(view, data);
 	}
 
 	window.addEventListener('popstate', function (event) {
@@ -249,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			localStorage.setItem('refreshToken', tokens.refresh)
 			
 			// We redirect to home page
-			navigateTo('profile');
+			navigateTo('profile', null);
 		} catch (error) {
 			alert('Login error: ${error.message}');
 		}
@@ -286,10 +292,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		
 		try {
 			const result = await verifyEmail(verification_code, userEmail);
-			navigateTo('login');
+			navigateTo('login', null);
 		} catch (error) {
 			alert('Registration error:, ${error.message}');
-			navigateTo('register'); 
+			navigateTo('register', null); 
 		}
 	});
 
@@ -301,18 +307,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('second-reg-container').style.display = 'none';
 		document.getElementById('login-form-container').style.display = 'block';
 
-		navigateTo('login'); 
+		navigateTo('login', null); 
 	});
 
-	// need to create a new function like loadProfile that gets you everything about a user except the friendlist, loadProfile is misused here and should only be used for hte original user
-	// need 2 call navigate as well, but keep in mind it will cause problems, so add flag to know if its searching or smth
 	searchButton.addEventListener('click', async function () {
 		const uname = document.getElementById('search-user-input').value;
 
 		try {
 			const result = await userLookUp(uname);
 			if (result['user'] !== null) {
-				loadProfile(result);
+				navigateTo('profile', result);
 			}
 			else {
 				alert('No such user');
@@ -323,23 +327,23 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	settingButton.addEventListener('click', function () {
-		navigateTo('settings'); 
+		navigateTo('settings', null); 
 	});
 
 	profileButton.addEventListener('click', function () {
-		navigateTo('profile');
+		navigateTo('profile', null);
 	});
 
 	SLButton.addEventListener('click', function () {
-		navigateTo('S&L');
+		navigateTo('S&L', null);
 	});
 
 	PONGButton.addEventListener('click', function () {
-		navigateTo('PONG');
+		navigateTo('PONG', null);
 	});
 
 	window.onload = function () {
 		const hashView = location.hash.replace("#", "") || "login"; 
-		navigateTo(hashView);
+		navigateTo(hashView, null);
 	};
 });

@@ -63,6 +63,24 @@ class SearchUserView(generics.RetrieveAPIView):
         result = UserProfile.objects.filter(username__iexact=query).first()
         if result:
             serializer = self.serializer_class(result)
-            return Response({'user': serializer.data}, status=HTTP_200_OK)
+
+            pong_games = PongGame.objects.filter(user=result)
+            rr_games = RrGame.objects.filter(user=result)
+            pong_data = PongGameSerializer(pong_games, many=True).data
+            rr_data = RrGameSerializer(rr_games, many=True).data
+
+            for game in pong_data:
+                game['game_type'] = 'pong'
+            for game in rr_data:
+                game['game_type'] = 'rr'
+            
+            combined_history = pong_data + rr_data
+            sorted_history = sorted(combined_history, key=lambda x: x.get('date_played', datetime.min), reverse=True)
+
+            return Response({
+                'user': serializer.data,
+                'match_history': sorted_history,
+                }, 
+                status=HTTP_200_OK)
         else:
             return Response({'user': None}, status=HTTP_200_OK)
