@@ -9,11 +9,8 @@ The Transcendence 42 project is a dynamic gaming platform featuring two exciting
 - **Games Available**:
   - **Pong**: A classic arcade game where players control paddles to hit a ball back and forth.
   - **Ricochet Robots**: A strategic board game that requires players to maneuver robots on a grid to reach designated targets.
-
 - **Chat System**: Engage in real-time discussions with other players through our integrated chat functionality.
-
 - **Matchmaking System**: Connect with players of similar skill levels for competitive matches.
-
 - **Tournament System**: Participate in organized tournaments to test your skills against the best players.
 
 ## Technologies Used
@@ -22,18 +19,14 @@ The Transcendence 42 project is a dynamic gaming platform featuring two exciting
   - **Django**: A high-level Python web framework for building robust applications.
   - **PostgreSQL**: A powerful open-source relational database system for data storage.
   - **Daphne**: An HTTP/WebSocket protocol server for handling asynchronous communication.
-
 - **Frontend**:
   - **JavaScript**: For dynamic interactivity within the web application.
   - **HTML/CSS**: The foundation of the web pages.
   - **Bootstrap**: A popular front-end framework for responsive design.
-
 - **Containerization**:
   - **Docker**: For containerizing the application and managing dependencies.
-
 - **Caching**:
   - **Redis**: A high-performance in-memory data store used for caching and real-time data management.
-
 - **Web Server**:
   - **NGINX**: A high-performance web server and reverse proxy for serving the application.
 
