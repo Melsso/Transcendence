@@ -34,5 +34,4 @@ export function loadProfile(requestData) {
     else {
         console.error("Error: No Match History Found!");
     }
-
 }

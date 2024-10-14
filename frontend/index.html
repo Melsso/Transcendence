@@ -178,27 +178,10 @@
             <div class="accordion" id="friend-accordion">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="Friends-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Friends</button>
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" id="friend-list-btn">Friends</button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="Friends-header" data-bs-parent="#friend-accordion">
                         <div class="accordion-body" id="friends-list">
-                            <!-- <div class="d-flex align-items-center mb-3">
-                                <img src="assets/avatar2.svg" alt="Bozo" class="rounded-circle me-3" style="width: 50px; height: 50px;">
-                                <div class="d-flex justify-content-between w-100">
-                                    <span class="fw-bold" id="friend-name-1">Bozo</span>
-                                    <div class="dropdown">
-                                        <button class="btn btn-friends" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                            &#8226;&#8226;&#8226;
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                            <li><a class="dropdown-item" href="#">View Profile</a></li>
-                                            <li><a class="dropdown-item" href="#">Send a Message</a></li>
-                                            <li><a class="dropdown-item" href="#">Unfriend</a></li>
-                                            <li><a class="dropdown-item" href="#">Invite To Game</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>       -->
                         </div>
                     </div>
                 </div>
@@ -235,6 +218,7 @@
                 <div class="profile-info" id="profile-info">
                     <h1 id="username" class="profile-username">Loading...</h1>
                     <p class="my-bio" id="profile-bio">Loading...</p>
+                    <button type="button" id="add-friend" class="btn" style="display: none;background-color: rgb(56, 4, 102);color: #7982b2;border: solid 1px black;">Add Friend!</button>
                     <div class="progress my-bar" id="exp-bar">
                         <div id="exp-pong" class="progress-bar progress-bar-striped progress-bar-animated" 
                              style="background-color: rgb(56, 4, 102);" 
@@ -404,7 +388,7 @@
                             <input type="text" placeholder="Search..." />
                             <div class="search-modal-buttons">
                                 <button onclick="closeModal(1)">Close</button>
-                                <button type="submit">Submit</button>
+                                <button onclick="closeModal(1)" type="submit">Submit</button>
                             </div>
                         </div>
                     </div>
@@ -416,7 +400,7 @@
                             <input type="text" placeholder="Search..." />
                             <div class="search-modal-buttons">
                                 <button onclick="closeModal(2)">Close</button>
-                                <button type="submit">Submit</button>
+                                <button onclick="closeModal(2)" type="submit">Submit</button>
                             </div>
                         </div>
                     </div>
@@ -428,7 +412,7 @@
                             <input type="text" placeholder="Search..." />
                             <div class="search-modal-buttons">
                                 <button onclick="closeModal(3)">Close</button>
-                                <button type="submit">Submit</button>
+                                <button onclick="closeModal(3) "type="submit">Submit</button>
                             </div>
                         </div>
                     </div>
@@ -606,7 +590,7 @@
     <script src="scripts/match.js"></script>
     <script src="scripts/pong.js"></script>
     <script src="scripts/chat.js"></script>
-    <script src="scripts/fetch.js"></script>
+    <script type="module" src="scripts/populateFriends.js"></script>
     <script type="module" src="scripts/changeToMainTwo.js"></script>
     <script src="scripts/confirm-password.js"></script>
     <script src="scripts/R-AvatarSelection.js"></script>
