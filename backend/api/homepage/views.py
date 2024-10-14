@@ -10,7 +10,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_409_CONFLICT
 )
-
+from django.contrib.auth import authenticate
 from games.models import PongGame, RrGame
 from games.serializers import PongGameSerializer, RrGameSerializer
 from users.models import UserProfile
@@ -100,5 +100,35 @@ class UpdateBio(generics.RetrieveAPIView):
 
         return Response({'detail': 'Bio changed',
         'bio' : curr_user.bio}, status=HTTP_200_OK)
+
+class UpdatePwd(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        curr_pwd = request.data.get('currentPwd')
+        new_pwd = request.data.get('newPwd')
+        cfm_pwd = request.data.get('confirmedPwd')
+
+        # if curr_pwd is None or new_pwd is None or cfm_pwd is None:
+        #     return Response({'detail': 'password empty'}, status=HTTP_400_BAD_REQUEST)
+        if curr_pwd is None:
+            return Response({'detail': 'current password empty'}, status=HTTP_400_BAD_REQUEST)
+        user = request.user
+
+        same_user = authenticate(username=user.username, password=curr_pwd)
+        if same_user is None:
+            return Response({'detail': 'Invalid Password'}, status=HTTP_400_BAD_REQUEST)
+        
+        if new_pwd is None:
+            return Response({'detail': 'new password empty'}, status=HTTP_400_BAD_REQUEST)
+        if cfm_pwd is None:
+            return Response({'detail': 'confirmed password empty'}, status=HTTP_400_BAD_REQUEST)
+        
+        if new_pwd != cfm_pwd:
+            return Response({'detail': 'new passwords dont match'}, status=HTTP_400_BAD_REQUEST)
+        
+        user.set_password(new_pwd)
+        user.save()
+
+        return Response({'detail': 'Password changed'}, status=HTTP_200_OK)
 
     

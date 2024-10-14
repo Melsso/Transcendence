@@ -123,10 +123,33 @@ async function updateBio(biog) {
 		}),
 	});
 	if (!response.ok) {
-		console.log(biog);
 		const errorResponse = await response.json();
 		console.log("Following error happened: ", response);
-		throw new Error(errorResponse.detail || 'Username Change failed');
+		throw new Error(errorResponse.detail || 'Bio Change failed');
+	}
+	const data = await response.json();
+	return data;
+}
+
+async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updatepwd/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			currentPwd: curr_pwd,
+			newPwd: new_pwd,
+			confirmedPwd: cfm_pwd,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", response);
+		throw new Error(errorResponse.detail || 'Password Change failed');
 	}
 	const data = await response.json();
 	return data;
@@ -236,6 +259,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	const PONGButton = document.getElementById('PONG-button');
 	const updateUsernameButton = document.getElementById('updateUsername-btn');
 	const updateBioButton = document.getElementById('updateBio-btn');
+	const updatePwdButton = document.getElementById('updatePwd-btn');
+
 
 	async function showView(view) {
 		reg1.style.display = 'none';
@@ -406,6 +431,18 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 		try {
 			const result = await updateBio(bio);
+		} catch (error) {
+			console.log('Error: ', error.detail);
+		}
+	});
+
+	updatePwdButton.addEventListener('click', async function () {
+		const curr_pwd = document.getElementById('current-password').value;
+		const new_pwd = document.getElementById('new-password').value;
+		const cfm_pwd = document.getElementById('new-confirm-password').value;
+	
+		try {
+			const result = await updatePwd(curr_pwd, new_pwd, cfm_pwd);
 		} catch (error) {
 			console.log('Error: ', error.detail);
 		}
