@@ -155,6 +155,28 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 	return data;
 }
 
+async function updateMail(new_mail) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updatemail/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			mail: new_mail,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", response);
+		throw new Error(errorResponse.detail || 'Mail Change failed');
+	}
+	const data = await response.json();
+	return data;
+}
+
 // This is the function that fetches user data on login
 async function loginUser(usernameOrEmail, password) {
 	const response = await fetch('http://localhost:8000/login/', {
@@ -260,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const updateUsernameButton = document.getElementById('updateUsername-btn');
 	const updateBioButton = document.getElementById('updateBio-btn');
 	const updatePwdButton = document.getElementById('updatePwd-btn');
+	// const updateMailButton = document.getElementById('updateMail-btn');
 
 
 	async function showView(view) {
@@ -447,4 +470,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			console.log('Error: ', error.detail);
 		}
 	});
+
+	// updateMailButton.addEventListener('click', async function () {
+	// 	const new_mail = document.getElementById('new-email').value;
+	
+	// 	try {
+	// 		const result = await updateMail(new_mail);
+	// 	} catch (error) {
+	// 		console.log('Error: ', error.detail);
+	// 	}
+	// });
 });
