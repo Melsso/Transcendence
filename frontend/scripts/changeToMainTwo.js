@@ -109,6 +109,28 @@ async function updateUsername(uname) {
 	return data;
 }
 
+async function updateBio(biog) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updatebio/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			bio: biog,
+		}),
+	});
+	if (!response.ok) {
+		console.log(biog);
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", response);
+		throw new Error(errorResponse.detail || 'Username Change failed');
+	}
+	const data = await response.json();
+	return data;
+}
 
 // This is the function that fetches user data on login
 async function loginUser(usernameOrEmail, password) {
@@ -213,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
 	const updateUsernameButton = document.getElementById('updateUsername-btn');
+	const updateBioButton = document.getElementById('updateBio-btn');
 
 	async function showView(view) {
 		reg1.style.display = 'none';
@@ -373,6 +396,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await updateUsername(username);
 			
+		} catch (error) {
+			console.log('Error: ', error.detail);
+		}
+	});
+
+	updateBioButton.addEventListener('click', async function () {
+		const bio = document.getElementById('new-Bio').value;
+	
+		try {
+			const result = await updateBio(bio);
 		} catch (error) {
 			console.log('Error: ', error.detail);
 		}

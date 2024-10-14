@@ -5,5 +5,5 @@ urlpatterns = [
     path('home/', HomePageView.as_view(), name='home'),
     path('home/search-users/', SearchUserView.as_view(), name='search_users'),
     path('home/settings/updateuname/', UpdateUName.as_view(),name='update_uname'),
+    path('home/settings/updatebio/', UpdateBio.as_view(),name='update_bio')
 ]
-

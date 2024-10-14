@@ -86,3 +86,19 @@ class UpdateUName(generics.RetrieveAPIView):
         user_data = UserProfileSerializer(user=curr_user)
         return Response({'detail': 'Username changed'}, status=HTTP_200_OK)
 
+class UpdateBio(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        new_bio = request.data.get('bio')
+
+        if new_bio is None:
+            return Response({'detail': 'Bio empty'}, status=HTTP_400_BAD_REQUEST)
+
+        curr_user = request.user
+        curr_user.biography = new_bio
+        curr_user.save()
+
+        return Response({'detail': 'Bio changed',
+        'bio' : curr_user.bio}, status=HTTP_200_OK)
+
+    
