@@ -86,6 +86,30 @@ async function registerUser(username, password, email) {
 	return data;
 }
 
+async function updateUsername(uname) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updateuname/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			username: uname,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", response);
+		throw new Error(errorResponse.detail || 'Username Change failed');
+	}
+
+	const data = await response.json();
+	return data;
+}
+
+
 // This is the function that fetches user data on login
 async function loginUser(usernameOrEmail, password) {
 	const response = await fetch('http://localhost:8000/login/', {
@@ -188,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
+	const updateUsernameButton = document.getElementById('updateUsername-btn');
 
 	async function showView(view) {
 		reg1.style.display = 'none';
@@ -342,4 +367,14 @@ document.addEventListener('DOMContentLoaded', function () {
 		const hashView = location.hash.replace("#", "") || "login"; 
 		navigateTo(hashView);
 	};
+
+	updateUsernameButton.addEventListener('click', async function () {
+		const username = document.getElementById('new-username').value;
+		try {
+			const result = await updateUsername(username);
+			
+		} catch (error) {
+			console.log('Error: ', error.detail);
+		}
+	});
 });

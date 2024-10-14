@@ -66,3 +66,23 @@ class SearchUserView(generics.RetrieveAPIView):
             return Response({'user': serializer.data}, status=HTTP_200_OK)
         else:
             return Response({'user': None}, status=HTTP_200_OK)
+
+class UpdateUName(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        uname = request.data.get('username')
+
+        if uname is None:
+            return Response({'detail': 'Username empty'}, status=HTTP_400_BAD_REQUEST)
+
+        if UserProfile.objects.filter(username=uname).exists():
+            return Response({'detail': 'Username already in use'}, status=HTTP_400_BAD_REQUEST)
+        
+        curr_user = request.user
+        curr_user.username = uname
+        curr_user.save()
+
+        user_data = UserProfileSerializer(user=curr_user)
+        return Response({'detail': 'Username changed'}, status=HTTP_200_OK)
+
