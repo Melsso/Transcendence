@@ -148,7 +148,7 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Following error happened: ", response);
+		console.log("Following error happened: ", errorResponse.detail);
 		throw new Error(errorResponse.detail || 'Password Change failed');
 	}
 	const data = await response.json();
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainSettings.style.display = 'none';
 	mainSLgame.style.display = 'none';
 	mainPONGgame.style.display = 'none';
-
+	
 	const loginButton = document.getElementById('login');
 	const profileButton = document.getElementById('to-profile');
 	const registerButton = document.getElementById('register');
