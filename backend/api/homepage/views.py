@@ -131,4 +131,17 @@ class UpdatePwd(generics.RetrieveAPIView):
 
         return Response({'detail': 'Password changed'}, status=HTTP_200_OK)
 
-    
+# class UpdateMail(generics.RetrieveAPIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     def post(self, request, *args, **kwargs):
+#         new_mail = request.data.get('mail')
+
+#         if new_mail is None:
+#             return Response({'detail': 'mail empty'}, status=HTTP_400_BAD_REQUEST)
+#         # check if the mail is valide or already in use
+#         # check might add confirmation from the mail user
+#         curr_user = request.user
+#         curr_user.email = new_mail
+#         curr_user.save()
+
+#         return Response({'detail': 'Mail changed'}, status=HTTP_200_OK)
