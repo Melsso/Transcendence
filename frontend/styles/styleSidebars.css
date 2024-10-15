@@ -26,14 +26,30 @@
 	background-color: transparent; 
 }
 
-.dropdown {
-	/* position: absolute; */
-	/* right: 0; */
+.friend-request-container {
+	position: absolute;
+	right: 2%;
 	opacity: 0;
 	visibility: hidden;
 	transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
+.btn-request-yes {
+	background-color: #11c604b6;
+}
+
+.btn-request-no {
+	background-color: #b20101b3;
+}
+
+.dropdown {
+	position: absolute;
+	right: 0;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+#collapseOne.show .friend-request-container,
 #collapseOne.show .dropdown {
 	opacity: 1;
 	visibility: visible; 
@@ -42,7 +58,6 @@
 .dropdown-menu {
 	overflow-y: hidden !important;
 	min-width: 150px;
-	/* position: absolute; */
 }
 
 

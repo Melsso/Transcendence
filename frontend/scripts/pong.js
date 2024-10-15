@@ -35,14 +35,53 @@ const ball = {
     speed: 5,
     dx: 0,
     dy: 6
-    
 };
+
+const player1 = {name: 'player1', icon: '../frontend/assets/logo.jpg',  score: 0};
+const player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0};
+
+function firstRound(){
+    if (player1.score === 0 && player2.score === 0){
+        setTimeout(() => {
+            sbVisible = true;
+        }, 5000);
+    }
+    if (crossCount === 10)
+        sbVisible = false;
+}
+
+function ScoreBoardTracker(){
+    drawScoreBoard();
+}
+
+function drawScoreBoard() {
+    ctx.clearRect(0, 0, canvas.width, 50);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, canvas.width, 50);
+    const image1 = new Image();
+    const image2 = new Image();
+    image1.src = player1.icon;
+    image2.src = player2.icon;
+    
+
+       ctx.drawImage(image1, 10, 5, 40, 40);
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'white';
+        ctx.fillText('Player 1', 100, 30);
+        ctx.fillText(player1.score, 220, 30);
+
+        ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'white';
+        ctx.fillText('Player 2', canvas.width - 100, 30);
+        ctx.fillText(player2.score, canvas.width - 220, 30); 
+}
 
 let crossCount = 0;
 let sbVisible = false;
-let sbvFirstround = false;
 
 function drawSpeedBuff() {
+
     const rectWidth = 20;
     const rectHeight = 100;
     
@@ -71,19 +110,18 @@ function drawSpeedBuff() {
         crossCount += 1;
         console.log(`The ball has crossed the hue ${crossCount} times!`);
 
-        // Check if the ball has crossed twice
-        if (crossCount == 10) {
+        if (crossCount === 10) {
             console.log('The green hue has disappeared!');
             sbVisible = false;
         }
     }
 }
-let ResetTime;
-function startHueTimer() {
-    hueTimeout = setTimeout(() => {
-        sbvFirstround = true;
-    }, 5000);
-}
+let ResetTime = null;
+// function startHueTimer() {
+//     hueTimeout = setTimeout(() => {
+//         sbvFirstround = true;
+//     }, 5000);
+// }
 
 function Prediction() {
     let predictedY = ball.y;
@@ -151,10 +189,7 @@ function restartGame() {
     aiPaddle.y = canvas.height / 2 - aiPaddle.height / 2;
     crossCount = 0;
     sbVisible = false;
-    sbvFirstround = false;
-    setTimeout(() => {
-        sbVisible = true; // Set hue to visible
-    }, elapsedTime + 5000); // 5000 milliseconds = 5 seconds
+    ResetTime = null;
 }
 
 function drawTimer() {
@@ -162,6 +197,7 @@ function drawTimer() {
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
+    console.log(elapsedTime);
 }
 
 resizeCanvas();
@@ -211,13 +247,12 @@ function moveAIPaddlemid() {
 }
 
 function moveAIPaddleEasy() {
-    if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
-        aiPaddle.y -= aiPaddle.dy;
-    } else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
-        aiPaddle.y += aiPaddle.dy;
-    }
+    // if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
+        // aiPaddle.y -= aiPaddle.dy;
+    // } else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
+        // aiPaddle.y += aiPaddle.dy;
+    // }
 }
-
 function moveBall() {
     const elapsedTime = Date.now() - ResetTime;
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
@@ -264,14 +299,25 @@ function moveBall() {
         switchOffAI();
     }
 
-    if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+    if (ball.x - ball.radius < 0) {
+        player2.score++;
+        drawScoreBoard();
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
-        // gameStartTime = Date.now();
-        ResetTime = Date.now();
+        switchOnAI();
+        restartGame();
+    }
+    if (ball.x + ball.radius > canvas.width) {
+        player1.score++;
+        drawScoreBoard();
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx *= -1;
+        ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+        ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
         switchOnAI();
         restartGame();
     }
@@ -325,14 +371,17 @@ aibutton.addEventListener('click', function () {
 });
 
 function gameLoop(difficulty) {
-    if (!ResetTime) {
-        // Set ResetTime only when the game starts
+    if (!ResetTime)
         ResetTime = Date.now();
-    }
     ai_menu.style.display = 'none';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
-//    startHueTimer();
+    if (elapsedTime === 5) {
+        sbVisible = true;
+    }
+    
+    if (crossCount === 10)
+        sbVisible = false;
 
     drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
@@ -351,7 +400,8 @@ function gameLoop(difficulty) {
             moveAIPaddleHard();
             break;
     }
-
+    drawScoreBoard();
+    
     drawSpeedBuff();
     moveBall();
     drawTimer();
@@ -369,28 +419,28 @@ document.getElementById('return-to-menu-ai').addEventListener('click', () => {
     menu.style.display = 'flex';
 });
 
-function applyBlurEffect() {
-    const gameContainer = document.querySelector('.gameContainer');
+// function applyBlurEffect() {
+//     const gameContainer = document.querySelector('.gameContainer');
 
-    const mainTwo = document.getElementById('mainTwo');
-    const allElements = mainTwo.children;
+//     const mainTwo = document.getElementById('mainTwo');
+//     const allElements = mainTwo.children;
 
-    for (let i = 0; i < allElements.length; i++) {
-        if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
-            allElements[i].classList.add('blur-effect');
-        }
-    }
-}
+//     for (let i = 0; i < allElements.length; i++) {
+//         if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
+//             allElements[i].classList.add('blur-effect');
+//         }
+//     }
+// }
 
-function removeBlurEffect() {
-    const mainTwo = document.getElementById('mainTwo');
-    const allElements = mainTwo.children;
+// function removeBlurEffect() {
+//     const mainTwo = document.getElementById('mainTwo');
+//     const allElements = mainTwo.children;
 
-    for (let i = 0; i < allElements.length; i++) {
-        allElements[i].classList.remove('blur-effect');
-        allElements[i].classList.remove('no-blur');
-        allElements[i].style.zIndex = '';  // Reset z-index
-    }
-}
+//     for (let i = 0; i < allElements.length; i++) {
+//         allElements[i].classList.remove('blur-effect');
+//         allElements[i].classList.remove('no-blur');
+//         allElements[i].style.zIndex = '';  // Reset z-index
+//     }
+// }
 
-document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);
+// document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);

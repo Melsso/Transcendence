@@ -87,6 +87,97 @@ async function registerUser(username, password, email) {
 	return data;
 }
 
+async function updateUsername(uname) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updateuname/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			username: uname,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", response);
+		throw new Error(errorResponse.detail || 'Username Change failed');
+	}
+
+	const data = await response.json();
+	return data;
+}
+
+async function updateBio(biog) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updatebio/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			bio: biog,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", response);
+		throw new Error(errorResponse.detail || 'Bio Change failed');
+	}
+	const data = await response.json();
+	return data;
+}
+
+async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updatepwd/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			currentPwd: curr_pwd,
+			newPwd: new_pwd,
+			confirmedPwd: cfm_pwd,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", errorResponse.detail);
+		throw new Error(errorResponse.detail || 'Password Change failed');
+	}
+	const data = await response.json();
+	return data;
+}
+
+async function updateMail(new_mail) {
+	const access_token = localStorage.getItem('accessToken');
+	const url = 'http://localhost:8000/home/settings/updatemail/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			mail: new_mail,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log("Following error happened: ", response);
+		throw new Error(errorResponse.detail || 'Mail Change failed');
+	}
+	const data = await response.json();
+	return data;
+}
+
 // This is the function that fetches user data on login
 async function loginUser(usernameOrEmail, password) {
 	const response = await fetch('http://localhost:8000/login/', {
@@ -205,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainSettings.style.display = 'none';
 	mainSLgame.style.display = 'none';
 	mainPONGgame.style.display = 'none';
-
+	
 	const loginButton = document.getElementById('login');
 	const profileButton = document.getElementById('to-profile');
 	const registerButton = document.getElementById('register');
@@ -215,8 +306,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
+	const updateUsernameButton = document.getElementById('updateUsername-btn');
+	const updateBioButton = document.getElementById('updateBio-btn');
+	const updatePwdButton = document.getElementById('updatePwd-btn');
+	// const updateMailButton = document.getElementById('updateMail-btn');
 	const friendButton = document.getElementById('friend-list-btn');
 	const sendFriendRequestButton = document.getElementById('add-friend');
+
 
 	async function showView(view, data) {
 		reg1.style.display = 'none';
@@ -415,4 +511,46 @@ document.addEventListener('DOMContentLoaded', function () {
 		const hashView = location.hash.replace("#", "") || "login"; 
 		navigateTo(hashView, null);
 	};
+
+	updateUsernameButton.addEventListener('click', async function () {
+		const username = document.getElementById('new-username').value;
+		try {
+			const result = await updateUsername(username);
+			
+		} catch (error) {
+			console.log('Error: ', error.detail);
+		}
+	});
+
+	updateBioButton.addEventListener('click', async function () {
+		const bio = document.getElementById('new-Bio').value;
+	
+		try {
+			const result = await updateBio(bio);
+		} catch (error) {
+			console.log('Error: ', error.detail);
+		}
+	});
+
+	updatePwdButton.addEventListener('click', async function () {
+		const curr_pwd = document.getElementById('current-password').value;
+		const new_pwd = document.getElementById('new-password').value;
+		const cfm_pwd = document.getElementById('new-confirm-password').value;
+	
+		try {
+			const result = await updatePwd(curr_pwd, new_pwd, cfm_pwd);
+		} catch (error) {
+			console.log('Error: ', error.detail);
+		}
+	});
+
+	// updateMailButton.addEventListener('click', async function () {
+	// 	const new_mail = document.getElementById('new-email').value;
+	
+	// 	try {
+	// 		const result = await updateMail(new_mail);
+	// 	} catch (error) {
+	// 		console.log('Error: ', error.detail);
+	// 	}
+	// });
 });
