@@ -20,37 +20,51 @@ export async function getFriends() {
 
 	const data = await response.json();
 	return data;
-
 };
 
-export async function loadFriends(data) {
-	const results = data['friends'];
+export async function loadFriends(data, userid) {
 	const friendsListContainer = document.getElementById('friends-list');
 	friendsListContainer.innerHTML = '';
-	if (results && results.length > 0){
-		results.forEach(res =>{
-			const user = res.friend_data;
+	
+	const results = data['friends'];
+	if (results && results.length > 0) {
+		results.forEach(res => {
+			// var user_data;
+			var friend_data;
+			const status = res.status;
+			if (userid === res.user_data.id && status === 'PENDING') {
+				return ;
+			} else {
+				// user_data = res.friend_data;
+				friend_data = res.user_data;
+			}
+			if (userid === res.user_data.id && status === 'FRIENDS') {
+				friend_data = res.friend_data;
+			}
+			const fid = res.id;
+			// Creating the friend Div
 			const FriendDiv = document.createElement('div');
 			FriendDiv.className = 'd-flex align-items-center mb-3';
-			FriendDiv.id = user.id;
+			FriendDiv.id = friend_data.id;
+			FriendDiv.setAttribute('Friendship_id', fid);
+
+			// Creating the image link
 			const avatarImg = document.createElement('img');
-			avatarImg.src = user.avatar;
-			avatarImg.alt = user.username;
+			avatarImg.src = friend_data.avatar;
+			avatarImg.alt = friend_data.username;
 			avatarImg.className = 'rounded-circle me-3';
 			avatarImg.style.width = '50px';
 			avatarImg.style.height = '50px';
-
-
 
 			const nameDropdownDiv = document.createElement('div');
 			nameDropdownDiv.className = 'd-flex justify-content-between w-100';
 
 			const nameSpan = document.createElement('div');
 			nameSpan.className = 'fw-bold';
-			nameSpan.textContent = user.username;
+			nameSpan.textContent = friend_data.username;
 			nameDropdownDiv.appendChild(nameSpan);
 			
-			if (user.status === 'FRIENDS') {
+			if (status === 'FRIENDS') {
 				const friendRequestContainer = document.getElementById('friend-request-container');
 				if (friendRequestContainer) {
 				    friendRequestContainer.remove();
@@ -59,8 +73,8 @@ export async function loadFriends(data) {
 				const dropdownDiv = document.createElement('div');
 				dropdownDiv.className = 'dropdown dropend';
 	
-				const uniqueDropdownId = `dropdownMenuButton${user.id}`;
-				const uniqueDropdownMenuId = `dropDownMenu${user.id}`;
+				const uniqueDropdownId = `dropdownMenuButton${friend_data.id}`;
+				const uniqueDropdownMenuId = `dropDownMenu${friend_data.id}`;
 	
 				const dropdownButton = document.createElement('button');
 				dropdownButton.className = 'btn btn-friends';
@@ -80,6 +94,10 @@ export async function loadFriends(data) {
 					a.className = 'dropdown-item';
 					a.href = '#';
 					a.textContent = action;
+					a.addEventListener('click', (event) => {
+						event.preventDefault();
+						handleAction(action, friend_data.id, userid);
+					});
 					li.appendChild(a);
 					dropdownMenu.appendChild(li);
 				});
@@ -87,52 +105,56 @@ export async function loadFriends(data) {
 				dropdownDiv.appendChild(dropdownButton);
 				dropdownDiv.appendChild(dropdownMenu);
 				nameDropdownDiv.appendChild(dropdownDiv);
-				}
-				if (user.status === 'PENDING') {
-					const friendRequestContainer = document.createElement('div');
-					friendRequestContainer.className = 'friend-request-container';	
-					const refuseButton = document.createElement('button');
-					refuseButton.id = 'no-btn'
-					refuseButton.setAttribute('user_id', user.id);
-					refuseButton.type = 'button';
-					refuseButton.className = 'btn btn-request-no';
-					refuseButton.innerHTML = '&#10005;';
-					const acceptButton = document.createElement('button');
-					acceptButton.id = 'yes-btn';
-					acceptButton.setAttribute('user_id', user.id);
-					acceptButton.type = 'button';
-					acceptButton.className = 'btn btn-request-yes';
-					acceptButton.innerHTML = '&#10003;'; 
-					friendRequestContainer.appendChild(refuseButton);
-					friendRequestContainer.appendChild(acceptButton);
+			}
+			if (status === 'PENDING') {
+				const friendRequestContainer = document.createElement('div');
+				friendRequestContainer.className = 'friend-request-container';	
+				const refuseButton = document.createElement('button');
+				refuseButton.id = 'no-btn'
+				refuseButton.setAttribute('user_id', friend_data.id);
+				refuseButton.type = 'button';
+				refuseButton.className = 'btn btn-request-no';
+				refuseButton.innerHTML = '&#10005;';
+				const acceptButton = document.createElement('button');
+				acceptButton.id = 'yes-btn';
+				acceptButton.setAttribute('user_id', friend_data.id);
+				acceptButton.type = 'button';
+				acceptButton.className = 'btn btn-request-yes';
+				acceptButton.innerHTML = '&#10003;'; 
+				friendRequestContainer.appendChild(refuseButton);
+				friendRequestContainer.appendChild(acceptButton);
+				FriendDiv.appendChild(friendRequestContainer);
 				
-					refuseButton.addEventListener('click', async function () {
-						const nature = 'refuse';
+				refuseButton.addEventListener('click', async function () {
+					const nature = 'refuse';
 
-						try {
-							const result = await respondFriendRequest(user.id, nature);
-							console.log('Performed: ', nature);
+					try {
+						const result = await respondFriendRequest(friend_data.id, nature);
+						const r1 = await getFriends();
+						loadFriends(r1, userid);
+
+					} catch (error) {
+							alert('Error: 1', error.detail);
+					}
+				});
+
+				acceptButton.addEventListener('click', async function () {
+					const nature = 'accept';
+
+					try {
+						const result = await respondFriendRequest(friend_data.id, nature);
+						const r1 = await getFriends();
+						loadFriends(r1, userid);
 						} catch (error) {
-							alert('Error: ', error.detail);
+							alert('Error: 2', error.detail);
 						}
 					});
-
-					acceptButton.addEventListener('click', async function () {
-						const nature = 'accept';
-
-						try {
-							const result = await respondFriendRequest(user.id, nature);
-							console.log('Performed: ', nature);
-						} catch (error) {
-							alert('Error: ', error.detail);
-						}
-					});
-				}
+			}
 			FriendDiv.appendChild(avatarImg);
 			FriendDiv.appendChild(nameDropdownDiv);
 			friendsListContainer.appendChild(FriendDiv);
 		});
-	}else {
+	} else {
 		const FriendDiv = document.createElement('div');
 		FriendDiv.className = 'd-flex align-items-center mb-3';
 		FriendDiv.id = 'aaaa';
@@ -142,6 +164,30 @@ export async function loadFriends(data) {
 		friendsListContainer.appendChild(FriendDiv);
 	}
 };
+
+async function handleAction(action, targetId, userid) {
+	switch(action) {
+		case 'Unfriend':
+			try {
+				const nature = 'delete';
+				const res = await respondFriendRequest(targetId, nature);
+				const r1 = await getFriends();
+				loadFriends(r1, userid);
+			} catch (error) {
+				alert('Error: ', error.detail);
+			}
+			break;
+		case 'Send a Message':
+			console.log("Sending msg");
+			break;
+		case 'View Profile':
+			console.log('Profile call');
+			break;
+		case 'Invite To Game':
+			console.log('hhhhhh');
+			break;
+	}
+}
 
 async function respondFriendRequest(targetId, nature) {
 	const access_token = localStorage.getItem('accessToken');
@@ -161,7 +207,6 @@ async function respondFriendRequest(targetId, nature) {
 			nature: nature,
 		}),
 	});
-
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		throw new Error(errorResponse);

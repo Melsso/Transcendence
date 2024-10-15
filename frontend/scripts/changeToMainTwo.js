@@ -246,7 +246,7 @@ async function logoutUser() {
 	}
 	else {
 		const errorResponse = await response.json();
-		throw new Error (errorResponse);
+		throw new Error (errorResponse.detail);
 	}
 }
 
@@ -435,9 +435,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			await logoutUser();
-			console.log('Logged out successfuly');
+			console.log("User logging out...");
 		} catch (error) {
-			console.log('Error: ', error.detail);
+			console.log('Error: ', error);
 		}
 
 		document.getElementById('register-form-container').style.display = 'none';
@@ -466,17 +466,16 @@ document.addEventListener('DOMContentLoaded', function () {
 	friendButton.addEventListener('click', async function () {
 		try {
 			const result = await getFriends();
-			loadFriends(result);
+			loadFriends(result, userData.id);
 
 		} catch (error) {
-			console.log("Error: ", error.message);
+			console.log("Error: ", error.detail);
 		}
 	});
 
 	sendFriendRequestButton.addEventListener('click', async function () {
 		const target = document.getElementById('username');
 		const target_id = target.getAttribute('user_id');
-		console.log(target_id, '<----');
 		try {
 	
 			const result = await sendFriendRequest(target_id);

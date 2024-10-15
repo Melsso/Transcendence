@@ -72,12 +72,22 @@ class FriendRequestManager(generics.ListAPIView):
         if nature is None:
             return Response({'detail':'No action provided'}, status=HTTP_400_BAD_REQUEST)
 
+        if nature == 'delete':
+            friend_entry = get_object_or_404(
+                Friend,
+                Q(user=target_id, friend=user) | Q(user=user, friend=target_id),
+                status='FRIENDS'
+            )
+            friend_entry.delete()
+            return Response(status=HTTP_200_OK)
+
         friend_request = get_object_or_404(Friend, user=target_id, friend=user, status='PENDING')
 
         if nature == 'accept':
             friend_request.status = 'FRIENDS'
             friend_request.save()
             return Response({'detail': 'Friend Request Accepted!'}, status=HTTP_200_OK)
+
         if nature == 'refuse':
             friend_request.delete()
-            return Response({'detail': 'Friend request refused!'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'Friend request refused!'}, status=HTTP_200_OK)
