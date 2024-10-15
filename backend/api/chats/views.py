@@ -21,8 +21,12 @@ class FriendListView(generics.ListAPIView):
     serializer_class = FriendSerializer
 
     def get_queryset(self):
-        return Friend.objects.filter(user=self.request.user, status__in=['FRIENDS', 'PENDING'])
-    
+        user = self.request.user
+        friends = Friend.objects.filter(user=user, status='FRIENDS') | Friend.objects.filter(friend=user, status='FRIENDS')
+        friend_requests = Friend.objects.filter(friend=user, status='PENDING')
+
+        return friends.union(friend_requests)
+
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
