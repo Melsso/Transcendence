@@ -13,5 +13,5 @@ class FriendSerializer(serializers.ModelSerializer):
             'id': obj.friend.id,
             'username': obj.friend.username,
             'avatar': obj.friend.avatar.url if obj.friend.avatar else None,
-            'bio': obj.friend.bio
+            'status': obj.status
         }

@@ -161,6 +161,33 @@ async function logoutUser() {
 	}
 }
 
+async function sendFriendRequest(targetId) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error('User is not authenticated');
+	}
+	const url = 'http://localhost:8000/FriendRequestManager/';
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			target_id: targetId,
+		}),
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log('Errmsg: ', errorResponse, " sinon: ", errorResponse.detail);
+		throw new Error(errorResponse);
+	}
+	const data = await response.json();
+	return data;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 	const reg1 = document.getElementById('register-form-container');
     const log1 = document.getElementById('login-form-container');
@@ -189,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
 	const friendButton = document.getElementById('friend-list-btn');
+	const sendFriendRequestButton = document.getElementById('add-friend');
 
 	async function showView(view, data) {
 		reg1.style.display = 'none';
@@ -210,14 +238,11 @@ document.addEventListener('DOMContentLoaded', function () {
 				if (data === null) {
 					const result = await homepageData();
 					const addFriendBtn = document.getElementById('add-friend');
-					console.log('kasud', addFriendBtn);
-					console.log('salam');
 					addFriendBtn.style.display = 'none';
 					loadProfile(result);
 				}
 				else {
 					const calleruser = data['user'];
-					console.log(calleruser);
 					if (userData["username"] !== calleruser['username']) {
 						const addFriendBtn = document.getElementById('add-friend');
 						addFriendBtn.style.display = 'flex';
@@ -317,7 +342,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	logoutButton.addEventListener('click', async function () {
 
-		// await logoutUser();
+		try {
+			await logoutUser();
+			console.log('Logged out successfuly');
+		} catch (error) {
+			console.log('Error: ', error.detail);
+		}
 
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
@@ -352,6 +382,19 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
+	sendFriendRequestButton.addEventListener('click', async function () {
+		const target = document.getElementById('username');
+		const target_id = target.getAttribute('user_id');
+		console.log(target_id, '<----');
+		try {
+	
+			const result = await sendFriendRequest(target_id);
+			alert('Friend Request Sent!');
+		} catch (error) {
+			console.log("Error: ", error.detail);
+		}
+	});
+	
 	settingButton.addEventListener('click', function () {
 		navigateTo('settings', null); 
 	});
