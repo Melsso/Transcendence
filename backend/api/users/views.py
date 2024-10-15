@@ -174,10 +174,12 @@ class LogoutView(generics.GenericAPIView):
     
     def post(self, request):
         try:
-            refresh_token = request.data["refresh"]
+            refresh_token = request.data.get("refresh")
+            if refresh_token is None:
+                return Response({'detail': "No refresh token"}, status=HTTP_400_BAD_REQUEST)
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-            return Response(status=HTTP_205_RESET_CONTENT)
+            return Response({'detail': 'Logout successful'}, status=HTTP_205_RESET_CONTENT)
         except Exception as e:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response({'detail': str(e)}, status=HTTP_400_BAD_REQUEST)
