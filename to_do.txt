@@ -28,13 +28,9 @@ MINOR:
 
 
 GAME 1:
-attacks: you can choose from two main attack styles, cd will be 10 seconds on both (classes)
-		1 - Breaker: you break the Opponent's paddle if u hit him for 5 seconds.
-		2 - Freezer: you freeze the oppponent's paddle if u hit him for 2 seconds.
 power-ups/debufs: they will spawn ranodmly in the game, if you're the one who touches the power-up with the ball the power-up will activate:
 		1 - you slow they oppponent's movment by 30% for 3 seconds.
 		2 - the ball becomes smaller for 3 seconds.
-		3 - mirror: reflect enemy's attack for the next 5 seconds.
 		4 - makes your paddle longer
 		5 - makes your paddle smller
 		

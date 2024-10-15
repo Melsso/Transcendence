@@ -51,7 +51,10 @@ export async function loadFriends(data) {
 			nameDropdownDiv.appendChild(nameSpan);
 			
 			if (user.status === 'FRIENDS') {
-
+				const friendRequestContainer = document.getElementById('friend-request-container');
+				if (friendRequestContainer) {
+				    friendRequestContainer.remove();
+				}
 				const actions = ['View Profile', 'Send a Message', 'Unfriend', 'Invite To Game'];
 				const dropdownDiv = document.createElement('div');
 				dropdownDiv.className = 'dropdown dropend';
@@ -80,25 +83,30 @@ export async function loadFriends(data) {
 					li.appendChild(a);
 					dropdownMenu.appendChild(li);
 				});
-				nameDropdownDiv.innerHTML = '';
 				nameDropdownDiv.appendChild(nameSpan);
 				dropdownDiv.appendChild(dropdownButton);
 				dropdownDiv.appendChild(dropdownMenu);
 				nameDropdownDiv.appendChild(dropdownDiv);
 				}
 				if (user.status === 'PENDING') {
-					const yes = document.createElement('button');
-					const no = document.createElement('button');
-					yes.className = 'btn btn-primary';
-					yes.id = 'yes-btn';
-					no.id = 'no-btn';
-					yes.textContent = 'Accept';
-					no.textContent = 'Refuse';
-					no.className = 'btn btn-danger';
-					nameDropdownDiv.appendChild(no);
-					nameDropdownDiv.appendChild(yes);
+					const friendRequestContainer = document.createElement('div');
+					friendRequestContainer.className = 'friend-request-container';	
+					const refuseButton = document.createElement('button');
+					refuseButton.id = 'no-btn'
+					refuseButton.setAttribute('user_id', user.id);
+					refuseButton.type = 'button';
+					refuseButton.className = 'btn btn-request-no';
+					refuseButton.innerHTML = '&#10005;';
+					const acceptButton = document.createElement('button');
+					acceptButton.id = 'yes-btn';
+					acceptButton.setAttribute('user_id', user.id);
+					acceptButton.type = 'button';
+					acceptButton.className = 'btn btn-request-yes';
+					acceptButton.innerHTML = '&#10003;'; 
+					friendRequestContainer.appendChild(refuseButton);
+					friendRequestContainer.appendChild(acceptButton);
 				
-					no.addEventListener('click', async function () {
+					refuseButton.addEventListener('click', async function () {
 						const nature = 'refuse';
 
 						try {
@@ -109,7 +117,7 @@ export async function loadFriends(data) {
 						}
 					});
 
-					yes.addEventListener('click', async function () {
+					acceptButton.addEventListener('click', async function () {
 						const nature = 'accept';
 
 						try {
@@ -119,13 +127,7 @@ export async function loadFriends(data) {
 							alert('Error: ', error.detail);
 						}
 					});
-
-
-
 				}
-				
-				
-			// nameDropdownDiv.appendChild(dropdownDiv);
 			FriendDiv.appendChild(avatarImg);
 			FriendDiv.appendChild(nameDropdownDiv);
 			friendsListContainer.appendChild(FriendDiv);
