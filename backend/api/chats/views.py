@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from rest_framework import generics, permissions
@@ -13,6 +14,7 @@ from rest_framework.status import (
 
 from .models import Friend
 from .serializers import FriendSerializer
+from users.serializers import UserProfileSerializer
 # Create your views here.
 User = get_user_model()
 
@@ -22,7 +24,11 @@ class FriendListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        friends = Friend.objects.filter(user=user, status='FRIENDS') | Friend.objects.filter(friend=user, status='FRIENDS')
+        
+        friends = Friend.objects.filter(status='FRIENDS').filter(
+            Q(user=user) | Q(friend=user)
+        )
+
         friend_requests = Friend.objects.filter(friend=user, status='PENDING')
 
         return friends.union(friend_requests)

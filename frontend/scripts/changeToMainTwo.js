@@ -246,9 +246,7 @@ async function logoutUser() {
 	}
 	else {
 		const errorResponse = await response.json();
-		alert('Logout failed: ${errorResponse}');
-
-		// here will have to handle depending on error encountered, probably redirect to login anyway
+		throw new Error (errorResponse);
 	}
 }
 
@@ -333,19 +331,16 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
-					const addFriendBtn = document.getElementById('add-friend');
-					addFriendBtn.style.display = 'none';
+					sendFriendRequestButton.style.display = 'none';
 					loadProfile(result);
 				}
 				else {
 					const calleruser = data['user'];
 					if (userData["username"] !== calleruser['username']) {
-						const addFriendBtn = document.getElementById('add-friend');
-						addFriendBtn.style.display = 'flex';
+						sendFriendRequestButton.style.display = 'flex';
 					}
 					else {
-						const addFriendBtn = document.getElementById('add-friend');
-						addFriendBtn.style.display = 'none';
+						sendFriendRequestButton.style.display = 'none';
 					}
 					
 					loadProfile(data);
