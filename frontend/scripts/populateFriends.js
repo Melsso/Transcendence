@@ -1,11 +1,14 @@
+let baseUrl = 'http://10.11.5.17:80/';
+// let baseUrl = 'http://localhost:80/';
+
+
 export async function getFriends() {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
 
-	const url = `http://localhost:8000/friends/`
-
+	const url = baseUrl + 'api/friends/'
 	const response = await fetch(url, {
 		method: 'GET',
 		headers: {
@@ -15,7 +18,7 @@ export async function getFriends() {
 	});
 	if (!response.ok){
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail || "Friend List error");
+		throw new Error(errorResponse || "Friend List error");
 	}
 
 	const data = await response.json();
@@ -174,7 +177,10 @@ async function handleAction(action, targetId, userid) {
 				const r1 = await getFriends();
 				loadFriends(r1, userid);
 			} catch (error) {
-				alert('Error: ', error.detail);
+				alert('Error: ', error);
+				if (error.detail) {
+					alert('Error details: ', error.detail);
+				}
 			}
 			break;
 		case 'Send a Message':
@@ -194,8 +200,7 @@ async function respondFriendRequest(targetId, nature) {
 	if (!access_token) {
 		throw new Error('User is not authenticated');
 	}
-	const url = 'http://localhost:8000/FriendRequestManager/';
-	
+	const url = baseUrl + 'api/FriendRequestManager/';
 	const response = await fetch(url, {
 		method: 'PUT',
 		headers: {

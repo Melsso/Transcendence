@@ -79,7 +79,7 @@ class FriendRequestManager(generics.ListAPIView):
                 status='FRIENDS'
             )
             friend_entry.delete()
-            return Response(status=HTTP_200_OK)
+            return Response({'detail': 'Friend Deleted'}, status=HTTP_200_OK)
 
         friend_request = get_object_or_404(Friend, user=target_id, friend=user, status='PENDING')
 

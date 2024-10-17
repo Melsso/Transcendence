@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['0.0.0.0',
     'localhost',
     '127.0.0.1',
     'backend',
+    '10.11.5.17',
 ]
 
 LOGGING = {

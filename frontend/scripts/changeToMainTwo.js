@@ -5,7 +5,8 @@ let userData = {};
 
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
-
+const baseUrl = 'http://10.11.5.17:80/';
+// let baseUrl = 'http://localhost:80/';
 
 // This is the function that fetches user data on homepage access
 async function homepageData() {
@@ -16,8 +17,8 @@ async function homepageData() {
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
-
-	const response = await fetch('http://localhost:8000/home/', {
+	const url = baseUrl + 'api/home/';
+	const response = await fetch(url, {
 		method: 'GET',
 		headers: {
 			'Authorization': `Bearer ${access_token}`,
@@ -43,8 +44,7 @@ async function userLookUp(searchTerm) {
 		throw new Error("No access token found.");
 	}
 
-	const url = `http://localhost:8000/home/search-users/?search-user-input=${encodeURIComponent(searchTerm)}`;
-
+	const url = baseUrl + `api/home/search-users/?search-user-input=${encodeURIComponent(searchTerm)}`;
 	const response = await fetch(url, {
 		method: 'GET',
 		headers: {
@@ -65,7 +65,8 @@ async function userLookUp(searchTerm) {
 
 // This is the function that fetches user data on register
 async function registerUser(username, password, email) {
-	const response = await fetch('http://localhost:8000/register/', {
+	const url = baseUrl + 'api/register/';
+	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -80,7 +81,7 @@ async function registerUser(username, password, email) {
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		console.log("Following error happened: ", response);
-		throw new Error(errorResponse.detail || 'Registration failed');
+		throw new Error(errorResponse || 'Registration failed');
 	}
 
 	const data = await response.json();
@@ -89,7 +90,12 @@ async function registerUser(username, password, email) {
 
 async function updateUsername(uname) {
 	const access_token = localStorage.getItem('accessToken');
-	const url = 'http://localhost:8000/home/settings/updateuname/';
+	if (!access_token) {
+		console.log('No access Token!');
+		return ;
+	}
+
+	const url = baseUrl + 'api/home/settings/updateuname/';
 	const response = await fetch (url, {
 		method: 'POST',
 		headers: {
@@ -112,7 +118,11 @@ async function updateUsername(uname) {
 
 async function updateBio(biog) {
 	const access_token = localStorage.getItem('accessToken');
-	const url = 'http://localhost:8000/home/settings/updatebio/';
+	if (!access_token) {
+		console.log("No access Token!");
+		return ;
+	}
+	const url = baseUrl + 'api/home/settings/updatebio/';
 	const response = await fetch (url, {
 		method: 'POST',
 		headers: {
@@ -134,7 +144,11 @@ async function updateBio(biog) {
 
 async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 	const access_token = localStorage.getItem('accessToken');
-	const url = 'http://localhost:8000/home/settings/updatepwd/';
+	if (!access_token) {
+		console.log("No access Token");
+		return ;
+	}
+	const url = baseUrl + 'api/home/settings/updatepwd/';
 	const response = await fetch (url, {
 		method: 'POST',
 		headers: {
@@ -158,7 +172,11 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 
 async function updateMail(new_mail) {
 	const access_token = localStorage.getItem('accessToken');
-	const url = 'http://localhost:8000/home/settings/updatemail/';
+	if (!access_token) {
+		console.log('No access Token');
+		return ;
+	}
+	const url = baseUrl + 'api/home/settings/updatemail/';
 	const response = await fetch (url, {
 		method: 'POST',
 		headers: {
@@ -180,7 +198,8 @@ async function updateMail(new_mail) {
 
 // This is the function that fetches user data on login
 async function loginUser(usernameOrEmail, password) {
-	const response = await fetch('http://localhost:8000/login/', {
+	const url = baseUrl + 'api/login/';
+	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -202,7 +221,8 @@ async function loginUser(usernameOrEmail, password) {
 
 // This is the function that fetches user data on email verification step
 async function verifyEmail(verification_code, email) {
-	const response = await fetch('http://localhost:8000/verify-code/', {
+	const url = baseUrl + 'api/verify-code/';
+	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -225,9 +245,18 @@ async function verifyEmail(verification_code, email) {
 // This is the function that will make sure the tokens are removed in the backend and front
 async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
+	if (!refresh_token) {
+		console.log('No refresh Token');
+		return ;
+	}
 	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		console.log('No access Token');
+		return ;
+	}
 
-	const response = await fetch('http://localhost:8000/logout/', {
+	const url = baseUrl + 'api/logout/';
+	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
 			'Authorization': `Bearer ${access_token}`,
@@ -255,8 +284,8 @@ async function sendFriendRequest(targetId) {
 	if (!access_token) {
 		throw new Error('User is not authenticated');
 	}
-	const url = 'http://localhost:8000/FriendRequestManager/';
 
+	const url = baseUrl + 'api/FriendRequestManager/';
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -270,7 +299,6 @@ async function sendFriendRequest(targetId) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log('Errmsg: ', errorResponse, " sinon: ", errorResponse.detail);
 		throw new Error(errorResponse);
 	}
 	const data = await response.json();
@@ -409,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('register-form-container').style.display = 'none';
 			document.getElementById('second-reg-container').style.display = 'block';
 		} catch (error) {
-			alert('Registration error: ${error.message}');
+			alert('Registration error: ${error}');
 
 			// We update the things we need to render
 			document.getElementById('login-form-container').style.display = 'none';

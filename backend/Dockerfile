@@ -1,5 +1,4 @@
 FROM --platform=$BUILDPLATFORM python:3.10-alpine AS builder
-EXPOSE 8000
 WORKDIR /app
 
 RUN apk update && apk add --no-cache \

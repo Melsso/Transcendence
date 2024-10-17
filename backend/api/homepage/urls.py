@@ -3,10 +3,10 @@ from .views import HomePageView, SearchUserView, UpdateUName, UpdateBio, UpdateP
 # from .views import HomePageView, SearchUserView, UpdateUName, UpdateBio, UpdatePwd, UpdateMail
 
 urlpatterns = [
-    path('home/', HomePageView.as_view(), name='home'),
-    path('home/search-users/', SearchUserView.as_view(), name='search_users'),
-    path('home/settings/updateuname/', UpdateUName.as_view(),name='update_uname'),
-    path('home/settings/updatebio/', UpdateBio.as_view(),name='update_bio'),
-    path('home/settings/updatepwd/', UpdatePwd.as_view(),name='update_pwd')
+    path('api/home/', HomePageView.as_view(), name='home'),
+    path('api/home/search-users/', SearchUserView.as_view(), name='search_users'),
+    path('api/home/settings/updateuname/', UpdateUName.as_view(),name='update_uname'),
+    path('api/home/settings/updatebio/', UpdateBio.as_view(),name='update_bio'),
+    path('api/home/settings/updatepwd/', UpdatePwd.as_view(),name='update_pwd')
     # ,path('home/settings/updatemail/', UpdateMail.as_view(),name='update_mail')
 ]
