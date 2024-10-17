@@ -12,6 +12,8 @@ from rest_framework.status import (
 )
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
 from .utils import generate_verification_code
 from .models import UserProfile
@@ -174,10 +176,14 @@ class LogoutView(generics.GenericAPIView):
     
     def post(self, request):
         try:
-            refresh_token = request.data["refresh"]
+            refresh_token = request.data.get("refresh")
+            if refresh_token is None:
+                return Response({'detail': "No refresh token"}, status=HTTP_400_BAD_REQUEST)
             token = RefreshToken(refresh_token)
             token.blacklist()
 
             return Response(status=HTTP_205_RESET_CONTENT)
+        except TokenError as e:
+            return Response({'detail': str(e)}, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response({'detail': str(e)}, status=HTTP_400_BAD_REQUEST)

@@ -5,8 +5,8 @@ export function loadProfile(requestData) {
         user = requestData['user'];
         
         const profileUsername = document.getElementById('username');
-        profileUsername.textContent = user.username;
-        
+        profileUsername.textContent = user['username'];
+        profileUsername.setAttribute('user_id', user.id);
         const bio = document.getElementById('profile-bio');
         bio.textContent = user.biography;
         

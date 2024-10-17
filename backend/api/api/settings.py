@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['0.0.0.0',
     'localhost',
     '127.0.0.1',
     'backend',
+    '10.11.5.17',
 ]
 
 LOGGING = {
@@ -76,6 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'channels',
     'users',
