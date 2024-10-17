@@ -70,6 +70,9 @@ function Notification(title, message, type) {
         case 'message':
             header.style.backgroundColor = 'rgba(25, 110, 238, 0.5)';
             break;
+        case 'profile':
+            header.style.backgroundColor = 'rgba(230, 230, 38, 0.5)';
+            break;
         default:
             break;
     }

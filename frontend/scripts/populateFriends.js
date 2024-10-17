@@ -135,9 +135,9 @@ export async function loadFriends(data, userid) {
 						const result = await respondFriendRequest(friend_data.id, nature);
 						const r1 = await getFriends();
 						loadFriends(r1, userid);
-
+						Notification('Friend Action', `You refused a friend request from ${friend_data.username}!`, 'request');
 					} catch (error) {
-							alert('Error: 1', error.detail);
+						Notification('Friend Action ERROR', `the following error has occured ${error}`,'alert');
 					}
 				});
 
@@ -148,8 +148,9 @@ export async function loadFriends(data, userid) {
 						const result = await respondFriendRequest(friend_data.id, nature);
 						const r1 = await getFriends();
 						loadFriends(r1, userid);
+						Notification('Friend Action', `You Accepted a friend request from ${friend_data.username}!`, 'request');
 						} catch (error) {
-							alert('Error: 2', error.detail);
+							Notification('Friend Action ERROR', `the following error has occured ${error}`,'alert');
 						}
 					});
 			}
@@ -176,11 +177,9 @@ async function handleAction(action, targetId, userid) {
 				const res = await respondFriendRequest(targetId, nature);
 				const r1 = await getFriends();
 				loadFriends(r1, userid);
+				Notification('Friend Action', 'You have deleted a friend!', 'request');
 			} catch (error) {
-				alert('Error: ', error);
-				if (error.detail) {
-					alert('Error details: ', error.detail);
-				}
+					Notification('Friend Action ERROR', `the following error has occured ${error}`,'alert');
 			}
 			break;
 		case 'Send a Message':

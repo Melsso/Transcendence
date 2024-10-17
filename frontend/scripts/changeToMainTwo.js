@@ -66,6 +66,7 @@ async function userLookUp(searchTerm) {
 // This is the function that fetches user data on register
 async function registerUser(username, password, email) {
 	const url = baseUrl + 'api/register/';
+	console.log(url);
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -417,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			// We redirect to home page
 			navigateTo('profile', null);
 		} catch (error) {
-			alert('Login error: ${error.message}');
+			Notification('Profile Action', `Failed to login because: ${error}`, 'alert');
 		}
 	});
 
@@ -430,14 +431,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await registerUser(username, password, email);
 			// Here we get the email that we need for the verification step
 			userEmail = result.user_email;
-			alert('Registration successful.');
+			Notification('Profile Action', 'Registration Successful', 'profile');
 
 			// We update the things we need to render
 			document.getElementById('login-form-container').style.display = 'none';
 			document.getElementById('register-form-container').style.display = 'none';
 			document.getElementById('second-reg-container').style.display = 'block';
 		} catch (error) {
-			alert('Registration error: ${error}');
+			Notification('Profile Action', `Failed to Register because: ${error}`, 'alert');
 
 			// We update the things we need to render
 			document.getElementById('login-form-container').style.display = 'none';
@@ -454,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await verifyEmail(verification_code, userEmail);
 			navigateTo('login', null);
 		} catch (error) {
-			alert('Registration error:, ${error.message}');
+			Notification('Profile Action', `Failed to verify email because: ${error}`, 'alert');
 			navigateTo('register', null); 
 		}
 	});
@@ -463,9 +464,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			await logoutUser();
-			console.log("User logging out...");
 		} catch (error) {
-			console.log('Error: ', error);
+			Notification('Profile Action', `Failed to logout because: ${error}`, 'alert');
 		}
 
 		document.getElementById('register-form-container').style.display = 'none';
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				navigateTo('profile', result);
 			}
 			else {
-				alert('No such user');
+				Notification('Search', 'No such user found!', 'alert');
 			}
 		} catch (error) {
 			console.log("Error: ", error.message);
@@ -507,9 +507,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 	
 			const result = await sendFriendRequest(target_id);
-			alert('Friend Request Sent!');
+			Notification('Friend Action', 'You have sent a friend request!', 'request');
 		} catch (error) {
-			console.log("Error: ", error.detail);
+			Notification('Friend Action', `Friend Request Failed because: ${error}`, 'alert');
 		}
 	});
 	
@@ -538,9 +538,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		const username = document.getElementById('new-username').value;
 		try {
 			const result = await updateUsername(username);
-			
+			Notification('Profile Action', 'You have updated your username!', 'profile');
 		} catch (error) {
-			console.log('Error: ', error.detail);
+			Notification('Profile Action', `Failed to change Username because: ${error}`, 'alert');
 		}
 	});
 
@@ -549,8 +549,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 		try {
 			const result = await updateBio(bio);
+			Notification('Profile Action', 'You have updated your bio!', 'profile');
 		} catch (error) {
-			console.log('Error: ', error.detail);
+			Notification('Profile Action', `Failed to change bio because: ${error}`, 'alert');
 		}
 	});
 
@@ -561,8 +562,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 		try {
 			const result = await updatePwd(curr_pwd, new_pwd, cfm_pwd);
+			Notification('Profile Action', 'You have updated your password!', 'profile');
 		} catch (error) {
-			console.log('Error: ', error.detail);
+			cNotification('Profile Action', `Failed to change password because: ${error}`, 'alert');
 		}
 	});
 
