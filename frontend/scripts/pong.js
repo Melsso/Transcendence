@@ -249,6 +249,8 @@ function drawBall(x, y, radius) {
     ctx.closePath();
 }
 
+window.gameover = false;
+
 function gameLoop(difficulty) {
     if (!ResetTime)
         ResetTime = Date.now();
@@ -292,7 +294,9 @@ function gameLoop(difficulty) {
     moveBall();
     window.drawTimer();
     console.log(ball.dy)
-
+    window.gameOverScreen();
+    if (gameover)
+        return;
     requestAnimationFrame(() => gameLoop(difficulty));
 }
 

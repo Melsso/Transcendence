@@ -1,5 +1,8 @@
 const player1 = {name: 'player1', icon: '../frontend/assets/logo.jpg',  score: 0};
 const player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0};
+const play_again = document.getElementById('playAgain');
+const	change_difficulty = document.getElementById('diffy');
+const	backtomain = document.getElementById('goodbye')
 
 window.buff = {
 	x: 0,
@@ -230,12 +233,66 @@ function moveAIPaddlemid() {
 }
 
 function moveAIPaddleEasy() {
-	if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
-		 aiPaddle.y -= aiPaddle.dy;
-	} else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
-		 aiPaddle.y += aiPaddle.dy;
+	//if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
+	//	 aiPaddle.y -= aiPaddle.dy;
+	//} else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
+	//	 aiPaddle.y += aiPaddle.dy;
+	//}
+}
+function endGame(winnerMessage) {
+	gameActive = false; // Stop the game
+	alert(winnerMessage); // Display the winner
+	// Additional logic to reset the game or show a menu can be added here
+}
+
+function gameOverScreen(){
+	if (player1.score === 1){
+		showGameOverScreen();
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#FFD700';
+		ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#ffffff';
+		ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
+		gameover = true;
+	}
+	else if (player2.score === 1){
+		// endGame("Winner player 2");
+		showGameOverScreen();
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#ffffff';
+		ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#FFD700';
+		ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
+		gameover = true;
 	}
 }
+function showGameOverScreen() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
+	// Draw background (optional)
+	ctx.fillStyle = '#000'; // Black background
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// Draw Game Over text
+	ctx.font = '195px "PixelFont", sans-serif'; // Make sure to load the pixel font
+	ctx.fillStyle = '#ffffff'; // Bright yellow color
+	ctx.textAlign = 'center';
+	ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 250);
+
+	// Draw scores
+	//ctx.font = '50px "PixelFont", sans-serif';
+	//ctx.fillStyle = '#ffffff'; // White color
+	//ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
+	//ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
+
+	// Draw restart message
+	ctx.font = '24px "PixelFont", sans-serif';
+	ctx.fillStyle = '#ff0000'; // Red color
+	ctx.fillText('yemak tmedha ?', canvas.width / 2, canvas.height / 2 + 500);
+}
+
 
 document.getElementById('return-to-menu').addEventListener('click', () => {
 	ai_menu.style.display = 'none';

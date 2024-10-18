@@ -186,3 +186,17 @@ class UpdatePwd(generics.RetrieveAPIView):
 #         curr_user.save()
 
 #         return Response({'detail': 'Mail changed'}, status=HTTP_200_OK)
+
+class   UpdateAvatar(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        avatar = request.FILES.get('avatar')
+        user = request.user
+        
+        if avatar:
+            user.avatar = avatar
+            user.save()
+            return  Response({"detail": "Updated Avatar Successfully."}, status=HTTP_200_OK)
+        else:
+            return Response({"detail": "Invalid Avatar."}, status=HTTP_400_BAD_REQUEST)
+
