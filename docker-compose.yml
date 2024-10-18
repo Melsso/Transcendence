@@ -19,7 +19,7 @@ services:
       cd api && daphne -b 0.0.0.0 -p 8000 api.asgi:application"     
     volumes:
       - ./backend:/app
-      - ./backend/media:/app/media
+      - ./backend/api/media:/app/api/media
     depends_on:
       - database
       - redis
@@ -50,6 +50,7 @@ services:
     container_name: pong-frontend-container
     volumes:
       - ./frontend:/usr/share/nginx/html
+      - ./backend/api/media:/usr/share/nginx/html/media
     ports:
       - "0.0.0.0:80:80"
     depends_on:
@@ -69,7 +70,6 @@ services:
 
 volumes:
   postgres_data:
-  media_data: 
 
 networks:
   pong-network:
