@@ -92,7 +92,7 @@ async function registerUser(username, password, email) {
 async function updateUsername(uname) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
-		console.log('No access Token!');
+		Notification('Profile Action', "No access Token!", 2, 'alert');
 		return ;
 	}
 
@@ -119,7 +119,7 @@ async function updateUsername(uname) {
 async function updateBio(biog) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
-		console.log("No access Token!");
+		Notification('Profile Action', "No access Token!", 2, 'alert');
 		return ;
 	}
 	const url = baseUrl + 'api/home/settings/updatebio/';
@@ -144,7 +144,7 @@ async function updateBio(biog) {
 async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
-		console.log("No access Token");
+		Notification('Profile Action', "No access Token!", 2, 'alert');
 		return ;
 	}
 	const url = baseUrl + 'api/home/settings/updatepwd/';
@@ -171,7 +171,8 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 async function updateMail(new_mail) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
-		console.log('No access Token');
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+
 		return ;
 	}
 	const url = baseUrl + 'api/home/settings/updatemail/';
@@ -187,7 +188,7 @@ async function updateMail(new_mail) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Following error happened: ", response);
+		Notification('Profile Action', "Following error happened: ", 2, 'alert');
 		throw new Error(errorResponse.detail || 'Mail Change failed');
 	}
 	const data = await response.json();
@@ -242,12 +243,14 @@ async function verifyEmail(formData) {
 async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
 	if (!refresh_token) {
-		console.log('No refresh Token');
+		Notification('Profile Action', "No refresh Token", 2, 'alert');
+
 		return ;
 	}
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
-		console.log('No access Token');
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+
 		return ;
 	}
 
@@ -373,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				mainBody.style.display = 'flex';
 
 			} catch (error) {
-				console.log("Error: ", error.message);
+				Notification('Profile Action', "Error: changeToMainTwo.js:379", 2, 'alert'); // check
 			}
 		} else if (view === 'settings') {
 			mainTwo.style.display = 'flex';
@@ -490,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				Notification('Search', 'No such user found!', 2,'alert');
 			}
 		} catch (error) {
-			console.log("Error: ", error.message);
+			Notification('Profile Action', "Error: changeToMainTwo:496", 2, 'alert');// check
 		}
 	});
 
@@ -500,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			loadFriends(result, userData.id);
 
 		} catch (error) {
-			console.log("Error: ", error.detail);
+			Notification('Profile Action', "Error: ", 2, 'alert');
 		}
 	});
 
@@ -603,7 +606,8 @@ updateAvatarbtn.addEventListener('click',async function () {
 async function updateAvatar(formData) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
-		console.log('No access Token');
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+
 		return ;
 	}
 	const url = baseUrl + 'api/home/settings/updateavatar/';

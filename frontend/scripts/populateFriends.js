@@ -183,13 +183,13 @@ async function handleAction(action, targetId, userid) {
 			}
 			break;
 		case 'Send a Message':
-			console.log("Sending msg");
+			Notification('Message Action', "Sending msg", 2, 'message');
 			break;
-		case 'View Profile':
-			console.log('Profile call');
+			case 'View Profile':
+				Notification('Profile Action', "Profile call", 2, 'message');
 			break;
 		case 'Invite To Game':
-			console.log('hhhhhh');
+			Notification('Game Action', "Profile call", 2, 'invite');
 			break;
 	}
 }
