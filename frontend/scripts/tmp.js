@@ -22,15 +22,15 @@
 // friendRequestContainer.appendChild(acceptButton);
 
 
-document.querySelector("#id_message_send_input").focus();
-document.querySelector("#id_message_send_input").onkeyup = function (e) {
-if (e.keyCode == 13) {
-    document.querySelector("#id_message_send_button").click();
-}
+document.querySelector("#message-content").focus();
+document.querySelector("#message-content").onkeyup = function (e) {
+    if (e.keyCode == 13) {
+        document.querySelector("#send-button").click();
+    }
 };
-document.querySelector("#id_message_send_button").onclick = function (e) {
-var messageInput = document.querySelector(
-    "#id_message_send_input"
-).value;
-chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
+document.querySelector("#send-button").onclick = function (e) {
+    var messageInput = document.querySelector(
+        "#message-content"
+    ).value;
+    chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
 };
