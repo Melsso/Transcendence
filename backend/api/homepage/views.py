@@ -1,5 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_200_OK,
@@ -106,13 +108,12 @@ class UpdateUName(generics.RetrieveAPIView):
             return Response({'detail': 'Username empty'}, status=HTTP_400_BAD_REQUEST)
 
         if UserProfile.objects.filter(username=uname).exists():
-            return Response({'detail': 'Username already in use'}, status=HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Username already in use'}, status=HTTP_409_CONFLICT)
         
         curr_user = request.user
         curr_user.username = uname
         curr_user.save()
 
-        user_data = UserProfileSerializer(user=curr_user)
         return Response({'detail': 'Username changed'}, status=HTTP_200_OK)
 
 class UpdateBio(generics.RetrieveAPIView):
@@ -127,8 +128,7 @@ class UpdateBio(generics.RetrieveAPIView):
         curr_user.biography = new_bio
         curr_user.save()
 
-        return Response({'detail': 'Bio changed',
-        'bio' : curr_user.bio}, status=HTTP_200_OK)
+        return Response({'detail': 'Bio changed'}, status=HTTP_200_OK)
 
 class UpdatePwd(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -137,8 +137,6 @@ class UpdatePwd(generics.RetrieveAPIView):
         new_pwd = request.data.get('newPwd')
         cfm_pwd = request.data.get('confirmedPwd')
 
-        # if curr_pwd is None or new_pwd is None or cfm_pwd is None:
-        #     return Response({'detail': 'password empty'}, status=HTTP_400_BAD_REQUEST)
         if curr_pwd is None:
             return Response({'detail': 'current password empty'}, status=HTTP_400_BAD_REQUEST)
         user = request.user
@@ -154,7 +152,21 @@ class UpdatePwd(generics.RetrieveAPIView):
         
         if new_pwd != cfm_pwd:
             return Response({'detail': 'new passwords dont match'}, status=HTTP_400_BAD_REQUEST)
-        
+
+        if new_pwd == curr_pwd:
+             return Response({'detail': 'Old and new password can\'t be the same'}, status=HTTP_400_BAD_REQUEST)
+
+        try:
+            validate_password(new_pwd)
+        except ValidationError as e:
+
+            if hasattr(e, 'message'):
+                error_message = e.message
+            else:
+                error_message = e.messages
+
+            return Response({'detail': error_message}, status=HTTP_400_BAD_REQUEST)
+
         user.set_password(new_pwd)
         user.save()
 

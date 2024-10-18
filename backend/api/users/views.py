@@ -35,7 +35,6 @@ class RegisterView(generics.CreateAPIView):
             message = f'Your verification code is: {verification_code}'
     
             send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
-            print('after mail sending')
 
             user.verification_code = verification_code
             user.save()
@@ -157,12 +156,15 @@ class VerifyCodeView(generics.GenericAPIView):
     def post(self, request):
         code = request.data.get('code')
         email = request.data.get('email')
+        avatar = request.FILES.get('avatar')
     
         try:
             user = UserProfile.objects.get(email=email)
             if user.verification_code == code:
                 user.is_verified = True
                 user.verification_code = ''
+                if avatar:
+                    user.avatar = avatar
                 user.save()
                 return Response({"detail": "Verification successful."}, status=HTTP_200_OK)
             else:
