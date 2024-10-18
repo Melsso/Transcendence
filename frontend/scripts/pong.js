@@ -126,12 +126,6 @@ function restartGame() {
     }
 }
 
-// function drawTimer() {
-//     ctx.font = '20px Arial';
-//     ctx.fillStyle = 'white';
-//     ctx.textAlign = 'center';
-//     ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
-// }
 
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
