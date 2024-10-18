@@ -44,6 +44,9 @@ let	aiblock = {
 
 var	wasHit = false;
 var	aiDidHit = false;
+let crossCount = 0;
+let sbVisible = false;
+let BallinBuff = false;
 
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Space'){
@@ -138,6 +141,82 @@ function movebuff() {
 			  buff.speed *= -1;
 		 }
 	if (buff.y + buff.height > canvas.height)
+		 buff.visible = false;
+	}
+}
+
+function ScoreBoardTracker(){
+	drawScoreBoard();
+}
+
+function drawScoreBoard() {
+	ctx.clearRect(0, 0, canvas.width, 50);
+	ctx.fillStyle = 'blue';
+	ctx.fillRect(0, 0, canvas.width, 50);
+	const image1 = new Image();
+	const image2 = new Image();
+	image1.src = player1.icon;
+	image2.src = player2.icon;
+	
+
+		ctx.drawImage(image1, 10, 5, 40, 40);
+		 ctx.font = '20px Arial';
+		 ctx.fillStyle = 'white';
+		 ctx.fillText('Player 1', 100, 30);
+		 ctx.fillText(player1.score, 220, 30);
+
+		 ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+		 ctx.font = '20px Arial';
+		 ctx.fillStyle = 'white';
+		 ctx.fillText('Player 2', canvas.width - 100, 30);
+		 ctx.fillText(player2.score, canvas.width - 220, 30); 
+}
+function giveSpeedBuff(){
+	if (LastpaddletoHit === "player 1")
+		 playerPaddle.dy = 12;
+	else if (LastpaddletoHit === "Ai")
+		 aiPaddle.dy = 12;
+	if (playerPaddle.dy === 20 && LastpaddletoHit === "player 1")
+		 playerPaddle.dy = 20;
+	if (playerPaddle.dy === 20 && LastpaddletoHit === "Ai")
+		 aiPaddle.dy = 12;
+}
+
+function giveSpeedBuff(){
+	if (LastpaddletoHit === "player 1")
+		 playerPaddle.dy = 12;
+	else if (LastpaddletoHit === "Ai")
+		 aiPaddle.dy = 12;
+	if (playerPaddle.dy === 20 && LastpaddletoHit === "player 1")
+		 playerPaddle.dy = 20;
+	if (playerPaddle.dy === 20 && LastpaddletoHit === "Ai")
+		 aiPaddle.dy = 12;
+}
+
+function drawSpeedBuff() {
+	if (buff.visible) {
+		 ctx.globalAlpha = 0.5;
+		 ctx.fillStyle = "red";
+		 ctx.fillRect(buff.x, buff.y, buff.width, buff.height);
+	}
+	ctx.globalAlpha = 1.0;
+	if ((buff.visible) &&
+		 ball.x + ball.radius > buff.x && 
+		 ball.x - ball.radius < buff.x + buff.width && 
+		 ball.y + ball.radius > buff.y && 
+		 ball.y - ball.radius < buff.y + buff.height) {
+			  if (!BallinBuff){}
+					BallinBuff = true;
+			  }
+			  else {
+					if (BallinBuff) {
+						 BallinBuff = false; // Reset the flag
+						 crossCount++; // Increment the cross count since the ball left the buff
+						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
+							  giveSpeedBuff();
+						 }
+					}
+	if (crossCount === 2) {
 		 buff.visible = false;
 	}
 }
