@@ -1,30 +1,17 @@
-const canvas = document.getElementById('pongCanvas');
-const ctx = canvas.getcontext('2d');
-const gameModal = document.getElementById('gameModal');
-const gameContainer = document.querySelector('.gameContainer');
-const menu = document.getElementById('menuuu');
-const aibutton = document.getElementById('start-pong-ai');
-const inv_btn = document.getElementById('send-invite');
-const	q_up = document.getElementById('matchmaking');
-const inv_menu = document.getElementById('inv-menu');
-const ai_menu = document.getElementById('ai-menu');
-const	ai_easy = document.getElementById('PongEasy');
-const	ai_medium = document.getElementById('PongMedium');
-const	ai_hard = document.getElementById('PongHard');
 const player1 = {name: 'player1', icon: '../frontend/assets/logo.jpg',  score: 0};
 const player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0};
 
-let	Buff = {
+window.buff = {
 	x: 0,
 	y: 0,
-	width: 60,
-	height: 15,
+	width: 70,
+	height: 10,
 	speed: -2,
-	direction: -1, // this should be removed.
+	direction: -1,
 	visible: false
 };
 
-let	block = {
+window.block = {
 	x: 0,
 	y: 0,
 	width: 10,
@@ -33,7 +20,7 @@ let	block = {
 	visible: false
 };
 
-let	aiblock = {
+window.aiblock = {
 	x: 0,
 	y: 0,
 	width: 10,
@@ -42,12 +29,12 @@ let	aiblock = {
 	visible: false
 };
 
-var	wasHit = false;
-var	aiDidHit = false;
-let crossCount = 0;
-let sbVisible = false;
-let BallinBuff = false;
-let aiTargetY = null;
+window.wasHit = false;
+window.aiDidHit = false;
+window.crossCount = 0;
+window.sbVisible = false;
+window.BallinBuff = false;
+window.aiTargetY = null;
 
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Space'){
@@ -77,12 +64,12 @@ function didItHit(){
 		(block.x >= aiPaddle.x - aiPaddle.width) &&
 		(block.y >= aiPaddle.y) &&
 		(block.y <= aiPaddle.y +aiPaddle.height)){
-			block.visible = rtue;
+			block.visible = true;
 			aiPaddle.height /= 2;
 			wasHit = true;
 		}
 }
-function didAiitHit() {
+function didAiHit() {
 	if (aiDidHit === true)
 		 return;
 	if (aiblock.visible === true &&
@@ -200,8 +187,8 @@ function drawSpeedBuff() {
 			  }
 			  else {
 					if (BallinBuff) {
-						 BallinBuff = false; // Reset the flag
-						 crossCount++; // Increment the cross count since the ball left the buff
+						 BallinBuff = false;
+						 crossCount++;
 						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
 							  giveSpeedBuff();
 						 }
