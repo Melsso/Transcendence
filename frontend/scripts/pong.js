@@ -493,23 +493,6 @@ function drawBall(x, y, radius) {
     ctx.closePath();
 }
 
-inv_btn.addEventListener('click', function () {
-    menu.style.display = 'none';
-    inv_menu.style.display = 'flex';
-});
-
-aibutton.addEventListener('click', function () {
-    menu.style.display = 'none';
-    ai_menu.style.display = 'flex';
-
-    const selectDifficulty = (difficulty) => {
-        gameLoop(difficulty)
-    };
-
-    ai_easy.addEventListener('click', () => selectDifficulty('easy'));
-    ai_medium.addEventListener('click', () => selectDifficulty('medium'));
-    ai_hard.addEventListener('click', () => selectDifficulty('hard'));
-});
 
 function gameLoop(difficulty) {
     if (!ResetTime)
@@ -558,37 +541,59 @@ function gameLoop(difficulty) {
 }
 
 document.getElementById('return-to-menu').addEventListener('click', () => {
-    inv_menu.style.display = 'flex';
+    ai_menu.style.display = 'none';
+    inv_menu.style.display = 'none';
     menu.style.display = 'flex';
 });
 
 document.getElementById('return-to-menu-ai').addEventListener('click', () => {
-    ai_menu.style.display = 'flex';
+    inv_menu.style.display = 'none';
+    ai_menu.style.display = 'none';
     menu.style.display = 'flex';
 });
 
- function applyBlurEffect() {
-     const gameContainer = document.querySelector('.gameContainer');
+inv_btn.addEventListener('click', function () {
+    menu.style.display = 'none';
+    ai_menu.style.display = 'none';
+    inv_menu.style.display = 'flex';
+});
 
-     const mainTwo = document.getElementById('mainTwo');
-     const allElements = mainTwo.children;
+aibutton.addEventListener('click', function () {
+    inv_menu.style.display = 'none';
+    menu.style.display = 'none';
+    ai_menu.style.display = 'flex';
 
-     for (let i = 0; i < allElements.length; i++) {
-         if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
-             allElements[i].classList.add('blur-effect');
-         }
-     }
- }
+    const selectDifficulty = (difficulty) => {
+        gameLoop(difficulty)
+    };
 
- function removeBlurEffect() {
-     const mainTwo = document.getElementById('mainTwo');
-     const allElements = mainTwo.children;
+    ai_easy.addEventListener('click', () => selectDifficulty('easy'));
+    ai_medium.addEventListener('click', () => selectDifficulty('medium'));
+    ai_hard.addEventListener('click', () => selectDifficulty('hard'));
+});
 
-     for (let i = 0; i < allElements.length; i++) {
-         allElements[i].classList.remove('blur-effect');
-         allElements[i].classList.remove('no-blur');
-         allElements[i].style.zIndex = '';  // Reset z-index
-     }
- }
+//  function applyBlurEffect() {
+//      const gameContainer = document.querySelector('.gameContainer');
 
- document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);
+//      const mainTwo = document.getElementById('mainTwo');
+//      const allElements = mainTwo.children;
+
+//      for (let i = 0; i < allElements.length; i++) {
+//          if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
+//              allElements[i].classList.add('blur-effect');
+//          }
+//      }
+//  }
+
+//  function removeBlurEffect() {
+//      const mainTwo = document.getElementById('mainTwo');
+//      const allElements = mainTwo.children;
+
+//      for (let i = 0; i < allElements.length; i++) {
+//          allElements[i].classList.remove('blur-effect');
+//          allElements[i].classList.remove('no-blur');
+//          allElements[i].style.zIndex = '';  // Reset z-index
+//      }
+//  }
+
+//  document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);
