@@ -1,7 +1,7 @@
 import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 // This variable is used to store user data
-let userData = {};
+window.userData = {};
 
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
@@ -66,7 +66,6 @@ async function userLookUp(searchTerm) {
 // This is the function that fetches user data on register
 async function registerUser(username, password, email) {
 	const url = baseUrl + 'api/register/';
-	console.log(url);
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
