@@ -5,7 +5,7 @@ let userData = {};
 
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
-const baseUrl = 'http://10.11.5.17:80/';
+const baseUrl = 'http://10.11.5.15:80/';
 // let baseUrl = 'http://localhost:80/';
 
 // This is the function that fetches user data on homepage access
@@ -81,8 +81,7 @@ async function registerUser(username, password, email) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Following error happened: ", response);
-		throw new Error(errorResponse || 'Registration failed');
+		throw new Error(errorResponse);
 	}
 
 	const data = await response.json();
@@ -109,8 +108,7 @@ async function updateUsername(uname) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Following error happened: ", response);
-		throw new Error(errorResponse.detail || 'Username Change failed');
+		throw new Error(errorResponse.detail);
 	}
 
 	const data = await response.json();
@@ -136,8 +134,7 @@ async function updateBio(biog) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Following error happened: ", response);
-		throw new Error(errorResponse.detail || 'Bio Change failed');
+		throw new Error(errorResponse.detail);
 	}
 	const data = await response.json();
 	return data;
@@ -164,8 +161,7 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log("Following error happened: ", errorResponse.detail);
-		throw new Error(errorResponse.detail || 'Password Change failed');
+		throw new Error(errorResponse.detail);
 	}
 	const data = await response.json();
 	return data;
@@ -221,22 +217,19 @@ async function loginUser(usernameOrEmail, password) {
 }
 
 // This is the function that fetches user data on email verification step
-async function verifyEmail(verification_code, email) {
+async function verifyEmail(formData) {
 	const url = baseUrl + 'api/verify-code/';
 	const response = await fetch(url, {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			code: verification_code,
-			email: email,	
-		}),
+		// headers: {
+		// 	'Content-Type': 'application/json',
+		// },
+		body: formData,
 	});
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail || 'Verification failed');
+		throw new Error(errorResponse.detail);
 	}
 
 	const data = await response.json();
@@ -319,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 	mainOne.style.display = 'none';
 	mainTwo.style.display = 'flex';
-	mainBody.style.display = 'none';
+	mainBody.style.display = 'flex';
 	mainSettings.style.display = 'none';
 	mainSLgame.style.display = 'none';
 	mainPONGgame.style.display = 'none';
@@ -336,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	const updateUsernameButton = document.getElementById('updateUsername-btn');
 	const updateBioButton = document.getElementById('updateBio-btn');
 	const updatePwdButton = document.getElementById('updatePwd-btn');
-	// const updateMailButton = document.getElementById('updateMail-btn');
 	const friendButton = document.getElementById('friend-list-btn');
 	const sendFriendRequestButton = document.getElementById('add-friend');
 
@@ -448,13 +440,23 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	registerButton.addEventListener('click', async function () {
+		const avatarInput = document.getElementById('avatar');
+		if (avatarInput.files.length === 0) {
+			Notification('Profile Action', 'Please select an avatar image to upload.', 'alert');
+			return;
+	  	}
 		const verification_code = document.getElementById('verification-code').value;
-		const avatarUrl = document.getElementById('avatar').value;
+		
+		const formData = new FormData();
+		formData.append('code', verification_code);
+		formData.append('email', userEmail);
+		formData.append('avatar', avatarInput.files[0]);
 		
 		try {
-			const result = await verifyEmail(verification_code, userEmail);
+			const result = await verifyEmail(formData);
 			navigateTo('login', null);
 		} catch (error) {
+			console.log('salam hma khrat', error);
 			Notification('Profile Action', `Failed to verify email because: ${error}`, 'alert');
 			navigateTo('register', null); 
 		}
@@ -564,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await updatePwd(curr_pwd, new_pwd, cfm_pwd);
 			Notification('Profile Action', 'You have updated your password!', 'profile');
 		} catch (error) {
-			cNotification('Profile Action', `Failed to change password because: ${error}`, 'alert');
+			Notification('Profile Action', `${error}`, 'alert');
 		}
 	});
 
