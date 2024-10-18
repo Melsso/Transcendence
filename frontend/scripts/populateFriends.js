@@ -135,9 +135,9 @@ export async function loadFriends(data, userid) {
 						const result = await respondFriendRequest(friend_data.id, nature);
 						const r1 = await getFriends();
 						loadFriends(r1, userid);
-						Notification('Friend Action', `You refused a friend request from ${friend_data.username}!`, 'request');
+						Notification('Friend Action', `You refused a friend request from ${friend_data.username}!`, 2,'request');
 					} catch (error) {
-						Notification('Friend Action ERROR', `the following error has occured ${error}`,'alert');
+						Notification('Friend Action ERROR', `the following error has occured ${error}`,2,'alert');
 					}
 				});
 
@@ -148,9 +148,9 @@ export async function loadFriends(data, userid) {
 						const result = await respondFriendRequest(friend_data.id, nature);
 						const r1 = await getFriends();
 						loadFriends(r1, userid);
-						Notification('Friend Action', `You Accepted a friend request from ${friend_data.username}!`, 'request');
+						Notification('Friend Action', `You Accepted a friend request from ${friend_data.username}!`, 2,'request');
 						} catch (error) {
-							Notification('Friend Action ERROR', `the following error has occured ${error}`,'alert');
+							Notification('Friend Action ERROR', `the following error has occured ${error}`,2,'alert');
 						}
 					});
 			}
@@ -177,9 +177,9 @@ async function handleAction(action, targetId, userid) {
 				const res = await respondFriendRequest(targetId, nature);
 				const r1 = await getFriends();
 				loadFriends(r1, userid);
-				Notification('Friend Action', 'You have deleted a friend!', 'request');
+				Notification('Friend Action', 'You have deleted a friend!', 2,'request');
 			} catch (error) {
-					Notification('Friend Action ERROR', `the following error has occured ${error}`,'alert');
+					Notification('Friend Action ERROR', `the following error has occured ${error}`,2,'alert');
 			}
 			break;
 		case 'Send a Message':

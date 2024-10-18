@@ -42,8 +42,13 @@ function showLoginForm(logButton, regButton) {
 
 // observer.observe(mainTwo, { attributes: true });
 
-function Notification(title, message, type) {
-    const mainpage = document.getElementById('mainTwo');
+function Notification(title, message, file,type) {
+    if (file === 2){
+        var mainpage = document.getElementById('mainTwo');
+    }
+    else {
+        var mainpage = document.getElementById('mainOne')
+    }
 
     const main_welcome = document.createElement('div');
     main_welcome.classList.add("position-fixed", "p-3", "top-0", "end-0");
