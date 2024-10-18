@@ -47,6 +47,7 @@ var	aiDidHit = false;
 let crossCount = 0;
 let sbVisible = false;
 let BallinBuff = false;
+let aiTargetY = null;
 
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Space'){
@@ -182,17 +183,6 @@ function giveSpeedBuff(){
 		 aiPaddle.dy = 12;
 }
 
-function giveSpeedBuff(){
-	if (LastpaddletoHit === "player 1")
-		 playerPaddle.dy = 12;
-	else if (LastpaddletoHit === "Ai")
-		 aiPaddle.dy = 12;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === "player 1")
-		 playerPaddle.dy = 20;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === "Ai")
-		 aiPaddle.dy = 12;
-}
-
 function drawSpeedBuff() {
 	if (buff.visible) {
 		 ctx.globalAlpha = 0.5;
@@ -220,3 +210,74 @@ function drawSpeedBuff() {
 		 buff.visible = false;
 	}
 }
+
+function drawTimer() {
+	ctx.font = '20px Arial';
+	ctx.fillStyle = 'white';
+	ctx.textAlign = 'center';
+	ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
+}
+function moveAIPaddleHard() {
+
+	let predictedY = Prediction();
+	if (aistop)
+		 return ;
+
+	const tolerance = 3;
+
+		 if (Math.abs(aiPaddle.y + aiPaddle.height / 2 - predictedY) > tolerance) {
+			  if (predictedY < aiPaddle.y + aiPaddle.height / 2) {
+					aiPaddle.y -= aiPaddle.dy;
+			  } else if (predictedY > aiPaddle.y + aiPaddle.height / 2) {
+					aiPaddle.y += aiPaddle.dy;
+			  }
+	}
+}
+function moveAIPaddlemid() {
+	if (aistop)
+		 return;
+		 if (ball.y < aiPaddle.y + aiPaddle.height / 2)
+			  aiPaddle.y -= aiPaddle.dy;
+		 else if (ball.y >= aiPaddle.y + aiPaddle.height / 2)
+			  aiPaddle.y += aiPaddle.dy;
+}
+
+function moveAIPaddleEasy() {
+	if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
+		 aiPaddle.y -= aiPaddle.dy;
+	} else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
+		 aiPaddle.y += aiPaddle.dy;
+	}
+}
+
+document.getElementById('return-to-menu').addEventListener('click', () => {
+	ai_menu.style.display = 'none';
+	inv_menu.style.display = 'none';
+	menu.style.display = 'flex';
+});
+
+document.getElementById('return-to-menu-ai').addEventListener('click', () => {
+	inv_menu.style.display = 'none';
+	ai_menu.style.display = 'none';
+	menu.style.display = 'flex';
+});
+
+inv_btn.addEventListener('click', function () {
+	menu.style.display = 'none';
+	ai_menu.style.display = 'none';
+	inv_menu.style.display = 'flex';
+});
+
+aibutton.addEventListener('click', function () {
+	inv_menu.style.display = 'none';
+	menu.style.display = 'none';
+	ai_menu.style.display = 'flex';
+
+	const selectDifficulty = (difficulty) => {
+		 gameLoop(difficulty)
+	};
+
+	ai_easy.addEventListener('click', () => selectDifficulty('easy'));
+	ai_medium.addEventListener('click', () => selectDifficulty('medium'));
+	ai_hard.addEventListener('click', () => selectDifficulty('hard'));
+});
