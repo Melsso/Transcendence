@@ -3,6 +3,10 @@ import { loadFriends, getFriends } from "./populateFriends.js";
 // This variable is used to store user data
 window.userData = {};
 
+// require("dotenv").config();
+
+// console.log("first ", process.env.ACTIVE_HOST);
+
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
 const baseUrl = 'http://10.11.5.17:80/';
@@ -316,6 +320,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainSLgame = document.getElementById('S&L-page');
 	const mainPONGgame = document.getElementById('PONG-game');
 	
+	console.log('HALAW: ', process.env.ACTIVE_HOST);
+
 	mainOne.style.display = 'none';
 	mainTwo.style.display = 'flex';
 	mainBody.style.display = 'none';
