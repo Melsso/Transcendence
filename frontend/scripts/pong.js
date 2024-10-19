@@ -19,7 +19,8 @@ window.playerPaddle = {
     y: 0,
     width: 0,
     height: 0,
-    dy: 5
+    dy: 5,
+    hasanattack: null
 };
 
 window.aiPaddle = {
@@ -27,7 +28,8 @@ window.aiPaddle = {
     y: 0,
     width: 0,
     height: 0,
-    dy: 5
+    dy: 5,
+    aihasanattack: null
 };
 
 window.ball = {
@@ -37,6 +39,13 @@ window.ball = {
     speed: 3,
     dx: 0,
     dy: 6
+};
+
+window.scoreboard = {
+    x: 0,
+    y: 0, // Assuming the scoreboard starts at the top of the canvas
+    width: canvas.width,
+    height: 50 // Height of the scoreboard, adjust as necessary
 };
 
 let ResetTime = null;
@@ -100,7 +109,7 @@ function setGameDimensions() {
 }
 
 
-function restartGame() {
+function restartGame(difficulty) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (wasHit === true){
         aiPaddle.height *= 2; 
@@ -115,23 +124,30 @@ function restartGame() {
     aiPaddle.x = canvas.width - aiPaddle.width;
     aiPaddle.y = canvas.height / 2 - aiPaddle.height / 2;
     crossCount = 0;
+    AttackCount = 0;
     playerPaddle.dy = 7;
     aiPaddle.dy = 7
     buff.visible = false;
+    attack.visible = false;
     block.visible = false;
     ResetTime = null;
     LastpaddletoHit = null;
+    gameover = false;
     if (buff.speed > 0) {
         buff.speed *= -1;
     }
+    if (Attack.speed > 0) {
+        Attack.speed *= -1;
+    }
+    requestAnimationFrame(() => gameLoop(difficulty));
 }
 
-
+let isingame = false;
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 function movePlayerPaddle() {
-    if (upPressed && playerPaddle.y > 0) {
+    if (upPressed && playerPaddle.y > 50) {
         playerPaddle.y -= playerPaddle.dy;
     } else if (downPressed && playerPaddle.y < canvas.height - playerPaddle.height) {
         playerPaddle.y += playerPaddle.dy;
@@ -157,7 +173,7 @@ function moveBall() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > 50 || ball.y - ball.radius < 0) {
         ball.dy *= -1;
     }
 
@@ -255,8 +271,20 @@ function gameLoop(difficulty) {
     if (!ResetTime)
         ResetTime = Date.now();
     ai_menu.style.display = 'none';
+    isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
+    if (elapsedTime === 1) {
+        Attack.visible = true;
+        Attack.y = canvas.height - Attack.height;
+        // randomizeAttackX();
+        Attack.x = canvas.width / 2 - Attack.width / 2;
+    }
+    if (Attack.visible) {
+        moveAttackbuff();
+    }
+    if (AttackCount === 2)
+        Attack.visible = false;
     if (elapsedTime === 4) {
         buff.visible = true;
         buff.y = canvas.height - buff.height;
@@ -271,29 +299,19 @@ function gameLoop(difficulty) {
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
     movePlayerPaddle();
-    
-    switch (difficulty) {
-        case 'easy':
-            moveAIPaddleEasy();
-            break;
-        case 'medium':
-            moveAIPaddlemid();
-            break;
-        case 'hard':
-            moveAIPaddleHard();
-            break;
-    }
+    window.moveAIPaddle(difficulty);
     window.didItHit();
     window.didAiHit();
     window.drawScoreBoard();
     window.drawaiBlock();
     window.drawBlock();
     window.moveBlock();
+    console.log(Attack.visible);
     window.moveaiBlock();
     window.drawSpeedBuff();
+    window.drawAttackBuff();
     moveBall();
     window.drawTimer();
-    console.log(ball.dy)
     window.gameOverScreen();
     if (gameover)
         return;
