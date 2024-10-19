@@ -2,16 +2,34 @@ const messageContainer = document.getElementById('message-container');
 const chatInput = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
 const noChat = document.getElementById('no-chat');
-
+const globalbtn = document.getElementById('revert_to_global');
+const open = document.createElement('button');
+let tar;
 function handleSend(username) {
 	chatInput.focus();
-	const message = chatInput.value;
+	const message = chatInput.value; 	
 	window.userData.socket.send(JSON.stringify({ message: message, username : username, target: window.userData.target}));
 	addMessage(message, true, null);
 	chatInput.value = ''; 
 }
 
 
+globalbtn.addEventListener('click', function(event) {
+	event.preventDefault();
+	console.log("kifech kemlt", window.userData.target);
+	if (window.userData.target !== 'Global') {
+		messageContainer.innerHTML = '';
+		window.userData.target = 'Global';
+		console.log("GLOBVAL");
+		return ;
+		//load global chat
+	}
+	else {
+		console.log("NOT GOLBAL");
+		Notification('Message Action', 'You are already in the global chat room!', 2, 'alert');
+		return ;
+	}
+});
 
 function addMessage(message, isSender = false, data) {
 	if (message.trim() === '') return;
@@ -41,7 +59,6 @@ function addMessage(message, isSender = false, data) {
 }
 
 export function	launchSocket() {
-	console.log('dkhelna launcchsocket');
 		window.userData.socket.onopen = function(e) {
 			console.log("socket on");
 		}
@@ -60,13 +77,13 @@ export function	launchSocket() {
 			if (data.target !== "Global" && data.target !== window.userData.username) {
 				return ;
 			}
-			Notification('Message Action', 'You have received a message!', 2, 'message');
-
-			var collapseElement = document.getElementById('collapseTwo');
-			var bsCollapse = new bootstrap.Collapse(collapseElement, {
-				toggle: false
-			});			 
-			bsCollapse.show();
+			var Chat = document.getElementById('collapseTwo');
+			if (Chat.classList.contains('show') && (data.target === window.userData.username)) {
+					;
+			}
+			else {
+				SpecialNotification('You received a message!',  data.message , data.username);
+			}
 			if (data.target === window.userData.username) {
 				if (window.userData.target !== data.username) {
 					messageContainer.innerHTML = '';
@@ -92,3 +109,79 @@ export function	launchSocket() {
 		 noChat.style.display = 'block';
 	}
 };
+
+
+
+function SpecialNotification(title, message, target) {	
+	var mainpage = document.getElementById('mainTwo');
+
+	const main_welcome = document.createElement('div');
+	main_welcome.classList.add("position-fixed", "p-3", "top-0", "end-0");
+	main_welcome.style.zIndex = '100';
+
+	const msg_container = document.createElement('div');
+	msg_container.id = 'WELCOME';
+	msg_container.classList.add('toast');
+	msg_container.setAttribute('role', 'alert');
+	msg_container.setAttribute('aria-live', 'assertive');
+	msg_container.setAttribute('aria-atomic', 'true');
+
+	const header = document.createElement('div');
+
+	header.style.backgroundColor = 'rgba(25, 110, 238, 0.5)';            
+	header.classList.add('toast-header');
+	header.style.textAlign = 'center';
+
+	const header_msg = document.createElement('strong');
+	header_msg.classList.add('me-auto');
+	header_msg.textContent = title;
+	header_msg.style.color = 'black'; 
+
+	const msg_close = document.createElement('button');
+	msg_close.type = 'button';
+	msg_close.classList.add('btn-close');
+	msg_close.setAttribute('aria-label', 'Close');
+	msg_close.setAttribute('data-bs-dismiss', 'toast');
+
+	open.type = 'button';
+	open.textContent = 'Open Chat!';
+	open.classList.add('btn');
+	open.style.backgroundColor = 'rgba(25, 110, 238, 0.5)';
+	open.style.padding = '0.25rem 0.5rem'; 
+	open.style.fontSize = '0.75rem';
+	open.style.marginLeft = '10px';
+
+	header.appendChild(header_msg);
+	header.appendChild(open);
+	header.appendChild(msg_close);
+
+	const msg_content = document.createElement('div');
+	msg_content.classList.add('toast-body');
+	const holder = ': ';
+	msg_content.textContent = target + holder + message;  
+
+
+	msg_container.appendChild(header);
+	msg_container.appendChild(msg_content);
+	main_welcome.appendChild(msg_container);
+	mainpage.appendChild(main_welcome);
+
+	const toast = new bootstrap.Toast(msg_container);
+	toast.show();
+	tar = target;
+	setTimeout(() => {
+		 toast.hide();
+	}, 5000);
+}
+open.addEventListener('click', function () {
+	var collapseElement = document.getElementById('collapseTwo');
+	var bsCollapse = new bootstrap.Collapse(collapseElement, {
+	toggle: false
+	});			 
+	if (collapseElement.classList.contains('show')) {
+		bsCollapse.hide();
+	}
+	else
+		bsCollapse.show();
+	window.userData.target = tar;
+})

@@ -191,3 +191,19 @@
 	transform: translateX(90%);
 	background-image: url("../assets/search-logo.png");
 }
+
+.Global-chat {
+	position: absolute;
+	bottom: -0.1%;
+	left: 100%;
+	width: 10%;
+	height: 4.75%;
+	z-index: 999;
+}
+
+.Global-btn {
+	width:100%;
+	height: 100%;
+	background-color: #9da5cf;
+	border-radius: 10%;
+}
