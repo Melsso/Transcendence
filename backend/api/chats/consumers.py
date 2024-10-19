@@ -110,15 +110,18 @@ class random(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         username = text_data_json["username"]
+        target = text_data_json["target"]
         await self.channel_layer.group_send(
             self.roomGroupName,{
-                "type" : "sendMessage"
-                , "message" : message
-                , "username" : username,
+                "type" : "sendMessage",
+                "message" : message,
+                "username" : username,
+                "target" : target,
             }
         )
 
     async def sendMessage(self, event) :
         message = event["message"]
         username = event["username"]
-        await self.send(text_data=json.dumps({"message":message, "username":username}))
+        target = event["target"]
+        await self.send(text_data=json.dumps({"message":message, "username":username, "target":target}))

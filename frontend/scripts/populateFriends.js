@@ -1,5 +1,5 @@
-const baseUrl = process.env.ACTIVE_HOST;;
-
+const baseUrl = process.env.ACTIVE_HOST;
+import { launchSocket  } from "./chat.js";
 
 export async function getFriends() {
 	const access_token = localStorage.getItem('accessToken');
@@ -98,7 +98,7 @@ export async function loadFriends(data, userid) {
 					a.textContent = action;
 					a.addEventListener('click', (event) => {
 						event.preventDefault();
-						handleAction(action, friend_data.id, userid);
+						handleAction(action, friend_data.id, userid, friend_data.username);
 					});
 					li.appendChild(a);
 					dropdownMenu.appendChild(li);
@@ -168,7 +168,8 @@ export async function loadFriends(data, userid) {
 	}
 };
 
-async function handleAction(action, targetId, userid) {
+async function handleAction(action, targetId, userid, targetUname) {
+	const messageContainer = document.getElementById('message-container');
 	switch(action) {
 		case 'Unfriend':
 			try {
@@ -182,7 +183,15 @@ async function handleAction(action, targetId, userid) {
 			}
 			break;
 		case 'Send a Message':
-			Notification('Message Action', "Sending msg", 2, 'message');
+			var collapseElement = document.getElementById('collapseTwo');
+			var bsCollapse = new bootstrap.Collapse(collapseElement, {
+				toggle: false
+			});			 
+			bsCollapse.show();
+			if (targetUname !== window.userData.target) {
+				messageContainer.innerHTML = '';
+			}
+			window.userData.target = targetUname;
 			break;
 			case 'View Profile':
 				Notification('Profile Action', "Profile call", 2, 'message');
