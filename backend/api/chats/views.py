@@ -12,8 +12,8 @@ from rest_framework.status import (
     HTTP_403_FORBIDDEN,
 )
 
-from .models import Friend
-from .serializers import FriendSerializer
+from .models import Friend, Message
+from .serializers import FriendSerializer, MessageSerializer
 from users.serializers import UserProfileSerializer
 # Create your views here.
 User = get_user_model()
@@ -93,3 +93,22 @@ class FriendRequestManager(generics.ListAPIView):
         if nature == 'refuse':
             friend_request.delete()
             return Response({'detail': 'Friend request refused!'}, status=HTTP_200_OK)
+
+
+class MessageListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = MessageSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        targ_uname = self.kwargs.get('targ_uname', None)
+
+        if targ_uname:
+            return Message.objects.filter(sender=user, target_user__username=targ_uname).order_by('timestamp')
+        else:
+            return Message.objects.filter(target_user__isnull=True).order_by('timestamp')
+
+    def get(self, request, targ_uname=None):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response({'list': serializer.data}, status=HTTP_200_OK)
