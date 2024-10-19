@@ -1,14 +1,14 @@
 import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
+import { launchSocket  } from "./chat.js";
 // This variable is used to store user data
 window.userData = {};
 
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
-const baseUrl = 'http://10.11.5.15:80/';
-// let baseUrl = 'http://localhost:80/';
+const baseUrl = process.env.ACTIVE_HOST;;
 
-// This is the function that fetches user data on homepage access
+
 async function homepageData() {
 	
 	const access_token = localStorage.getItem('accessToken');
@@ -34,9 +34,7 @@ async function homepageData() {
 		// Notification('Profile Action', 'Failed to load your profile', 1, 'alert');
 		throw new Error(errorResponse.detail);
 	}
-
 	const data = await response.json();
-	userData = data["user"];
 	return data;
 }
 
@@ -269,8 +267,10 @@ async function logoutUser() {
 	if (response.ok) {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
+		//here we have to close  the socket if it's open
 		userData = {};
 		userEmail = "";
+
 	}
 	else {
 		const errorResponse = await response.json();
@@ -298,7 +298,7 @@ async function sendFriendRequest(targetId) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw new Error(errorResponse.detail);
 	}
 	const data = await response.json();
 	return data;
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainSettings = document.getElementById('setting-page');
 	const mainSLgame = document.getElementById('S&L-page');
 	const mainPONGgame = document.getElementById('PONG-game');
-	
+
 	mainOne.style.display = 'none';
 	mainTwo.style.display = 'flex';
 	mainBody.style.display = 'flex';
@@ -357,7 +357,16 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
+
+					userData = result["user"];
+
+					const u = new URL(baseUrl);
+					const chatSocket = new WebSocket(`ws://${u.host}/ws/`);
+					userData["socket"] = chatSocket;
+					userData["target"] = "Global";
+					launchSocket();
 					sendFriendRequestButton.style.display = 'none';
+
 					loadProfile(result);
 				}
 				else {
@@ -410,7 +419,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			const result = await loginUser(username, password);
-			// Here we are getting our access tokens and storing them locally
 			const tokens = result.tokens;
 			localStorage.setItem('accessToken', tokens.access)
 			localStorage.setItem('refreshToken', tokens.refresh)

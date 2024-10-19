@@ -1,90 +1,94 @@
-const chatSocket = new WebSocket("ws://10.11.5.17:80/ws/"); //check wrong url "maybe"
+const messageContainer = document.getElementById('message-container');
+const chatInput = document.getElementById('chat-input');
+const sendButton = document.getElementById('send-button');
+const noChat = document.getElementById('no-chat');
 
-chatSocket.onopen = function(e) {
-	console.log("socket on");
+function handleSend(username) {
+	chatInput.focus();
+	const message = chatInput.value;
+	window.userData.socket.send(JSON.stringify({ message: message, username : username, target: window.userData.target}));
+	addMessage(message, true, null);
+	chatInput.value = ''; 
 }
 
-chatSocket.onclose = function(e) {
-	console.log("socket off");
+
+
+function addMessage(message, isSender = false, data) {
+	if (message.trim() === '') return;
+
+	const messageElement = document.createElement('div');
+
+	messageElement.classList.add('message');
+	messageElement.classList.add(isSender ? 'right' : 'left');
+	 
+	const avatarElement = document.createElement('img');
+
+	avatarElement.src = isSender ? window.userData.avatar : 'assets/receiver-avatar.svg';
+	avatarElement.alt = isSender ? window.userData.username : data.username;
+
+	const contentElement = document.createElement('div');
+	contentElement.classList.add('message-content');
+	contentElement.textContent = message;
+
+	messageElement.appendChild(contentElement);
+	messageElement.appendChild(avatarElement);
+	messageContainer.appendChild(messageElement);
+
+	if (messageContainer.children.length > 1) {
+		noChat.style.display = 'none';
+	}
+	messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
-// document.querySelector("#message-content").focus();
-
-// document.querySelector("#message-content").onkeyup = function (e) { // check send on key <enter>
-//     if (e.keyCode == 13) {
-//         document.querySelector("#send-button").click();
-//     }
-// };
-
-function send_message(username) {
-	var messageInput =  document.getElementById('chat-input');
-	// messageInput.value = ''; 
-	messageInput.focus();
-
-	console.log('asda', username);
-	// console.log("message: <", messageInput.value);
-    chatSocket.send(JSON.stringify({ message: messageInput.value, username : username}));
-	messageInput.value = '';
-};
-chatSocket.onmessage = function(e) {
-	
-	const data = JSON.parse(e.data);
-	console.log("username :",  data.username);
-	console.log("message :", data.message);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-	const messageContainer = document.getElementById('message-container');
-	const chatInput = document.getElementById('chat-input');
-	const sendButton = document.getElementById('send-button');
-	const noChat = document.getElementById('no-chat');
-
-	function addMessage(message, isSender = false) {
-		if (message.trim() === '') return;
-
-		const messageElement = document.createElement('div');
-		messageElement.classList.add('message');
-		messageElement.classList.add(isSender ? 'right' : 'left');
-		 
-		const avatarElement = document.createElement('img');
-		avatarElement.src = isSender ? 'assets/avatar1.svg' : 'assets/receiver-avatar.svg';
-		avatarElement.alt = 'User Avatar';
-
-		const contentElement = document.createElement('div');
-		contentElement.classList.add('message-content');
-		contentElement.textContent = message;
-
-		messageElement.appendChild(contentElement);
-		messageElement.appendChild(avatarElement);
-
-		messageContainer.appendChild(messageElement);
-
-		if (messageContainer.children.length > 1) {
-			noChat.style.display = 'none';
+export function	launchSocket() {
+	console.log('dkhelna launcchsocket');
+		window.userData.socket.onopen = function(e) {
+			console.log("socket on");
 		}
-		messageContainer.scrollTop = messageContainer.scrollHeight;
-	}
+		
+		window.userData.socket.onclose = function(e) {
+			console.log("socket off");
+		}
+		
+		
+		window.userData.socket.onmessage = function(e) {
+			const data = JSON.parse(e.data);
 
-	function handleSend() {
-		const message = chatInput.value;
-		addMessage(message, true); 
-		chatInput.value = ''; 
-		chatInput.focus(); 
-	}
+			if (window.userData.username === data.username) {
+				return ;
+			}
+			if (data.target !== "Global" && data.target !== window.userData.username) {
+				return ;
+			}
+			Notification('Message Action', 'You have received a message!', 2, 'message');
+
+			var collapseElement = document.getElementById('collapseTwo');
+			var bsCollapse = new bootstrap.Collapse(collapseElement, {
+				toggle: false
+			});			 
+			bsCollapse.show();
+			if (data.target === window.userData.username) {
+				if (window.userData.target !== data.username) {
+					messageContainer.innerHTML = '';
+				}
+				window.userData.target = data.username;
+			}
+			addMessage(data.message, false, data);
+		}
 
 	chatInput.addEventListener('keydown', function(event) {
 		if (event.key === 'Enter') {
 			event.preventDefault();
-			send_message(window.userData.username);
+			handleSend(window.userData.username);
 		}
 	});
 
 	sendButton.addEventListener('click', function(event) {
 		event.preventDefault();
-		send_message(window.userData.username);
+		handleSend(window.userData.username);
 	});
 
 	if (messageContainer.children.length === 0) {
 		 noChat.style.display = 'block';
 	}
-});
+};

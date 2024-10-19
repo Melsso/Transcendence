@@ -1,16 +1,22 @@
 .PHONY: all build run fclean re start stop list
 
 COMPOSE_FILE = docker-compose.yml
-# DOCKER = docker
-
 DOCKER = docker
 
+ifeq ($(shell uname), Darwin)
+	IP_COMMAND = ipconfig getifaddr en0
+else ifeq ($(shell uname), Linux)
+	IP_COMMAND = hostname -I | awk '{print $$1}'
+endif
+
+ACTIVE_HOST = http://$(shell $(IP_COMMAND)):80/
 
 all: run
 
 build:
 	@echo "Building all images..."
-	$(DOCKER)-compose build
+	@echo "Active Host IP is: $(shell $(IP_COMMAND))"
+	ACTIVE_HOST=$(ACTIVE_HOST) $(DOCKER)-compose build --build-arg ACTIVE_HOST=$(ACTIVE_HOST)
 
 run: build
 	@echo "Running all containers..."
@@ -32,5 +38,6 @@ list:
 fclean: stop
 	@echo "Removing all stopped containers..."
 	$(DOCKER)-compose down --rmi all --volumes --remove-orphans
+	find backend/api/media/avatars -mindepth 1 -delete 2>/dev/null
 
 re: fclean run

@@ -18,4 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
+ARG ACTIVE_HOST
+ENV ACTIVE_HOST=${ACTIVE_HOST}
+
 CMD sh -c "cd api && daphne -b 0.0.0.0 -p 8000 api.asgi:application"
