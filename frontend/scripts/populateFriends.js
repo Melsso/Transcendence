@@ -1,5 +1,4 @@
 const baseUrl = process.env.ACTIVE_HOST;
-import { launchSocket  } from "./chat.js";
 
 export async function getFriends() {
 	const access_token = localStorage.getItem('accessToken');

@@ -71,6 +71,7 @@ export function	launchSocket() {
 		window.userData.socket.onmessage = function(e) {
 			const data = JSON.parse(e.data);
 
+
 			if (window.userData.username === data.username) {
 				return ;
 			}
@@ -78,18 +79,27 @@ export function	launchSocket() {
 				return ;
 			}
 			var Chat = document.getElementById('collapseTwo');
-			if (Chat.classList.contains('show') && (data.target === window.userData.username)) {
+			if (Chat.classList.contains('show') && (data.target === window.userData.username || window.userData.target === 'Global')) {
 					;
 			}
 			else {
-				SpecialNotification('You received a message!',  data.message , data.username);
-			}
-			if (data.target === window.userData.username) {
-				if (window.userData.target !== data.username) {
-					messageContainer.innerHTML = '';
+				if (data.target !== 'Global') {
+					SpecialNotification('You received a message!',  data.message , data.username);				
 				}
-				window.userData.target = data.username;
+				else {
+					SpecialNotification('You received a message!',  data.message , 'Global');
+				}
 			}
+			if (data.target === window.userData.username || data.target === 'Global') {
+				if (data.target === 'Global' && window.userData.target !== 'Global') {
+					messageContainer.innerHTML = '';
+					window.userData.target = 'Global';
+				}
+				else if (data.target === window.userData.username && window.userData.target !== data.username) {
+					messageContainer.innerHTML = '';// change to not force clear
+						window.userData.target = data.username;
+					}
+				}
 			addMessage(data.message, false, data);
 		}
 
@@ -180,6 +190,9 @@ open.addEventListener('click', function () {
 	});			 
 	if (collapseElement.classList.contains('show')) {
 		bsCollapse.hide();
+		setTimeout(() => {
+			toast.hide();
+	  }, 1000);
 	}
 	else
 		bsCollapse.show();
