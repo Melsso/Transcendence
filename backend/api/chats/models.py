@@ -15,7 +15,7 @@ class Message(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_names='private_messages'
+        related_name='private_messages'
     )
 
     def __str__(self):

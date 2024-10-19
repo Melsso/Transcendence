@@ -304,6 +304,32 @@ async function sendFriendRequest(targetId) {
 	return data;
 }
 
+async function getMessages(targ_uname=null) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error('User is not authenticated');
+	}
+
+	let url = baseUrl + `api/MessageList/`;
+	if (targ_uname) { 
+		url = baseUrl + `api/MessageList/${targ_uname}/`;
+	}
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw new Error(errorResponse.detail || 'Failed to retrieve messages');
+	}
+	const data = await response.json();
+	return data;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 	const reg1 = document.getElementById('register-form-container');
     const log1 = document.getElementById('login-form-container');
