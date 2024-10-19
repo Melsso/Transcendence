@@ -38,5 +38,6 @@ list:
 fclean: stop
 	@echo "Removing all stopped containers..."
 	$(DOCKER)-compose down --rmi all --volumes --remove-orphans
+	find backend/api/media/avatars -mindepth 1 -delete
 
 re: fclean run
