@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY . .
 
+ARG ACTIVE_HOST
+ENV ACTIVE_HOST=${ACTIVE_HOST}
+
 RUN npm install
 RUN npm run build
 

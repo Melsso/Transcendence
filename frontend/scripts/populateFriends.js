@@ -1,5 +1,4 @@
-let baseUrl = 'http://10.11.5.15:80/';
-// let baseUrl = 'http://localhost:80/';
+const baseUrl = process.env.ACTIVE_HOST;;
 
 
 export async function getFriends() {

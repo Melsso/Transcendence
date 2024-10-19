@@ -3,14 +3,9 @@ import { loadFriends, getFriends } from "./populateFriends.js";
 // This variable is used to store user data
 window.userData = {};
 
-// require("dotenv").config();
-
-// console.log("first ", process.env.ACTIVE_HOST);
-
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
-const baseUrl = 'http://10.11.5.15:80/';
-// let baseUrl = 'http://localhost:80/';
+const baseUrl = process.env.ACTIVE_HOST;;
 
 // This is the function that fetches user data on homepage access
 async function homepageData() {
@@ -302,7 +297,7 @@ async function sendFriendRequest(targetId) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw new Error(errorResponse.detail);
 	}
 	const data = await response.json();
 	return data;
@@ -318,8 +313,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainSettings = document.getElementById('setting-page');
 	const mainSLgame = document.getElementById('S&L-page');
 	const mainPONGgame = document.getElementById('PONG-game');
-	
-	console.log('HALAW: ', process.env.ACTIVE_HOST);
 
 	mainOne.style.display = 'none';
 	mainTwo.style.display = 'flex';

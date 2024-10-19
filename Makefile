@@ -9,23 +9,23 @@ else ifeq ($(shell uname), Linux)
 	IP_COMMAND = hostname -I | awk '{print $$1}'
 endif
 
-ACTIVE_HOST = http://$(shell $(IP_COMMAND)):80
+ACTIVE_HOST = http://$(shell $(IP_COMMAND)):80/
 
 all: run
 
 build:
 	@echo "Building all images..."
-	$(DOCKER)-compose build
+	@echo "Active Host IP is: $(shell $(IP_COMMAND))"
+	ACTIVE_HOST=$(ACTIVE_HOST) $(DOCKER)-compose build --build-arg ACTIVE_HOST=$(ACTIVE_HOST)
 
 run: build
 	@echo "Running all containers..."
-	@echo "Active Host IP is: $(shell $(IP_COMMAND))"
-	ACTIVE_HOST=$(ACTIVE_HOST) $(DOCKER)-compose up -d
+	$(DOCKER)-compose up -d
 	@echo "Application is running in detached mode, use make stop to stop the running containers"
 
 start:
 	@echo "Starting containers..."
-	ACTIVE_HOST=$(ACTIVE_HOST) $(DOCKER)-compose start
+	$(DOCKER)-compose start
 
 stop:
 	@echo "Stopping containers..."

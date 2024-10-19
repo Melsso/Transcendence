@@ -5,6 +5,8 @@ services:
   backend:
     build:
       context: ./backend
+      args:
+        - ACTIVE_HOST=${ACTIVE_HOST}
     container_name: pong-backend-container
     command: > 
       sh -c "
@@ -47,11 +49,11 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        - ACTIVE_HOST=${ACTIVE_HOST}
     container_name: pong-frontend-container
     volumes:
       - ./backend/api/media:/usr/share/nginx/html/media
-    environment:
-      - ACTIVE_HOST=${ACTIVE_HOST}
     ports:
       - "0.0.0.0:80:80"
     depends_on:

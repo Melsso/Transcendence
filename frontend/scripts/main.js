@@ -15,4 +15,4 @@ import './RR-creater.js';
 import './RR.js';
 import './tmp.js';
 
-// Notification('ALLLO', 'lAEWIE', 1, 'alert');
+window.ACTIVE_HOST = process.env.ACTIVE_HOST;

@@ -54,7 +54,9 @@ class FriendRequestManager(generics.ListAPIView):
         if target_user is None:
             return Response({'detail':'No Such User'}, status=HTTP_400_BAD_REQUEST)
         
-        existing_request = Friend.objects.filter(user=user, friend=target_user).first()
+        existing_request = Friend.objects.filter(
+            Q(user=user, friend=target_user) | Q(user=target_user, friend=user)
+        ).first()
         if existing_request:
             return Response({'detail':'Already Sent A Request'}, status=HTTP_400_BAD_REQUEST)
 

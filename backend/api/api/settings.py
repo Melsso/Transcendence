@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from urllib.parse import urlparse
 import os
 from datetime import timedelta
 
@@ -27,11 +28,16 @@ SECRET_KEY = 'django-insecure-#1lpaxezqj4l$57m3zw*rca08wxxz+u(%drcf7myn)iy9-f8=g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0',
-    '10.11.5.15',
-    'localhost',
-    '127.0.0.1',
-    'backend',
+active_host = os.getenv('ACTIVE_HOST')
+parsed_url = urlparse(active_host)
+host_ip = parsed_url.hostname
+
+ALLOWED_HOSTS = [
+    # '0.0.0.0',
+    host_ip,
+    # 'localhost',
+    # '127.0.0.1',
+    # 'backend',
 ]
 
 LOGGING = {
