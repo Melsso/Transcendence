@@ -195,7 +195,7 @@ async function handleAction(action, targetId, userid, targetUname) {
 				messageContainer.innerHTML = '';
 				setTimeout(() => {
 					bsCollapse.show();
-				}, 1000);
+				}, 600);
 			}
 			else {
 				bsCollapse.show();

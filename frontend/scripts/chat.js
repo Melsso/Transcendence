@@ -17,9 +17,23 @@ function handleSend(username) {
 
 globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
+	var collapseElement = document.getElementById('collapseTwo');
+	var name = document.getElementById('chatName');
 	var name = document.getElementById('chatName');
 	if (window.userData.target !== 'Global') {
 		messageContainer.innerHTML = '';
+		var bsCollapse = new bootstrap.Collapse(collapseElement, {
+		toggle: false
+		});
+		if (collapseElement.classList.contains('show')) {
+			bsCollapse.hide();
+			setTimeout(() => {
+				bsCollapse.show();
+		  }, 600);
+		}
+		else {
+			bsCollapse.show();
+		}
 		try {
 			const result = await getMessages();
 			loadMessages(result["list"]);
@@ -89,37 +103,35 @@ export async function	launchSocket() {
 			}
 			else {
 				if (data.target !== 'Global') {
-					SpecialNotification('You received a message!',  data.message , data.username);				
+					SpecialNotification('You received a message!',  data.message , data.username);
+					return ;				
 				}
 				else {
 					SpecialNotification('You received a message!',  data.message , 'Global');
+					return ;
 				}
 			}
 			if (data.target === window.userData.username || data.target === 'Global') {
 				if (data.target === 'Global' && window.userData.target !== 'Global') {
-					// messageContainer.innerHTML = '';
-					// window.userData.target = 'Global';
-					// try {
-					// 	const result = await getMessages();
-					// 	loadMessages(result["list"]);
-					// } catch (error) {
-					// 	Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
-					// }
 					SpecialNotification('You received a message!',  data.message , 'Global');
 					return ;
 				}
 				else if (data.target === window.userData.username && window.userData.target !== data.username) {
-					// messageContainer.innerHTML = '';// change to not force clear
-					// window.userData.target = data.username;
 					SpecialNotification('You received a message!',  data.message , data.username);
 				}
+				else {
+					addMessage(data.message, false, data);
+				}
 			}
-			addMessage(data.message, false, data);
 		}
 
 	chatInput.addEventListener('keydown', function(event) {
 		if (event.key === 'Enter') {
 			event.preventDefault();
+			if (chatInput.value.length > 200) {
+				messageInput.value = messageInput.value.substring(0, 200);
+				Notification('Message Action', 'You have reached the limit of characters you can type per message!', 2, 'alert');
+			}
 			handleSend(window.userData.username);
 		}
 	});
@@ -209,7 +221,7 @@ open.addEventListener('click', async function () {
 		setTimeout(() => {
 			bsCollapse.show();
 			toast.hide();
-	  }, 1000);
+	  }, 600);
 	}
 	else {
 		bsCollapse.show();

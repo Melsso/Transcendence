@@ -32,6 +32,9 @@
 
 .message-container .message {
 	display: flex;
+	max-width: calc(50ch);
+	word-wrap: break-word;
+	white-space: pre-wrap;
 	align-items: center;
 	margin-bottom: 10px;
 }
@@ -47,6 +50,8 @@
 .message-container .message .message-content {
 	max-width: 70%;
 	padding: 10px;
+	font-size: 16px;  
+	line-height: 1.5; 
 	border-radius: 10px;
 	background-color: #e9ecef;
 }
