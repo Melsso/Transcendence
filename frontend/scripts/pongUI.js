@@ -22,6 +22,15 @@ window.Attack = {
 	direction: -1,
 	visible: false
 };
+window.PaddleBigger = {
+	x: 0,
+	y: 0,
+	width: 70,
+	height: 10,
+	speed: -2,
+	direction: -1,
+	visible: false
+};
 
 window.block = {
 	x: 0,
@@ -45,12 +54,47 @@ window.wasHit = false;
 window.aiDidHit = false;
 window.crossCount = 0;
 window.AttackCount = 0;
+window.BigPadCount = 0;
 window.sbVisible = false;
 window.abVisible = false;
 window.BallinBuff = false;
 window.BallinAttackBuff = false;
+window.BallinPadBigBuff = false;
 window.aiTargetY = null;
+window.GOscreen = false;
 
+function	redoGame(){
+	player1.score = 0;
+	player2.score = 0;
+	GOscreen = false;
+	restartGame();
+}
+
+document.addEventListener('keydown', (event) => {
+	if (GOscreen === true){
+		if (event.code === 'KeyR'){
+				console.log ("trying to do so");
+				redoGame();
+			}
+	}
+});
+document.addEventListener('keydown', (event) => {
+	if (GOscreen === true){
+		if (event.code === 'KeyQ'){
+				console.log ("trying to do so");
+				GOscreen = false;
+				gameover = false;
+				isingame = true;
+				inv_menu.style.display = 'none';
+				ai_menu.style.display = 'none';
+				menu.style.display = 'flex';
+				Instructions.style.display = 'none';
+				removeGameOverScreen();
+				player1.score = 0;
+				player2.score = 0;
+		}
+	}
+});
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Space'){
 		if (block.visible === true)
@@ -59,7 +103,6 @@ document.addEventListener('keydown', (event) => {
 		if (playerPaddle.hasanattack === 1){
 			block.x = playerPaddle.x + playerPaddle.width / 2 - block.width / 2;
 			block.y = playerPaddle.height / 2 + playerPaddle.y - block.height / 2;
-			console.log("shooting...");
 			playerPaddle.hasanattack = 0;
 		}
 		else
@@ -74,7 +117,6 @@ document.addEventListener('keydown', (event) => {
 		if (aiPaddle.aihasanattack === 1){
 			aiblock.x = aiPaddle.x + aiPaddle.width / 2 - aiblock.width / 2;
 			aiblock.y = aiPaddle.height / 2 + aiPaddle.y - aiblock.height / 2;
-			console.log("shooting....");
 			aiPaddle.aihasanattack = 0;
 		}
 		else
@@ -100,7 +142,6 @@ function	AttackPrediction(){
 		aiblock.visible = true;
 		aiblock.x = aiPaddle.x + aiPaddle.width / 2 - aiblock.width / 2;
 		aiblock.y = aiPaddle.height / 2 + aiPaddle.y - aiblock.height / 2;
-		console.log("shooting....");
 		aiPaddle.aihasanattack = 0;
 	}
 }
@@ -115,7 +156,6 @@ function didAiHit() {
 		aiblock.visible = false;
 		playerPaddle.height = playerPaddle.height / 2;
 		aiDidHit = true;
-		console.log("AI block hit the player paddle!");
 	}
 }
 
@@ -161,6 +201,11 @@ function randomizeAttackX() {
 	const rightBoundary = canvas.width * 0.8;
 	Attack.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
 }
+function randomizePadBigX() {
+	const leftBoundary = canvas.width * 0.2;
+	const rightBoundary = canvas.width * 0.8;
+	PaddleBigger.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
+}
 
 function movebuff() {
 	if (buff.visible) {
@@ -180,6 +225,16 @@ function moveAttackbuff() {
 		}
 	if (Attack.y + Attack.height > canvas.height)
 		Attack.visible = false;
+	}
+}
+function movePadBigbuff() {
+	if (PaddleBigger.visible) {
+		PaddleBigger.y += PaddleBigger.speed;
+		if (PaddleBigger.y + PaddleBigger.height <= 52) {
+			PaddleBigger.speed *= -1;
+		}
+	if (PaddleBigger.y + PaddleBigger.height > canvas.height)
+		PaddleBigger.visible = false;
 	}
 }
 
@@ -236,6 +291,20 @@ function giveAttackBuff(){
 	if (aiPaddle.aihasanattack === 1 && LastpaddletoHit === "Ai")
 		aiPaddle.aihasanattack = 1;
 }
+let doubled = false;
+let aidoubled = false;
+function givePadBigBuff(){
+	let heightx2 = playerPaddle.height * 2;
+	let aiheightx2 = aiPaddle.height * 2;
+	if (LastpaddletoHit === "player 1" && doubled != true){
+		playerPaddle.height = heightx2;
+		doubled = true;
+	}
+	else if (LastpaddletoHit === "Ai" && aidoubled != true){
+		aiPaddle.height = aiheightx2;
+		aidoubled = true;
+	}
+}
 
 function drawSpeedBuff() {
 	if (buff.visible) {
@@ -291,6 +360,33 @@ function drawAttackBuff() {
 		 Attack.visible = false;
 	}
 }
+function drawPadBigBuff() {
+	if (PaddleBigger.visible) {
+		 ctx.globalAlpha = 0.5;
+		 ctx.fillStyle = "cyan";
+		 ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
+	}
+	ctx.globalAlpha = 1.0;
+	if ((PaddleBigger.visible) &&
+		 ball.x + ball.radius > PaddleBigger.x && 
+		 ball.x - ball.radius < PaddleBigger.x + PaddleBigger.width && 
+		 ball.y + ball.radius > PaddleBigger.y && 
+		 ball.y - ball.radius < PaddleBigger.y + PaddleBigger.height) {
+			  if (!BallinPadBigBuff){}
+					BallinPadBigBuff = true;
+			  }
+			  else {
+					if (BallinPadBigBuff) {
+						 BallinPadBigBuff = false;
+						 BigPadCount++;
+						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
+							  givePadBigBuff();
+						 }
+					}
+	if (BigPadCount === 2) {
+		PaddleBigger.visible = false;
+	}
+}
 
 function drawTimer() {
 	ctx.font = '20px Arial';
@@ -339,13 +435,9 @@ function moveAIPaddleEasy() {
 		 aiPaddle.y += aiPaddle.dy;
 	}
 }
-function endGame(winnerMessage) {
-	gameActive = false; // Stop the game
-	alert(winnerMessage); // Display the winner
-	// Additional logic to reset the game or show a menu can be added here
-}
 function gameOverScreen(){
 	if (player1.score === 1){
+		GOscreen = true;
 		showGameOverScreen();
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
@@ -360,8 +452,8 @@ function gameOverScreen(){
 		isingame = false;
 	}
 	else if (player2.score === 1){
-		// endGame("Winner player 2");
 		showGameOverScreen();
+		GOscreen = true;
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#ffffff';
 		ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
@@ -375,29 +467,25 @@ function gameOverScreen(){
 		isingame = false;
 	}
 }
-function showGameOverScreen() {
+function removeGameOverScreen() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-
-	// Draw background (optional)
-	ctx.fillStyle = '#000'; // Black background
+	GOscreen = false; // Hide game over screen
+	gameover = false; // Reset game over flag
+	console.log("we made it here");
+	isingame = true; // Set the game as active again
+}
+function showGameOverScreen() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = '#000';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-	// Draw Game Over text
-	ctx.font = '195px "PixelFont", sans-serif'; // Make sure to load the pixel font
-	ctx.fillStyle = '#ffffff'; // Bright yellow color
+	const	font_size = canvas.width * 0.15;
+	ctx.font = `${font_size}px "PixelFont", sans-serif`;
+	ctx.fillStyle = '#ffffff';
 	ctx.textAlign = 'center';
-	ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 250);
-	// drawButton('Play Again', canvas.width / 2 - 100, canvas.height / 2, 200, 50);
-	// Draw scores
-	//ctx.font = '50px "PixelFont", sans-serif';
-	//ctx.fillStyle = '#ffffff'; // White color
-	//ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
-	//ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
-
-	// Draw restart message
+	ctx.fillText('GAME OVER', canvas.width * 0.5, canvas.height * 0.3);
 	ctx.font = '24px "PixelFont", sans-serif';
-	ctx.fillStyle = '#ff0000'; // Red color
-	ctx.fillText('yemak tmedha ?', canvas.width / 2, canvas.height / 2 + 500);
+	ctx.fillStyle = '#ff0000';
+	ctx.fillText('Press R to replay, Q to go back to main menu', canvas.width / 2, canvas.height / 2 + 500);
 }
 
 
