@@ -457,17 +457,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	registerButton.addEventListener('click', async function () {
 		const avatarInput = document.getElementById('avatar');
-		if (avatarInput.files.length === 0) {
-			Notification('Profile Action', 'Please select an avatar image to upload.',1, 'alert');
-			return;
-	  	}
+		const avatarSelectionResult = document.getElementById('avatar-selection-result');
+		const selectedImage = avatarSelectionResult.querySelector('img');
 		const verification_code = document.getElementById('verification-code').value;
 		
 		const formData = new FormData();
 		formData.append('code', verification_code);
 		formData.append('email', userEmail);
-		formData.append('avatar', avatarInput.files[0]);
-		
+
+		if (avatarInput.files.length > 0) {
+			formData.append('avatar', avatarInput.files[0]);
+	  } else if (selectedImage) {
+			try {
+				const response = await fetch(selectedImage.src); 
+				const blob = await response.blob(); 
+				const file = new File([blob], selectedImage.src.split('/').pop(), { type: blob.type }) 
+				formData.append('avatar', file);  
+		  	} catch (error) {
+				Notification('Profile Action', `Failed to fetch preset avatar: ${error}`, 1, 'alert');
+				return;
+		  	}
+	  } else {
+			Notification('Profile Action', 'Please select an avatar image to upload.', 1, 'alert');
+			return;
+	  }
 		try {
 			const result = await verifyEmail(formData);
 			navigateTo('login', null);

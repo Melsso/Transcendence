@@ -253,14 +253,12 @@ export function loadMessages(data) {
 		if (window.userData.username === message.username) {
 			messageElement.classList.add('right');
 			avatarElement.src = window.userData.avatar;
-			console.log('te3i', avatarElement.src);
 			avatarElement.alt = message.username;
 		}
 		else {
 			messageElement.classList.add('left');
 			const avtar = 'media/' + message.avatar;
 			avatarElement.src = avtar;
-			console.log('te3o', avatarElement.src);
 			avatarElement.alt = message.username;
 		}
 
