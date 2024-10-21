@@ -1,3 +1,5 @@
+import { getMessages, loadMessages } from "./chat";
+
 const baseUrl = process.env.ACTIVE_HOST;
 
 export async function getFriends() {
@@ -182,17 +184,34 @@ async function handleAction(action, targetId, userid, targetUname) {
 			}
 			break;
 		case 'Send a Message':
+			
 			var name = document.getElementById('chatName');
-			name.textContent = targetUname;
 			var collapseElement = document.getElementById('collapseTwo');
 			var bsCollapse = new bootstrap.Collapse(collapseElement, {
-				toggle: false
+			toggle: false
 			});			 
-			bsCollapse.show();
-			if (targetUname !== window.userData.target) {
+			if (collapseElement.classList.contains('show') && targetUname !== window.userData.target) {
+				bsCollapse.hide();
 				messageContainer.innerHTML = '';
+				setTimeout(() => {
+					bsCollapse.show();
+				}, 1000);
 			}
-			window.userData.target = targetUname;
+			else {
+				bsCollapse.show();
+			}
+			name.textContent = targetUname;
+			if (targetUname !== window.userData.target) {
+				window.userData.target = targetUname;
+				messageContainer.innerHTML = '';
+				try {
+					const result = await getMessages(targetUname);
+					loadMessages(result["list"]);
+				}catch (error) {
+					Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+					break ;
+				}
+			}
 			break;
 			case 'View Profile':
 				Notification('Profile Action', "Profile call", 2, 'message');

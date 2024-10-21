@@ -9,7 +9,7 @@ let tar;
 function handleSend(username) {
 	chatInput.focus();
 	const message = chatInput.value; 	
-	window.userData.socket.send(JSON.stringify({ message: message, username : username, target: window.userData.target}));
+	window.userData.socket.send(JSON.stringify({ message: message, username : username, target: window.userData.target, av: window.userData.avatar}));
 	addMessage(message, true, null);
 	chatInput.value = ''; 
 }
@@ -46,7 +46,7 @@ function addMessage(message, isSender = false, data) {
 	 
 	const avatarElement = document.createElement('img');
 
-	avatarElement.src = isSender ? window.userData.avatar : 'assets/receiver-avatar.svg';
+	avatarElement.src = isSender ? window.userData.avatar : data.av;
 	avatarElement.alt = isSender ? window.userData.username : data.username;
 
 	const contentElement = document.createElement('div');
@@ -85,7 +85,7 @@ export async function	launchSocket() {
 			}
 			var Chat = document.getElementById('collapseTwo');
 			if (Chat.classList.contains('show') && (data.target === window.userData.username || window.userData.target === 'Global')) {
-					;
+				;
 			}
 			else {
 				if (data.target !== 'Global') {
@@ -97,24 +97,23 @@ export async function	launchSocket() {
 			}
 			if (data.target === window.userData.username || data.target === 'Global') {
 				if (data.target === 'Global' && window.userData.target !== 'Global') {
-					messageContainer.innerHTML = '';
-					window.userData.target = 'Global';
-					try {
-						console.log('9bel');
-						const result = await getMessages();
-						console.log('apres');
-						console.log(result);
-						loadMessages(result["list"]);
-					} catch (error) {
-						Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
-					}
+					// messageContainer.innerHTML = '';
+					// window.userData.target = 'Global';
+					// try {
+					// 	const result = await getMessages();
+					// 	loadMessages(result["list"]);
+					// } catch (error) {
+					// 	Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+					// }
+					SpecialNotification('You received a message!',  data.message , 'Global');
 					return ;
 				}
 				else if (data.target === window.userData.username && window.userData.target !== data.username) {
-					messageContainer.innerHTML = '';// change to not force clear
-						window.userData.target = data.username;
-					}
+					// messageContainer.innerHTML = '';// change to not force clear
+					// window.userData.target = data.username;
+					SpecialNotification('You received a message!',  data.message , data.username);
 				}
+			}
 			addMessage(data.message, false, data);
 		}
 
@@ -198,35 +197,43 @@ function SpecialNotification(title, message, target) {
 		 toast.hide();
 	}, 5000);
 }
-open.addEventListener('click', function () {
+open.addEventListener('click', async function () {
 	var collapseElement = document.getElementById('collapseTwo');
 	var name = document.getElementById('chatName');
+	messageContainer.innerHTML = '';
 	var bsCollapse = new bootstrap.Collapse(collapseElement, {
 	toggle: false
-	});			 
+	});
 	if (collapseElement.classList.contains('show')) {
 		bsCollapse.hide();
 		setTimeout(() => {
+			bsCollapse.show();
 			toast.hide();
-	  }, 5000);
+	  }, 1000);
 	}
-	else
+	else {
 		bsCollapse.show();
+	}
 	window.userData.target = tar;
 	name.textContent = tar;
-})
+	try {
+		const result = await getMessages(tar);
+		loadMessages(result["list"]);
+	} catch (error) {
+		Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+	}
+});
 
-export async function getMessages(targ_uname=null) {
+export async function getMessages(uname=null) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error('User is not authenticated');
 	}
 
 	let url = baseUrl + `api/MessageList/`;
-	if (targ_uname) { 
-		url = baseUrl + `api/MessageList/${targ_uname}/`;
+	if (uname && uname !== 'Global') { 
+		url = baseUrl + `api/MessageList/${uname}/`;
 	}
-	console.log(url);
 	const response = await fetch(url, {
 		method: 'GET',
 		headers: {
@@ -238,7 +245,6 @@ export async function getMessages(targ_uname=null) {
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		throw new Error(errorResponse.detail || 'Failed to retrieve messages');
-
 	}
 	const data = await response.json();
 	return data;
@@ -273,6 +279,8 @@ export function loadMessages(data) {
 		if (messageContainer.children.length > 1) {
 			noChat.style.display = 'none';
 		}
-		messageContainer.scrollTop = messageContainer.scrollHeight;
+		requestAnimationFrame(() => {
+			messageContainer.scrollTop = messageContainer.scrollHeight;
+		});
 	});
 }
