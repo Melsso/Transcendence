@@ -208,7 +208,7 @@ open.addEventListener('click', function () {
 		bsCollapse.hide();
 		setTimeout(() => {
 			toast.hide();
-	  }, 1000);
+	  }, 5000);
 	}
 	else
 		bsCollapse.show();
@@ -252,13 +252,17 @@ export function loadMessages(data) {
 		const avatarElement = document.createElement('img');
 		if (window.userData.username === message.username) {
 			messageElement.classList.add('right');
+			avatarElement.src = window.userData.avatar;
+			console.log('te3i', avatarElement.src);
+			avatarElement.alt = message.username;
 		}
 		else {
 			messageElement.classList.add('left');
+			const avtar = 'media/' + message.avatar;
+			avatarElement.src = avtar;
+			console.log('te3o', avatarElement.src);
+			avatarElement.alt = message.username;
 		}
-		const avtar = '../backend/api/media/' + message.avatar;
-		avatarElement.src = avtar;
-		avatarElement.alt = message.username;
 
 		const contentElement = document.createElement('div');
 		contentElement.classList.add('message-content');
