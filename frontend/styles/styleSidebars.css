@@ -208,3 +208,10 @@
 	border-radius: 10%;
 	border: none;
 }
+
+.chatName {
+	font-weight: bold; 
+	display: inline-block;
+	text-align: center;
+	width: 100%;
+}

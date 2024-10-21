@@ -4,6 +4,7 @@ const sendButton = document.getElementById('send-button');
 const noChat = document.getElementById('no-chat');
 const globalbtn = document.getElementById('revert_to_global');
 const open = document.createElement('button');
+const baseUrl = process.env.ACTIVE_HOST;
 let tar;
 function handleSend(username) {
 	chatInput.focus();
@@ -14,18 +15,22 @@ function handleSend(username) {
 }
 
 
-globalbtn.addEventListener('click', function(event) {
+globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
-	console.log("kifech kemlt", window.userData.target);
+	var name = document.getElementById('chatName');
 	if (window.userData.target !== 'Global') {
 		messageContainer.innerHTML = '';
+		try {
+			const result = await getMessages();
+			loadMessages(result["list"]);
+		} catch (error) {
+			Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+		}
 		window.userData.target = 'Global';
-		console.log("GLOBVAL");
+		name.textContent = 'Global';
 		return ;
-		//load global chat
 	}
 	else {
-		console.log("NOT GOLBAL");
 		Notification('Message Action', 'You are already in the global chat room!', 2, 'alert');
 		return ;
 	}
@@ -58,7 +63,7 @@ function addMessage(message, isSender = false, data) {
 	messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
-export function	launchSocket() {
+export async function	launchSocket() {
 		window.userData.socket.onopen = function(e) {
 			console.log("socket on");
 		}
@@ -68,7 +73,7 @@ export function	launchSocket() {
 		}
 		
 		
-		window.userData.socket.onmessage = function(e) {
+		window.userData.socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
 
 
@@ -94,6 +99,16 @@ export function	launchSocket() {
 				if (data.target === 'Global' && window.userData.target !== 'Global') {
 					messageContainer.innerHTML = '';
 					window.userData.target = 'Global';
+					try {
+						console.log('9bel');
+						const result = await getMessages();
+						console.log('apres');
+						console.log(result);
+						loadMessages(result["list"]);
+					} catch (error) {
+						Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+					}
+					return ;
 				}
 				else if (data.target === window.userData.username && window.userData.target !== data.username) {
 					messageContainer.innerHTML = '';// change to not force clear
@@ -185,6 +200,7 @@ function SpecialNotification(title, message, target) {
 }
 open.addEventListener('click', function () {
 	var collapseElement = document.getElementById('collapseTwo');
+	var name = document.getElementById('chatName');
 	var bsCollapse = new bootstrap.Collapse(collapseElement, {
 	toggle: false
 	});			 
@@ -197,4 +213,64 @@ open.addEventListener('click', function () {
 	else
 		bsCollapse.show();
 	window.userData.target = tar;
+	name.textContent = tar;
 })
+
+export async function getMessages(targ_uname=null) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error('User is not authenticated');
+	}
+
+	let url = baseUrl + `api/MessageList/`;
+	if (targ_uname) { 
+		url = baseUrl + `api/MessageList/${targ_uname}/`;
+	}
+	console.log(url);
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw new Error(errorResponse.detail || 'Failed to retrieve messages');
+
+	}
+	const data = await response.json();
+	return data;
+}
+
+export function loadMessages(data) {
+	data.forEach(message => {
+		if (message.content.trim() === '') return;
+		const messageElement = document.createElement('div');
+		messageElement.classList.add('message');
+		const avatarElement = document.createElement('img');
+		if (window.userData.username === message.username) {
+			messageElement.classList.add('right');
+		}
+		else {
+			messageElement.classList.add('left');
+		}
+		const avtar = '../backend/api/media/' + message.avatar;
+		avatarElement.src = avtar;
+		avatarElement.alt = message.username;
+
+		const contentElement = document.createElement('div');
+		contentElement.classList.add('message-content');
+		contentElement.textContent = message.content;
+
+		messageElement.appendChild(contentElement);
+		messageElement.appendChild(avatarElement);
+		messageContainer.appendChild(messageElement);
+
+		if (messageContainer.children.length > 1) {
+			noChat.style.display = 'none';
+		}
+		messageContainer.scrollTop = messageContainer.scrollHeight;
+	});
+}

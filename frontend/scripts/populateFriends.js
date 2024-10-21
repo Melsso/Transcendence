@@ -182,6 +182,8 @@ async function handleAction(action, targetId, userid, targetUname) {
 			}
 			break;
 		case 'Send a Message':
+			var name = document.getElementById('chatName');
+			name.textContent = targetUname;
 			var collapseElement = document.getElementById('collapseTwo');
 			var bsCollapse = new bootstrap.Collapse(collapseElement, {
 				toggle: false

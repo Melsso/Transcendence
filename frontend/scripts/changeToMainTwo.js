@@ -1,6 +1,6 @@
 import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
-import { launchSocket  } from "./chat.js";
+import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 // This variable is used to store user data
 window.userData = {};
 
@@ -304,31 +304,6 @@ async function sendFriendRequest(targetId) {
 	return data;
 }
 
-async function getMessages(targ_uname=null) {
-	const access_token = localStorage.getItem('accessToken');
-	if (!access_token) {
-		throw new Error('User is not authenticated');
-	}
-
-	let url = baseUrl + `api/MessageList/`;
-	if (targ_uname) { 
-		url = baseUrl + `api/MessageList/${targ_uname}/`;
-	}
-	const response = await fetch(url, {
-		method: 'GET',
-		headers: {
-			'Authorization': `Bearer ${access_token}`,
-			'Content-Type': 'application/json',
-		},
-	});
-
-	if (!response.ok) {
-		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail || 'Failed to retrieve messages');
-	}
-	const data = await response.json();
-	return data;
-}
 
 document.addEventListener('DOMContentLoaded', function () {
 	const reg1 = document.getElementById('register-form-container');
@@ -392,8 +367,9 @@ document.addEventListener('DOMContentLoaded', function () {
 					userData["target"] = "Global";
 					launchSocket();
 					sendFriendRequestButton.style.display = 'none';
-
 					loadProfile(result);
+					const res = await getMessages();
+					loadMessages(res["list"]);
 				}
 				else {
 					const calleruser = data['user'];
@@ -403,8 +379,9 @@ document.addEventListener('DOMContentLoaded', function () {
 					else {
 						sendFriendRequestButton.style.display = 'none';
 					}
-					
 					loadProfile(data);
+					const res = await getMessages();
+					loadMessages(res["list"]);
 				}
 			
 				mainTwo.style.display = 'flex';

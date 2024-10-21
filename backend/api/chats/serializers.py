@@ -26,8 +26,8 @@ class FriendSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='sender.username', read_only=True)
     avatar = serializers.CharField(source='sender.avatar', read_only=True)
-    message = serializers.CharField(source='sender.content')
+    content = serializers.CharField()
 
     class Meta:
         model = Message
-        fields = ['username', 'avatar', 'message', 'time_stamp']
+        fields = ['username', 'avatar', 'content', 'timestamp']
