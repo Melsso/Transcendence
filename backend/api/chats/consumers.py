@@ -31,17 +31,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = text_data_json["username"]
         target = text_data_json["target"]
         
-        user = UserProfile.objects.get(username=username)
+        user = await database_sync_to_async(self.get_user)(username)
 
         if target == 'Global':
-            Message.objects.create(
+            await database_sync_to_async(Message.objects.create)(
                 sender=user,
                 content=message,
-                target_user=null
+                target_user=None
             )
         else:
-            targ = UserProfile.objects.get(username=target)
-            Message.objects.create(
+            targ = await database_sync_to_async(self.get_user)(target)
+            await database_sync_to_async(Message.objects.create)(
                 sender=user,
                 content=message,
                 target_user=targ
@@ -61,3 +61,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = event["username"]
         target = event["target"]
         await self.send(text_data=json.dumps({"message":message, "username":username, "target":target}))
+    
+    def get_user(self, username):
+        return UserProfile.objects.get(username=username)

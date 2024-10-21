@@ -32,6 +32,8 @@ function showLoginForm(logButton, regButton) {
     document.getElementById('login-form-container').style.display = 'block';
 }
 
+
+
 // const mainTwo = document.getElementById('mainTwo');
 
 // const observer = new MutationObserver(() => {
@@ -73,7 +75,7 @@ function Notification(title, message, file,type) {
             header.style.backgroundColor = 'rgba(76, 39, 133, 0.5)';
             break;
         case 'message':
-            header.style.backgroundColor = 'rgba(25, 110, 238, 0.5)';
+            header.style.backgroundColor = 'rgba(25, 110, 238, 0.5)';            
             break;
         case 'profile':
             header.style.backgroundColor = 'rgba(230, 230, 38, 0.5)';
