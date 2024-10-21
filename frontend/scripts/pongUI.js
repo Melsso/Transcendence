@@ -53,9 +53,9 @@ window.aiTargetY = null;
 
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Space'){
-		 if (block.visible === true)
-			  return;
-		 block.visible = true;
+		if (block.visible === true)
+			return;
+		block.visible = true;
 		if (playerPaddle.hasanattack === 1){
 			block.x = playerPaddle.x + playerPaddle.width / 2 - block.width / 2;
 			block.y = playerPaddle.height / 2 + playerPaddle.y - block.height / 2;
@@ -68,13 +68,14 @@ document.addEventListener('keydown', (event) => {
 });
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Enter'){
-		 if (aiblock.visible === true)
-			  return;
-		 aiblock.visible = true;
+		if (aiblock.visible === true)
+			return;
+		aiblock.visible = true;
 		if (aiPaddle.aihasanattack === 1){
 			aiblock.x = aiPaddle.x + aiPaddle.width / 2 - aiblock.width / 2;
 			aiblock.y = aiPaddle.height / 2 + aiPaddle.y - aiblock.height / 2;
 			console.log("shooting....");
+			aiPaddle.aihasanattack = 0;
 		}
 		else
 			return ;
@@ -93,49 +94,60 @@ function didItHit(){
 			wasHit = true;
 		}
 }
+
+function	AttackPrediction(){
+	if (aiPaddle.y === playerPaddle.y && aiPaddle.aihasanattack === 1){
+		aiblock.visible = true;
+		aiblock.x = aiPaddle.x + aiPaddle.width / 2 - aiblock.width / 2;
+		aiblock.y = aiPaddle.height / 2 + aiPaddle.y - aiblock.height / 2;
+		console.log("shooting....");
+		aiPaddle.aihasanattack = 0;
+	}
+}
+
 function didAiHit() {
 	if (aiDidHit === true)
-		 return;
+		return;
 	if (aiblock.visible === true &&
-		 (aiblock.x <= playerPaddle.x + playerPaddle.width) &&
-		 (aiblock.y >= playerPaddle.y) && 
-		 (aiblock.y <= playerPaddle.y + playerPaddle.height)) {
-		 aiblock.visible = false;
-		 playerPaddle.height = playerPaddle.height / 2;
-		 aiDidHit = true;
-		 console.log("AI block hit the player paddle!");
+		(aiblock.x <= playerPaddle.x + playerPaddle.width) &&
+		(aiblock.y >= playerPaddle.y) && 
+		(aiblock.y <= playerPaddle.y + playerPaddle.height)) {
+		aiblock.visible = false;
+		playerPaddle.height = playerPaddle.height / 2;
+		aiDidHit = true;
+		console.log("AI block hit the player paddle!");
 	}
 }
 
 function moveBlock() {
 	if (block.visible) {
-		 block.x += block.speed;
+		block.x += block.speed;
 
-		 if (block.x + block.width >= canvas.width) {
-			  block.visible = false;
-		 }
+		if (block.x + block.width >= canvas.width) {
+			block.visible = false;
+		}
 	}
 }
 function moveaiBlock() {
 	if (aiblock.visible) {
-		 aiblock.x -= aiblock.speed; 
+		aiblock.x -= aiblock.speed; 
 
-		 if (aiblock.x + aiblock.width <= 0) {
-			  aiblock.visible = false;
-		 }
+		if (aiblock.x + aiblock.width <= 0) {
+			aiblock.visible = false;
+		}
 	}
 }
 
 function drawBlock() {
 	if (block.visible) {
-		 ctx.fillStyle = 'blue';
-		 ctx.fillRect(block.x, block.y, block.width, block.height);
+		ctx.fillStyle = 'blue';
+		ctx.fillRect(block.x, block.y, block.width, block.height);
 	}
 }
 function drawaiBlock() {
 	if (aiblock.visible) {
-		 ctx.fillStyle = 'green';
-		 ctx.fillRect(aiblock.x, aiblock.y, aiblock.width, aiblock.height);
+		ctx.fillStyle = 'green';
+		ctx.fillRect(aiblock.x, aiblock.y, aiblock.width, aiblock.height);
 	}
 }
 
@@ -152,22 +164,22 @@ function randomizeAttackX() {
 
 function movebuff() {
 	if (buff.visible) {
-		 buff.y += buff.speed;
-		 if (buff.y + buff.height <= 52) {
-			  buff.speed *= -1;
-		 }
+		buff.y += buff.speed;
+		if (buff.y + buff.height <= 52) {
+			buff.speed *= -1;
+		}
 	if (buff.y + buff.height > canvas.height)
-		 buff.visible = false;
+		buff.visible = false;
 	}
 }
 function moveAttackbuff() {
 	if (Attack.visible) {
-		 Attack.y += Attack.speed;
-		 if (Attack.y + Attack.height <= 52) {
-			  Attack.speed *= -1;
-		 }
+		Attack.y += Attack.speed;
+		if (Attack.y + Attack.height <= 52) {
+			Attack.speed *= -1;
+		}
 	if (Attack.y + Attack.height > canvas.height)
-		 Attack.visible = false;
+		Attack.visible = false;
 	}
 }
 
@@ -185,27 +197,34 @@ function drawScoreBoard() {
 	image2.src = player2.icon;
 	
 
-		ctx.drawImage(image1, 10, 5, 40, 40);
-		 ctx.font = '20px Arial';
-		 ctx.fillStyle = 'white';
-		 ctx.fillText('Player 1', 100, 30);
-		 ctx.fillText(player1.score, 220, 30);
+	 	ctx.drawImage(image1, 10, 5, 40, 40);
+	ctx.font = '20px Arial';
+	ctx.fillStyle = 'white';
+	// ctx.fillText('Player 1', 100, 30);
+	// ctx.fillText(player1.score, 220, 30);
+	ctx.fillText('Player 1', 10*canvas.width/100, 30);
+	ctx.fillText(player1.score, 18*canvas.width/100, 30);
 
-		 ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
-		 ctx.font = '20px Arial';
-		 ctx.fillStyle = 'white';
-		 ctx.fillText('Player 2', canvas.width - 100, 30);
-		 ctx.fillText(player2.score, canvas.width - 220, 30); 
+	// ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+	ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+	
+	ctx.font = '20px Arial';
+	ctx.fillStyle = 'white';
+	// ctx.fillText('Player 2', canvas.width - 100, 30);
+	// ctx.fillText(player2.score, canvas.width - 220, 30); 
+	ctx.fillText('Player 2', 90*canvas.width/100, 30);
+	ctx.fillText(player2.score, 82*canvas.width/100, 30); 
+
 }
 function giveSpeedBuff(){
 	if (LastpaddletoHit === "player 1")
-		 playerPaddle.dy = 12;
+		playerPaddle.dy = 12;
 	else if (LastpaddletoHit === "Ai")
-		 aiPaddle.dy = 12;
+		aiPaddle.dy = 12;
 	if (playerPaddle.dy === 20 && LastpaddletoHit === "player 1")
-		 playerPaddle.dy = 20;
+		playerPaddle.dy = 20;
 	if (playerPaddle.dy === 20 && LastpaddletoHit === "Ai")
-		 aiPaddle.dy = 12;
+		aiPaddle.dy = 12;
 }
 function giveAttackBuff(){
 	if (LastpaddletoHit === "player 1")
@@ -280,7 +299,14 @@ function drawTimer() {
 	ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
 }
 function moveAIPaddleHard() {
-
+	if (aiPaddle.aihasanattack === 1){
+		if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048) {
+			aiPaddle.y -= aiPaddle.dy;
+	  } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
+			aiPaddle.y += aiPaddle.dy;
+			}
+		AttackPrediction();
+	}
 	let predictedY = Prediction();
 	if (aistop)
 		 return ;
@@ -288,26 +314,28 @@ function moveAIPaddleHard() {
 	const tolerance = 3;
 
 		 if (Math.abs(aiPaddle.y + aiPaddle.height / 2 - predictedY) > tolerance) {
-			  if (predictedY < aiPaddle.y + aiPaddle.height / 2) {
+			  if (predictedY < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048) {
 					aiPaddle.y -= aiPaddle.dy;
-			  } else if (predictedY > aiPaddle.y + aiPaddle.height / 2) {
+			  } else if (predictedY > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
 					aiPaddle.y += aiPaddle.dy;
 			  }
 	}
 }
 function moveAIPaddlemid() {
+	AttackPrediction();
 	if (aistop)
 		 return;
-		 if (ball.y < aiPaddle.y + aiPaddle.height / 2)
+		 if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048)
 			  aiPaddle.y -= aiPaddle.dy;
-		 else if (ball.y >= aiPaddle.y + aiPaddle.height / 2)
+		 else if (ball.y >= aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040)
 			  aiPaddle.y += aiPaddle.dy;
 }
 
 function moveAIPaddleEasy() {
-	if (ball.y < aiPaddle.y + aiPaddle.height / 2) {
+	AttackPrediction();
+	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048) {
 		 aiPaddle.y -= aiPaddle.dy;
-	} else if (ball.y > aiPaddle.y + aiPaddle.height / 2) {
+	} else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
 		 aiPaddle.y += aiPaddle.dy;
 	}
 }
@@ -408,15 +436,13 @@ aibutton.addEventListener('click', function () {
 function	moveAIPaddle(difficulty){
 	switch (difficulty) {
 		case 'easy':
-			 moveAIPaddleEasy();
-			 break;
+			moveAIPaddleEasy();
+			break;
 		case 'medium':
-			 moveAIPaddlemid();
-			 break;
+			moveAIPaddlemid();
+			break;
 		case 'hard':
-			 moveAIPaddleHard();
-			 break;
-			 if (aiPaddle.y < 150) {
-				aiPaddle.y = 70; }
+			moveAIPaddleHard();
+			break;
   }
 }
