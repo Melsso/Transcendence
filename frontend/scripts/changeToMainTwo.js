@@ -71,7 +71,7 @@ async function registerUser(username, password, email) {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
-			username: username,
+			email: username,
 			password: password,
 			email: email,
 		}),
@@ -85,6 +85,25 @@ async function registerUser(username, password, email) {
 
 	const data = await response.json();
 	return data;
+}
+
+async function resetPassowrd(email, password, verf_code) {
+	const url = baseUrl + 'api/reset-password/';
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			verf_code: verf_code,
+			password: password,
+			email: email,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw new Error(errorResponse);
+	}
 }
 
 async function updateUsername(uname) {
@@ -191,6 +210,24 @@ async function updateMail(new_mail) {
 	}
 	const data = await response.json();
 	return data;
+}
+
+async function checkEmail(email) {
+	const url = baseUrl + 'api/forgot/';
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			email: email,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		console.log(errorResponse.detail);
+		throw new Error(errorResponse.detail);
+	}
 }
 
 // This is the function that fetches user data on login
@@ -315,14 +352,20 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainSettings = document.getElementById('setting-page');
 	const mainSLgame = document.getElementById('S&L-page');
 	const mainPONGgame = document.getElementById('PONG-game');
+	const forgotcontainer = document.getElementById('forgot-container');
+	const newpass = document.getElementById('create-new-pass');
 
 	mainOne.style.display = 'none';
+	log1.style.display = 'none';
+	forgotcontainer.style.display = 'none';
+	newpass.style.display = 'none';
 	mainTwo.style.display = 'flex';
 	mainBody.style.display = 'flex';
 	mainSettings.style.display = 'none';
 	mainSLgame.style.display = 'none';
 	mainPONGgame.style.display = 'none';
 	
+	const confirmButton = document.getElementById('pass-verf-code');
 	const loginButton = document.getElementById('login');
 	const profileButton = document.getElementById('to-profile');
 	const registerButton = document.getElementById('register');
@@ -337,9 +380,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	const updatePwdButton = document.getElementById('updatePwd-btn');
 	const friendButton = document.getElementById('friend-list-btn');
 	const sendFriendRequestButton = document.getElementById('add-friend');
-
+	const TonewpassButton = document.getElementById('to-new-pass');
+	const	forgotButton = document.getElementById('forgot-btn');
 
 	async function showView(view, data) {
+		forgotcontainer.style.display = 'none';
+		newpass.style.display = 'none';
 		reg1.style.display = 'none';
 		log1.style.display = 'none';
 		reg2.style.display = 'none';
@@ -402,6 +448,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else if (view === 'register') {
 			mainOne.style.display = 'flex';
 			reg2.style.display = 'block';
+		} else if (view == 'forgot') {
+			mainOne.style.display = 'flex';
+			forgotcontainer.style.display = 'block';
 		}
 	}
 
@@ -416,6 +465,42 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
+	forgotButton.addEventListener('click', function() {
+		navigateTo('forgot', null);
+	});
+
+	TonewpassButton.addEventListener('click', async function() {
+		const input_email = document.getElementById('forgotmail').value;
+		try {
+			await checkEmail(input_email);
+			document.getElementById('forgot-container').style.display = 'none';
+			document.getElementById('create-new-pass').style.display = 'block';
+		}catch(error) {
+			Notification('Profile Action', 'This email doesn\'t belong to any account!', 1, 'alert');
+		}
+		confirmButton.addEventListener('click', async function() {
+			const new_pass = document.getElementById('New Password-R').value;
+			const conf_new = document.getElementById('Confirm-New-Password').value;
+			const verf = document.getElementById('verf-code').value;
+			if (new_pass !== conf_new){
+				Notification('Profile Action', 'Make sure the new passwords match!', 1, 'alert');
+				return;
+			}
+			if (!verf) {
+				Notification('Profile Action', 'Make sure you type the correct verification code!', 1, 'alert');
+				return ;
+			}
+			try {
+				await resetPassowrd(input_email, new_pass, verf);
+				Notification('Profile Action', 'You have changed your password successfully!', 1, 'profile');
+				navigateTo('login', null);
+			}catch (error) {
+				Notification('Profile Action', 'Wrong verification code!', 1, 'alert');
+			}
+	
+		});
+	});
+
 	loginButton.addEventListener('click', async function () {
 		const username = document.getElementById('username-login').value;
 		const password = document.getElementById('password-login').value;
@@ -423,14 +508,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await loginUser(username, password);
 			const tokens = result.tokens;
-			localStorage.setItem('accessToken', tokens.access)
-			localStorage.setItem('refreshToken', tokens.refresh)
-			
-			// We redirect to home page
+			localStorage.setItem('accessToken', tokens.access);
+			localStorage.setItem('refreshToken', tokens.refresh);
 			navigateTo('profile', null);
 		} catch (error) {
 			Notification('Profile Action', `Failed to login because: ${error}`, 1,'alert');
 		}
+		
 	});
 
 	nextButton.addEventListener('click', async function () {

@@ -1,5 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_200_OK,
@@ -189,3 +191,60 @@ class LogoutView(generics.GenericAPIView):
             return Response({'detail': str(e)}, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'detail': str(e)}, status=HTTP_400_BAD_REQUEST)
+
+class ForgotPasswordView(generics.GenericAPIView):
+
+    def post(self, request):
+        try:
+            email = request.data.get("email")
+            if email is None:
+                return Response({'detail': "No email"}, status=HTTP_400_BAD_REQUEST)
+
+            user = UserProfile.objects.get(email=email)
+            if user is None:
+                Response({"detail": "User not found."}, status=HTTP_404_NOT_FOUND)
+            verification_code = generate_verification_code()
+
+            subject = 'Your Verification Code'
+            message = f'Your verification code is: {verification_code}'
+
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
+            user.verification_code = verification_code
+            user.save()
+
+            return Response(status=HTTP_200_OK)
+
+        except UserProfile.DoesNotExist:
+            return Response({"detail": "User not found."}, status=HTTP_404_NOT_FOUND)
+
+class ResetPasswordView(generics.GenericAPIView):
+
+    def post(self, request, *args, **kwargs):
+        verification_code = request.data.get("verf_code")
+        new_pass = request.data.get("password")
+        email = request.data.get("email")
+
+        try:
+            user = UserProfile.objects.get(email=email)
+            if user.verification_code == verification_code:
+                user.is_verified = True
+                user.verification_code = ''
+            else:
+                return Response({"detail": "Invalid verification code."}, status=HTTP_400_BAD_REQUEST)
+            try:
+                validate_password(new_pass)
+            except ValidationError as e:
+
+                if hasattr(e, 'message'):
+                    error_message = e.message
+                else:
+                    error_message = e.messages
+
+                return Response({'detail': error_message}, status=HTTP_400_BAD_REQUEST)
+            
+            user.set_password(new_pass)
+            user.save()
+
+            return Response({'detail': 'Password changed'}, status=HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({"detail": "User not found."}, status=HTTP_404_NOT_FOUND)

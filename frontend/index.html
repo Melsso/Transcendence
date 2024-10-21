@@ -40,74 +40,19 @@
                     </button>
                     <div class="collapse settings-container-1 mt-2" id="Game-1-settings">
                         <div class="mb-3 text-center">
-                            <label class="form-label">Choose Attack mode:</label>
+                            <label class="form-label">Choose a game mode:</label>
                             <div class="d-flex justify-content-center">
                                 <div class="form-check me-3">
                                     <input class="form-check-input" type="radio" name="attackMode" id="mode1" value="option1" checked>
                                     <label class="form-check-label" for="mode1">
-                                        Breaker
+                                        Default Mode
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="attackMode" id="mode2" value="option2">
                                     <label class="form-check-label" for="mode2">
-                                        Freezer
+                                        Buff Mode
                                     </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3 text-center">
-                            <label class="form-label">Choose Different Power-ups/Debufs:</label>
-                            <div class="container">
-                                <div class="row justify-content-center">
-                                    <div class="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="setting1" value="setting1">
-                                            <label class="form-check-label" for="setting1">
-                                                Setting 1
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="setting2" value="setting2">
-                                            <label class="form-check-label" for="setting2">
-                                                Setting 2
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="setting3" value="setting3">
-                                            <label class="form-check-label" for="setting3">
-                                                Setting 3
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="setting4" value="setting4">
-                                            <label class="form-check-label" for="setting4">
-                                                Setting 4
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="setting5" value="setting5">
-                                            <label class="form-check-label" for="setting5">
-                                                Setting 5
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="setting6" value="setting6">
-                                            <label class="form-check-label" for="setting6">
-                                                Setting 6
-                                            </label>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -533,6 +478,42 @@
                                 placeholder="Password" required>
                         </div>
                         <button type="button" class="btn btn-primary" id="login">Login</button>
+                        <a href="#forgot-password" id="forgot-btn" style="position: absolute; top: 83%; right:37%;">Forgot your password?</a>
+                    </form>
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="fst-italic rounded m-5 p-3 text-center my-form" id="forgot-container">
+                    <h1 class="p-3">Forgot password</h1>
+                    <p class="p-3">Enter your email to get the verification code to create a new password.</p>
+                    <form id="forgot-email">
+                        <div class="input-container-main mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="text" id="forgotmail" name="Email" class="form-control input-w justify-content-center"
+                                placeholder="Email" required>
+                        </div>
+                        <button type="button" class="btn btn-primary input-left" id="to-new-pass">Next</button>
+                    </form>
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="fst-italic rounded m-5 p-3 text-center my-form" id="create-new-pass">
+                    <h1 class="p-3">Forgot password</h1>
+                    <p class="p-3">Enter your new passowrd and make sure to not forget it.</p>
+                    <form id="new-forgot-passowrd">
+                        <div class="input-container-main mb-2">
+                            <label for="verf-code class="form-label">verification-code:</label>
+                            <input type="text" id="verf-code" name="verf-code" class="form-control input-w" placeholder="verification code" required>
+                        </div>
+                        <div class="input-container-main mb-2">
+                            <label for="New Password" class="form-label">New Password:</label>
+                            <input type="password" id="New Password-R" name="New Password" class="form-control input-w" placeholder="New Password" required>
+                        </div>
+                        <div class="input-container-main mb-2">
+                            <label for="Confirm-New-Password" class="form-label">Confirm-New-Password:</label>
+                            <input type="password" id="Confirm-New-Password" name="Confirm-New-Password" class="form-control input-c" placeholder="Confirm-New-Password" required>
+                        </div>
+                        <button type="button" class="btn btn-primary input-left" id="pass-verf-code">Confirm</button>
                     </form>
                 </div>
             </div>
