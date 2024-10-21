@@ -14,6 +14,24 @@ const ai_easy = document.getElementById('PongEasy');
 const ai_medium = document.getElementById('PongMedium');
 const ai_hard = document.getElementById('PongHard');
 const ins_return = document.getElementById('return-to-menu-ins');
+window.data = {
+    playerStats1: {
+        score: 0,
+        buffs_taken: 0,
+        attack_acc: 0,
+    }, playerStats2: {
+        score: 0,
+        buffs_taken: 0,
+        attack_acc: 0,
+    }, gameStats: {
+        average_round_time: 0,
+        fastest_round: 0,
+        longest_round: 0,
+        map_played: 1,
+        full_time: 0,
+        winner: 0,
+    }
+};
 
 let LastpaddletoHit = null;
 
