@@ -5,12 +5,15 @@ const gameContainer = document.querySelector('.gameContainer');
 const menu = document.getElementById('menuuu');
 const aibutton = document.getElementById('start-pong-ai');
 const inv_btn = document.getElementById('send-invite');
+const Instructionsbtn = document.getElementById('Instructions');
+const Instructions = document.getElementById('Instructions-box');
 const q_up = document.getElementById('matchmaking');
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
 const ai_easy = document.getElementById('PongEasy');
 const ai_medium = document.getElementById('PongMedium');
 const ai_hard = document.getElementById('PongHard');
+const ins_return = document.getElementById('return-to-menu-ins');
 
 let LastpaddletoHit = null;
 
@@ -128,7 +131,7 @@ function restartGame(difficulty) {
     playerPaddle.dy = 7;
     aiPaddle.dy = 7
     buff.visible = false;
-    attack.visible = false;
+    Attack.visible = false;
     block.visible = false;
     ResetTime = null;
     LastpaddletoHit = null;
@@ -173,7 +176,7 @@ function moveBall() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > 50 || ball.y - ball.radius < 0) {
+    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.dy *= -1;
     }
 
@@ -274,11 +277,10 @@ function gameLoop(difficulty) {
     isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
-    if (elapsedTime === 1) {
+    if (elapsedTime === 2) {
         Attack.visible = true;
         Attack.y = canvas.height - Attack.height;
-        // randomizeAttackX();
-        Attack.x = canvas.width / 2 - Attack.width / 2;
+        randomizeAttackX();
     }
     if (Attack.visible) {
         moveAttackbuff();
@@ -318,22 +320,38 @@ function gameLoop(difficulty) {
     requestAnimationFrame(() => gameLoop(difficulty));
 }
 
+ins_return.addEventListener('click', function () {
+    ai_menu.style.display = 'none';
+    inv_menu.style.display = 'none';
+    menu.style.display = 'flex';
+    Instructions.style.display = 'none';
+});
+
 document.getElementById('return-to-menu').addEventListener('click', () => {
     ai_menu.style.display = 'none';
     inv_menu.style.display = 'none';
     menu.style.display = 'flex';
+    Instructions.style.display = 'none';
 });
 
 document.getElementById('return-to-menu-ai').addEventListener('click', () => {
     inv_menu.style.display = 'none';
     ai_menu.style.display = 'none';
     menu.style.display = 'flex';
+    Instructions.style.display = 'none';
 });
 
 inv_btn.addEventListener('click', function () {
     menu.style.display = 'none';
     ai_menu.style.display = 'none';
     inv_menu.style.display = 'flex';
+    Instructions.style.display = 'none';
+});
+Instructionsbtn.addEventListener('click', function () {
+    menu.style.display = 'none';
+    ai_menu.style.display = 'none';
+    inv_menu.style.display = 'none';
+    Instructions.style.display = 'flex';
 });
 
 aibutton.addEventListener('click', function () {
