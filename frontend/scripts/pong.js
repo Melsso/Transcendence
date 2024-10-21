@@ -87,7 +87,6 @@ const speedIncrement = 0.22;
 function resizeCanvas() {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-    console.log(canvas.height);
     setGameDimensions();
 }
 
@@ -115,7 +114,7 @@ function setGameDimensions() {
 function restartGame(difficulty) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (wasHit === true){
-        aiPaddle.height *= 2; 
+        aiPaddle.height *= 2;
         wasHit = false;
     }
     if (aiDidHit === true){
@@ -129,7 +128,7 @@ function restartGame(difficulty) {
     crossCount = 0;
     AttackCount = 0;
     playerPaddle.dy = 7;
-    aiPaddle.dy = 7
+    aiPaddle.dy = 7;
     buff.visible = false;
     Attack.visible = false;
     block.visible = false;
@@ -142,7 +141,7 @@ function restartGame(difficulty) {
     if (Attack.speed > 0) {
         Attack.speed *= -1;
     }
-    requestAnimationFrame(() => gameLoop(difficulty));
+    requestAnimationFrame(() => gameLoop(diffy));
 }
 
 let isingame = false;
@@ -270,14 +269,24 @@ function drawBall(x, y, radius) {
 
 window.gameover = false;
 
+function getRandomNumber() {
+    // Generate a random number between 10 and 15
+    const randomNumber = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
+    return randomNumber;
+}
+
+// Example of storing the random number
+let storedRandomNumber = getRandomNumber();
+
 function gameLoop(difficulty) {
+    window.diffy = difficulty;
     if (!ResetTime)
         ResetTime = Date.now();
     ai_menu.style.display = 'none';
     isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
-    if (elapsedTime === 2) {
+    if (elapsedTime === storedRandomNumber) {
         Attack.visible = true;
         Attack.y = canvas.height - Attack.height;
         randomizeAttackX();
@@ -287,7 +296,7 @@ function gameLoop(difficulty) {
     }
     if (AttackCount === 2)
         Attack.visible = false;
-    if (elapsedTime === 4) {
+    if (elapsedTime === storedRandomNumber + 5) {
         buff.visible = true;
         buff.y = canvas.height - buff.height;
         randomizeBuffX();
@@ -297,6 +306,16 @@ function gameLoop(difficulty) {
     }
     if (crossCount === 2)
         buff.visible = false;
+    if (elapsedTime === storedRandomNumber + 10) {
+        PaddleBigger.visible = true;
+        PaddleBigger.y = canvas.height - PaddleBigger.height;
+        randomizePadBigX();
+    }
+    if (PaddleBigger.visible) {
+        movePadBigbuff();
+    }
+    if (BigPadCount === 2)
+        PaddleBigger.visible = false;
     drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
@@ -308,10 +327,10 @@ function gameLoop(difficulty) {
     window.drawaiBlock();
     window.drawBlock();
     window.moveBlock();
-    console.log(Attack.visible);
     window.moveaiBlock();
     window.drawSpeedBuff();
     window.drawAttackBuff();
+    window.drawPadBigBuff();
     moveBall();
     window.drawTimer();
     window.gameOverScreen();
