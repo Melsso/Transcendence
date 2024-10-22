@@ -76,14 +76,14 @@ class Command(BaseCommand):
                     'player': 'Sofiane',
                     'opponent': 'ai',
                     'score': 15,
-                    'map_name': 'Desert',
+                    'map_name': 'Map1',
                     'is_win': True
                 },
                 {
                     'player': 'ai',
                     'opponent': 'Sofiane',
                     'score': 13,
-                    'map_name': 'Desert',
+                    'map_name': 'Map1',
                     'is_win': False
                 },
             ],
@@ -92,14 +92,14 @@ class Command(BaseCommand):
                     'player': 'Rayan',
                     'opponent': 'Sadoon',
                     'score': 16,
-                    'map_name': 'Mountain',
+                    'map_name': 'Map2',
                     'is_win': True
                 },
                 {
                     'player': 'Sadoon',
                     'opponent': 'Rayan',
                     'score': 15,
-                    'map_name': 'Mountain',
+                    'map_name': 'Map2',
                     'is_win': False
                 }
             ]

@@ -1,26 +1,52 @@
+import Chart from 'chart.js/auto';
 const baseUrl = process.env.ACTIVE_HOST;
+let pvpChart;
+let pveChart;
 
-function loadProfileInfo(user) {
-    const profileUsername = document.getElementById('username');
-    const avatarElement = document.getElementById('profile-avatar');
-    const bio = document.getElementById('profile-bio');
-    const expBar1 = document.getElementById('exp-pong');
-    const expBar2 = document.getElementById('exp-ogame');
-    
-    profileUsername.textContent = user.username;
-    profileUsername.setAttribute('user_id', user.id);
-
-    avatarElement.style.backgroundImage = `url(${user.avatar})`;
-
-    bio.textContent = user.biography;
-
-    expBar1.style.width = 78;
-    expBar1.textContent = `Game 1 - Level ${user.bar_exp_game1/1000}`;
-    expBar1.setAttribute('aria-valuenow', user.bar_exp_game1%1000);
-    expBar2.style.width = 200;
-    expBar2.textContent = `Game 2 - Level ${user.bar_exp_game2/1000}`;
-    expBar2.setAttribute('aria-valuenow', user.bar_exp_game2%1000);
+function createChart(ctx, label, data, chartType) {
+	if (pvpChart && chartType === 'pvp') {
+        pvpChart.destroy();
+    }
+    if (pveChart && chartType === 'pve') {
+        pveChart.destroy();
+    }
+    const myChart = new Chart(ctx, {
+		 type: 'line',
+		 data: {
+			  labels: data.games,
+			  datasets: [{
+					label: label,
+					data: data.wins,
+					borderColor: 'rgba(0, 123, 255, 0.8)',
+					backgroundColor: 'rgba(0, 123, 255, 0.1)',
+					fill: true
+			  }]
+		 },
+		 options: {
+			  scales: {
+					x: {
+						 title: {
+							  display: true,
+							  text: 'Number of Games'
+						 }
+					},
+					y: {
+						 title: {
+							  display: true,
+							  text: 'Number of Wins'
+						 },
+						 beginAtZero: true
+					}
+			  }
+		 }
+	});
+    if (chartType === 'pve') {
+        pveChart = myChart;
+    } else {
+        pvpChart = myChart;
+    }
 }
+
 
 export async function getMatchHistory(uname) {
     const access_token = localStorage.getItem('accessToken');
@@ -69,14 +95,153 @@ export async function loadProfile(requestData) {
         loadMatchHistory(result['match_history']);
     } catch (error) {
         Notification('Profile Action', `Failed To Get Match History: ${error}`, 2, 'alert');
-    }
+    }  
+}
+
+function loadProfileInfo(user) {
+    const profileUsername = document.getElementById('username');
+    const avatarElement = document.getElementById('profile-avatar');
+    const bio = document.getElementById('profile-bio');
+    const expBar1 = document.getElementById('exp-pong');
+    const expBar2 = document.getElementById('exp-ogame');
     
+    profileUsername.textContent = user.username;
+    profileUsername.setAttribute('user_id', user.id);
+
+    avatarElement.style.backgroundImage = `url(${user.avatar})`;
+
+    bio.textContent = user.biography;
+
+    expBar1.style.width = 78;
+    expBar1.textContent = `Game 1 - Level ${user.bar_exp_game1/1000}`;
+    expBar1.setAttribute('aria-valuenow', user.bar_exp_game1%1000);
+    expBar2.style.width = 200;
+    expBar2.textContent = `Game 2 - Level ${user.bar_exp_game2/1000}`;
+    expBar2.setAttribute('aria-valuenow', user.bar_exp_game2%1000);
+}
+
+function computeStats(games) {
+    let stats = {
+        pveWins: 0,
+        pveLosses: 0,
+        pvpWins: 0,
+        pvpLosses: 0,
+        mapStatistics: {
+            'Map1': { wins: 0, losses: 0 },
+            'Map2': { wins: 0, losses: 0 },
+            'Map3': { wins: 0, losses: 0 },
+        },
+        pveWinLossData: {
+            games: [],
+            wins: []
+        },
+        pvpWinLossData: {
+            games: [],
+            wins: []
+        }
+    };
+
+    let gameCount = 0;
+
+    games.forEach(game => {
+        const gameKey = Object.keys(game)[0];
+        const { ally, enemy } = game[gameKey];
+        const isPve = enemy.user.username === 'ai';
+        if (ally.game_type !== 'pong') {
+            return ;
+        }
+        gameCount++;
+        if (ally.is_win) {
+            if (isPve) {
+                stats.pveWins++;
+                stats.pveWinLossData.wins.push((stats.pveWinLossData.wins.length > 0 ? stats.pveWinLossData.wins[stats.pveWinLossData.wins.length - 1] : 0) + 1);
+            } else {
+                stats.pvpWins++;
+                stats.pvpWinLossData.wins.push((stats.pvpWinLossData.wins.length > 0 ? stats.pvpWinLossData.wins[stats.pvpWinLossData.wins.length - 1] : 0) + 1);
+            }
+        } else {
+            if (isPve) {
+                stats.pveLosses++;
+                stats.pveWinLossData.wins.push(stats.pveWinLossData.wins.length > 0 ? stats.pveWinLossData.wins[stats.pveWinLossData.wins.length - 1] : 0);
+            } else {
+                stats.pvpLosses++;
+                stats.pvpWinLossData.wins.push(stats.pvpWinLossData.wins.length > 0 ? stats.pvpWinLossData.wins[stats.pvpWinLossData.wins.length - 1] : 0);
+            }
+        }
+        if (isPve) {
+            stats.pveWinLossData.games.push(gameCount);
+        } else {
+            stats.pvpWinLossData.games.push(gameCount);
+        }
+        stats.mapStatistics[ally.map_name].wins += ally.is_win ? 1 : 0;
+        stats.mapStatistics[ally.map_name].losses += ally.is_win ? 0 : 1;
+    });
+
+    return stats;
+}
+
+function loadStats(games) {
+    const stats = computeStats(games);
+    
+    const pveWinRate = stats.pveWins + stats.pveLosses > 0 ? (stats.pveWins / (stats.pveWins + stats.pveLosses)) * 100 : 0;
+    const pvpWinRate = stats.pvpWins + stats.pvpLosses > 0 ? (stats.pvpWins / (stats.pvpWins + stats.pvpLosses)) * 100 : 0;
+    const totalWins = stats.pveWins + stats.pvpWins;
+    const totalLosses= stats.pveLosses + stats.pvpLosses;
+    const totalWinRate = totalWins + totalLosses > 0 ? (totalWins / (totalWins + totalLosses)) * 100 : 0;
+    const attack1Accuracy = 70;
+    const attack2Accuracy = 65;
+    const map1WinRate = stats.mapStatistics['Map1'].wins + stats.mapStatistics['Map1'].losses > 0
+        ? (stats.mapStatistics['Map1'].wins / (stats.mapStatistics['Map1'].wins + stats.mapStatistics['Map1'].losses)) * 100 : 0;
+    const map2WinRate = stats.mapStatistics['Map2'].wins + stats.mapStatistics['Map2'].losses > 0
+        ? (stats.mapStatistics['Map2'].wins / (stats.mapStatistics['Map2'].wins + stats.mapStatistics['Map2'].losses)) * 100 : 0;
+    const map3WinRate = stats.mapStatistics['Map3'].wins + stats.mapStatistics['Map3'].losses > 0
+        ? (stats.mapStatistics['Map3'].wins / (stats.mapStatistics['Map3'].wins + stats.mapStatistics['Map3'].losses)) * 100 : 0;
+    
+    const pveWinrateElem = document.getElementById('pve-winrate');
+    pveWinrateElem.style.width = pveWinRate + '%';
+    pveWinrateElem.textContent = pveWinRate + '%';
+    document.querySelectorAll('.win-loss')[0].innerHTML = `Wins: ${stats.pveWins} | Losses: ${stats.pveLosses}`;
+
+    const pvpWinrateElem = document.getElementById('pvp-winrate');
+	pvpWinrateElem.style.width = pvpWinRate + '%';
+	pvpWinrateElem.textContent = pvpWinRate + '%';
+	document.querySelectorAll('.win-loss')[1].innerHTML = `Wins: ${stats.pvpWins} | Losses: ${stats.pvpLosses}`;
+
+    const avgSuccessHistoryElem = document.getElementById('avg-success-history');
+	avgSuccessHistoryElem.style.width = totalWinRate + '%';
+	avgSuccessHistoryElem.textContent = totalWinRate + '%';
+
+    const attack1AccuracyElem = document.getElementById('attack1-accuracy');
+	attack1AccuracyElem.style.width = attack1Accuracy + '%';
+	attack1AccuracyElem.textContent = attack1Accuracy + '%';
+
+    const attack2AccuracyElem = document.getElementById('attack2-accuracy');
+	attack2AccuracyElem.style.width = attack2Accuracy + '%';
+	attack2AccuracyElem.textContent = attack2Accuracy + '%';
+
+    const map1WinrateElem = document.getElementById('map1-winrate');
+	map1WinrateElem.style.width = map1WinRate + '%';
+	map1WinrateElem.textContent = map1WinRate + '%';
+
+	const map2WinrateElem = document.getElementById('map2-winrate');
+	map2WinrateElem.style.width = map2WinRate + '%';
+	map2WinrateElem.textContent = map2WinRate + '%';
+
+	const map3WinrateElem = document.getElementById('map3-winrate');
+	map3WinrateElem.style.width = map3WinRate + '%';
+	map3WinrateElem.textContent = map3WinRate + '%';
+
+    const mostUsedPowerupElem = document.getElementById('most-used-powerup');
+	mostUsedPowerupElem.style.width = 80 + '%';
+	mostUsedPowerupElem.textContent = "Bullet";
+
+	createChart(document.getElementById('winLossChartPVE').getContext('2d'), 'PvE Win-Loss', stats.pveWinLossData, 'pve');
+	createChart(document.getElementById('winLossChartPVP').getContext('2d'), 'PvP Win-Loss', stats.pvpWinLossData, 'pvp');
 }
 
 export function loadMatchHistory(games) {
     const historyTab = document.getElementById('History');
-	const matchHistoryContainer = document.querySelector('.match-history-container');
-    
+    const matchHistoryContainer = document.querySelector('.match-history-container');
     historyTab.addEventListener('click', function () {
 		matchHistoryContainer.innerHTML = '';
 		try {
@@ -87,8 +252,9 @@ export function loadMatchHistory(games) {
         }
 	});
 
-    matchHistoryContainer.innerHTML = '';
+    loadStats(games);
 
+    matchHistoryContainer.innerHTML = '';
     if (games.length === 0) {
         const para = document.createElement('p');
         para.textContent = 'No Match Played!';
