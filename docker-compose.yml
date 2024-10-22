@@ -17,6 +17,7 @@ services:
       echo 'Db is up, running migrations...';
       python3 api/manage.py makemigrations; 
       python3 api/manage.py migrate;
+      python api/manage.py create_ai_user;
       echo 'Starting Daphne...';
       cd api && daphne -b 0.0.0.0 -p 8000 api.asgi:application"     
     volumes:

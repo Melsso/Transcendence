@@ -8,11 +8,11 @@ class PongGameSerializer(serializers.ModelSerializer):
     opponent = UserProfileSerializer(read_only=True) 
     class Meta:
         model = PongGame
-        fields = ['id', 'user', 'opponent', 'is_win', 'score', 'date_played', 'map_name']
+        fields = ['id', 'user', 'opponent', 'is_win', 'score', 'date_played', 'game_id']
 
 class RrGameSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)  # Use serializer for the user
     opponent = UserProfileSerializer(read_only=True) 
     class Meta:
         model = RrGame
-        fields = ['id', 'user', 'opponent', 'is_win', 'score', 'date_played']
+        fields = ['id', 'user', 'opponent', 'is_win', 'score', 'date_played', 'game_id']

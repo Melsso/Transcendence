@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     'chats',
     'games',
     'homepage',
+    'custom_scripts',
 ]
 
 REST_FRAMEWORK = {
