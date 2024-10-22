@@ -1,4 +1,4 @@
-import { loadProfile } from "./populatePageHelpers.js";
+import { loadProfile, getMatchHistory, loadMatchHistory } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 // This variable is used to store user data
@@ -6,17 +6,15 @@ window.userData = {};
 
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
-const baseUrl = process.env.ACTIVE_HOST;;
+const baseUrl = process.env.ACTIVE_HOST;
 
 
 async function homepageData() {
-	
 	const access_token = localStorage.getItem('accessToken');
-	// const refresh_token = localStorage.getItem('refreshToken');
-
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
+
 	const url = baseUrl + 'api/home/';
 	const response = await fetch(url, {
 		method: 'GET',
@@ -71,7 +69,7 @@ async function registerUser(username, password, email) {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
-			email: username,
+			username: username,
 			password: password,
 			email: email,
 		}),
@@ -381,8 +379,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	const friendButton = document.getElementById('friend-list-btn');
 	const sendFriendRequestButton = document.getElementById('add-friend');
 	const TonewpassButton = document.getElementById('to-new-pass');
-	const	forgotButton = document.getElementById('forgot-btn');
-
+	const forgotButton = document.getElementById('forgot-btn');
+	
 	async function showView(view, data) {
 		forgotcontainer.style.display = 'none';
 		newpass.style.display = 'none';
@@ -426,8 +424,8 @@ document.addEventListener('DOMContentLoaded', function () {
 						sendFriendRequestButton.style.display = 'none';
 					}
 					loadProfile(data);
-					const res = await getMessages();
-					loadMessages(res["list"]);
+					// const res = await getMessages();
+					// loadMessages(res["list"]);									
 				}
 			
 				mainTwo.style.display = 'flex';
@@ -514,7 +512,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		} catch (error) {
 			Notification('Profile Action', `Failed to login because: ${error}`, 1,'alert');
 		}
-		
 	});
 
 	nextButton.addEventListener('click', async function () {
@@ -598,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				navigateTo('profile', result);
 			}
 			else {
-				Notification('Search', 'No such user found!', 2,'alert');
+				Notification('Search', 'No such user found!', 2, 'alert');
 			}
 		} catch (error) {
 			Notification('Profile Action', "Error: changeToMainTwo:496", 2, 'alert');// check
@@ -623,10 +620,10 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await sendFriendRequest(target_id);
 			Notification('Friend Action', 'You have sent a friend request!', 2,'request');
 		} catch (error) {
-			Notification('Friend Action', `Friend Request Failed because: ${error}`, 2,'alert');
+			Notification('Friend Action', `Friend Request Failed because: ${error}`, 2, 'alert');
 		}
 	});
-	
+
 	settingButton.addEventListener('click', function () {
 		navigateTo('settings', null); 
 	});

@@ -19,7 +19,6 @@ globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
 	var collapseElement = document.getElementById('collapseTwo');
 	var name = document.getElementById('chatName');
-	var name = document.getElementById('chatName');
 	if (window.userData.target !== 'Global') {
 		messageContainer.innerHTML = '';
 		var bsCollapse = new bootstrap.Collapse(collapseElement, {

@@ -5,7 +5,7 @@ import './chart.js';
 import './chat.js';
 import './confirm-password.js';
 import './L-R-buttons.js';
-import './match.js';
+// import './match.js';
 import './pong.js';
 import './pongUI.js';
 import './populateFriends.js';
