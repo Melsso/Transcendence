@@ -218,3 +218,108 @@ document.addEventListener('keyup', (e) => {
 	if (e.key === 'ArrowDown') downPressed = false;
 });
 
+function moveBall() {
+	const elapsedTime = Date.now() - ResetTime;
+	const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
+	ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+	ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+
+	ball.x += ball.dx;
+	ball.y += ball.dy;
+
+	if (ball.y + ball.radius < 70 ||ball.y + ball.radius > 40 || ball.y - ball.radius < 0) {
+		 ball.dy *= -1;
+	}
+
+	if (
+		 ball.x - ball.radius < wasdPaddle.x + wasdPaddle.width &&
+		 ball.y > wasdPaddle.y &&
+		 ball.y < wasdPaddle.y + wasdPaddle.height
+	) {
+		 var relativeIntersectY = (wasdPaddle.y + wasdPaddle.height / 2) - ball.y;
+		 var normrelIntersectY = relativeIntersectY / (wasdPaddle.height / 2);
+		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+
+		 ball.dx = ball.speed * Math.cos(bounceAngle);
+		 ball.dy = -ball.speed * Math.sin(bounceAngle);
+		 
+		 ball.x = wasdPaddle.x + wasdPaddle.width + ballRadius + 1;
+		 
+		 ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
+		 LastpaddletoHit = "wasd";
+	}
+
+	if (
+		 ball.x + ball.radius > ARPaddle.x &&
+		 ball.y > ARPaddle.y &&
+		 ball.y < ARPaddle.y + ARPaddle.height
+	) {
+		 var relativeIntersectY = (ARPaddle.y + ARPaddle.height / 2) - ball.y;
+		 var normrelIntersectY = relativeIntersectY / (ARPaddle.height / 2);
+		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+		 ball.dx = - ball.speed * Math.cos(bounceAngle);
+		 ball.dy = - ball.speed * Math.sin(bounceAngle);
+		 ball.x = ARPaddle.x - ballRadius -1;
+		 ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
+		 LastpaddletoHit = "Arrows";
+	}
+
+	if ((ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width) && fullTime >= 0)
+		 newRound();
+}
+
+
+function stopGameLoop() {
+	for (let i = 0; i < animationFrameIDs.length; i++) {
+		 cancelAnimationFrame(animationFrameIDs[i]);
+	}
+	animationFrameIDs = [];
+	gameActive = false;
+}
+
+
+function restartRound() {
+    gameLoop(diffy);
+}
+function newRound(){
+	EL = elapsedTime;
+	const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
+	if (ball.x - ball.radius <= 0) {
+		 player2.score++;
+		 console.log("Arrows has scored: " + player2.score);
+		 if (player2.score === 2){
+			  gameover = true;
+			  return;
+		 }
+		 stopGameLoop();
+		 ball.x = canvas.width / 2;
+		 ball.y = canvas.height / 2;
+		 ball.dx *= -1;
+		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+		 restartGame();
+		 countdownBeforeRound(() => {
+			  gameActive = true;
+			  restartRound();
+		 });
+		 return; 
+	}
+	if (ball.x + ball.radius >= canvas.width) {
+		 player1.score++;
+		 console.log("wasd has scored: " + player1.score);
+		 if (player1.score === 2){
+			  gameover = true;
+			  return;
+		 }
+		 ball.x = canvas.width / 2;
+		 ball.y = canvas.height / 2;
+		 ball.dx *= -1;
+		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+		 countdownBeforeRound(() => {
+			  switchOnAI();
+			  restartGame();
+		 });
+		 return; 
+	}
+}
