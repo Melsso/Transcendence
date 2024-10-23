@@ -1,7 +1,7 @@
 const	player1 = {name: 'wasd', icon: '../frontend/assets/logo.jpg', score: 0}
 const	player2 = {name: 'Arrows', icon: '../frontend/assets/logo.jpg', score: 0}
 
-let	Buff = {
+let	buff = {
 	x: 0,
 	y: 0,
 	width: 70,
@@ -85,7 +85,113 @@ let scoreboard = {
    height: 50 // Height of the scoreboard, adjust as necessary
 };
 
+let wasdHit = false;
+let ARHit = false;
+let crossCount = 0;
+let AttackCount = 0;
+let BigPadCount = 0;
+let sbVisible = false;
+let abVisible = true;
+let BallinBuff = false;
+let BallinAttackBuff = false;
+let BallinPadBigBuff = false;
+let aiTargetY = null;
+let GOscreen = false;
 
+//UI
+function	redoGame(){
+	ResetTime = Date.now();
+	GOscreen = false;
+	gameover = false; 
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (wasdHit === true){
+		ARPaddle.height *= 2;
+		wasdHit = false;
+	}
+	if (ARHit === true){
+		wasdPaddle.height *= 2;
+		ARHit = false;
+	}
+	crossCount = 0;
+	AttackCount = 0;
+	BigPadCount = 0;
+	wasdPaddle.dy = 7;
+	ARPaddle.dy = 7;
+	ball.dy = 6;
+	buff.visible = false;
+	Attack.visible = false;
+	block.visible = false;
+	LastpaddletoHit = null;
+	gameover = false;
+	if (buff.speed > 0) {
+		 buff.speed *= -1;
+	}
+	if (Attack.speed > 0) {
+		 Attack.speed *= -1;
+	}
+	gameActive = true;
+	gameLoop(diffy);
+	player1.score = 0;
+	player2.score = 0;
+}
+
+document.addEventListener('keydown', (event) => {
+	if (GOscreen === true){
+		if (event.code === 'KeyR'){
+				console.log ("trying to do so");
+				player1.score = 0;
+				player2.score = 0;
+				redoGame();
+			}
+	}
+});
+
+function stopGameLoop() {
+	for (let i = 0; i < animationFrameIDs.length; i++) {
+		 cancelAnimationFrame(animationFrameIDs[i]);
+	}
+	animationFrameIDs = [];
+	gameActive = false;
+}
+
+document.addEventListener('keydown', (event) => {
+	if (GOscreen === true){
+		if (event.code === 'KeyQ' && gameActive === false){
+			stopGameLoop();
+			removeGameOverScreen();
+			window.diffy = null;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			GOscreen = false;
+			gameover = false;
+			isingame = false;
+			menu.style.display = 'flex';
+			player1.score = 0;
+			player2.score = 0;
+			fullTime = 0;
+			gameActive = false;
+		}
+	}
+});
+
+document.addEventListener('keydown', (event) => {
+	if (event.code === 'Space'){
+		if (block.visible === true) {
+			return;
+		}
+		if (playerPaddle.hasanattack === 1){
+			block.visible = true;
+			block.x = playerPaddle.x + playerPaddle.width / 2 - block.width / 2;
+			block.y = playerPaddle.height / 2 + playerPaddle.y - block.height / 2;
+			playerPaddle.hasanattack = 0;
+		}
+		else {
+			return ;
+		}
+	}
+});
+
+
+//gamelogic
 let gameStartTime;
 const speedIncreaseInterval = 5000;
 const initialSpeed = 6;
