@@ -1,5 +1,5 @@
 import { getMessages, loadMessages } from "./chat";
-
+import { userLookUp} from "./changeToMainTwo";
 const baseUrl = process.env.ACTIVE_HOST;
 
 export async function getFriends() {
@@ -214,7 +214,16 @@ async function handleAction(action, targetId, userid, targetUname) {
 			}
 			break;
 			case 'View Profile':
-				Notification('Profile Action', "Profile call", 2, 'message');
+				try {
+					const result = await userLookUp(targetUname);
+					if (result['user'] !== null) {
+						window.navigateTo('profile', result);
+					} else {
+						Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+					}
+				} catch (error) {
+					Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+				}
 			break;
 		case 'Invite To Game':
 			Notification('Game Action', "Profile call", 2, 'invite');

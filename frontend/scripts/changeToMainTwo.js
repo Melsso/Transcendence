@@ -36,7 +36,7 @@ async function homepageData() {
 	return data;
 }
 
-async function userLookUp(searchTerm) {
+export async function userLookUp(searchTerm) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error("No access token found.");
@@ -452,11 +452,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	function navigateTo(view, data) {
-		history.pushState({ view: view }, null, `#${view}`);
-		showView(view, data);
-	}
-
 	window.addEventListener('popstate', function (event) {
 		if (event.state && event.state.view) {
 			showView(event.state.view);
@@ -466,6 +461,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	forgotButton.addEventListener('click', function() {
 		navigateTo('forgot', null);
 	});
+
+	function navigateTo(view, data) {
+		history.pushState({ view: view }, null, `#${view}`);
+		showView(view, data);
+	}
+	window.navigateTo = navigateTo;
 
 	TonewpassButton.addEventListener('click', async function() {
 		const input_email = document.getElementById('forgotmail').value;
@@ -689,6 +690,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	// 	}
 	// });
 });
+
 
 const updateAvatarbtn = document.getElementById('updateavatar-btn');
 updateAvatarbtn.addEventListener('click',async function () {

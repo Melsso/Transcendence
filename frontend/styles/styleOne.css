@@ -193,7 +193,22 @@
 } */
 
 
+#forgot-btn {
+	margin-left: auto; /* Align the forgot link to the right */
+	text-decoration: none;
+	font-size: 0.9rem;
+}
+.form-actions {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-top: 20px;
+}
 
+#login {
+	transform: translateX(100%);
+	margin-right: 0;
+}
 
 body, html {
 	height: 100%;
