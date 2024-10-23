@@ -314,6 +314,146 @@ function movePadBigbuff() {
 	}
 }
 
+function drawScoreBoard() {
+	ctx.clearRect(0, 0, canvas.width, 50);
+	ctx.fillStyle = 'blue';
+	ctx.fillRect(0, 0, canvas.width, 50);
+	const image1 = new Image();
+	const image2 = new Image();
+	image1.src = player1.icon;
+	image2.src = player2.icon;
+	ctx.drawImage(image1, 10, 5, 40, 40);
+	ctx.font = '20px Arial';
+	ctx.fillStyle = 'white';
+	ctx.fillText('wasd', 10*canvas.width/100, 30);
+	ctx.fillText(player1.score, 18*canvas.width/100, 30);
+	ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+	
+	ctx.font = '20px Arial';
+	ctx.fillStyle = 'white'; 
+	ctx.fillText('Arrows', 90*canvas.width/100, 30);
+	ctx.fillText(player2.score, 82*canvas.width/100, 30);
+}
+
+function giveSpeedBuff(){
+	if (LastpaddletoHit === "wasd")
+		wasdPaddle.dy = 12;
+	else if (LastpaddletoHit === "Arrows")
+		ARPaddle.dy = 12;
+	if (wasdPaddle.dy === 20 && LastpaddletoHit === "wasd")
+		wasdPaddle.dy = 20;
+	if (ARPaddle.dy === 20 && LastpaddletoHit === "Arrows")
+		ARPaddle.dy = 12;
+}
+function giveAttackBuff(){
+	if (LastpaddletoHit === "wasd")
+		wasdPaddle.hasanattack = 1;
+	else if (LastpaddletoHit === "Arrows")
+		ARPaddle.hasanattack = 1;
+	if (wasdPaddle.hasanattack === 1 && LastpaddletoHit === "wasd")
+		wasdPaddle.hasanattack = 1;
+	if (ARPaddle.hasanattack === 1 && LastpaddletoHit === "Arrows")
+		ARPaddle.hasanattack = 1;
+}
+let doubled = false;
+let ARdoubled = false;
+function givePadBigBuff(){
+	let heightx2 = wasdPaddle.height * 2;
+	let aiheightx2 = ARPaddle.height * 2;
+	if (LastpaddletoHit === "wasd" && doubled != true){
+		wasdPaddle.height = heightx2;
+		doubled = true;
+	}
+	else if (LastpaddletoHit === "Arrows" && aidoubled != true){
+		ARPaddle.height = aiheightx2;
+		ARdoubled = true;
+	}
+}
+function drawSpeedBuff() {
+	if (buff.visible) {
+		 ctx.globalAlpha = 0.5;
+		 ctx.fillStyle = "gold";
+		 ctx.fillRect(buff.x, buff.y, buff.width, buff.height);
+	}
+	ctx.globalAlpha = 1.0;
+	if ((buff.visible) &&
+		 ball.x + ball.radius > buff.x && 
+		 ball.x - ball.radius < buff.x + buff.width && 
+		 ball.y + ball.radius > buff.y && 
+		 ball.y - ball.radius < buff.y + buff.height) {
+			  if (!BallinBuff)
+					BallinBuff = true;
+			  }
+			  else {
+					if (BallinBuff) {
+						 BallinBuff = false;
+						 crossCount++;
+						 if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
+							giveSpeedBuff();
+							if (LastpaddletoHit === "wasd"){
+								flag = 50;
+							}
+						}
+					}
+				}
+	if (crossCount === 2) {
+		 buff.visible = false;
+	}
+}
+function drawAttackBuff() {
+	if (Attack.visible) {
+		 ctx.globalAlpha = 0.5;
+		 ctx.fillStyle = "red";
+		 ctx.fillRect(Attack.x, Attack.y, Attack.width, Attack.height);
+	}
+	ctx.globalAlpha = 1.0;
+	if ((Attack.visible) &&
+		 ball.x + ball.radius > Attack.x && 
+		 ball.x - ball.radius < Attack.x + Attack.width && 
+		 ball.y + ball.radius > Attack.y && 
+		 ball.y - ball.radius < Attack.y + Attack.height) {
+			  if (!BallinAttackBuff)
+					BallinAttackBuff = true;
+			  }
+			  else{
+					if (BallinAttackBuff) {
+						 BallinAttackBuff = false;
+						 AttackCount++;
+						 if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
+							  giveAttackBuff();
+					 		}
+						}
+					}
+	if (AttackCount === 2)
+		Attack.visible = false;
+}
+function drawPadBigBuff() {
+	if (PaddleBigger.visible) {
+		 ctx.globalAlpha = 0.5;
+		 ctx.fillStyle = "cyan";
+		 ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
+	}
+	ctx.globalAlpha = 1.0;
+	if ((PaddleBigger.visible) &&
+		 ball.x + ball.radius > PaddleBigger.x && 
+		 ball.x - ball.radius < PaddleBigger.x + PaddleBigger.width && 
+		 ball.y + ball.radius > PaddleBigger.y && 
+		 ball.y - ball.radius < PaddleBigger.y + PaddleBigger.height) {
+			  if (!BallinPadBigBuff){}
+					BallinPadBigBuff = true;
+			  }
+			  else {
+					if (BallinPadBigBuff) {
+						 BallinPadBigBuff = false;
+						 BigPadCount++;
+						 if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows")
+								givePadBigBuff();
+					}
+				}
+	if (BigPadCount === 2) {
+		PaddleBigger.visible = false;
+	}
+}
 
 //gamelogic
 let gameStartTime;
