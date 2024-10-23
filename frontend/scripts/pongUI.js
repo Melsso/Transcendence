@@ -136,6 +136,7 @@ document.addEventListener('keydown', (event) => {
 			menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
+			fullTime = 0;
 			gameActive = false;
 		}
 	}
@@ -526,7 +527,7 @@ function gameOverScreen(){
 		gameover = true;
 		isingame = false;
 	}
-	else if (player2.score >= 6){
+	else if (player2.score >= 2){
 		showGameOverScreen();
 		GOscreen = true;
 		ctx.font = '50px "PixelFont", sans-serif';

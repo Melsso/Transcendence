@@ -292,7 +292,7 @@ function newRound(){
     if (ball.x - ball.radius <= 0) {
         player2.score++;
         console.log("Player 2 score: " + player2.score);
-        if (player2.score === 6){
+        if (player2.score === 2){
             gameover = true;
             return;
         }
