@@ -1,8 +1,9 @@
 .gameContainer {
 	width: 100%;
 	height: 100%;
-	background-color: black;
+	background-color: transparent;
 	justify-content: center;
+	z-index: 899;
 	align-items: center;
 }
 
@@ -10,7 +11,7 @@ canvas {
 	width: 100%;
 	height: 100%;
 	display: block;
-	z-index: 999;
+	z-index: 900;
 }
 
 
@@ -77,6 +78,7 @@ canvas {
 	align-items: center;
 	z-index: 1;
 	gap: 10%;
+	z-index: 901;
 }
 
 .Instructions {
@@ -177,31 +179,147 @@ canvas {
 	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
 }
 
+@font-face {
+	font-family: 'CustomFont'; /* Replace with a name you want to use */
+	src: url('../fonts/LLPIXEL3.ttf') format('truetype'); /* Adjust the path and format */
+	font-weight: normal; /* Use appropriate weight */
+	font-style: normal; /* Use appropriate style */
+}
+
+.pong-lobby-name {
+	position: absolute;
+	left:5%;
+	top:5%;
+	height: 15%;
+	width: 90%;
+	display: flex;
+	justify-content: center; /* Center the lobby name */
+	align-items: center;
+	position: relative; /* Allows absolute positioning of the mode and map */
+	color: #ffffff;
+	font-family: 'CustomFont';
+	border: 2px solid #bababa;
+	box-shadow: 0 0 50px #bababa;
+	font-size: 2em;
+	border-radius: 15px;
+	/* background-color: #0000009c; Semi-transparent black background */
+	/* background-image: 
+		linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)),
+		linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1));
+	background-size: 20px 20px; */
+	padding: 20px;
+}
+
+.pong-lobby-name h1 {
+	margin: 0;
+	padding: 5px;
+	text-align: center;
+	font-size: 3em;
+}
+
+
+.pong-lobby-name .map {
+	position: absolute;
+	left: 20px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.pong-lobby-name .mode {
+	position: absolute;
+	right: 20px;
+	top: 50%;
+	transform: translateY(-50%);
+}
 
 .pong-inv-container {
 	display: flex;
-	box-shadow: #000000 solid 3px;
-	height: 100%;
+	flex-direction: column; 
+	/* box-shadow: 0 0 10px #00ff99; 
+	border: 2px solid #00ff99;  */
+	/* background: linear-gradient(to bottom, #170e52, #4c2785,#170e52); */
+	/* background-color: #4c2785; */
+	/* background-repeat: repeat;  */
+	height: 100%; 
+	width: 100%; 
+	/* background-color: #1e1e1e;  */
+}
+
+.pong-players {
+	display: flex;
+	flex-direction: row;
+	position: absolute;
+	top: 25%;
 	width: 100%;
+	height: 70%;
+	/* justify-content: space-between; */
+}
+
+
+.pong-container-players {
+	background-color: #0000009c; /* Semi-transparent black background */
+	/* background-image:  */
+		/* linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)),
+		linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1));
+	background-size: 20px 20px; */
+	width: 40%; 
+	display: flex;
+	font-family: 'CustomFont';
 	flex-direction: column;
 	align-items: center;
-	justify-content: flex-start;
+	justify-content: center;
+	height: 100%;
+	border: 2px solid #bababa;
+	box-shadow: 0 0 50px #bababa;
+	border-radius: 15px;
+}
+
+
+.player1-container {
+	margin-left: 7.5%;
+	margin-right: 5%;
+	/* background-color: #1e1e1e; */
+}
+
+
+.player2-container {
+	/* background-color: #1e1e1e; */
+}
+
+.avatar {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	overflow: hidden;
+	margin-bottom: 15px;
+}
+
+.avatar-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover; 
+}
+.player2-container .avatar {
+	background-color: #1e1e1e;
+	/* border: 3px solid #00ff99; */
+}
+
+.player-info {
+	color: #ffffff; 
+	font-family: 'CustomFont';
+	font-size: 16px;
+	text-align: center;
+}
+
+.pong-p-c {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	position: relative;
 }
 
-.pong-container-players {
-	display:flex;
-	background-color: #000000;
-	flex-direction: column;
-	position: absolute;
-	align-items: center;
-	justify-content: center;
-	width: 15%;
-	height: 90%;
-	left: 0;
-	top: 5%;
-	overflow-y: auto;
-}
 
 .search-modal {
 	display: none;
@@ -209,77 +327,28 @@ canvas {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	background-color: #000000;
+	background-color: #1e1e1e; /* Matching dark background */
+	border: 2px solid #ffcc00; /* Retro gold border */
+	box-shadow: 0 0 10px #ffcc00; /* Neon glow effect */
 	padding: 20px;
-	box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
-	z-index: 100; /* Ensure modal is on top of everything */
 	width: 80%;
 	max-width: 400px;
 }
 
-.search-modal-content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.search-modal-buttons {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-}
-
-.search-modal input {
-	width: 100%;
-	padding: 10px;
-	margin-bottom: 10px;
-	border-radius: 5px;
-	border: 1px solid #ccc;
-}
-
-.search-modal button {
-	padding: 5px 10px;
-	background-color: #1e90ff;
-	color: white;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	margin: 5px;
-	flex: 1;
-	text-align: center;
-}
-
-.search-modal button:hover {
-	background-color: #005f99;
-}
 .search-modal.active {
 	display: flex;
+}
+
+.plus-btn {
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	border: 3px solid #ffcc00;
+	background-color: #333;
+	color: #fff;
+	font-size: 36px;
+	display: flex;
 	justify-content: center;
-	align-items: center; 
-}
-
-.modal-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0, 0, 0, 0.7);
-	z-index: 50;
-	display: none;
-}
-
-/* Show overlay when modal is active */
-.modal-overlay.active {
-	display: block;
-}
-
-.pong-p-c {
-	width:100%;
-	height:25%;
-	border: solid black 2px;
-	display: flex;           
-	justify-content: center; 
 	align-items: center;
-	position: relative;
+	cursor: pointer;
 }

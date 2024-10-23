@@ -3,6 +3,7 @@
 	top: 0;
 	left: 0;
 	width: 100%;
+	background: linear-gradient(to bottom, #7255a8, #4c2785, #170e52);
 	height: 100%;
 	z-index: 1;
 	overflow: hidden;
@@ -16,6 +17,7 @@
 	height: 100%;
 	display: flex;
 	background: linear-gradient(to bottom, #7255a8, #4c2785, #170e52);
+	transition: background 0.5s ease-in-out;
 	align-items: center;
 	justify-content: center;
 }
