@@ -148,9 +148,9 @@ function countdownBeforeRound(callback) {
 
         if (countdown < 0) {
             clearInterval(intervalID);
-            callback(); // Call the function to restart the round
+            callback();
         }
-    }, 1000); // Set interval for every 1 second
+    }, 1000);
 }
 
 
@@ -218,7 +218,6 @@ function switchOnAI() {
         aistop = false;
 }
 
-let aiTargetY = null;
 
 let EL = null;
 function moveBall() {
@@ -407,8 +406,7 @@ function gameLoop(difficulty) {
     if (elapsedTime === 1) {
         Attack.visible = true;
         Attack.y = canvas.height - Attack.height;
-        Attack.x = canvas.width / 2 - Attack.width / 2;
-        // randomizeAttackX();
+        randomizeAttackX();
     }
     if (Attack.visible) {
         moveAttackbuff();
@@ -458,7 +456,6 @@ function gameLoop(difficulty) {
     console.log(fullTime);
     let frameID = requestAnimationFrame(() => gameLoop(difficulty));
     animationFrameIDs.push(frameID);
-    // console.log('ki bdina', AnimationframeID);
     if (gameover) {
         console.log(animationFrameIDs);
         setbackoriginalvalues();
@@ -550,24 +547,19 @@ ai_hard.addEventListener('click', function(event) {
 //      }
 //  }
 
-//  document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);
 function    calculateAverageRoundTime(){
     let endScore = player1.score + player2.score;
     let art = fullTime / endScore;
     return art;
 }
 
-// function calculateAccuracy(player1, player2){
-//     let averageHits = player2.gothit / player1.ABR
-// }
 
 // let player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
 function endGameStats() {
-    // Example values - these would be calculated based on the actual game state
-    const player1Score = getPlayer1Score(); // Replace with actual function to get Player 1's score
-    const player2Score = getPlayer2Score(); // Replace with actual function to get Player 2's score
-    const player1BuffsTaken = getPlayer1Buffs(); // Replace with actual function to get Player 1's buffs taken
-    const player2BuffsTaken = getPlayer2Buffs(); // Replace with actual function to get Player 2's buffs taken
+    const player1Score = getPlayer1Score(); 
+    const player2Score = getPlayer2Score(); 
+    const player1BuffsTaken = getPlayer1Buffs();
+    const player2BuffsTaken = getPlayer2Buffs();
     // window.player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
     window.player2AttackAcc = calculateAccuracy(player2.ABR, player1.gothit); // Replace with actual accuracy calculation
 

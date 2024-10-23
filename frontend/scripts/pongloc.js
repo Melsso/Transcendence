@@ -1,5 +1,11 @@
 const	player1 = {name: 'wasd', icon: '../frontend/assets/logo.jpg', score: 0}
 const	player2 = {name: 'Arrows', icon: '../frontend/assets/logo.jpg', score: 0}
+const canvas = document.getElementById('pongCanvas');
+const ctx = canvas.getContext('2d');
+const menu = document.getElementById('menuuu');
+const ins_return = document.getElementById('return-to-menu-ins');
+const gameContainer = document.querySelector('.gameContainer');
+const gameModal = document.getElementById('gameModal');
 
 let	buff = {
 	x: 0,
@@ -80,9 +86,9 @@ let ball = {
 
 let scoreboard = {
    x: 0,
-   y: 0, // Assuming the scoreboard starts at the top of the canvas
+   y: 0,
    width: canvas.width,
-   height: 50 // Height of the scoreboard, adjust as necessary
+   height: 50
 };
 
 let wasdHit = false;
@@ -92,12 +98,18 @@ let AttackCount = 0;
 let BigPadCount = 0;
 let sbVisible = false;
 let abVisible = true;
+let flag = 0;
 let BallinBuff = false;
+let ResetTime = null;
 let BallinAttackBuff = false;
 let BallinPadBigBuff = false;
-let aiTargetY = null;
 let GOscreen = false;
-
+let upPressed = false;
+let downPressed = false;
+let wPressed = false;
+let sPressed = false;
+let gameActive = false;
+let animationFrameIDs = [];
 //UI
 function	redoGame(){
 	ResetTime = Date.now();
@@ -120,7 +132,8 @@ function	redoGame(){
 	ball.dy = 6;
 	buff.visible = false;
 	Attack.visible = false;
-	block.visible = false;
+	WDblock.visible = false;
+	ARblock.visible = false;
 	LastpaddletoHit = null;
 	gameover = false;
 	if (buff.speed > 0) {
@@ -130,7 +143,7 @@ function	redoGame(){
 		 Attack.speed *= -1;
 	}
 	gameActive = true;
-	gameLoop(diffy);
+	gameLLoop();
 	player1.score = 0;
 	player2.score = 0;
 }
@@ -159,7 +172,6 @@ document.addEventListener('keydown', (event) => {
 		if (event.code === 'KeyQ' && gameActive === false){
 			stopGameLoop();
 			removeGameOverScreen();
-			window.diffy = null;
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			GOscreen = false;
 			gameover = false;
@@ -167,7 +179,6 @@ document.addEventListener('keydown', (event) => {
 			menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
-			fullTime = 0;
 			gameActive = false;
 		}
 	}
@@ -175,13 +186,13 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Space'){
-		if (block.visible === true) {
+		if (WDblock.visible === true) {
 			return;
 		}
 		if (wasdPaddle.hasanattack === 1){
-			block.visible = true;
-			block.x = wasdPaddle.x + wasdPaddle.width / 2 - block.width / 2;
-			block.y = wasdPaddle.height / 2 + wasdPaddle.y - block.height / 2;
+			WDblock.visible = true;
+			WDblock.x = wasdPaddle.x + wasdPaddle.width / 2 - WDblock.width / 2;
+			WDblock.y = wasdPaddle.height / 2 + wasdPaddle.y - WDblock.height / 2;
 			wasdPaddle.hasanattack = 0;
 		}
 		else {
@@ -191,7 +202,7 @@ document.addEventListener('keydown', (event) => {
 });
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Enter'){
-		if (aiblock.visible === true)
+		if (ARblock.visible === true)
 			return;
 		if (ARPaddle.hasanattack === 1){
 			ARblock.visible = true;
@@ -208,12 +219,12 @@ function didItHit(){
 	if (wasdHit === true){
 		return;
 	}
-	if (block.visible === true &&
-		(block.x >= ARPaddle.x - ARPaddle.width - 20) &&
-		(block.y >= ARPaddle.y) &&
-		(block.y <= ARPaddle.y + ARPaddle.height)) 
+	if (WDblock.visible === true &&
+		(WDblock.x >= ARPaddle.x - ARPaddle.width - 20) &&
+		(WDblock.y >= ARPaddle.y) &&
+		(WDblock.y <= ARPaddle.y + ARPaddle.height)) 
 		{
-			block.visible = false;
+			WDblock.visible = false;
 			ARPaddle.height /= 2;
 			wasdHit = true;
 		}
@@ -242,7 +253,7 @@ function moveBlock() {
 		}
 	}
 }
-function moveaiBlock() {
+function moveARBlock() {
 	if (ARblock.visible) {
 		ARblock.x -= ARblock.speed; 
 
@@ -252,7 +263,7 @@ function moveaiBlock() {
 	}
 }
 
-function drawBlock() {
+function drawwasdBlock() {
 	if (WDblock.visible) {
 		ctx.fillStyle = 'blue';
 		ctx.fillRect(WDblock.x, WDblock.y, WDblock.width, WDblock.height);
@@ -316,7 +327,7 @@ function movePadBigbuff() {
 
 function drawScoreBoard() {
 	ctx.clearRect(0, 0, canvas.width, 50);
-	ctx.fillStyle = 'blue';
+	ctx.fillStyle = 'black';
 	ctx.fillRect(0, 0, canvas.width, 50);
 	const image1 = new Image();
 	const image2 = new Image();
@@ -364,7 +375,7 @@ function givePadBigBuff(){
 		wasdPaddle.height = heightx2;
 		doubled = true;
 	}
-	else if (LastpaddletoHit === "Arrows" && aidoubled != true){
+	else if (LastpaddletoHit === "Arrows" && ARdoubled != true){
 		ARPaddle.height = aiheightx2;
 		ARdoubled = true;
 	}
@@ -400,65 +411,127 @@ function drawSpeedBuff() {
 		 buff.visible = false;
 	}
 }
-function drawAttackBuff() {
-	if (Attack.visible) {
-		 ctx.globalAlpha = 0.5;
-		 ctx.fillStyle = "red";
-		 ctx.fillRect(Attack.x, Attack.y, Attack.width, Attack.height);
-	}
-	ctx.globalAlpha = 1.0;
-	if ((Attack.visible) &&
-		 ball.x + ball.radius > Attack.x && 
-		 ball.x - ball.radius < Attack.x + Attack.width && 
-		 ball.y + ball.radius > Attack.y && 
-		 ball.y - ball.radius < Attack.y + Attack.height) {
-			  if (!BallinAttackBuff)
-					BallinAttackBuff = true;
-			  }
-			  else{
-					if (BallinAttackBuff) {
-						 BallinAttackBuff = false;
-						 AttackCount++;
-						 if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
-							  giveAttackBuff();
-					 		}
-						}
-					}
-	if (AttackCount === 2)
-		Attack.visible = false;
-}
 function drawPadBigBuff() {
 	if (PaddleBigger.visible) {
-		 ctx.globalAlpha = 0.5;
-		 ctx.fillStyle = "cyan";
-		 ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
-	}
-	ctx.globalAlpha = 1.0;
-	if ((PaddleBigger.visible) &&
-		 ball.x + ball.radius > PaddleBigger.x && 
-		 ball.x - ball.radius < PaddleBigger.x + PaddleBigger.width && 
-		 ball.y + ball.radius > PaddleBigger.y && 
-		 ball.y - ball.radius < PaddleBigger.y + PaddleBigger.height) {
-			  if (!BallinPadBigBuff){}
-					BallinPadBigBuff = true;
-			  }
-			  else {
-					if (BallinPadBigBuff) {
-						 BallinPadBigBuff = false;
-						 BigPadCount++;
-						 if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows")
-								givePadBigBuff();
+		ctx.globalAlpha = 0.5;
+		ctx.fillStyle = "red";
+		ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
+  }
+  ctx.globalAlpha = 1.0;
+  if ((PaddleBigger.visible) &&
+		ball.x + ball.radius > PaddleBigger.x && 
+		ball.x - ball.radius < PaddleBigger.x + PaddleBigger.width && 
+		ball.y + ball.radius > PaddleBigger.y && 
+		ball.y - ball.radius < PaddleBigger.y + PaddleBigger.height) {
+			 if (!BallinPadBigBuff)
+				  BallinPadBigBuff = true;
+			 }
+			 else {
+				  if (BallinPadBigBuff) {
+						BallinPadBigBuff = false;
+						AttackCount++;
+						if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
+						  giveAttackBuff();
+						}
 					}
-				}
-	if (BigPadCount === 2) {
+			  }
+  if (crossCount === 2) {
 		PaddleBigger.visible = false;
+  }
+}
+function	drawAttackBuff(){
+	if (Attack.visible) {
+		ctx.globalAlpha = 0.5;
+		ctx.fillStyle = "red";
+		ctx.fillRect(Attack.x, Attack.y, Attack.width, Attack.height);
+  }
+  ctx.globalAlpha = 1.0;
+  if ((Attack.visible) &&
+		ball.x + ball.radius > Attack.x && 
+		ball.x - ball.radius < Attack.x + Attack.width && 
+		ball.y + ball.radius > Attack.y && 
+		ball.y - ball.radius < Attack.y + Attack.height) {
+			 if (!BallinAttackBuff)
+				  BallinAttackBuff = true;
+			 }
+			 else {
+				  if (BallinAttackBuff) {
+						BallinAttackBuff = false;
+						AttackCount++;
+						if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
+						  giveAttackBuff();
+						}
+					}
+			  }
+  if (crossCount === 2) {
+		Attack.visible = false;
+  }
+}
+
+function drawTimer() {
+	ctx.font = '20px Arial';
+	ctx.fillStyle = 'white';
+	ctx.textAlign = 'center';
+	ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
+}
+function gameOverScreen(){
+	if (player1.score >= 2){
+		GOscreen = true;
+		showGameOverScreen();
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#FFD700';
+		ctx.fillText(`wasd: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#ffffff';
+		ctx.fillText(`Arrows: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#FFD700';
+		ctx.fillText(`NIYEEE: player1`, canvas.width / 2, canvas.height / 2 - 100);
+		player1.score = 0;
+		gameover = true;
+		isingame = false;
 	}
+	else if (player2.score >= 2){
+		showGameOverScreen();
+		GOscreen = true;
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#ffffff';
+		ctx.fillText(`wasd: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#FFD700';
+		ctx.fillText(`Arrows: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#FFD700';
+		ctx.fillText(`WINNER: player2`, canvas.width / 2, canvas.height / 2 - 100);
+		gameover = true;
+		isingame = false;
+	}
+}
+function removeGameOverScreen() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	GOscreen = false;
+	gameover = false;
+	console.log("we made it here");
+	isingame = false;
+}
+function showGameOverScreen() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = '#000';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	const	font_size = canvas.width * 0.15;
+	ctx.font = `${font_size}px "PixelFont", sans-serif`;
+	ctx.fillStyle = '#ffffff';
+	ctx.textAlign = 'center';
+	ctx.fillText('GAME OVER', canvas.width * 0.5, canvas.height * 0.3);
+	ctx.font = '24px "PixelFont", sans-serif';
+	ctx.fillStyle = '#ff0000';
+	ctx.fillText('Press R to replay, Q to go back to main menu', canvas.width / 2, canvas.height / 2 + 500);
 }
 
 //gamelogic
 let gameStartTime;
 const speedIncreaseInterval = 5000;
-const initialSpeed = 6;
+const initialSpeed = 4;
 const speedIncrement = 0.22;
 
 
@@ -515,7 +588,7 @@ function countdownBeforeRound(callback) {
         drawPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
         drawPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
         drawBall(ball.x, ball.y, ball.radius);
-        window.drawScoreBoard();
+        drawScoreBoard();
         ctx.font = '48px sans-serif'; 
         ctx.fillStyle = '#fff';
         ctx.fillText(`Round starts in: ${countdown}`, canvas.width / 2 , canvas.height * 0.4);
@@ -524,35 +597,31 @@ function countdownBeforeRound(callback) {
 
         if (countdown < 0) {
             clearInterval(intervalID);
-            callback(); // Call the function to restart the round
+            callback();
       	}
-   }, 1000); // Set interval for every 1 second
+   }, 1000);
 }
 
 function restartGame(difficulty) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	if (wasHit === true){
+	if (wasdHit === true){
 		ARPaddle.height *= 2;
-		wasHit = false;
+		wasdHit = false;
 	}
-	if (aiDidHit === true){
+	if (ARHit === true){
 		wasdPaddle.height *= 2;
-		aiDidHit = false;
+		ARHit = false;
 	}
-	setbackoriginalvalues();
-	wasdPaddle.x = 0;
-	wasdPaddle.y = canvas.height / 2 - wasdPaddle.height / 2;
-	ARPaddle.x = canvas.width - ARPaddle.width;
-	ARPaddle.y = canvas.height / 2 - ARPaddle.height / 2;
 	crossCount = 0;
 	AttackCount = 0;
 	BigPadCount = 0;
 	wasdPaddle.dy = 7;
 	ARPaddle.dy = 7;
-	ball.dy = 6;
+	ball.dy = 4;
 	buff.visible = false;
 	Attack.visible = false;
-	block.visible = false;
+	WDblock.visible = false;
+	ARblock.visible = false;
 	PaddleBigger.visible = false;
 	ResetTime = null;
 	LastpaddletoHit = null;
@@ -568,50 +637,44 @@ function restartGame(difficulty) {
 
 let isingame = false;
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+addEventListener('resize', resizeCanvas);
 
 function movewasdPaddle() {
-    if (wPressed && wasdPaddle.y > 50) {
-        wasdPaddle.y -= wasdPaddle.dy;
-    } else if (sPressed && wasdPaddle.y < canvas.height - wasdPaddle.height) {
-        wasdPaddle.y += wasdPaddle.dy;
-    }
-}
-
-
-function moveARPaddle() {
-	if (upPressed && ARPaddle.y > 50) {
-		 ARPaddle.y -= ARPaddle.dy;
-	} else if (downPressed && ARPaddle.y < canvas.height - ARPaddle.height) {
-		 ARPaddle.y += ARPaddle.dy;
+	if (wPressed && wasdPaddle.y > 50) {
+		wasdPaddle.y -= wasdPaddle.dy;
+	} else if (sPressed && wasdPaddle.y < canvas.height - wasdPaddle.height) {
+		wasdPaddle.y += wasdPaddle.dy;
 	}
 }
 
-let upPressed = false;
-let downPressed = false;
-let wPressed = false;
-let sPressed = false;
+function moveARPaddle() {
+	if (upPressed && ARPaddle.y > 50) {
+		ARPaddle.y -= ARPaddle.dy;
+	} else if (downPressed && ARPaddle.y < canvas.height - ARPaddle.height) {
+		ARPaddle.y += ARPaddle.dy;
+	}
+}
+
 
 document.addEventListener('keydown', (e) => {
-	if (e.key === 'KeyW') wPressed = true;
-	if (e.key === 'KeyS') sPressed = true;
+	if (e.code === 'KeyW') wPressed = true;
+	if (e.code === 'KeyS') sPressed = true;
 });
 
 document.addEventListener('keyup', (e) => {
-	if (e.key === 'KeyW') wPressed = false;
-	if (e.key === 'KeyS') sPressed = false;
+	if (e.code === 'KeyW') wPressed = false;
+	if (e.code === 'KeyS') sPressed = false;
 });
 
 document.addEventListener('keydown', (e) => {
-	if (e.key === 'ArrowUp') upPressed = true;
-	if (e.key === 'ArrowDown') downPressed = true;
+	if (e.code === 'ArrowUp') upPressed = true;
+	if (e.code === 'ArrowDown') downPressed = true;
 });
 
 document.addEventListener('keyup', (e) => {
-	if (e.key === 'ArrowUp') upPressed = false;
-	if (e.key === 'ArrowDown') downPressed = false;
+	if (e.code === 'ArrowUp') upPressed = false;
+	if (e.code === 'ArrowDown') downPressed = false;
 });
-
 function moveBall() {
 	const elapsedTime = Date.now() - ResetTime;
 	const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
@@ -621,7 +684,7 @@ function moveBall() {
 	ball.x += ball.dx;
 	ball.y += ball.dy;
 
-	if (ball.y + ball.radius < 70 ||ball.y + ball.radius > 40 || ball.y - ball.radius < 0) {
+	if (ball.y + ball.radius < 70 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
 		 ball.dy *= -1;
 	}
 
@@ -658,7 +721,7 @@ function moveBall() {
 		 LastpaddletoHit = "Arrows";
 	}
 
-	if ((ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width) && fullTime >= 0)
+	if ((ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width))
 		 newRound();
 }
 
@@ -673,7 +736,7 @@ function stopGameLoop() {
 
 
 function restartRound() {
-    gameLoop(diffy);
+    gameLLoop();
 }
 function newRound(){
 	EL = elapsedTime;
@@ -686,15 +749,17 @@ function newRound(){
 			  return;
 		 }
 		 stopGameLoop();
-		 ball.x = canvas.width / 2;
-		 ball.y = canvas.height / 2;
-		 ball.dx *= -1;
-		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
-		 restartGame();
-		 countdownBeforeRound(() => {
+		setbackoriginalvalues();
+
+		ball.x = canvas.width / 2;
+		ball.y = canvas.height / 2;
+		ball.dx *= -1;
+		ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+		ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+		countdownBeforeRound(() => {
 			  gameActive = true;
 			  restartRound();
+			  restartGame();
 		 });
 		 return; 
 	}
@@ -705,14 +770,17 @@ function newRound(){
 			  gameover = true;
 			  return;
 		 }
+		 stopGameLoop();
+		 setbackoriginalvalues();
 		 ball.x = canvas.width / 2;
 		 ball.y = canvas.height / 2;
 		 ball.dx *= -1;
 		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
 		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
 		 countdownBeforeRound(() => {
-			  switchOnAI();
-			  restartGame();
+				gameActive = true;
+				restartRound();
+				restartGame();
 		 });
 		 return; 
 	}
@@ -720,14 +788,12 @@ function newRound(){
 let gameover = false;
 
 function    setbackoriginalvalues(){
-	playerPaddle.width = canvas.width * 0.01;
-	aiPaddle.width = canvas.width * 0.01;
-	playerPaddle.height = canvas.height * 0.1;
-	aiPaddle.height = canvas.height * 0.1;
-	playerPaddle.x = 0;
-	aiPaddle.x = 0;
-	playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
-	aiPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
+	wasdPaddle.width = canvas.width * 0.01;
+	ARPaddle.width = canvas.width * 0.01;
+	wasdPaddle.height = canvas.height * 0.1;
+	ARPaddle.height = canvas.height * 0.1;
+	wasdPaddle.y = canvas.height / 2 - wasdPaddle.height / 2;
+	ARPaddle.y = canvas.height / 2 - wasdPaddle.height / 2;
 }
 function getRandomNumber() {
 	const randomNumber = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
@@ -736,48 +802,44 @@ function getRandomNumber() {
 
 let storedRandomNumber = getRandomNumber();
 
-function gameLoop(difficulty) {
+function gameLLoop() {
 	if (!gameActive) {
 		 return;
 	}
-	let diffy = difficulty;
 	if (!ResetTime)
 		 ResetTime = Date.now();
-	ai_menu.style.display = 'none';
 	isingame = true;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
 	if (elapsedTime === 1) {
-		 Attack.visible = true;
-		 Attack.y = canvas.height - Attack.height;
-		//  Attack.x = canvas.width / 2 - Attack.width / 2;
-		 randomizeAttackX();
+		Attack.visible = true;
+		Attack.y = canvas.height - Attack.height;
+		randomizeAttackX();
 	}
-	if (Attack.visible) {
+	if (Attack.visible)
 		 moveAttackbuff();
-	}
 	if (AttackCount === 2)
 		 Attack.visible = false;
-	if (elapsedTime === 2) {
-		 buff.visible = true;
-		 buff.y = canvas.height - buff.height;
-		 randomizeBuffX();
+	if (elapsedTime === 4) {
+		buff.visible = true;
+		buff.y = canvas.height - buff.height;
+		randomizeBuffX();
 	}
 	if (buff.visible) {
-		 movebuff();
+		movebuff();
 	}
 	if (crossCount === 2)
-		 buff.visible = false;
-	if (elapsedTime === 8) {
-		 PaddleBigger.visible = true;
-		 PaddleBigger.y = canvas.height - PaddleBigger.height;
-		 randomizePadBigX();
+		buff.visible = false;
+	if (elapsedTime === 5) {
+		PaddleBigger.visible = true;
+		PaddleBigger.y = canvas.height - PaddleBigger.height;
+		randomizePadBigX();
 	}
 	if (PaddleBigger.visible) {
-		 movePadBigbuff();
+		movePadBigbuff();
 	}
 	if (BigPadCount === 2)
-		 PaddleBigger.visible = false;
+		PaddleBigger.visible = false;
 	drawPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
 	drawPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
 	drawBall(ball.x, ball.y, ball.radius);
@@ -785,20 +847,19 @@ function gameLoop(difficulty) {
 	moveARPaddle();
 	didItHit();
 	didAiHit();
-	drawaiBlock();
-	drawBlock();
+	drawARBlock();
+	drawwasdBlock();
 	moveBlock();
-	moveaiBlock();
+	moveARBlock();
 	drawSpeedBuff();
 	drawAttackBuff();
 	drawPadBigBuff();
 	moveBall();
 	drawScoreBoard();
 	drawTimer();
-	window.gameOverScreen();
-	let frameID = requestAnimationFrame(() => gameLoop(difficulty));
+	gameOverScreen();
+	let frameID = requestAnimationFrame(() => gameLLoop());
 	animationFrameIDs.push(frameID);
-	// console.log('ki bdina', AnimationframeID);
 	if (gameover) {
 		 console.log(animationFrameIDs);
 		 setbackoriginalvalues();
@@ -806,3 +867,9 @@ function gameLoop(difficulty) {
 		 return;
 	}
 }
+
+document.getElementById('pong-local').addEventListener('click', () => {
+	menu.style.display = 'none';
+	gameActive = true;
+	gameLLoop();
+})

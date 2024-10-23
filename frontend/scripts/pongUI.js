@@ -317,7 +317,6 @@ function drawScoreBoard() {
 	ctx.fillText('Player 2', 90*canvas.width/100, 30);
 	ctx.fillText(player2.score, 82*canvas.width/100, 30);
 }
-
 function giveSpeedBuff(){
 	if (LastpaddletoHit === "player 1")
 		playerPaddle.dy = 12;
