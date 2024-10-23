@@ -305,28 +305,19 @@ function drawScoreBoard() {
 	const image2 = new Image();
 	image1.src = player1.icon;
 	image2.src = player2.icon;
-
-	
-
 	ctx.drawImage(image1, 10, 5, 40, 40);
 	ctx.font = '20px Arial';
 	ctx.fillStyle = 'white';
-	// ctx.fillText('Player 1', 100, 30);
-	// ctx.fillText(player1.score, 220, 30);
 	ctx.fillText('Player 1', 10*canvas.width/100, 30);
 	ctx.fillText(player1.score, 18*canvas.width/100, 30);
-
-	// ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
 	ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
 	
 	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white';
-	// ctx.fillText('Player 2', canvas.width - 100, 30);
-	// ctx.fillText(player2.score, canvas.width - 220, 30); 
+	ctx.fillStyle = 'white'; 
 	ctx.fillText('Player 2', 90*canvas.width/100, 30);
 	ctx.fillText(player2.score, 82*canvas.width/100, 30);
-
 }
+
 function giveSpeedBuff(){
 	if (LastpaddletoHit === "player 1")
 		playerPaddle.dy = 12;
