@@ -92,6 +92,24 @@ const initialSpeed = 6;
 const speedIncrement = 0.22;
 
 
+function drawPaddle(x, y, width, height) {
+	ctx.fillStyle = 'white';
+	if (flag){
+		 ctx.fillStyle = 'gold';
+		 flag--;
+	}
+	ctx.fillRect(x, y, width, height);
+
+}
+
+function drawBall(x, y, radius) {
+	ctx.beginPath();
+	ctx.arc(x, y, radius, 0, Math.PI * 2);
+	ctx.fillStyle = 'white';
+	ctx.fill();
+	ctx.closePath();
+}
+
 function resizeCanvas() {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
@@ -198,6 +216,12 @@ function moveARPaddle() {
 		 ARPaddle.y += ARPaddle.dy;
 	}
 }
+
+let upPressed = false;
+let downPressed = false;
+let wPressed = false;
+let sPressed = false;
+
 document.addEventListener('keydown', (e) => {
 	if (e.key === 'KeyW') wPressed = true;
 	if (e.key === 'KeyS') sPressed = true;
@@ -321,5 +345,94 @@ function newRound(){
 			  restartGame();
 		 });
 		 return; 
+	}
+}
+let gameover = false;
+
+function    setbackoriginalvalues(){
+	playerPaddle.width = canvas.width * 0.01;
+	aiPaddle.width = canvas.width * 0.01;
+	playerPaddle.height = canvas.height * 0.1;
+	aiPaddle.height = canvas.height * 0.1;
+	playerPaddle.x = 0;
+	aiPaddle.x = 0;
+	playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
+	aiPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
+}
+function getRandomNumber() {
+	const randomNumber = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
+	return randomNumber;
+}
+
+let storedRandomNumber = getRandomNumber();
+
+function gameLoop(difficulty) {
+	if (!gameActive) {
+		 return;
+	}
+	let diffy = difficulty;
+	if (!ResetTime)
+		 ResetTime = Date.now();
+	ai_menu.style.display = 'none';
+	isingame = true;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
+	if (elapsedTime === 1) {
+		 Attack.visible = true;
+		 Attack.y = canvas.height - Attack.height;
+		//  Attack.x = canvas.width / 2 - Attack.width / 2;
+		 randomizeAttackX();
+	}
+	if (Attack.visible) {
+		 moveAttackbuff();
+	}
+	if (AttackCount === 2)
+		 Attack.visible = false;
+	if (elapsedTime === 2) {
+		 buff.visible = true;
+		 buff.y = canvas.height - buff.height;
+		 randomizeBuffX();
+	}
+	if (buff.visible) {
+		 movebuff();
+	}
+	if (crossCount === 2)
+		 buff.visible = false;
+	if (elapsedTime === 8) {
+		 PaddleBigger.visible = true;
+		 PaddleBigger.y = canvas.height - PaddleBigger.height;
+		 randomizePadBigX();
+	}
+	if (PaddleBigger.visible) {
+		 movePadBigbuff();
+	}
+	if (BigPadCount === 2)
+		 PaddleBigger.visible = false;
+	drawPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+	drawPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
+	drawBall(ball.x, ball.y, ball.radius);
+	movewasdPaddle();
+	moveARPaddle();
+	didItHit();
+	didAiHit();
+	drawaiBlock();
+	drawBlock();
+	moveBlock();
+	moveaiBlock();
+	drawSpeedBuff();
+	drawAttackBuff();
+	drawPadBigBuff();
+	moveBall();
+	drawScoreBoard();
+	drawTimer();
+	window.gameOverScreen();
+	let frameID = requestAnimationFrame(() => gameLoop(difficulty));
+	animationFrameIDs.push(frameID);
+	// console.log('ki bdina', AnimationframeID);
+	if (gameover) {
+		 console.log(animationFrameIDs);
+		 setbackoriginalvalues();
+		 gameActive = false;
+		 return;
 	}
 }
