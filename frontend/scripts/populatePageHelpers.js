@@ -98,6 +98,17 @@ export async function loadProfile(requestData) {
     }  
 }
 
+const statspage = document.getElementById('stats-tab');
+statspage.addEventListener('click', function () {
+    if (statspage.getAttribute('selected') === 'true') {
+        Notification('Profile Action', 'You are already viewing the pong stats!', 2, 'alert');
+        return ;
+    }
+    const historyTab = document.getElementById('History');
+    statspage.setAttribute('selected', 'true');
+    historyTab.setAttribute('selected', 'false');
+});
+
 function loadProfileInfo(user) {
     const profileUsername = document.getElementById('username');
     const avatarElement = document.getElementById('profile-avatar');
@@ -243,7 +254,13 @@ export function loadMatchHistory(games) {
     const historyTab = document.getElementById('History');
     const matchHistoryContainer = document.querySelector('.match-history-container');
     historyTab.addEventListener('click', function () {
+        if (historyTab.getAttribute('selected') === 'true') {
+            Notification('Profile Action', 'You are already viewing the match history tab!', 2, 'alert');
+            return ;
+        }
+        statspage.setAttribute('selected', 'false');
 		matchHistoryContainer.innerHTML = '';
+        historyTab.setAttribute('selected', 'true');
 		try {
 			loadMatchHistory(games);
             return ;

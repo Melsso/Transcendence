@@ -1,36 +1,25 @@
-// const friendRequestContainer = document.createElement('div');
-// friendRequestContainer.className = 'friend-request-container';
+// const menu = document.getElementById('menuuu');
+const lo = document.getElementById('1v1');
 
+// const inv_menu = document.getElementById('inv-menu');
+// const ai_menu = document.getElementById('ai-menu');
+// const Instructions = document.getElementById('Instructions-box');
+const lobby = document.getElementById('pong-inv-container');
 
-// const refuseButton = document.createElement('button');
-// refuseButton.id = 'no-btn'
-// refuseButton.setAttribute('user_id', user.id);
-// refuseButton.type = 'button';
-// refuseButton.className = 'btn btn-request-no';
-// refuseButton.innerHTML = '&#10005;'; 
+function openModal(modalId) {
+    document.getElementById(`pong-modal-${modalId}`).classList.add('active');
+    document.getElementById('modal-overlay').classList.add('active');
+}
 
+function closeModal(modalId) {
+    document.getElementById(`pong-modal-${modalId}`).classList.remove('active');
+    document.getElementById('modal-overlay').classList.remove('active');
+}
 
-// const acceptButton = document.createElement('button');
-// acceptButton.id = 'yes-btn';
-// acceptButton.setAttribute('user_id', user.id);
-// acceptButton.type = 'button';
-// acceptButton.className = 'btn btn-request-yes';
-// acceptButton.innerHTML = '&#10003;'; 
-
-
-// friendRequestContainer.appendChild(refuseButton);
-// friendRequestContainer.appendChild(acceptButton);
-
-
-document.querySelector("#message-content").focus();
-document.querySelector("#message-content").onkeyup = function (e) {
-    if (e.keyCode == 13) {
-        document.querySelector("#send-button").click();
-    }
-};
-document.querySelector("#send-button").onclick = function (e) {
-    var messageInput = document.querySelector(
-        "#message-content"
-    ).value;
-    chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
-};
+lo.addEventListener('click', function (){
+    menu.style.display = 'none';
+    ai_menu.style.display = 'none';
+    inv_menu.style.display = 'none';
+    Instructions.style.display = 'none';
+    lobby.style.display = 'flex';
+});
