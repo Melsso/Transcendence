@@ -14,7 +14,6 @@ function handleSend(username) {
 	chatInput.value = ''; 
 }
 
-
 globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
 	var collapseElement = document.getElementById('collapseTwo');
