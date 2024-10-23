@@ -14,6 +14,8 @@ const ai_easy = document.getElementById('PongEasy');
 const ai_medium = document.getElementById('PongMedium');
 const ai_hard = document.getElementById('PongHard');
 const ins_return = document.getElementById('return-to-menu-ins');
+window.gameActive = false;
+window.flag = 0;
 window.data = {
     playerStats1: {
         score: 0,
@@ -40,7 +42,7 @@ window.playerPaddle = {
     y: 0,
     width: 0,
     height: 0,
-    dy: 5,
+    dy: 7,
     hasanattack: null
 };
 
@@ -49,7 +51,7 @@ window.aiPaddle = {
     y: 0,
     width: 0,
     height: 0,
-    dy: 5,
+    dy: 7,
     aihasanattack: null
 };
 
@@ -98,7 +100,7 @@ function mediumDifficultyAI() {
 
 let gameStartTime;
 const speedIncreaseInterval = 5000;
-const initialSpeed = 3;
+const initialSpeed = 6;
 const speedIncrement = 0.22;
 
 
@@ -128,8 +130,39 @@ function setGameDimensions() {
     ball.y = canvas.height / 2;
 }
 
+function countdownBeforeRound(callback) {
+    let countdown = 3;
+    
+    const intervalID = setInterval(() => {
+ 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
+        drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+        drawBall(ball.x, ball.y, ball.radius);
+        window.drawScoreBoard();
+        ctx.font = '48px sans-serif'; 
+        ctx.fillStyle = '#fff';
+        ctx.fillText(`Round starts in: ${countdown}`, canvas.width / 2 , canvas.height * 0.4);
+        
+        countdown--;
 
+        if (countdown < 0) {
+            clearInterval(intervalID);
+            callback(); // Call the function to restart the round
+        }
+    }, 1000); // Set interval for every 1 second
+}
+
+
+let fullTime = null;
+let LongestRound = null;
+let ShortestRound = 2000;
 function restartGame(difficulty) {
+    fullTime += elapsedTime;
+    if (elapsedTime > LongestRound)
+        LongestRound = elapsedTime;
+    if (elapsedTime < ShortestRound)
+        ShortestRound = elapsedTime;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (wasHit === true){
         aiPaddle.height *= 2;
@@ -139,17 +172,21 @@ function restartGame(difficulty) {
         playerPaddle.height *= 2;
         aiDidHit = false;
     }
+    setbackoriginalvalues();
     playerPaddle.x = 0;
     playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
     aiPaddle.x = canvas.width - aiPaddle.width;
     aiPaddle.y = canvas.height / 2 - aiPaddle.height / 2;
     crossCount = 0;
     AttackCount = 0;
+    BigPadCount = 0;
     playerPaddle.dy = 7;
     aiPaddle.dy = 7;
+    ball.dy = 6;
     buff.visible = false;
     Attack.visible = false;
     block.visible = false;
+    PaddleBigger.visible = false;
     ResetTime = null;
     LastpaddletoHit = null;
     gameover = false;
@@ -158,8 +195,7 @@ function restartGame(difficulty) {
     }
     if (Attack.speed > 0) {
         Attack.speed *= -1;
-    }
-    requestAnimationFrame(() => gameLoop(diffy));
+    };
 }
 
 let isingame = false;
@@ -184,6 +220,7 @@ function switchOnAI() {
 
 let aiTargetY = null;
 
+let EL = null;
 function moveBall() {
     const elapsedTime = Date.now() - ResetTime;
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
@@ -193,7 +230,7 @@ function moveBall() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > 40 || ball.y - ball.radius < 0) {
         ball.dy *= -1;
     }
 
@@ -232,30 +269,66 @@ function moveBall() {
         switchOffAI();
     }
 
-    if (ball.x - ball.radius < 0) {
-        player2.score++;
-        drawScoreBoard();
-        ball.x = canvas.width / 2;
-        ball.y = canvas.height / 2;
-        ball.dx *= -1;
-        ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-        ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
-        switchOnAI();
-        restartGame();
-    }
-    if (ball.x + ball.radius > canvas.width) {
-        player1.score++;
-        drawScoreBoard();
-        ball.x = canvas.width / 2;
-        ball.y = canvas.height / 2;
-        ball.dx *= -1;
-        ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-        ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
-        switchOnAI();
-        restartGame();
-    }
+    if ((ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width) && fullTime >= 0)
+        newRound();
 }
 
+function stopGameLoop() {
+	for (let i = 0; i < animationFrameIDs.length; i++) {
+		 cancelAnimationFrame(animationFrameIDs[i]);
+	}
+	animationFrameIDs = [];
+	gameActive = false;
+}
+
+
+function restartRound() {
+    gameLoop(diffy);
+}
+
+function newRound(){
+    EL = elapsedTime;
+    const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
+    if (ball.x - ball.radius <= 0) {
+        player2.score++;
+        console.log("Player 2 score: " + player2.score);
+        if (player2.score === 6){
+            gameover = true;
+            return;
+        }
+        stopGameLoop();
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx *= -1;
+        ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+        ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+        restartGame();
+        countdownBeforeRound(() => {
+            gameActive = true;
+            switchOnAI();
+            restartRound();
+        });
+        return; 
+    }
+    if (ball.x + ball.radius >= canvas.width) {
+        player1.score++;
+        console.log("Player 1 score: " + player1.score);
+        if (player1.score === 2){
+            gameover = true;
+            return;
+        }
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx *= -1;
+        ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+        ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+        countdownBeforeRound(() => {
+            switchOnAI();
+            restartGame();
+        });
+        return; 
+    }
+}
 
 let upPressed = false;
 let downPressed = false;
@@ -274,7 +347,12 @@ document.addEventListener('keyup', (e) => {
 
 function drawPaddle(x, y, width, height) {
     ctx.fillStyle = 'white';
+    if (flag){
+        ctx.fillStyle = 'gold';
+        flag--;
+    }
     ctx.fillRect(x, y, width, height);
+
 }
 
 function drawBall(x, y, radius) {
@@ -287,16 +365,38 @@ function drawBall(x, y, radius) {
 
 window.gameover = false;
 
+function    setbackoriginalvalues(){
+    playerPaddle.width = canvas.width * 0.01;
+    aiPaddle.width = canvas.width * 0.01;
+    playerPaddle.height = canvas.height * 0.1;
+    aiPaddle.height = canvas.height * 0.1;
+    playerPaddle.x = 0;
+    aiPaddle.x = 0;
+    playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
+    aiPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
+}
 function getRandomNumber() {
-    // Generate a random number between 10 and 15
     const randomNumber = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
     return randomNumber;
 }
 
-// Example of storing the random number
 let storedRandomNumber = getRandomNumber();
 
+function calculateAccuracy(player1, player2){
+    let averageHits = player2.gothit / player1.ABR
+    if (player1.ABR === 0)
+        return 0;
+    return averageHits;
+}
+
+
+let player1AttackAcc = null; 
+window.animationFrameIDs = [];
+
 function gameLoop(difficulty) {
+    if (!gameActive) {
+        return;
+    }
     window.diffy = difficulty;
     if (!ResetTime)
         ResetTime = Date.now();
@@ -304,17 +404,18 @@ function gameLoop(difficulty) {
     isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
-    if (elapsedTime === storedRandomNumber) {
+    if (elapsedTime === 1) {
         Attack.visible = true;
         Attack.y = canvas.height - Attack.height;
-        randomizeAttackX();
+        Attack.x = canvas.width / 2 - Attack.width / 2;
+        // randomizeAttackX();
     }
     if (Attack.visible) {
         moveAttackbuff();
     }
     if (AttackCount === 2)
         Attack.visible = false;
-    if (elapsedTime === storedRandomNumber + 5) {
+    if (elapsedTime === 2) {
         buff.visible = true;
         buff.y = canvas.height - buff.height;
         randomizeBuffX();
@@ -324,7 +425,7 @@ function gameLoop(difficulty) {
     }
     if (crossCount === 2)
         buff.visible = false;
-    if (elapsedTime === storedRandomNumber + 10) {
+    if (elapsedTime === 8) {
         PaddleBigger.visible = true;
         PaddleBigger.y = canvas.height - PaddleBigger.height;
         randomizePadBigX();
@@ -338,10 +439,10 @@ function gameLoop(difficulty) {
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
     movePlayerPaddle();
+    console.log(aiPaddle.width);
     window.moveAIPaddle(difficulty);
     window.didItHit();
     window.didAiHit();
-    window.drawScoreBoard();
     window.drawaiBlock();
     window.drawBlock();
     window.moveBlock();
@@ -350,11 +451,20 @@ function gameLoop(difficulty) {
     window.drawAttackBuff();
     window.drawPadBigBuff();
     moveBall();
+    window.drawScoreBoard();
     window.drawTimer();
+    player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit);
     window.gameOverScreen();
-    if (gameover)
+    console.log(fullTime);
+    let frameID = requestAnimationFrame(() => gameLoop(difficulty));
+    animationFrameIDs.push(frameID);
+    // console.log('ki bdina', AnimationframeID);
+    if (gameover) {
+        console.log(animationFrameIDs);
+        setbackoriginalvalues();
+        gameActive = false;
         return;
-    requestAnimationFrame(() => gameLoop(difficulty));
+    }
 }
 
 ins_return.addEventListener('click', function () {
@@ -391,18 +501,29 @@ Instructionsbtn.addEventListener('click', function () {
     Instructions.style.display = 'flex';
 });
 
-aibutton.addEventListener('click', function () {
+aibutton.addEventListener('click', function (event) {
+    event.preventDefault();
     inv_menu.style.display = 'none';
     menu.style.display = 'none';
     ai_menu.style.display = 'flex';
+});
 
-    const selectDifficulty = (difficulty) => {
-        gameLoop(difficulty)
-    };
+ai_easy.addEventListener('click', function (event) {
+    event.preventDefault();
+    gameActive = true;
+    gameLoop('easy');
+});
 
-    ai_easy.addEventListener('click', () => selectDifficulty('easy'));
-    ai_medium.addEventListener('click', () => selectDifficulty('medium'));
-    ai_hard.addEventListener('click', () => selectDifficulty('hard'));
+ai_medium.addEventListener('click', function(event) {
+    event.preventDefault();
+    gameActive = true;
+    gameLoop('medium');
+});
+
+ai_hard.addEventListener('click', function(event) {
+    event.preventDefault();
+    gameActive = true;
+    gameLoop('hard');
 });
 
 //  function applyBlurEffect() {
@@ -430,3 +551,42 @@ aibutton.addEventListener('click', function () {
 //  }
 
 //  document.getElementById('start-pong-ai').addEventListener('click', applyBlurEffect);
+function    calculateAverageRoundTime(){
+    let endScore = player1.score + player2.score;
+    let art = fullTime / endScore;
+    return art;
+}
+
+// function calculateAccuracy(player1, player2){
+//     let averageHits = player2.gothit / player1.ABR
+// }
+
+// let player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
+function endGameStats() {
+    // Example values - these would be calculated based on the actual game state
+    const player1Score = getPlayer1Score(); // Replace with actual function to get Player 1's score
+    const player2Score = getPlayer2Score(); // Replace with actual function to get Player 2's score
+    const player1BuffsTaken = getPlayer1Buffs(); // Replace with actual function to get Player 1's buffs taken
+    const player2BuffsTaken = getPlayer2Buffs(); // Replace with actual function to get Player 2's buffs taken
+    // window.player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
+    window.player2AttackAcc = calculateAccuracy(player2.ABR, player1.gothit); // Replace with actual accuracy calculation
+
+    // Fill in player stats
+    window.data.playerStats1.score = player1.score; //done
+    window.data.playerStats1.buffs_taken = player1.Btaken; //done
+    window.data.playerStats1.attack_acc = player1AttackAcc;
+
+    window.data.playerStats2.score = player2.score; // done
+    window.data.playerStats2.buffs_taken = player2.Btaken; // done
+    window.data.playerStats2.attack_acc = player2AttackAcc;
+
+    // Fill in game stats
+    window.data.gameStats.average_round_time = calculateAverageRoundTime(); // done
+    window.data.gameStats.fastest_round = ShortestRound; // done
+    window.data.gameStats.longest_round = LongestRound; // done
+    window.data.gameStats.map_played = 1; // Replace with actual map played
+    window.data.gameStats.full_time = fullTime; // done
+    window.data.gameStats.winner = player1.Score > player2.Score ? 1 : 2; // should work, to be tested //
+
+    console.log("Game stats updated:", window.data);
+}

@@ -1,5 +1,5 @@
-const player1 = {name: 'player1', icon: '../frontend/assets/logo.jpg',  score: 0};
-const player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0};
+window.player1 = {name: 'player1', icon: '../frontend/assets/logo.jpg',  score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
+window.player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
 // const play_again = document.getElementById('playAgain');
 const	change_difficulty = document.getElementById('diffy');
 const	backtomain = document.getElementById('goodbye')
@@ -37,7 +37,7 @@ window.block = {
 	y: 0,
 	width: 10,
 	height: 10,
-	speed: 20,
+	speed: 40,
 	visible: false
 };
 
@@ -46,7 +46,7 @@ window.aiblock = {
 	y: 0,
 	width: 10,
 	height: 10,
-	speed: 20,
+	speed: 40,
 	visible: false
 };
 
@@ -56,7 +56,7 @@ window.crossCount = 0;
 window.AttackCount = 0;
 window.BigPadCount = 0;
 window.sbVisible = false;
-window.abVisible = false;
+window.abVisible = true;
 window.BallinBuff = false;
 window.BallinAttackBuff = false;
 window.BallinPadBigBuff = false;
@@ -64,57 +64,106 @@ window.aiTargetY = null;
 window.GOscreen = false;
 
 function	redoGame(){
+	ResetTime = Date.now();
+	GOscreen = false;
+	gameover = false; 
+	fullTime += elapsedTime;
+	if (elapsedTime > LongestRound)
+		 LongestRound = elapsedTime;
+	if (elapsedTime < ShortestRound)
+		 ShortestRound = elapsedTime;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (wasHit === true){
+		 aiPaddle.height *= 2;
+		 wasHit = false;
+	}
+	if (aiDidHit === true){
+		 playerPaddle.height *= 2;
+		 aiDidHit = false;
+	}
+	crossCount = 0;
+	AttackCount = 0;
+	BigPadCount = 0;
+	playerPaddle.dy = 7;
+	aiPaddle.dy = 7;
+	ball.dy = 6;
+	buff.visible = false;
+	Attack.visible = false;
+	block.visible = false;
+	LastpaddletoHit = null;
+	gameover = false;
+	if (buff.speed > 0) {
+		 buff.speed *= -1;
+	}
+	if (Attack.speed > 0) {
+		 Attack.speed *= -1;
+	}
+	gameActive = true;
+	gameLoop(diffy);
 	player1.score = 0;
 	player2.score = 0;
-	GOscreen = false;
-	restartGame();
 }
 
 document.addEventListener('keydown', (event) => {
 	if (GOscreen === true){
 		if (event.code === 'KeyR'){
 				console.log ("trying to do so");
+				player1.score = 0;
+				player2.score = 0;
 				redoGame();
 			}
 	}
 });
+
+function stopGameLoop() {
+	for (let i = 0; i < animationFrameIDs.length; i++) {
+		 cancelAnimationFrame(animationFrameIDs[i]);
+	}
+	animationFrameIDs = [];
+	gameActive = false;
+}
+
 document.addEventListener('keydown', (event) => {
 	if (GOscreen === true){
-		if (event.code === 'KeyQ'){
-				console.log ("trying to do so");
-				GOscreen = false;
-				gameover = false;
-				isingame = true;
-				inv_menu.style.display = 'none';
-				ai_menu.style.display = 'none';
-				menu.style.display = 'flex';
-				Instructions.style.display = 'none';
-				removeGameOverScreen();
-				player1.score = 0;
-				player2.score = 0;
+		if (event.code === 'KeyQ' && gameActive === false){
+			stopGameLoop();
+			removeGameOverScreen();
+			window.diffy = null;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			GOscreen = false;
+			gameover = false;
+			isingame = false;
+			menu.style.display = 'flex';
+			player1.score = 0;
+			player2.score = 0;
+			gameActive = false;
 		}
 	}
 });
+
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Space'){
-		if (block.visible === true)
+		if (block.visible === true) {
 			return;
-		block.visible = true;
+		}
 		if (playerPaddle.hasanattack === 1){
+			block.visible = true;
 			block.x = playerPaddle.x + playerPaddle.width / 2 - block.width / 2;
 			block.y = playerPaddle.height / 2 + playerPaddle.y - block.height / 2;
 			playerPaddle.hasanattack = 0;
 		}
-		else
+		else {
 			return ;
+		}
 	}
 });
+
 document.addEventListener('keydown', (event) => {
 	if (event.code === 'Enter'){
 		if (aiblock.visible === true)
 			return;
-		aiblock.visible = true;
 		if (aiPaddle.aihasanattack === 1){
+			aiblock.visible = true;
 			aiblock.x = aiPaddle.x + aiPaddle.width / 2 - aiblock.width / 2;
 			aiblock.y = aiPaddle.height / 2 + aiPaddle.y - aiblock.height / 2;
 			aiPaddle.aihasanattack = 0;
@@ -125,15 +174,19 @@ document.addEventListener('keydown', (event) => {
 });
 
 function didItHit(){
-	if (wasHit === true)
+	if (wasHit === true){
+		player2.wasHit++;
 		return;
+	}
 	if (block.visible === true &&
-		(block.x >= aiPaddle.x - aiPaddle.width) &&
+		(block.x >= aiPaddle.x - aiPaddle.width - 20) &&
 		(block.y >= aiPaddle.y) &&
-		(block.y <= aiPaddle.y +aiPaddle.height)){
-			block.visible = true;
+		(block.y <= aiPaddle.y + aiPaddle.height)) 
+		{
+			block.visible = false;
 			aiPaddle.height /= 2;
 			wasHit = true;
+			player2.gothit++;
 		}
 }
 
@@ -147,14 +200,17 @@ function	AttackPrediction(){
 }
 
 function didAiHit() {
-	if (aiDidHit === true)
+	if (aiDidHit === true){
+		player1.gothit++;
 		return;
+	}
 	if (aiblock.visible === true &&
-		(aiblock.x <= playerPaddle.x + playerPaddle.width) &&
+		(aiblock.x <= playerPaddle.x + playerPaddle.width + 20) &&
 		(aiblock.y >= playerPaddle.y) && 
 		(aiblock.y <= playerPaddle.y + playerPaddle.height)) {
 		aiblock.visible = false;
 		playerPaddle.height = playerPaddle.height / 2;
+		player1.gothit++;
 		aiDidHit = true;
 	}
 }
@@ -238,9 +294,7 @@ function movePadBigbuff() {
 	}
 }
 
-function ScoreBoardTracker(){
-	drawScoreBoard();
-}
+
 
 function drawScoreBoard() {
 	ctx.clearRect(0, 0, canvas.width, 50);
@@ -250,9 +304,10 @@ function drawScoreBoard() {
 	const image2 = new Image();
 	image1.src = player1.icon;
 	image2.src = player2.icon;
+
 	
 
-	 	ctx.drawImage(image1, 10, 5, 40, 40);
+	ctx.drawImage(image1, 10, 5, 40, 40);
 	ctx.font = '20px Arial';
 	ctx.fillStyle = 'white';
 	// ctx.fillText('Player 1', 100, 30);
@@ -268,7 +323,7 @@ function drawScoreBoard() {
 	// ctx.fillText('Player 2', canvas.width - 100, 30);
 	// ctx.fillText(player2.score, canvas.width - 220, 30); 
 	ctx.fillText('Player 2', 90*canvas.width/100, 30);
-	ctx.fillText(player2.score, 82*canvas.width/100, 30); 
+	ctx.fillText(player2.score, 82*canvas.width/100, 30);
 
 }
 function giveSpeedBuff(){
@@ -282,10 +337,14 @@ function giveSpeedBuff(){
 		aiPaddle.dy = 12;
 }
 function giveAttackBuff(){
-	if (LastpaddletoHit === "player 1")
+	if (LastpaddletoHit === "player 1"){
 		playerPaddle.hasanattack = 1;
-	else if (LastpaddletoHit === "Ai")
+		player1.ABR += 1;
+	}
+	else if (LastpaddletoHit === "Ai"){
 		aiPaddle.aihasanattack = 1;
+		player2.ABR += 1;
+	}
 	if (playerPaddle.hasanattack === 1 && LastpaddletoHit === "player 1")
 		playerPaddle.hasanattack = 1;
 	if (aiPaddle.aihasanattack === 1 && LastpaddletoHit === "Ai")
@@ -318,15 +377,22 @@ function drawSpeedBuff() {
 		 ball.x - ball.radius < buff.x + buff.width && 
 		 ball.y + ball.radius > buff.y && 
 		 ball.y - ball.radius < buff.y + buff.height) {
-			  if (!BallinBuff){}
+			  if (!BallinBuff)
 					BallinBuff = true;
 			  }
 			  else {
 					if (BallinBuff) {
 						 BallinBuff = false;
 						 crossCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
-							  giveSpeedBuff();
+						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
+							giveSpeedBuff();
+							if (LastpaddletoHit === "player 1"){
+								player1.Btaken++;
+								flag = 50;
+							}
+							else
+								player2.Btaken++;
+						 }
 						 }
 					}
 	if (crossCount === 2) {
@@ -345,20 +411,24 @@ function drawAttackBuff() {
 		 ball.x - ball.radius < Attack.x + Attack.width && 
 		 ball.y + ball.radius > Attack.y && 
 		 ball.y - ball.radius < Attack.y + Attack.height) {
-			  if (!BallinAttackBuff){}
+			  if (!BallinAttackBuff)
 					BallinAttackBuff = true;
 			  }
-			  else {
+			  else{
 					if (BallinAttackBuff) {
 						 BallinAttackBuff = false;
 						 AttackCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
+						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
 							  giveAttackBuff();
-						 }
+							 if (LastpaddletoHit === "player 1")
+								player1.Btaken++;
+							else
+								player2.Btaken++;
+					 		}
+						}
 					}
-	if (AttackCount === 2) {
-		 Attack.visible = false;
-	}
+	if (AttackCount === 2)
+		Attack.visible = false;
 }
 function drawPadBigBuff() {
 	if (PaddleBigger.visible) {
@@ -380,9 +450,13 @@ function drawPadBigBuff() {
 						 BallinPadBigBuff = false;
 						 BigPadCount++;
 						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
-							  givePadBigBuff();
-						 }
+								givePadBigBuff();
+						 if (LastpaddletoHit === "player 1")
+							player1.Btaken++;
+						else
+							player2.Btaken++;
 					}
+				}
 	if (BigPadCount === 2) {
 		PaddleBigger.visible = false;
 	}
@@ -436,7 +510,7 @@ function moveAIPaddleEasy() {
 	}
 }
 function gameOverScreen(){
-	if (player1.score === 1){
+	if (player1.score >= 2){
 		GOscreen = true;
 		showGameOverScreen();
 		ctx.font = '50px "PixelFont", sans-serif';
@@ -448,10 +522,11 @@ function gameOverScreen(){
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
 		ctx.fillText(`WINNER: player1`, canvas.width / 2, canvas.height / 2 - 100);
+		player1.score = 0;
 		gameover = true;
 		isingame = false;
 	}
-	else if (player2.score === 1){
+	else if (player2.score >= 6){
 		showGameOverScreen();
 		GOscreen = true;
 		ctx.font = '50px "PixelFont", sans-serif';
@@ -472,7 +547,7 @@ function removeGameOverScreen() {
 	GOscreen = false; // Hide game over screen
 	gameover = false; // Reset game over flag
 	console.log("we made it here");
-	isingame = true; // Set the game as active again
+	isingame = false; // Set the game as active again
 }
 function showGameOverScreen() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -488,39 +563,6 @@ function showGameOverScreen() {
 	ctx.fillText('Press R to replay, Q to go back to main menu', canvas.width / 2, canvas.height / 2 + 500);
 }
 
-
-document.getElementById('return-to-menu').addEventListener('click', () => {
-	ai_menu.style.display = 'none';
-	inv_menu.style.display = 'none';
-	menu.style.display = 'flex';
-});
-
-document.getElementById('return-to-menu-ai').addEventListener('click', () => {
-	inv_menu.style.display = 'none';
-	ai_menu.style.display = 'none';
-	menu.style.display = 'flex';
-});
-
-inv_btn.addEventListener('click', function () {
-	menu.style.display = 'none';
-	ai_menu.style.display = 'none';
-	inv_menu.style.display = 'flex';
-});
-
-aibutton.addEventListener('click', function () {
-	inv_menu.style.display = 'none';
-	menu.style.display = 'none';
-	ai_menu.style.display = 'flex';
-
-	const selectDifficulty = (difficulty) => {
-		 gameLoop(difficulty)
-	};
-
-	ai_easy.addEventListener('click', () => selectDifficulty('easy'));
-	ai_medium.addEventListener('click', () => selectDifficulty('medium'));
-	ai_hard.addEventListener('click', () => selectDifficulty('hard'));
-});
-
 function	moveAIPaddle(difficulty){
 	switch (difficulty) {
 		case 'easy':
@@ -534,3 +576,4 @@ function	moveAIPaddle(difficulty){
 			break;
   }
 }
+
