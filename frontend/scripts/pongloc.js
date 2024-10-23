@@ -119,13 +119,13 @@ function setGameDimensions() {
 }
 
 function countdownBeforeRound(callback) {
-    let countdown = 3;
+   let countdown = 3;
     
-    const intervalID = setInterval(() => {
+   const intervalID = setInterval(() => {
  
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
-        drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+        drawPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+        drawPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
         drawBall(ball.x, ball.y, ball.radius);
         window.drawScoreBoard();
         ctx.font = '48px sans-serif'; 
@@ -137,7 +137,84 @@ function countdownBeforeRound(callback) {
         if (countdown < 0) {
             clearInterval(intervalID);
             callback(); // Call the function to restart the round
-        }
-    }, 1000); // Set interval for every 1 second
+      	}
+   }, 1000); // Set interval for every 1 second
 }
+
+function restartGame(difficulty) {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (wasHit === true){
+		ARPaddle.height *= 2;
+		wasHit = false;
+	}
+	if (aiDidHit === true){
+		wasdPaddle.height *= 2;
+		aiDidHit = false;
+	}
+	setbackoriginalvalues();
+	wasdPaddle.x = 0;
+	wasdPaddle.y = canvas.height / 2 - wasdPaddle.height / 2;
+	ARPaddle.x = canvas.width - ARPaddle.width;
+	ARPaddle.y = canvas.height / 2 - ARPaddle.height / 2;
+	crossCount = 0;
+	AttackCount = 0;
+	BigPadCount = 0;
+	wasdPaddle.dy = 7;
+	ARPaddle.dy = 7;
+	ball.dy = 6;
+	buff.visible = false;
+	Attack.visible = false;
+	block.visible = false;
+	PaddleBigger.visible = false;
+	ResetTime = null;
+	LastpaddletoHit = null;
+	gameover = false;
+	if (buff.speed > 0) {
+		buff.speed *= -1;
+	}
+	if (Attack.speed > 0) {
+		Attack.speed *= -1;
+	};
+}
+
+
+let isingame = false;
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function movewasdPaddle() {
+    if (wPressed && wasdPaddle.y > 50) {
+        wasdPaddle.y -= wasdPaddle.dy;
+    } else if (sPressed && wasdPaddle.y < canvas.height - wasdPaddle.height) {
+        wasdPaddle.y += wasdPaddle.dy;
+    }
+}
+
+
+function moveARPaddle() {
+	if (upPressed && ARPaddle.y > 50) {
+		 ARPaddle.y -= ARPaddle.dy;
+	} else if (downPressed && ARPaddle.y < canvas.height - ARPaddle.height) {
+		 ARPaddle.y += ARPaddle.dy;
+	}
+}
+document.addEventListener('keydown', (e) => {
+	if (e.key === 'KeyW') wPressed = true;
+	if (e.key === 'KeyS') sPressed = true;
+});
+
+document.addEventListener('keyup', (e) => {
+	if (e.key === 'KeyW') wPressed = false;
+	if (e.key === 'KeyS') sPressed = false;
+});
+
+document.addEventListener('keydown', (e) => {
+	if (e.key === 'ArrowUp') upPressed = true;
+	if (e.key === 'ArrowDown') downPressed = true;
+});
+
+document.addEventListener('keyup', (e) => {
+	if (e.key === 'ArrowUp') upPressed = false;
+	if (e.key === 'ArrowDown') downPressed = false;
+});
 
