@@ -178,17 +178,141 @@ document.addEventListener('keydown', (event) => {
 		if (block.visible === true) {
 			return;
 		}
-		if (playerPaddle.hasanattack === 1){
+		if (wasdPaddle.hasanattack === 1){
 			block.visible = true;
-			block.x = playerPaddle.x + playerPaddle.width / 2 - block.width / 2;
-			block.y = playerPaddle.height / 2 + playerPaddle.y - block.height / 2;
-			playerPaddle.hasanattack = 0;
+			block.x = wasdPaddle.x + wasdPaddle.width / 2 - block.width / 2;
+			block.y = wasdPaddle.height / 2 + wasdPaddle.y - block.height / 2;
+			wasdPaddle.hasanattack = 0;
 		}
 		else {
 			return ;
 		}
 	}
 });
+document.addEventListener('keydown', (event) => {
+	if (event.code === 'Enter'){
+		if (aiblock.visible === true)
+			return;
+		if (ARPaddle.hasanattack === 1){
+			ARblock.visible = true;
+			ARblock.x = ARPaddle.x + ARPaddle.width / 2 - ARblock.width / 2;
+			ARblock.y = ARPaddle.height / 2 + ARPaddle.y - ARblock.height / 2;
+			ARPaddle.hasanattack = 0;
+		}
+		else
+			return ;
+	}
+});
+
+function didItHit(){
+	if (wasdHit === true){
+		return;
+	}
+	if (block.visible === true &&
+		(block.x >= ARPaddle.x - ARPaddle.width - 20) &&
+		(block.y >= ARPaddle.y) &&
+		(block.y <= ARPaddle.y + ARPaddle.height)) 
+		{
+			block.visible = false;
+			ARPaddle.height /= 2;
+			wasdHit = true;
+		}
+}
+
+function didAiHit() {
+	if (ARHit === true){
+		return;
+	}
+	if (ARblock.visible === true &&
+		(ARblock.x <= wasdPaddle.x + wasdPaddle.width + 20) &&
+		(ARblock.y >= wasdPaddle.y) && 
+		(ARblock.y <= wasdPaddle.y + wasdPaddle.height)) {
+		ARblock.visible = false;
+		wasdPaddle.height = wasdPaddle.height / 2;
+		player1.gothit++;
+		ARHit = true;
+	}
+}
+function moveBlock() {
+	if (WDblock.visible) {
+		WDblock.x += WDblock.speed;
+
+		if (WDblock.x + WDblock.width >= canvas.width) {
+			WDblock.visible = false;
+		}
+	}
+}
+function moveaiBlock() {
+	if (ARblock.visible) {
+		ARblock.x -= ARblock.speed; 
+
+		if (ARblock.x + ARblock.width <= 0) {
+			ARblock.visible = false;
+		}
+	}
+}
+
+function drawBlock() {
+	if (WDblock.visible) {
+		ctx.fillStyle = 'blue';
+		ctx.fillRect(WDblock.x, WDblock.y, WDblock.width, WDblock.height);
+	}
+}
+function drawARBlock() {
+	if (ARblock.visible) {
+		ctx.fillStyle = 'green';
+		ctx.fillRect(ARblock.x, ARblock.y, ARblock.width, ARblock.height);
+	}
+}
+
+
+function randomizeBuffX() {
+	const leftBoundary = canvas.width * 0.2;
+	const rightBoundary = canvas.width * 0.8;
+	buff.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
+}
+function randomizeAttackX() {
+	const leftBoundary = canvas.width * 0.2;
+	const rightBoundary = canvas.width * 0.8;
+	Attack.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
+}
+function randomizePadBigX() {
+	const leftBoundary = canvas.width * 0.2;
+	const rightBoundary = canvas.width * 0.8;
+	PaddleBigger.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
+}
+
+
+function movebuff() {
+	if (buff.visible) {
+		buff.y += buff.speed;
+		if (buff.y + buff.height <= 52) {
+			buff.speed *= -1;
+		}
+	if (buff.y + buff.height > canvas.height)
+		buff.visible = false;
+	}
+}
+function moveAttackbuff() {
+	if (Attack.visible) {
+		Attack.y += Attack.speed;
+		if (Attack.y + Attack.height <= 52) {
+			Attack.speed *= -1;
+		}
+	if (Attack.y + Attack.height > canvas.height)
+		Attack.visible = false;
+	}
+}
+function movePadBigbuff() {
+	if (PaddleBigger.visible) {
+		PaddleBigger.y += PaddleBigger.speed;
+		if (PaddleBigger.y + PaddleBigger.height <= 52) {
+			PaddleBigger.speed *= -1;
+		}
+	if (PaddleBigger.y + PaddleBigger.height > canvas.height)
+		PaddleBigger.visible = false;
+	}
+}
 
 
 //gamelogic
