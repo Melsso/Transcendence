@@ -9,13 +9,15 @@ const player1 = {
     name: "Player 1",
     avatar: "assets/avatar1.svg",
     wins: '3',
-    losses: '0'
+    losses: '1',
+    level: '3.80'
 };
 const player2 = {
     name: "Player 1",
     avatar: "assets/avatar2.svg",
     wins: '3',
-    losses: '0'
+    losses: '0',
+    level: '7.34'
 };
 function openModal(modalId) {
     document.getElementById(`pong-modal-${modalId}`).classList.add('active');
@@ -49,41 +51,77 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 function displayPongLobby(lobbySettings, player1, player2 = null) {
     const lobbyContainer = document.getElementById('pong-inv-container');
     
-    // Populate lobby name
     const lobbyNameElement = document.getElementById('lobby-name');
     lobbyNameElement.innerHTML = `
     <div class="map">Map:   ${lobbySettings.map}</div>
-    <h1>1v1</h1>
+    <h1>1vs1</h1>
     <div class="mode">Mode:   ${lobbySettings.mode}</div>
     `;
-    // Populate Player 1
     const player1Container = document.querySelector('.player1-container');
     player1Container.innerHTML = `
-        <div class="avatar">
-            <img src="${player1.avatar}" alt="${player1.name} Avatar" class="avatar-image">
+    <div class="avatar">
+        <img src="${player1.avatar}" alt="${player1.name} Avatar" class="avatar-image">
+    </div>
+    <div class="player-info">
+        <h3>${player1.name}</h3>
+        <p>Level ${Math.floor(player1.level)}:</p>
+        <div class="exp-bar-container">
+            <div class="exp-bar" style="width: ${((player1.level - Math.floor(player1.level)) * 100).toFixed(0)}%;"></div>
         </div>
-        <div class="player-info">
-            <h3>${player1.name}</h3>
-            <p>Wins: ${player1.wins} | Losses: ${player1.losses}</p>
+        <p>W/L: ${player1.wins}-${player1.losses} </p>
+        <div class="winrate-bar-container">
+            <div class="winrate-bar" style="width: ${getWinPercentage(player1.wins, player1.losses)}%;"></div>
         </div>
+    </div>
+    <button type="button" id="ready-1" class="btn btn-ready">Not Ready</button>
     `;
-
-    // Populate or create Player 2
+    const readyButton1 = document.getElementById('ready-1');
+    readyButton1.textContent = 'Not Ready';
+    readyButton1.addEventListener('click', function () {
+        if (readyButton1.classList.contains('ready')) {
+            readyButton1.classList.remove('ready');
+            readyButton1.textContent = 'Not Ready';
+        } else {
+            readyButton1.classList.add('ready');
+            readyButton1.textContent = 'Ready!';
+        }
+    });
+    
+    
     const player2Container = document.querySelector('.player2-container');
     
     if (player2) {
-        // If Player 2 exists, show their information
+        
         player2Container.innerHTML = `
-            <div class="avatar">
-                <img src="${player2.avatar}" alt="${player2.name} Avatar" class="avatar-image">
+        <div class="avatar">
+            <img src="${player2.avatar}" alt="${player2.name} Avatar" class="avatar-image">
+        </div>
+        <div class="player-info">
+            <h3>${player2.name}</h3>
+            <p>Level ${Math.floor(player2.level)}:</p>
+            <div class="exp-bar-container">
+                <div class="exp-bar" style="width: ${((player2.level - Math.floor(player2.level)) * 100).toFixed(0)}%;"></div>
             </div>
-            <div class="player-info">
-                <h3>${player2.name}</h3>
-                <p>Wins: ${player2.wins} | Losses: ${player2.losses}</p>
+            <p>W/L: ${player2.wins}-${player2.losses} </p>
+            <div class="winrate-bar-container">
+                <div class="winrate-bar" style="width: ${getWinPercentage(player2.wins, player2.losses)}%;"></div>
             </div>
-        `;
+        </div>
+        <button type="button" id="ready-2" class="btn btn-ready">Not Ready</button>
+    `;
+        const readyButton2 = document.getElementById('ready-2');
+        readyButton2.textContent = 'Not Ready'; 
+        readyButton2.addEventListener('click', function () {
+            if (readyButton2.classList.contains('ready')) {
+                readyButton2.classList.remove('ready');
+                readyButton2.textContent = 'Not Ready';
+            } else {
+                readyButton2.classList.add('ready');
+                readyButton2.textContent = 'Ready!';
+            }
+        });
     } else {
-        // Otherwise, show the invite button and modal for adding a new player
+        
         player2Container.innerHTML = `
             <div id="modal-overlay" class="modal-overlay"></div>
             <div id="pong-p-c">
@@ -101,6 +139,12 @@ function displayPongLobby(lobbySettings, player1, player2 = null) {
         `;
     }
 
-    // Finally, make the lobby visible
+    
     lobbyContainer.style.display = 'block';
+}
+
+function getWinPercentage(wins, losses) {
+    const totalGames = Number(wins) + Number(losses); 
+    if (totalGames === 0) return 0; 
+    return (Number(wins) / totalGames) * 100; 
 }

@@ -380,18 +380,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	const sendFriendRequestButton = document.getElementById('add-friend');
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
-	const bgSections = document.querySelectorAll('.bg-section');
 	
 	async function showView(view, data) {
-		const img = new Image();
-		 img.src = '../assets/aa.png';
-		img.onload = () => {
-		bgSections.forEach(section => {
-			 section.style.background = 'linear-gradient(to bottom, #7255a8, #4c2785, #170e52)'; 
-			 section.style.backgroundImage = '';
-			 section.style.backgroundSize = '';
-		});
-	};
 		forgotcontainer.style.display = 'none';
 		newpass.style.display = 'none';
 		reg1.style.display = 'none';
@@ -449,15 +439,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainTwo.style.display = 'flex';
 			mainSLgame.style.display = 'flex';
 		} else if (view === 'PONG') {
-			console.log('WHAT?2');
-				img.onload = () => {
-					console.log('WHAT?');
-				bgSections.forEach(section => {
-					 section.style.background = '';
-					 section.style.backgroundImage = "url('../assets/aa.png')";
-					 section.style.backgroundSize = 'cover';
-				});
-			};
 			mainTwo.style.display = 'flex';
 			mainPONGgame.style.display = 'flex';
 		} else if (view === 'register') {
