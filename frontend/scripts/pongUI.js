@@ -63,6 +63,44 @@ window.BallinPadBigBuff = false;
 window.aiTargetY = null;
 window.GOscreen = false;
 
+function	resets(){
+	GOscreen = false;
+	gameover = false; 
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (wasHit === true){
+		aiPaddle.height *= 2;
+		wasHit = false;
+	}
+	if (aiDidHit === true){
+		playerPaddle.height *= 2;
+		aiDidHit = false;
+	}
+	crossCount = 0;
+	AttackCount = 0;
+	BigPadCount = 0;
+	playerPaddle.dy = 7;
+	aiPaddle.dy = 7;
+	ball.dy = 6;
+	buff.visible = false;
+	Attack.visible = false;
+	PaddleBigger.visible = false;
+	block.visible = false;
+	aiblock.visible = false;
+	LastpaddletoHit = null;
+	gameover = false;
+	if (buff.speed > 0) {
+		buff.speed *= -1;
+	}
+	if (Attack.speed > 0) {
+		Attack.speed *= -1;
+	}
+	if (PaddleBigger.speed > 0) {
+		PaddleBigger.speed *= -1;
+	}
+	player1.score = 0;
+	player2.score = 0;
+}
+
 function	redoGame(){
 	ResetTime = Date.now();
 	GOscreen = false;
@@ -82,14 +120,22 @@ function	redoGame(){
 		 aiDidHit = false;
 	}
 	crossCount = 0;
+	ball.x = canvas.width / 2;
+	ball.y = canvas.height / 2;
+	ball.dx *= -1;
 	AttackCount = 0;
 	BigPadCount = 0;
 	playerPaddle.dy = 7;
+	setbackoriginalvalues();
 	aiPaddle.dy = 7;
 	ball.dy = 6;
+	playerPaddle.hasanattack = 0;
+	aiPaddle.hasanattack = 0;
 	buff.visible = false;
 	Attack.visible = false;
+	PaddleBigger.visible = false;
 	block.visible = false;
+	switchOnAI();
 	LastpaddletoHit = null;
 	gameover = false;
 	if (buff.speed > 0) {
@@ -97,6 +143,9 @@ function	redoGame(){
 	}
 	if (Attack.speed > 0) {
 		 Attack.speed *= -1;
+	}
+	if (PaddleBigger.speed > 0) {
+		 PaddleBigger.speed *= -1;
 	}
 	gameActive = true;
 	gameLoop(diffy);
@@ -126,17 +175,20 @@ function stopGameLoop() {
 document.addEventListener('keydown', (event) => {
 	if (GOscreen === true){
 		if (event.code === 'KeyQ' && gameActive === false){
+			ResetTime = null;
+			ball.x = canvas.width / 2;
+			ball.y = canvas.height / 2;
+			ball.dx *= -1;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			stopGameLoop();
 			removeGameOverScreen();
-			window.diffy = null;
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			resets();
 			GOscreen = false;
 			gameover = false;
 			isingame = false;
 			menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
-			fullTime = 0;
 			gameActive = false;
 		}
 	}
@@ -299,7 +351,7 @@ function movePadBigbuff() {
 
 function drawScoreBoard() {
 	ctx.clearRect(0, 0, canvas.width, 50);
-	ctx.fillStyle = 'blue';
+	ctx.fillStyle = 'black';
 	ctx.fillRect(0, 0, canvas.width, 50);
 	const image1 = new Image();
 	const image2 = new Image();
@@ -433,7 +485,7 @@ function drawPadBigBuff() {
 		 ball.x - ball.radius < PaddleBigger.x + PaddleBigger.width && 
 		 ball.y + ball.radius > PaddleBigger.y && 
 		 ball.y - ball.radius < PaddleBigger.y + PaddleBigger.height) {
-			  if (!BallinPadBigBuff){}
+			  if (!BallinPadBigBuff)
 					BallinPadBigBuff = true;
 			  }
 			  else {

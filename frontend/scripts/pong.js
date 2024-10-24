@@ -43,7 +43,7 @@ window.playerPaddle = {
     width: 0,
     height: 0,
     dy: 7,
-    hasanattack: null
+    hasanattack: 1
 };
 
 window.aiPaddle = {
@@ -100,7 +100,7 @@ function mediumDifficultyAI() {
 
 let gameStartTime;
 const speedIncreaseInterval = 5000;
-const initialSpeed = 6;
+const initialSpeed = 4;
 const speedIncrement = 0.22;
 
 
@@ -196,6 +196,9 @@ function restartGame(difficulty) {
     if (Attack.speed > 0) {
         Attack.speed *= -1;
     };
+    if (PaddleBigger.speed > 0) {
+        PaddleBigger.speed *= -1;
+    };
 }
 
 let isingame = false;
@@ -229,7 +232,7 @@ function moveBall() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > 40 || ball.y - ball.radius < 0) {
+    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.dy *= -1;
     }
 
@@ -268,7 +271,7 @@ function moveBall() {
         switchOffAI();
     }
 
-    if ((ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width) && fullTime >= 0)
+    if ((ball.x - ball.radius < ball.radius / 2 || ball.x + ball.radius >= canvas.width + ball.radius / 6) && fullTime >= 0)
         newRound();
 }
 
@@ -301,11 +304,12 @@ function newRound(){
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
-        restartGame();
         countdownBeforeRound(() => {
             gameActive = true;
             switchOnAI();
             restartRound();
+            restartGame();
+            setbackoriginalvalues();
         });
         return; 
     }
@@ -316,14 +320,18 @@ function newRound(){
             gameover = true;
             return;
         }
+        stopGameLoop();
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
         countdownBeforeRound(() => {
+            gameActive = true;
             switchOnAI();
+            restartRound();
             restartGame();
+            setbackoriginalvalues();
         });
         return; 
     }
@@ -369,8 +377,8 @@ function    setbackoriginalvalues(){
     aiPaddle.width = canvas.width * 0.01;
     playerPaddle.height = canvas.height * 0.1;
     aiPaddle.height = canvas.height * 0.1;
-    playerPaddle.x = 0;
-    aiPaddle.x = 0;
+    // playerPaddle.x = 0;
+    // aiPaddle.x = 0;
     playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
     aiPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
 }
@@ -381,7 +389,7 @@ function getRandomNumber() {
 
 let storedRandomNumber = getRandomNumber();
 
-function calculateAccuracy(player1, player2){
+function calculateAccuracy(){
     let averageHits = player2.gothit / player1.ABR
     if (player1.ABR === 0)
         return 0;
@@ -403,7 +411,7 @@ function gameLoop(difficulty) {
     isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
-    if (elapsedTime === 1) {
+    if (elapsedTime === storedRandomNumber) {
         Attack.visible = true;
         Attack.y = canvas.height - Attack.height;
         randomizeAttackX();
@@ -413,7 +421,7 @@ function gameLoop(difficulty) {
     }
     if (AttackCount === 2)
         Attack.visible = false;
-    if (elapsedTime === 2) {
+    if (elapsedTime === storedRandomNumber + 10) {
         buff.visible = true;
         buff.y = canvas.height - buff.height;
         randomizeBuffX();
@@ -423,7 +431,7 @@ function gameLoop(difficulty) {
     }
     if (crossCount === 2)
         buff.visible = false;
-    if (elapsedTime === 8) {
+    if (elapsedTime === storedRandomNumber + 20) {
         PaddleBigger.visible = true;
         PaddleBigger.y = canvas.height - PaddleBigger.height;
         randomizePadBigX();
@@ -437,8 +445,8 @@ function gameLoop(difficulty) {
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
     movePlayerPaddle();
-    console.log(aiPaddle.width);
     window.moveAIPaddle(difficulty);
+    console.log("slm");
     window.didItHit();
     window.didAiHit();
     window.drawaiBlock();
@@ -451,13 +459,11 @@ function gameLoop(difficulty) {
     moveBall();
     window.drawScoreBoard();
     window.drawTimer();
-    player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit);
+    // player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit);
     window.gameOverScreen();
-    console.log(fullTime);
     let frameID = requestAnimationFrame(() => gameLoop(difficulty));
     animationFrameIDs.push(frameID);
     if (gameover) {
-        console.log(animationFrameIDs);
         setbackoriginalvalues();
         gameActive = false;
         return;

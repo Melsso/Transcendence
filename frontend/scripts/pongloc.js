@@ -132,15 +132,19 @@ function	redoGame(){
 	ball.dy = 6;
 	buff.visible = false;
 	Attack.visible = false;
+	PaddleBigger.visible = false;
 	WDblock.visible = false;
 	ARblock.visible = false;
 	LastpaddletoHit = null;
 	gameover = false;
 	if (buff.speed > 0) {
-		 buff.speed *= -1;
+		buff.speed *= -1;
 	}
 	if (Attack.speed > 0) {
-		 Attack.speed *= -1;
+		Attack.speed *= -1;
+	}
+	if (PaddleBigger.speed > 0) {
+		PaddleBigger.speed *= -1;
 	}
 	gameActive = true;
 	gameLLoop();
@@ -167,12 +171,55 @@ function stopGameLoop() {
 	gameActive = false;
 }
 
+function	resets(){
+	GOscreen = false;
+	gameover = false; 
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (wasdHit === true){
+		ARPaddle.height *= 2;
+		wasdHit = false;
+	}
+	if (ARHit === true){
+		wasdPaddle.height *= 2;
+		ARHit = false;
+	}
+	crossCount = 0;
+	AttackCount = 0;
+	BigPadCount = 0;
+	wasdPaddle.dy = 7;
+	ARPaddle.dy = 7;
+	ball.dy = 6;
+	buff.visible = false;
+	Attack.visible = false;
+	PaddleBigger.visible = false;
+	WDblock.visible = false;
+	ARblock.visible = false;
+	LastpaddletoHit = null;
+	gameover = false;
+	if (buff.speed > 0) {
+		buff.speed *= -1;
+	}
+	if (Attack.speed > 0) {
+		Attack.speed *= -1;
+	}
+	if (PaddleBigger.speed > 0) {
+		PaddleBigger.speed *= -1;
+	}
+	player1.score = 0;
+	player2.score = 0;
+}
+
 document.addEventListener('keydown', (event) => {
 	if (GOscreen === true){
 		if (event.code === 'KeyQ' && gameActive === false){
+			ResetTime = null;
+			ball.x = canvas.width / 2;
+			ball.y = canvas.height / 2;
+			ball.dx *= -1;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			stopGameLoop();
 			removeGameOverScreen();
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			resets();
 			GOscreen = false;
 			gameover = false;
 			isingame = false;
@@ -240,7 +287,6 @@ function didAiHit() {
 		(ARblock.y <= wasdPaddle.y + wasdPaddle.height)) {
 		ARblock.visible = false;
 		wasdPaddle.height = wasdPaddle.height / 2;
-		player1.gothit++;
 		ARHit = true;
 	}
 }
@@ -414,7 +460,7 @@ function drawSpeedBuff() {
 function drawPadBigBuff() {
 	if (PaddleBigger.visible) {
 		ctx.globalAlpha = 0.5;
-		ctx.fillStyle = "red";
+		ctx.fillStyle = "cyan";
 		ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
   }
   ctx.globalAlpha = 1.0;
@@ -429,13 +475,13 @@ function drawPadBigBuff() {
 			 else {
 				  if (BallinPadBigBuff) {
 						BallinPadBigBuff = false;
-						AttackCount++;
+						BigPadCount++;
 						if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
-						  giveAttackBuff();
+						  givePadBigBuff();
 						}
 					}
 			  }
-  if (crossCount === 2) {
+  if (BigPadCount === 2) {
 		PaddleBigger.visible = false;
   }
 }
@@ -463,7 +509,7 @@ function	drawAttackBuff(){
 						}
 					}
 			  }
-  if (crossCount === 2) {
+  if (AttackCount === 2) {
 		Attack.visible = false;
   }
 }
@@ -486,7 +532,7 @@ function gameOverScreen(){
 		ctx.fillText(`Arrows: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`NIYEEE: player1`, canvas.width / 2, canvas.height / 2 - 100);
+		ctx.fillText(`WINNER: player1`, canvas.width / 2, canvas.height / 2 - 100);
 		player1.score = 0;
 		gameover = true;
 		isingame = false;
@@ -632,6 +678,9 @@ function restartGame(difficulty) {
 	if (Attack.speed > 0) {
 		Attack.speed *= -1;
 	};
+	if (PaddleBigger.speed > 0) {
+		PaddleBigger.speed *= -1;
+	};
 }
 
 
@@ -749,17 +798,17 @@ function newRound(){
 			  return;
 		 }
 		 stopGameLoop();
-		setbackoriginalvalues();
-
-		ball.x = canvas.width / 2;
-		ball.y = canvas.height / 2;
-		ball.dx *= -1;
-		ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-		ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
-		countdownBeforeRound(() => {
-			  gameActive = true;
-			  restartRound();
-			  restartGame();
+		 
+		 ball.x = canvas.width / 2;
+		 ball.y = canvas.height / 2;
+		 ball.dx *= -1;
+		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
+		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+		 countdownBeforeRound(() => {
+			gameActive = true;
+			setbackoriginalvalues();
+			restartRound();
+			restartGame();
 		 });
 		 return; 
 	}
@@ -771,17 +820,17 @@ function newRound(){
 			  return;
 		 }
 		 stopGameLoop();
-		 setbackoriginalvalues();
 		 ball.x = canvas.width / 2;
 		 ball.y = canvas.height / 2;
 		 ball.dx *= -1;
 		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
 		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
 		 countdownBeforeRound(() => {
-				gameActive = true;
-				restartRound();
-				restartGame();
-		 });
+			 gameActive = true;
+			 setbackoriginalvalues();
+			 restartRound();
+			 restartGame();
+			});
 		 return; 
 	}
 }
@@ -834,11 +883,11 @@ function gameLLoop() {
 		PaddleBigger.visible = true;
 		PaddleBigger.y = canvas.height - PaddleBigger.height;
 		randomizePadBigX();
-	}
-	if (PaddleBigger.visible) {
+  }
+  if (PaddleBigger.visible) {
 		movePadBigbuff();
-	}
-	if (BigPadCount === 2)
+  }
+  if (BigPadCount === 2)
 		PaddleBigger.visible = false;
 	drawPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
 	drawPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
