@@ -46,7 +46,7 @@ window.playerPaddle = {
     width: 0,
     height: 0,
     dy: 7,
-    hasanattack: 1
+    hasanattack: null
 };
 
 window.aiPaddle = {
@@ -302,6 +302,8 @@ function newRound(){
             return;
         }
         stopGameLoop();
+        playerPaddle.hasanattack = 0;
+        aiPaddle.hasanattack = 0;
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
@@ -444,6 +446,7 @@ function gameLoop(difficulty) {
     }
     if (BigPadCount === 2)
         PaddleBigger.visible = false;
+    switchOnAI();
     drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
