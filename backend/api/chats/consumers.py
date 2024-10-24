@@ -27,9 +27,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        action = text_data_json["action"]
         username = text_data_json["username"]
         target = text_data_json["target"]
+
+        if (action == 'Notification'):
+            await self.channel_layer.group_send(
+                self.roomGroupName, {
+                    "type": "Notification",
+                    "action": action,
+                    "username": username,
+                    "target": target,
+                }
+            )
+            return 
+        message = text_data_json["message"]
         avatar = text_data_json["av"]
 
         user = await database_sync_to_async(self.get_user)(username)
@@ -49,8 +61,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
 
         await self.channel_layer.group_send(
-            self.roomGroupName,{
+            self.roomGroupName, {
                 "type" : "sendMessage",
+                "action" : action,
                 "message" : message,
                 "username" : username,
                 "target" : target,
@@ -65,5 +78,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         avatar = event["av"]
         await self.send(text_data=json.dumps({"message":message, "username":username, "target":target, "av": avatar}))
     
+    async def Notification(self, event):
+        action = event["action"]
+        username = event["username"]
+        target = event["target"]
+        await self.send(text_data=json.dumps({"action":action, "username":username, "target":target}))
+
+
     def get_user(self, username):
         return UserProfile.objects.get(username=username)

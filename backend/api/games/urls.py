@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import MatchHistoryView
+from .views import MatchHistoryView, CreateGameRoomView
 
 urlpatterns = [
     path('api/games/match-history/', MatchHistoryView.as_view(), name='match_history'),
-	path('api/games/match-history/<str:uname>/', MatchHistoryView.as_view(), name='match_history_by_uname')
-	
+	path('api/games/match-history/<str:uname>/', MatchHistoryView.as_view(), name='match_history_by_uname'),
+	path('api/games/create-game-room/', CreateGameRoomView.as_view(), name='create_game_room')
 ]
