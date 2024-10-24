@@ -4,6 +4,13 @@
 	background-color: transparent;
 	justify-content: center;
 	z-index: 899;
+	background-color: #090417 ;
+	background-image: 
+	linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px), /* Thin vertical lines */
+	linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px); /* Thin horizontal lines */
+ 	background-size: 50px 50px; /* Adjust for a subtle grid */
+ 	border-radius: 15px;
+	 box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); 
 	align-items: center;
 }
 
@@ -17,15 +24,27 @@ canvas {
 
 
 .btn-play {
-	/* position: absolute; */
+	background-color: #7982b2;;
 	width: 100%;
 	height: 40%;
+	box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); 
+	border-color: #f2b8c6;
+	font-family: 'CustomFont';
 	font-size: medium;
 	z-index: 100;
 }
 
+.btn-return,
+.btn-return-2,
+.btn-play:hover {
+	background-color: #6a72a3;
+	border-color: #f2b8c6;
+}
+
 .btn-return {
 	position: absolute;
+	background-color: #7982b2;
+	border-color: #f2b8c6;
 	/* transform: translate(-1350%, -1100%); */
 	left: -100%;
 	top: -175%;
@@ -33,6 +52,8 @@ canvas {
 
 .btn-return-2 {
 	position: absolute;
+	background-color: #7982b2;
+	border-color: #f2b8c6;
 	left: -100%;
 	top: -400%;
 	/* transform: translate(-1350%, -1250%); */
@@ -180,11 +201,30 @@ canvas {
 }
 
 @font-face {
-	font-family: 'CustomFont'; /* Replace with a name you want to use */
-	src: url('../fonts/LLPIXEL3.ttf') format('truetype'); /* Adjust the path and format */
-	font-weight: normal; /* Use appropriate weight */
-	font-style: normal; /* Use appropriate style */
+	font-family: 'CustomFont'; 
+	src: url('../fonts/LLPIXEL3.ttf') format('truetype'); 
+	font-weight: normal; 
+	font-style: normal; 
 }
+
+.btn-ready {
+	width: 30%;
+	height: 5%;
+	transform: translateY(400%);
+	z-index: 100;
+	background-color: #8b0000;
+	color: white;
+	font-family: 'CustomFont';
+	border: 2px solid #bababa;
+	border-radius: 10px;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-ready.ready {
+	background-color: #006400; 
+	color: white;
+}
+
 
 .pong-lobby-name {
 	position: absolute;
@@ -193,20 +233,16 @@ canvas {
 	height: 15%;
 	width: 90%;
 	display: flex;
-	justify-content: center; /* Center the lobby name */
+	justify-content: center;
 	align-items: center;
-	position: relative; /* Allows absolute positioning of the mode and map */
+	position: relative;
 	color: #ffffff;
 	font-family: 'CustomFont';
-	border: 2px solid #bababa;
-	box-shadow: 0 0 50px #bababa;
+	background-color: #2b2a58; 
+	border: 2px solid #8e8e8e; 
+	box-shadow: 0 0 40px rgba(142, 142, 142, 0.5); 
 	font-size: 2em;
 	border-radius: 15px;
-	/* background-color: #0000009c; Semi-transparent black background */
-	/* background-image: 
-		linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)),
-		linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1));
-	background-size: 20px 20px; */
 	padding: 20px;
 }
 
@@ -235,14 +271,8 @@ canvas {
 .pong-inv-container {
 	display: flex;
 	flex-direction: column; 
-	/* box-shadow: 0 0 10px #00ff99; 
-	border: 2px solid #00ff99;  */
-	/* background: linear-gradient(to bottom, #170e52, #4c2785,#170e52); */
-	/* background-color: #4c2785; */
-	/* background-repeat: repeat;  */
 	height: 100%; 
 	width: 100%; 
-	/* background-color: #1e1e1e;  */
 }
 
 .pong-players {
@@ -252,16 +282,11 @@ canvas {
 	top: 25%;
 	width: 100%;
 	height: 70%;
-	/* justify-content: space-between; */
 }
 
 
 .pong-container-players {
-	background-color: #0000009c; /* Semi-transparent black background */
-	/* background-image:  */
-		/* linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)),
-		linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1));
-	background-size: 20px 20px; */
+	background-color: #343260; 
 	width: 40%; 
 	display: flex;
 	font-family: 'CustomFont';
@@ -269,26 +294,27 @@ canvas {
 	align-items: center;
 	justify-content: center;
 	height: 100%;
-	border: 2px solid #bababa;
-	box-shadow: 0 0 50px #bababa;
+	border: 2px solid #7a7a7a; 
+	box-shadow: 0 0 30px rgba(122, 122, 122, 0.4); 
 	border-radius: 15px;
+	color: #e5e5e5; 
 }
 
 
 .player1-container {
 	margin-left: 7.5%;
 	margin-right: 5%;
-	/* background-color: #1e1e1e; */
+	
 }
 
 
 .player2-container {
-	/* background-color: #1e1e1e; */
+	
 }
 
 .avatar {
-	width: 100px;
-	height: 100px;
+	width: 200px;
+	height: 200px;
 	border-radius: 50%;
 	overflow: hidden;
 	margin-bottom: 15px;
@@ -301,7 +327,7 @@ canvas {
 }
 .player2-container .avatar {
 	background-color: #1e1e1e;
-	/* border: 3px solid #00ff99; */
+	
 }
 
 .player-info {
@@ -327,8 +353,7 @@ canvas {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	background-color: #1e1e1e; /* Matching dark background */
-	border: 2px solid #ffcc00; /* Retro gold border */
+	background-color: #1e1e1e; /* Matching dark background */; /* Retro gold border */
 	box-shadow: 0 0 10px #ffcc00; /* Neon glow effect */
 	padding: 20px;
 	width: 80%;
@@ -343,12 +368,63 @@ canvas {
 	width: 120px;
 	height: 120px;
 	border-radius: 50%;
-	border: 3px solid #ffcc00;
-	background-color: #333;
 	color: #fff;
 	font-size: 36px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	cursor: pointer;
+}
+
+.exp-bar-container {
+	background-color: #ffffff;
+	border-radius: 5px;
+	height: 20px;
+	margin: 10px 0;
+	position: relative;
+	overflow: hidden;
+}
+
+.exp-bar {
+	background-color: #00ff00;
+	height: 100%;
+	transition: width 0.3s ease;
+	position: relative;
+}
+
+.exp-percentage {
+	height: 100%;
+	width: 100%;
+	color: #000000;
+	font-weight: bold;
+	position: absolute;
+	left:170%;
+	bottom:7.5%;
+}
+
+.winrate-bar-container {
+	background-color: #ffffff;
+	border-radius: 5px;
+	height: 20px;
+	margin: 10px 0;
+	position: relative;
+	overflow: hidden;
+}
+
+.winrate-bar {
+	background-color: #00ff00;
+	height: 100%;
+	transition: width 0.3s ease;
+	position: relative;
+}
+
+.winrate-percentage {
+	height: 100%;
+	width: 100%;
+	font-size:smaller;
+	color: #000000;
+	font-weight: bold;
+	position: absolute;
+	left:20%;
+	bottom:7.5%;
 }
