@@ -88,6 +88,7 @@ export async function loadProfile(requestData) {
         let result;
         if (requestData && 'friends' in requestData) {
             result = await getMatchHistory();
+            window.userData['match_history'] = result['match_history'];
         }
         else {
             result = await getMatchHistory(requestData.user.username);
@@ -131,7 +132,7 @@ function loadProfileInfo(user) {
     expBar2.setAttribute('aria-valuenow', user.bar_exp_game2%1000);
 }
 
-function computeStats(games) {
+export function computeStats(games) {
     let stats = {
         pveWins: 0,
         pveLosses: 0,

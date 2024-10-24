@@ -1,5 +1,6 @@
-import { getMessages, loadMessages } from "./chat";
+import { getMessages, loadMessages, handleSend } from "./chat";
 import { userLookUp} from "./changeToMainTwo";
+
 const baseUrl = process.env.ACTIVE_HOST;
 
 export async function getFriends() {
@@ -226,7 +227,14 @@ async function handleAction(action, targetId, userid, targetUname) {
 				}
 			break;
 		case 'Invite To Game':
-			Notification('Game Action', "Profile call", 2, 'invite');
+			if (window.userData.socket) {
+				// check game socket first
+				handleSend(targetUname, 'Notification');
+				Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'message');
+			}
+			else {
+				Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+			}
 			break;
 	}
 }
