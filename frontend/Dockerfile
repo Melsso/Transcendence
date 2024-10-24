@@ -21,6 +21,7 @@ COPY --from=builder /app/scripts /usr/share/nginx/html/scripts
 COPY --from=builder /app/media /usr/share/nginx/html/media
 COPY --from=builder /app/package.json /usr/share/nginx/html/package.json
 COPY --from=builder /app/index.html /usr/share/nginx/html/index.html
+COPY --from=builder /app/fonts /usr/share/nginx/html/fonts
 
 
 EXPOSE 80
