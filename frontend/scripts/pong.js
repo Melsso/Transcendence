@@ -14,6 +14,9 @@ const ai_easy = document.getElementById('PongEasy');
 const ai_medium = document.getElementById('PongMedium');
 const ai_hard = document.getElementById('PongHard');
 const ins_return = document.getElementById('return-to-menu-ins');
+let paddleWidth;
+let paddleHeight;
+let ballRadius;
 window.gameActive = false;
 window.flag = 0;
 window.data = {

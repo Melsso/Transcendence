@@ -1,4 +1,4 @@
-import { loadProfile, getMatchHistory, loadMatchHistory } from "./populatePageHelpers.js";
+import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 // This variable is used to store user data

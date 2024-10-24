@@ -1,9 +1,9 @@
-// const menu = document.getElementById('menuuu');
+const menu = document.getElementById('menuuu');
 const lo = document.getElementById('1v1');
 let lobbySettings;
-// const inv_menu = document.getElementById('inv-menu');
-// const ai_menu = document.getElementById('ai-menu');
-// const Instructions = document.getElementById('Instructions-box');
+const inv_menu = document.getElementById('inv-menu');
+const ai_menu = document.getElementById('ai-menu');
+const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
 const gamer1 = {
     name: "Player 1",
@@ -19,15 +19,6 @@ const gamer2 = {
     losses: '0',
     level: '7.34'
 };
-function openModal(modalId) {
-    document.getElementById(`pong-modal-${modalId}`).classList.add('active');
-    document.getElementById('modal-overlay').classList.add('active');
-}
-
-function closeModal(modalId) {
-    document.getElementById(`pong-modal-${modalId}`).classList.remove('active');
-    document.getElementById('modal-overlay').classList.remove('active');
-}
 
 lo.addEventListener('click', function (){
     menu.style.display = 'none';
@@ -125,13 +116,13 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         gamer2Container.innerHTML = `
         <div id="modal-overlay" class="modal-overlay"></div>
         <div id="pong-p-c">
-            <div class="plus-btn" onclick="openModal(1)">+</div>
+            <div class="plus-btn" id="modal1">+</div>
             <div id="pong-modal-1" class="search-modal">
                 <div class="search-modal-content">
                     <h2 style="color: #ffcc00; text-align: center;">Search for Player</h2>
                     <input type="text" placeholder="Enter player name..." id="search-input" />
                     <div class="search-modal-buttons">
-                        <button onclick="closeModal(1)" class="modal-btn">Close</button>
+                        <button id="modal1-close" class="modal-btn">Close</button>
                         <button onclick="submitInvite()" class="modal-btn">Submit</button>
                     </div>
                 </div>
@@ -142,6 +133,17 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
 
     
     lobbyContainer.style.display = 'block';
+    const modal = document.getElementById('modal1');
+    const modalClose = document.getElementById('modal1-close');
+
+    modal.addEventListener('click', function () {
+        document.getElementById('pong-modal-1').classList.add('active');
+        document.getElementById('modal-overlay').classList.add('active');
+    })
+    modalClose.addEventListener('click', function () {
+        document.getElementById('pong-modal-1').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('active');
+    })
 }
 
 function getWinPercentage(wins, losses) {
