@@ -307,11 +307,6 @@ canvas {
 	
 }
 
-
-.player2-container {
-	
-}
-
 .avatar {
 	width: 200px;
 	height: 200px;
@@ -347,33 +342,86 @@ canvas {
 }
 
 
+.modal-overlay {
+	display: none; 
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.7); 
+	z-index: 99; 
+}
+
 .search-modal {
-	display: none;
+	display: none; 
 	position: absolute;
 	top: 50%;
-	left: 50%;
+	left: 72.5%;
 	transform: translate(-50%, -50%);
-	background-color: #1e1e1e; /* Matching dark background */; /* Retro gold border */
-	box-shadow: 0 0 10px #ffcc00; /* Neon glow effect */
+	background-color: #2b2b2b; 
+	border: 2px solid #ffcc00; 
+	box-shadow: 0 0 20px #ffcc00; 
 	padding: 20px;
 	width: 80%;
 	max-width: 400px;
+	border-radius: 15px; 
+	z-index: 100; 
 }
 
 .search-modal.active {
+	display: flex; 
+	flex-direction: column; 
+}
+
+.search-modal-content {
 	display: flex;
+	flex-direction: column;
+	align-items: center; 
+}
+
+#search-input {
+	width: 100%;
+	padding: 10px; 
+	border: 2px solid #ffcc00; 
+	border-radius: 5px; 
+	margin-bottom: 20px; 
+	background-color: #4c4c4c; 
+	color: #fff; 
+}
+
+.modal-btn {
+	background-color: #ffcc00; 
+	color: #000; 
+	border: none; 
+	padding: 10px 20px; 
+	margin: 5px; 
+	border-radius: 5px; 
+	cursor: pointer; 
+	transition: background-color 0.3s; 
+}
+
+.modal-btn:hover {
+	background-color: #ff9900; 
 }
 
 .plus-btn {
 	width: 120px;
 	height: 120px;
 	border-radius: 50%;
-	color: #fff;
+	color: #ffcc00; /* Gold color */
 	font-size: 36px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	cursor: pointer;
+	background-color: #3b3b3b; /* Dark background */
+	box-shadow: 0 0 10px #ffcc00; /* Neon glow */
+	transition: transform 0.3s; /* Smooth scaling */
+}
+
+.plus-btn:hover {
+	transform: scale(1.1); /* Scale up on hover */
 }
 
 .exp-bar-container {

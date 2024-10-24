@@ -35,7 +35,7 @@ lo.addEventListener('click', function (){
     inv_menu.style.display = 'none';
     Instructions.style.display = 'none';
     lobby.style.display = 'flex';
-    displayPongLobby(lobbySettings, player1, player2);
+    displayPongLobby(lobbySettings, player1);
 });
 
 document.getElementById('PONG-button').addEventListener('click', function () {
@@ -123,20 +123,21 @@ function displayPongLobby(lobbySettings, player1, player2 = null) {
     } else {
         
         player2Container.innerHTML = `
-            <div id="modal-overlay" class="modal-overlay"></div>
-            <div id="pong-p-c">
-                <div class="plus-btn" onclick="openModal(1)">+</div>
-                <div id="pong-modal-1" class="search-modal">
-                    <div class="search-modal-content">
-                        <input type="text" placeholder="Search for player..." id="search-input">
-                        <div class="search-modal-buttons">
-                            <button onclick="closeModal(1)">Close</button>
-                            <button onclick="submitInvite()">Submit</button>
-                        </div>
+        <div id="modal-overlay" class="modal-overlay"></div>
+        <div id="pong-p-c">
+            <div class="plus-btn" onclick="openModal(1)">+</div>
+            <div id="pong-modal-1" class="search-modal">
+                <div class="search-modal-content">
+                    <h2 style="color: #ffcc00; text-align: center;">Search for Player</h2>
+                    <input type="text" placeholder="Enter player name..." id="search-input" />
+                    <div class="search-modal-buttons">
+                        <button onclick="closeModal(1)" class="modal-btn">Close</button>
+                        <button onclick="submitInvite()" class="modal-btn">Submit</button>
                     </div>
                 </div>
             </div>
-        `;
+        </div>
+    `;
     }
 
     
