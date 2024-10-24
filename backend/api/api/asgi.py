@@ -7,11 +7,16 @@ from channels.auth import AuthMiddlewareStack
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 
+def get_websocket_urlpatterns():
+    chats_routing = __import__('chats.routing').routing.websocket_urlpatterns
+    games_routing = __import__('games.routing').routing.websocket_urlpatterns
+    return chats_routing + games_routing
+
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
         URLRouter(
-            __import__('chats.routing').routing.websocket_urlpatterns
+            get_websocket_urlpatterns()
         )  
     ),
 })

@@ -22,7 +22,6 @@ async function homepageData() {
 			'Authorization': `Bearer ${access_token}`,
 			'Content-Type': 'application/json',
 		},
-
 	});
 
 	if (!response.ok) {

@@ -10,6 +10,7 @@ from .models import PongGame, RrGame
 from users.models import UserProfile
 from .serializers import PongGameSerializer, RrGameSerializer
 from django.shortcuts import get_object_or_404
+import uuid
 
 class MatchHistoryView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -61,3 +62,11 @@ class MatchHistoryView(generics.ListAPIView):
         sorted_game_list = [{f"game_{i+1}": value} for i, (key, value) in enumerate(sorted_games)]
 
         return Response({"match_history": sorted_game_list}, status=HTTP_200_OK)
+
+class CreateGameRoomView(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        uname = request.user.username
+        room_name = f"{uname}_{str(uuid.uuid64())}"
+        return Response({'room_name': room_name}, status=HTTP_200_OK)

@@ -4,12 +4,18 @@ const sendButton = document.getElementById('send-button');
 const noChat = document.getElementById('no-chat');
 const globalbtn = document.getElementById('revert_to_global');
 const open = document.createElement('button');
+const gameaccept = document.createElement('button');
 const baseUrl = process.env.ACTIVE_HOST;
 let tar;
-function handleSend(username) {
+
+export function handleSend(username, action) {
 	chatInput.focus();
-	const message = chatInput.value; 	
-	window.userData.socket.send(JSON.stringify({ message: message, username : username, target: window.userData.target, av: window.userData.avatar}));
+	const message = chatInput.value;
+	if (action) {
+		window.userData.socket.send(JSON.stringify({ action: action, username : window.userData.username, target: username}));
+		return ;
+	}
+	window.userData.socket.send(JSON.stringify({ action: 'Message', message: message, username : username, target: window.userData.target, av: window.userData.avatar}));
 	addMessage(message, true, null);
 	chatInput.value = ''; 
 }
@@ -88,8 +94,12 @@ export async function	launchSocket() {
 		window.userData.socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
 
-
 			if (window.userData.username === data.username) {
+				return ;
+			}
+			if (data.action == 'Notification' && data.target == window.userData.username) {
+				// here get the room name and then open socket on that room
+				GameNotification('Game Action', "Invited you to a pong game!", data.username);
 				return ;
 			}
 			if (data.target !== "Global" && data.target !== window.userData.username) {
@@ -130,13 +140,13 @@ export async function	launchSocket() {
 				messageInput.value = messageInput.value.substring(0, 200);
 				Notification('Message Action', 'You have reached the limit of characters you can type per message!', 2, 'alert');
 			}
-			handleSend(window.userData.username);
+			handleSend(window.userData.username, null);
 		}
 	});
 
 	sendButton.addEventListener('click', function(event) {
 		event.preventDefault();
-		handleSend(window.userData.username);
+		handleSend(window.userData.username, null);
 	});
 
 	if (messageContainer.children.length === 0) {
@@ -294,3 +304,69 @@ export function loadMessages(data) {
 		});
 	});
 }
+
+function GameNotification(title, message, target) {	
+	var mainpage = document.getElementById('mainTwo');
+
+	const main_welcome = document.createElement('div');
+	main_welcome.classList.add("position-fixed", "p-3", "top-0", "end-0");
+	main_welcome.style.zIndex = '100';
+
+	const msg_container = document.createElement('div');
+	msg_container.id = 'WELCOME';
+	msg_container.classList.add('toast');
+	msg_container.setAttribute('role', 'alert');
+	msg_container.setAttribute('aria-live', 'assertive');
+	msg_container.setAttribute('aria-atomic', 'true');
+
+	const header = document.createElement('div');
+
+	header.style.backgroundColor = 'rgba(76, 39, 133, 0.5)';            
+	header.classList.add('toast-header');
+	header.style.textAlign = 'center';
+
+	const header_msg = document.createElement('strong');
+	header_msg.classList.add('me-auto');
+	header_msg.textContent = title;
+	header_msg.style.color = 'black'; 
+
+	const msg_close = document.createElement('button');
+	msg_close.type = 'button';
+	msg_close.classList.add('btn-close');
+	msg_close.setAttribute('aria-label', 'Close');
+	msg_close.setAttribute('data-bs-dismiss', 'toast');
+
+	gameaccept.type = 'button';
+	gameaccept.textContent = 'Accept Game Invite!';
+	gameaccept.classList.add('btn');
+	gameaccept.style.backgroundColor = 'rgba(76, 39, 133, 0.5)';
+	gameaccept.style.padding = '0.25rem 0.5rem'; 
+	gameaccept.style.fontSize = '0.75rem';
+	gameaccept.style.marginLeft = '10px';
+
+	header.appendChild(header_msg);
+	header.appendChild(gameaccept);
+	header.appendChild(msg_close);
+
+	const msg_content = document.createElement('div');
+	msg_content.classList.add('toast-body');
+	const holder = ': ';
+	msg_content.textContent = target + holder + message;  
+
+
+	msg_container.appendChild(header);
+	msg_container.appendChild(msg_content);
+	main_welcome.appendChild(msg_container);
+	mainpage.appendChild(main_welcome);
+
+	const toast = new bootstrap.Toast(msg_container);
+	toast.show();
+	tar = target;
+	setTimeout(() => {
+		 toast.hide();
+	}, 10000);
+}
+
+gameaccept.addEventListener('click', function () {
+	
+})

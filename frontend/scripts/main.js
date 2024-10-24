@@ -12,6 +12,6 @@ import './populatePageHelpers.js';
 import './R-AvatarSelection.js';
 import './RR-creater.js';
 import './RR.js';
-import './tmp.js';
+import './gameSystem.js';
 
 window.ACTIVE_HOST = process.env.ACTIVE_HOST;
