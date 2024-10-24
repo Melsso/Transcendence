@@ -5,14 +5,14 @@ let lobbySettings;
 // const ai_menu = document.getElementById('ai-menu');
 // const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
-const player1 = {
+const gamer1 = {
     name: "Player 1",
     avatar: "assets/avatar1.svg",
     wins: '3',
     losses: '1',
     level: '3.80'
 };
-const player2 = {
+const gamer2 = {
     name: "Player 1",
     avatar: "assets/avatar2.svg",
     wins: '3',
@@ -35,7 +35,7 @@ lo.addEventListener('click', function (){
     inv_menu.style.display = 'none';
     Instructions.style.display = 'none';
     lobby.style.display = 'flex';
-    displayPongLobby(lobbySettings, player1);
+    displayPongLobby(lobbySettings, gamer1);
 });
 
 document.getElementById('PONG-button').addEventListener('click', function () {
@@ -48,7 +48,7 @@ document.getElementById('PONG-button').addEventListener('click', function () {
     
 });
 
-function displayPongLobby(lobbySettings, player1, player2 = null) {
+function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     const lobbyContainer = document.getElementById('pong-inv-container');
     
     const lobbyNameElement = document.getElementById('lobby-name');
@@ -57,20 +57,20 @@ function displayPongLobby(lobbySettings, player1, player2 = null) {
     <h1>1vs1</h1>
     <div class="mode">Mode:   ${lobbySettings.mode}</div>
     `;
-    const player1Container = document.querySelector('.player1-container');
-    player1Container.innerHTML = `
+    const gamer1Container = document.querySelector('.player1-container');
+    gamer1Container.innerHTML = `
     <div class="avatar">
-        <img src="${player1.avatar}" alt="${player1.name} Avatar" class="avatar-image">
+        <img src="${gamer1.avatar}" alt="${gamer1.name} Avatar" class="avatar-image">
     </div>
     <div class="player-info">
-        <h3>${player1.name}</h3>
-        <p>Level ${Math.floor(player1.level)}:</p>
+        <h3>${gamer1.name}</h3>
+        <p>Level ${Math.floor(gamer1.level)}:</p>
         <div class="exp-bar-container">
-            <div class="exp-bar" style="width: ${((player1.level - Math.floor(player1.level)) * 100).toFixed(0)}%;"></div>
+            <div class="exp-bar" style="width: ${((gamer1.level - Math.floor(gamer1.level)) * 100).toFixed(0)}%;"></div>
         </div>
-        <p>W/L: ${player1.wins}-${player1.losses} </p>
+        <p>W/L: ${gamer1.wins}-${gamer1.losses} </p>
         <div class="winrate-bar-container">
-            <div class="winrate-bar" style="width: ${getWinPercentage(player1.wins, player1.losses)}%;"></div>
+            <div class="winrate-bar" style="width: ${getWinPercentage(gamer1.wins, gamer1.losses)}%;"></div>
         </div>
     </div>
     <button type="button" id="ready-1" class="btn btn-ready">Not Ready</button>
@@ -88,23 +88,23 @@ function displayPongLobby(lobbySettings, player1, player2 = null) {
     });
     
     
-    const player2Container = document.querySelector('.player2-container');
+    const gamer2Container = document.querySelector('.player2-container');
     
-    if (player2) {
+    if (gamer2) {
         
-        player2Container.innerHTML = `
+        gamer2Container.innerHTML = `
         <div class="avatar">
-            <img src="${player2.avatar}" alt="${player2.name} Avatar" class="avatar-image">
+            <img src="${gamer2.avatar}" alt="${gamer2.name} Avatar" class="avatar-image">
         </div>
         <div class="player-info">
-            <h3>${player2.name}</h3>
-            <p>Level ${Math.floor(player2.level)}:</p>
+            <h3>${gamer2.name}</h3>
+            <p>Level ${Math.floor(gamer2.level)}:</p>
             <div class="exp-bar-container">
-                <div class="exp-bar" style="width: ${((player2.level - Math.floor(player2.level)) * 100).toFixed(0)}%;"></div>
+                <div class="exp-bar" style="width: ${((gamer2.level - Math.floor(gamer2.level)) * 100).toFixed(0)}%;"></div>
             </div>
-            <p>W/L: ${player2.wins}-${player2.losses} </p>
+            <p>W/L: ${gamer2.wins}-${gamer2.losses} </p>
             <div class="winrate-bar-container">
-                <div class="winrate-bar" style="width: ${getWinPercentage(player2.wins, player2.losses)}%;"></div>
+                <div class="winrate-bar" style="width: ${getWinPercentage(gamer2.wins, gamer2.losses)}%;"></div>
             </div>
         </div>
         <button type="button" id="ready-2" class="btn btn-ready">Not Ready</button>
@@ -122,7 +122,7 @@ function displayPongLobby(lobbySettings, player1, player2 = null) {
         });
     } else {
         
-        player2Container.innerHTML = `
+        gamer2Container.innerHTML = `
         <div id="modal-overlay" class="modal-overlay"></div>
         <div id="pong-p-c">
             <div class="plus-btn" onclick="openModal(1)">+</div>
