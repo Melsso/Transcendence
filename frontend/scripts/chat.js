@@ -84,11 +84,11 @@ function addMessage(message, isSender = false, data) {
 
 export async function	launchSocket() {
 		window.userData.socket.onopen = function(e) {
-			console.log("socket on--CHATSOCKET");
+			console.log("CHATSOCKET--ON");
 		}
 		
 		window.userData.socket.onclose = function(e) {
-			console.log("socket off");
+			console.log("CHATSOCKET--OFF");
 		}
 		
 		
@@ -99,7 +99,6 @@ export async function	launchSocket() {
 				return ;
 			}
 			if (data.action == 'Notification' && data.target == window.userData.username) {
-				// console.log('data: ', data);
 				GameNotification('Game Action', "Invited you to a pong game!", data.username);
 				gameaccept.addEventListener('click', async function () {
 					console.log('datachat: ', data);
@@ -248,7 +247,6 @@ open.addEventListener('click', async function () {
 		bsCollapse.hide();
 		setTimeout(() => {
 			bsCollapse.show();
-			toast.hide();
 	  }, 600);
 	}
 	else {
