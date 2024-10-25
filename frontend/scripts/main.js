@@ -15,3 +15,4 @@ import './RR.js';
 import './gameSystem.js';
 
 window.ACTIVE_HOST = process.env.ACTIVE_HOST;
+window.userData = {};

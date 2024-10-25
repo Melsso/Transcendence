@@ -84,22 +84,15 @@ function sendGameState(sock) {
 
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
-        // window.navigateTo('PONG', null);
-
-        console.log('You have opened a socket! welcome to lobby');
-        // here display lobby for everyone
-        // displayPongLobby(data['room_name'], lobbySettings, window.userData, null);
-        // console.log('PONG SOCKET ON');
 
     }
     window.userData.pong_socket.onclose = function(e) {
-        console.log('PONG SOCKET OFF');
-        window.userData.pong_socket.close();
-        window.userData.pong_socket = null;
-        window.userData.room_name = null;
+        // window.userData.pong_socket.close();
+        // window.userData.pong_socket = null;
+        // window.userData.room_name = null;
         return ;
     }
-    if (window.userData.pong_socket) {
+    if (window.userData.pong_socket || window.userData.pong_socket.readyState === WebSocket.OPEN) {
         setInterval(sendGameState, 1000);
     }
     else {
@@ -107,22 +100,16 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        console.log('dkhel bdanem', data);
         if (data.action == 'update_game_state') {
             gameState = data.state;
-            // console.log('Received: ', gameState);
-            // render game 
         } else if (data.action === 'current_players') {
             menu.style.display = 'none';
             ai_menu.style.display = 'none';
             inv_menu.style.display = 'none';
             Instructions.style.display = 'none';
             lobby.style.display = 'flex';
-            // const currentPlayers = data.players;
-            console.log('Current players in the room:', data.playe);
+            console.log('Current players in the room:', data.players);
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
-            // updatePlayerList(currentPlayers);
-            // eventually call displayPongLobby
         }
     }
 }
@@ -146,8 +133,6 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     
     const gamer2Wins = 9;
     const gamer2Losses = 20;
-    // const gameer2Level = ;
-    // const gamer2Stats = ;
     
     const lobbyNameElement = document.getElementById('lobby-name');
     lobbyNameElement.innerHTML = `
@@ -185,9 +170,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         }
     });
     
-    
     const gamer2Container = document.querySelector('.player2-container');
-    
     if (gamer2) {
         
         gamer2Container.innerHTML = `
@@ -219,7 +202,6 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             }
         });
     } else {
-        
         gamer2Container.innerHTML = `
         <div id="modal-overlay" class="modal-overlay"></div>
         <div id="pong-p-c">

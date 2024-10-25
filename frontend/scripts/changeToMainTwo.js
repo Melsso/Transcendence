@@ -2,7 +2,6 @@ import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 // This variable is used to store user data
-window.userData = {};
 
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
@@ -351,6 +350,11 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainPONGgame = document.getElementById('PONG-game');
 	const forgotcontainer = document.getElementById('forgot-container');
 	const newpass = document.getElementById('create-new-pass');
+	const inv_menu = document.getElementById('inv-menu');
+	const ai_menu = document.getElementById('ai-menu');
+	const Instructions = document.getElementById('Instructions-box');
+	const lobby = document.getElementById('pong-inv-container');
+	const menu = document.getElementById('menuuu');
 
 	mainOne.style.display = 'none';
 	log1.style.display = 'none';
@@ -380,7 +384,18 @@ document.addEventListener('DOMContentLoaded', function () {
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
 	
+	
 	async function showView(view, data) {
+		if (window.userData.pong_socket) {
+			window.userData.pong_socket.close();
+			window.userData.pong_socket = null;
+			window.userData.room_name = null;
+		}
+		inv_menu.style.display = 'none';
+		ai_menu.style.display = 'none';
+		Instructions.style.display = 'none';
+		lobby.style.display = 'none';
+		menu.style.display = 'none';
 		forgotcontainer.style.display = 'none';
 		newpass.style.display = 'none';
 		reg1.style.display = 'none';
@@ -401,12 +416,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
-					userData = result["user"];
-					if (!window.userData.socket) {
+					window.userData = result["user"];
+					console.log(window.userData.socket);
+					if (!window.userData.socket || window.userData.socket.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
 						const chatSocket = new WebSocket(`ws://${u.host}/ws/`);
-						userData["socket"] = chatSocket;
-						userData["target"] = "Global";
+						window.userData.socket = chatSocket;
+						window.userData["target"] = "Global";
+						console.log(window.userData.socket);
 						launchSocket();
 					}
 					sendFriendRequestButton.style.display = 'none';
@@ -438,6 +455,11 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainTwo.style.display = 'flex';
 			mainSLgame.style.display = 'flex';
 		} else if (view === 'PONG') {
+			inv_menu.style.display = 'none';
+			ai_menu.style.display = 'none';
+			Instructions.style.display = 'none';
+			lobby.style.display = 'none';
+			menu.style.display = 'flex';
 			mainTwo.style.display = 'flex';
 			mainPONGgame.style.display = 'flex';
 		} else if (view === 'register') {
