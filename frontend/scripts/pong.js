@@ -479,6 +479,8 @@ function gameLoop(difficulty) {
         return;
     }
 }
+window.gameLoop = gameLoop;
+
 ins_return.addEventListener('click', function () {
     ai_menu.style.display = 'none';
     inv_menu.style.display = 'none';
