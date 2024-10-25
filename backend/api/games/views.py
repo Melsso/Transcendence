@@ -68,5 +68,5 @@ class CreateGameRoomView(generics.CreateAPIView):
 
     def get(self, request, *args, **kwargs):
         uname = request.user.username
-        room_name = f"{uname}_{str(uuid.uuid64())}"
+        room_name = f"{uname}_{str(uuid.uuid4())}"
         return Response({'room_name': room_name}, status=HTTP_200_OK)
