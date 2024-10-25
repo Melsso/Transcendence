@@ -84,13 +84,10 @@ function sendGameState(sock) {
 
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
-
+        console.log("GAMESOCKET--ON")
     }
     window.userData.pong_socket.onclose = function(e) {
-        // window.userData.pong_socket.close();
-        // window.userData.pong_socket = null;
-        // window.userData.room_name = null;
-        return ;
+        console.log("GAMESOCKET--OFF")
     }
     if (window.userData.pong_socket || window.userData.pong_socket.readyState === WebSocket.OPEN) {
         setInterval(sendGameState, 1000);

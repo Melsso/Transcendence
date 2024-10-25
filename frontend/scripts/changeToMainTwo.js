@@ -416,15 +416,16 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
+					const sock = window.userData.socket;
 					window.userData = result["user"];
-					console.log(window.userData.socket);
-					if (!window.userData.socket || window.userData.socket.readyState !== WebSocket.OPEN) {
+					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
 						const chatSocket = new WebSocket(`ws://${u.host}/ws/`);
 						window.userData.socket = chatSocket;
 						window.userData["target"] = "Global";
-						console.log(window.userData.socket);
 						launchSocket();
+					} else {
+						window.userData.socket = sock;
 					}
 					sendFriendRequestButton.style.display = 'none';
 					loadProfile(result);
