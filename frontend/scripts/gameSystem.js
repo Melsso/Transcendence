@@ -3,18 +3,11 @@ const baseUrl = process.env.ACTIVE_HOST;
 
 const menu = document.getElementById('menuuu');
 const lo = document.getElementById('1v1');
-let lobbySettings;
+window.lobbySettings;
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
-// const gamer1 = {
-//     name: "Player 1",
-//     avatar: "assets/avatar1.svg",
-//     wins: '3',
-//     losses: '1',
-//     level: '3.80'
-// };
 let gameState = {
     ball: { x:0, y:0 },
     player1: { y:0 },
@@ -59,70 +52,107 @@ lo.addEventListener('click', async function (){
     inv_menu.style.display = 'none';
     Instructions.style.display = 'none';
     lobby.style.display = 'flex';
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+        return ;
+    }
     try {
         const data = await getRoomName();
+        window.userData.r_name = data.room_name;
         const u = new URL(baseUrl);
-        const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/`);
+        const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}`);
         window.userData['pong_socket'] = gameSocket;
         startGameSocket();
     } catch (error) {
         Notification('Game Action', `Failed to create a room! ${error}`, 2, 'alert');
+        window.userData.r_name = null;
+        if (window.userData.pong_socket) {
+            window.userData.pong_socket.close();
+        }
+        window.userData.pong_socket = null;
         return ;
     }
-    displayPongLobby(data['room_name'], lobbySettings, window.userData, null);
 });
 
 function sendGameState(sock) {
-    sock.send(JSON.stringify({
+    userData.pong_socket.send(JSON.stringify({
         action: 'update_game_state',
         state: gameState
     }));
 }
 
-async function startGameSocket() {
+export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
-        console.log('PONG SOCKET ON');
+        // window.navigateTo('PONG', null);
+
+        console.log('You have opened a socket! welcome to lobby');
+        // here display lobby for everyone
+        // displayPongLobby(data['room_name'], lobbySettings, window.userData, null);
+        // console.log('PONG SOCKET ON');
+
     }
     window.userData.pong_socket.onclose = function(e) {
         console.log('PONG SOCKET OFF');
+        window.userData.pong_socket.close();
+        window.userData.pong_socket = null;
+        window.userData.room_name = null;
+        return ;
     }
-    setInterval(sendGameState, 100);
+    if (window.userData.pong_socket) {
+        setInterval(sendGameState, 1000);
+    }
+    else {
+        return ;
+    }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
+        console.log('dkhel bdanem', data);
         if (data.action == 'update_game_state') {
             gameState = data.state;
-            console.log('Received: ', gameState);
-            // render? 
+            // console.log('Received: ', gameState);
+            // render game 
+        } else if (data.action === 'current_players') {
+            menu.style.display = 'none';
+            ai_menu.style.display = 'none';
+            inv_menu.style.display = 'none';
+            Instructions.style.display = 'none';
+            lobby.style.display = 'flex';
+            // const currentPlayers = data.players;
+            console.log('Current players in the room:', data.playe);
+            displayPongLobby(lobbySettings, data.players[0], data.players[1]);
+            // updatePlayerList(currentPlayers);
+            // eventually call displayPongLobby
         }
     }
 }
 
+
 document.getElementById('PONG-button').addEventListener('click', function () {
     const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
     const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
-    lobbySettings = {
+    window.lobbySettings = {
         mode: gameMode,
         map: selectedMap
     };
-    
 });
 
-function displayPongLobby(rm, lobbySettings, gamer1, gamer2 = null) {
+function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     const lobbyContainer = document.getElementById('pong-inv-container');
     
-    const gamer1Stats = computeStats(gamer1.match_history);
-    const gamer1Wins = gamer1Stats.pvpWins;
-    const gamer1Losses = gamer1Stats.pvpLosses;
+    // const gamer1Stats = computeStats(gamer1.match_history);
+    const gamer1Wins = 20;
+    const gamer1Losses = 10;
     
-    // const gamer2Wins = ;
-    // const gamer2Losses = ;
+    const gamer2Wins = 9;
+    const gamer2Losses = 20;
     // const gameer2Level = ;
     // const gamer2Stats = ;
     
     const lobbyNameElement = document.getElementById('lobby-name');
     lobbyNameElement.innerHTML = `
         <div class="map">Map:   ${lobbySettings.map}</div>
-        <h1>1vs1 ${rm}</h1>
+        <h1>1vs1 </h1>
         <div class="mode">Mode:   ${lobbySettings.mode}</div>
     `;
     const gamer1Container = document.querySelector('.player1-container');
@@ -162,17 +192,17 @@ function displayPongLobby(rm, lobbySettings, gamer1, gamer2 = null) {
         
         gamer2Container.innerHTML = `
         <div class="avatar">
-            <img src="${gamer2.avatar}" alt="${gamer2.name} Avatar" class="avatar-image">
+            <img src="${gamer2.avatar}" alt="${gamer2.username} Avatar" class="avatar-image">
         </div>
         <div class="player-info">
-            <h3>${gamer2.name}</h3>
-            <p>Level ${Math.floor(gamer2.level)}:</p>
+            <h3>${gamer2.username}</h3>
+            <p>Level ${Math.floor(gamer2.bar_exp_game1)}:</p>
             <div class="exp-bar-container">
-                <div class="exp-bar" style="width: ${((gamer2.level - Math.floor(gamer2.level)) * 100).toFixed(0)}%;"></div>
+                <div class="exp-bar" style="width: ${((gamer2.bar_exp_game1 - Math.floor(gamer2.bar_exp_game1)) * 100).toFixed(0)}%;"></div>
             </div>
-            <p>W/L: ${gamer2.wins}-${gamer2.losses} </p>
+            <p>W/L: ${gamer2Wins}-${gamer2Losses} </p>
             <div class="winrate-bar-container">
-                <div class="winrate-bar" style="width: ${getWinPercentage(gamer2.wins, gamer2.losses)}%;"></div>
+                <div class="winrate-bar" style="width: ${getWinPercentage(gamer2Wins, gamer2Losses)}%;"></div>
             </div>
         </div>
         <button type="button" id="ready-2" class="btn btn-ready">Not Ready</button>
@@ -210,17 +240,17 @@ function displayPongLobby(rm, lobbySettings, gamer1, gamer2 = null) {
 
     
     lobbyContainer.style.display = 'block';
-    const modal = document.getElementById('modal1');
-    const modalClose = document.getElementById('modal1-close');
+    // const modal = document.getElementById('modal1');
+    // const modalClose = document.getElementById('modal1-close');
 
-    modal.addEventListener('click', function () {
-        document.getElementById('pong-modal-1').classList.add('active');
-        document.getElementById('modal-overlay').classList.add('active');
-    })
-    modalClose.addEventListener('click', function () {
-        document.getElementById('pong-modal-1').classList.remove('active');
-        document.getElementById('modal-overlay').classList.remove('active');
-    })
+    // modal.addEventListener('click', function () {
+    //     document.getElementById('pong-modal-1').classList.add('active');
+    //     document.getElementById('modal-overlay').classList.add('active');
+    // })
+    // modalClose.addEventListener('click', function () {
+    //     document.getElementById('pong-modal-1').classList.remove('active');
+    //     document.getElementById('modal-overlay').classList.remove('active');
+    // })
 }
 
 function getWinPercentage(wins, losses) {
