@@ -86,7 +86,7 @@ function	resets(){
 	PaddleBigger.visible = false;
 	block.visible = false;
 	aiblock.visible = false;
-	LastpaddletoHit = null;
+	window.LastpaddletoHit = null;
 	gameover = false;
 	if (buff.speed > 0) {
 		buff.speed *= -1;
@@ -106,11 +106,11 @@ function	redoGame(){
 	window.ResetTime = Date.now();
 	window.GOscreen = false;
 	gameover = false; 
-	fullTime += window.elapsedTime;
-	if (window.elapsedTime > LongestRound)
-		 LongestRound = window.elapsedTime;
-	if (window.elapsedTime < ShortestRound)
-		 ShortestRound = window.elapsedTime;
+	window.fullTime += window.elapsedTime;
+	if (window.elapsedTime > window.LongestRound)
+		 window.LongestRound = window.elapsedTime;
+	if (window.elapsedTime < window.ShortestRound)
+		 window.ShortestRound = window.elapsedTime;
 	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
 	if (wasHit === true){
 		 aiPaddle.height *= 2;
@@ -127,7 +127,7 @@ function	redoGame(){
 	window.AttackCount = 0;
 	window.BigPadCount = 0;
 	playerPaddle.dy = 7;
-	setbackoriginalvalues();
+	window.setbackoriginalvalues();
 	aiPaddle.dy = 7;
 	ball.dy = 6;
 	playerPaddle.hasanattack = 0;
@@ -137,7 +137,7 @@ function	redoGame(){
 	PaddleBigger.visible = false;
 	block.visible = false;
 	switchOnAI();
-	LastpaddletoHit = null;
+	window.LastpaddletoHit = null;
 	gameover = false;
 	if (buff.speed > 0) {
 		 buff.speed *= -1;
@@ -149,7 +149,7 @@ function	redoGame(){
 		 PaddleBigger.speed *= -1;
 	}
 	gameActive = true;
-	gameLoop(diffy);
+	window.gameLoop(diffy);
 	player1.score = 0;
 	player2.score = 0;
 }
@@ -188,7 +188,7 @@ document.addEventListener('keydown', (event) => {
 			window.GOscreen = false;
 			gameover = false;
 			window.isingame = false;
-			menu.style.display = 'flex';
+			window.menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
 			gameActive = false;
@@ -361,9 +361,9 @@ window.movePadBigbuff = movePadBigbuff;
 
 
 function drawScoreBoard() {
-	window.ctx.clearRect(0, 0, window.canvas.width, 50);
+	window.ctx.clearRect(0, 0, window.canvas.width, canvas.height * 0.0436);
 	window.ctx.fillStyle = 'black';
-	window.ctx.fillRect(0, 0, window.canvas.width, 50);
+	window.ctx.fillRect(0, 0, window.canvas.width, canvas.height * 0.0436);
 	const image1 = new Image();
 	const image2 = new Image();
 	image1.src = player1.icon;
@@ -383,28 +383,28 @@ function drawScoreBoard() {
 window.drawScoreBoard = drawScoreBoard;
 
 function giveSpeedBuff(){
-	if (LastpaddletoHit === "player 1")
+	if (window.LastpaddletoHit === "player 1")
 		playerPaddle.dy = 12;
-	else if (LastpaddletoHit === "Ai")
+	else if (window.LastpaddletoHit === "Ai")
 		aiPaddle.dy = 12;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === "player 1")
+	if (playerPaddle.dy === 20 && window.LastpaddletoHit === "player 1")
 		playerPaddle.dy = 20;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === "Ai")
+	if (playerPaddle.dy === 20 && window.LastpaddletoHit === "Ai")
 		aiPaddle.dy = 12;
 }
 window.giveSpeedBuff = giveSpeedBuff;
 function giveAttackBuff(){
-	if (LastpaddletoHit === "player 1"){
+	if (window.LastpaddletoHit === "player 1"){
 		playerPaddle.hasanattack = 1;
 		player1.ABR += 1;
 	}
-	else if (LastpaddletoHit === "Ai"){
+	else if (window.LastpaddletoHit === "Ai"){
 		aiPaddle.aihasanattack = 1;
 		player2.ABR += 1;
 	}
-	if (playerPaddle.hasanattack === 1 && LastpaddletoHit === "player 1")
+	if (playerPaddle.hasanattack === 1 && window.LastpaddletoHit === "player 1")
 		playerPaddle.hasanattack = 1;
-	if (aiPaddle.aihasanattack === 1 && LastpaddletoHit === "Ai")
+	if (aiPaddle.aihasanattack === 1 && window.LastpaddletoHit === "Ai")
 		aiPaddle.aihasanattack = 1;
 }
 window.giveAttackBuff = giveAttackBuff;
@@ -413,11 +413,11 @@ let aidoubled = false;
 function givePadBigBuff(){
 	let heightx2 = playerPaddle.height * 2;
 	let aiheightx2 = aiPaddle.height * 2;
-	if (LastpaddletoHit === "player 1" && doubled != true){
+	if (window.LastpaddletoHit === "player 1" && doubled != true){
 		playerPaddle.height = heightx2;
 		doubled = true;
 	}
-	else if (LastpaddletoHit === "Ai" && aidoubled != true){
+	else if (window.LastpaddletoHit === "Ai" && aidoubled != true){
 		aiPaddle.height = aiheightx2;
 		aidoubled = true;
 	}
@@ -443,9 +443,9 @@ function drawSpeedBuff() {
 					if (BallinBuff) {
 						 BallinBuff = false;
 						 window.crossCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
+						 if (window.LastpaddletoHit === "player 1" || window.LastpaddletoHit === "Ai"){
 							giveSpeedBuff();
-							if (LastpaddletoHit === "player 1"){
+							if (window.LastpaddletoHit === "player 1"){
 								player1.Btaken++;
 								flag = 50;
 							}
@@ -479,9 +479,9 @@ function drawAttackBuff() {
 					if (BallinAttackBuff) {
 						 BallinAttackBuff = false;
 						 window.AttackCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
+						 if (window.LastpaddletoHit === "player 1" || window.LastpaddletoHit === "Ai"){
 							  giveAttackBuff();
-							 if (LastpaddletoHit === "player 1")
+							 if (window.LastpaddletoHit === "player 1")
 								player1.Btaken++;
 							else
 								player2.Btaken++;
@@ -511,9 +511,9 @@ function drawPadBigBuff() {
 					if (BallinPadBigBuff) {
 						 BallinPadBigBuff = false;
 						 window.BigPadCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
+						 if (window.LastpaddletoHit === "player 1" || window.LastpaddletoHit === "Ai")
 								givePadBigBuff();
-						 if (LastpaddletoHit === "player 1")
+						 if (window.LastpaddletoHit === "player 1")
 							player1.Btaken++;
 						else
 							player2.Btaken++;
@@ -531,19 +531,32 @@ function drawTimer() {
 	window.ctx.textAlign = 'center';
 	window.ctx.fillText(`${window.elapsedTime}`, window.canvas.width /2, 30);
 }
+let aitoop;
+function switchOffAI() {
+   aitoop = true;
+}
+function switchOnAI() {
+    if (aitoop = true)
+        aitoop = false;
+}
 
 window.drawTimer = drawTimer;
 function moveAIPaddleHard() {
+	if (window.LastpaddletoHit === "Ai")
+		switchOffAI();
+	else
+		switchOnAI();
 	if (aiPaddle.aihasanattack === 1){
-		if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048) {
+		if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0436 && aiPaddle.y < canvas.height * 0.9289) {
 			aiPaddle.y -= aiPaddle.dy;
 	  } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
 			aiPaddle.y += aiPaddle.dy;
 			}
 		AttackPrediction();
 	}
-	let predictedY = Prediction();
-	if (aistop)
+	let predictedY = window.Prediction();
+	
+	if (aitoop === true)
 		 return ;
 
 	const tolerance = 3;
@@ -558,9 +571,9 @@ function moveAIPaddleHard() {
 }
 function moveAIPaddlemid() {
 	AttackPrediction();
-	if (aistop)
+	if (aitoop)
 		 return;
-		 if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048)
+	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0436 && aiPaddle.y < canvas.height * 0.9289)
 			  aiPaddle.y -= aiPaddle.dy;
 		 else if (ball.y >= aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040)
 			  aiPaddle.y += aiPaddle.dy;
@@ -568,7 +581,7 @@ function moveAIPaddlemid() {
 
 function moveAIPaddleEasy() {
 	AttackPrediction();
-	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048) {
+	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0436 && aiPaddle.y < canvas.height * 0.9289) {
 		 aiPaddle.y -= aiPaddle.dy;
 	} else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
 		 aiPaddle.y += aiPaddle.dy;

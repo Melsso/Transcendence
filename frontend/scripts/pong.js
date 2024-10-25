@@ -2,7 +2,7 @@ window.canvas = document.getElementById('pongCanvas');
 window.ctx = canvas.getContext('2d');
 const gameModal = document.getElementById('gameModal');
 const gameContainer = document.querySelector('.gameContainer');
-const menu = document.getElementById('menuuu');
+window.menu = document.getElementById('menuuu');
 const aibutton = document.getElementById('start-pong-ai');
 const inv_btn = document.getElementById('send-invite');
 const Instructionsbtn = document.getElementById('Instructions');
@@ -95,12 +95,7 @@ function Prediction() {
     }
     return predictedY;
 }
-
-
-
-function mediumDifficultyAI() {
-    
-}
+window.Prediction = Prediction;
 
 let gameStartTime;
 const speedIncreaseInterval = 5000;
@@ -158,9 +153,9 @@ function countdownBeforeRound(callback) {
 }
 
 
-let fullTime = null;
-let LongestRound = null;
-let ShortestRound = 2000;
+window.fullTime = null;
+window.LongestRound = null;
+window.ShortestRound = 2000;
 function restartGame(difficulty) {
     fullTime += window.elapsedTime;
     if (window.elapsedTime > LongestRound)
@@ -187,6 +182,8 @@ function restartGame(difficulty) {
     playerPaddle.dy = 7;
     aiPaddle.dy = 7;
     ball.dy = 6;
+    playerPaddle.hasanattack = 0;
+    aiPaddle.aihasanattack = 0;
     buff.visible = false;
     Attack.visible = false;
     block.visible = false;
@@ -216,14 +213,17 @@ function movePlayerPaddle() {
         playerPaddle.y += playerPaddle.dy;
     }
 }
-let aistop;
+
+
+window.aitoop = false;
 function switchOffAI() {
-    aistop = true;
+    window.aitoop = true;
 }
 function switchOnAI() {
-    if (aistop = true)
-        aistop = false;
+    if (window.aitoop = true)
+        window.aitoop = false;
 }
+window.switchOnAI = switchOnAI;
 
 
 let EL = null;
@@ -236,7 +236,7 @@ function moveBall() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    if (ball.y + ball.radius < 70 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+    if (ball.y + ball.radius < canvas.height * 0.0436 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.dy *= -1;
     }
 
@@ -305,6 +305,8 @@ function newRound(){
         stopGameLoop();
         playerPaddle.hasanattack = 0;
         aiPaddle.hasanattack = 0;
+        block.visible = false;
+        aiblock.visible = false;
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
@@ -388,6 +390,7 @@ function    setbackoriginalvalues(){
     playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
     aiPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
 }
+window.setbackoriginalvalues = setbackoriginalvalues;
 function getRandomNumber() {
     const randomNumber = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
     return randomNumber;
@@ -476,7 +479,6 @@ function gameLoop(difficulty) {
         return;
     }
 }
-
 ins_return.addEventListener('click', function () {
     ai_menu.style.display = 'none';
     inv_menu.style.display = 'none';
@@ -521,6 +523,7 @@ aibutton.addEventListener('click', function (event) {
 ai_easy.addEventListener('click', function (event) {
     event.preventDefault();
     gameActive = true;
+    console.log('slm');
     gameLoop('easy');
 });
 
