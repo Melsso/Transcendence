@@ -228,9 +228,13 @@ async function handleAction(action, targetId, userid, targetUname) {
 			break;
 		case 'Invite To Game':
 			if (window.userData.socket) {
-				// check game socket first
-				handleSend(targetUname, 'Notification');
-				Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'message');
+				if (window.userData.pong_socket) {
+					handleSend(targetUname, window.userData.r_name, 'Notification');
+					Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
+				}
+				else {
+					Notification('Game Action', 'You Are Not In A Lobby! Join A Lobby First!', 2, 'alert');
+				}
 			}
 			else {
 				Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');

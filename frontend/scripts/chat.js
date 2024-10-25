@@ -6,13 +6,14 @@ const globalbtn = document.getElementById('revert_to_global');
 const open = document.createElement('button');
 const gameaccept = document.createElement('button');
 const baseUrl = process.env.ACTIVE_HOST;
+import { startGameSocket  } from "./gameSystem.js";
 let tar;
 
-export function handleSend(username, action) {
+export function handleSend(username, r_name, action) {
 	chatInput.focus();
 	const message = chatInput.value;
 	if (action) {
-		window.userData.socket.send(JSON.stringify({ action: action, username : window.userData.username, target: username}));
+		window.userData.socket.send(JSON.stringify({ action: action, username : window.userData.username, target: username, room_name: r_name, lobbySettings: window.lobbySettings}));
 		return ;
 	}
 	window.userData.socket.send(JSON.stringify({ action: 'Message', message: message, username : username, target: window.userData.target, av: window.userData.avatar}));
@@ -83,7 +84,7 @@ function addMessage(message, isSender = false, data) {
 
 export async function	launchSocket() {
 		window.userData.socket.onopen = function(e) {
-			console.log("socket on");
+			console.log("socket on--CHATSOCKET");
 		}
 		
 		window.userData.socket.onclose = function(e) {
@@ -98,8 +99,27 @@ export async function	launchSocket() {
 				return ;
 			}
 			if (data.action == 'Notification' && data.target == window.userData.username) {
-				// here get the room name and then open socket on that room
+				// console.log('data: ', data);
 				GameNotification('Game Action', "Invited you to a pong game!", data.username);
+				gameaccept.addEventListener('click', async function () {
+					console.log('datachat: ', data);
+					if (window.userData['pong_socket']) {
+						window.userData['pong_socket'].close();
+						delete window.userData['pong_socket'];
+					}
+					const u = new URL(baseUrl);
+					const accessToken = localStorage.getItem('accessToken');
+					if (!accessToken) {
+						Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+						return ;
+					}
+					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data.room_name}/?token=${accessToken}`);
+					window.userData['pong_socket'] = gameSocket;
+					window.navigateTo('PONG', null);
+					window.lobbySettings = data.lobbySettings;
+					startGameSocket();
+					return ;
+				});
 				return ;
 			}
 			if (data.target !== "Global" && data.target !== window.userData.username) {
@@ -140,13 +160,13 @@ export async function	launchSocket() {
 				messageInput.value = messageInput.value.substring(0, 200);
 				Notification('Message Action', 'You have reached the limit of characters you can type per message!', 2, 'alert');
 			}
-			handleSend(window.userData.username, null);
+			handleSend(window.userData.username, null, null);
 		}
 	});
 
 	sendButton.addEventListener('click', function(event) {
 		event.preventDefault();
-		handleSend(window.userData.username, null);
+		handleSend(window.userData.username, null, null);
 	});
 
 	if (messageContainer.children.length === 0) {
@@ -366,7 +386,3 @@ function GameNotification(title, message, target) {
 		 toast.hide();
 	}, 10000);
 }
-
-gameaccept.addEventListener('click', function () {
-	
-})

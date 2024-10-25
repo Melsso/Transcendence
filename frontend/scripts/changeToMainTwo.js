@@ -401,14 +401,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
-
 					userData = result["user"];
-
-					const u = new URL(baseUrl);
-					const chatSocket = new WebSocket(`ws://${u.host}/ws/`);
-					userData["socket"] = chatSocket;
-					userData["target"] = "Global";
-					launchSocket();
+					if (!window.userData.socket) {
+						const u = new URL(baseUrl);
+						const chatSocket = new WebSocket(`ws://${u.host}/ws/`);
+						userData["socket"] = chatSocket;
+						userData["target"] = "Global";
+						launchSocket();
+					}
 					sendFriendRequestButton.style.display = 'none';
 					loadProfile(result);
 					const res = await getMessages();
