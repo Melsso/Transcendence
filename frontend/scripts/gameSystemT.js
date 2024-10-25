@@ -1,10 +1,10 @@
-// const inv_menu = document.getElementById('inv-menu');
-// const ai_menu = document.getElementById('ai-menu');
-// const Instructions = document.getElementById('Instructions-box');
+const inv_menu = document.getElementById('inv-menu');
+const ai_menu = document.getElementById('ai-menu');
+const Instructions = document.getElementById('Instructions-box');
 const Tlobby = document.getElementById('pong-tournament');
-// const menu = document.getElementById('menuuu');
+const menu = document.getElementById('menuuu');
 const tourniLobby = document.getElementById('tournament');
-
+let lobbysettings;
 const gamer2Template = {
 	username: "Player 1",
 	avatar: "assets/avatar2.svg",

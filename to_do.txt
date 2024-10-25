@@ -27,10 +27,4 @@ MINOR:
 - Multiple language supports YYYYYYYY
 
 
-GAME 1:
-power-ups/debufs: they will spawn ranodmly in the game, if you're the one who touches the power-up with the ball the power-up will activate:
-		1 - you slow they oppponent's movment by 30% for 3 seconds.
-		2 - the ball becomes smaller for 3 seconds.
-		4 - makes your paddle longer
-		5 - makes your paddle smller
-		
+		//lobby set default settings always

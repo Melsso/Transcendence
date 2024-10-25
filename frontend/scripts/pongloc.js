@@ -7,6 +7,8 @@ const ins_returnn = document.getElementById('return-to-menu-ins');
 const gameContainerr = document.querySelector('.gameContainer');
 const gameModall = document.getElementById('gameModal');
 
+let elapsedTime;
+let el;
 let ppaddleWidth;
 let ppaddleHeight;
 let ballsRadius;
@@ -150,7 +152,6 @@ function	redotheGame(){
 document.addEventListener('keydown', (event) => {
 	if (GameOverscreen === true){
 		if (event.code === 'KeyR'){
-				console.log ("trying to do so");
 				player1.score = 0;
 				player2.score = 0;
 				redotheGame();
@@ -513,7 +514,7 @@ function drawingTimer() {
 	ctxx.font = '20px Arial';
 	ctxx.fillStyle = 'white';
 	ctxx.textAlign = 'center';
-	ctxx.fillText(`${elapsedTime}`, Canvaas.width /2, 30);
+	ctxx.fillText(`${elapsedTime / 1000}`, Canvaas.width /2, 30);
 }
 function gameOScreen(){
 	if (player1.score >= 2){
@@ -552,7 +553,6 @@ function removeGameOScreen() {
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	GameOverscreen = false;
 	gameover = false;
-	console.log("we made it here");
 	iscurrentlyingame = false;
 }
 function showGameOScreen() {
@@ -719,7 +719,7 @@ document.addEventListener('keyup', (e) => {
 	if (e.code === 'ArrowDown') ArrowdownPressed = false;
 });
 function movingBall() {
-	const elapsedTime = Date.now() - ResetedTime;
+	elapsedTime = Date.now() - ResetedTime;
 	const speedFactor = 1 + Math.floor(elapsedTime / speedIncrease) * speedInc;
 	Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
 	Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
@@ -732,9 +732,9 @@ function movingBall() {
 	}
 
 	if (
-		 Balls.x - Balls.radius < wasdPaddle.x + wasdPaddle.width &&
-		 Balls.y > wasdPaddle.y &&
-		 Balls.y < wasdPaddle.y + wasdPaddle.height
+		 Balls.x - Balls.radius <= wasdPaddle.x + wasdPaddle.width &&
+		 Balls.y >= wasdPaddle.y &&
+		 Balls.y <= wasdPaddle.y + wasdPaddle.height
 	) {
 		 var relativeIntersectY = (wasdPaddle.y + wasdPaddle.height / 2) - Balls.y;
 		 var normrelIntersectY = relativeIntersectY / (wasdPaddle.height / 2);
@@ -750,9 +750,9 @@ function movingBall() {
 	}
 
 	if (
-		 Balls.x + Balls.radius > ARPaddle.x &&
-		 Balls.y > ARPaddle.y &&
-		 Balls.y < ARPaddle.y + ARPaddle.height
+		 Balls.x + Balls.radius >= ARPaddle.x &&
+		 Balls.y >= ARPaddle.y &&
+		 Balls.y <= ARPaddle.y + ARPaddle.height
 	) {
 		 var relativeIntersectY = (ARPaddle.y + ARPaddle.height / 2) - Balls.y;
 		 var normrelIntersectY = relativeIntersectY / (ARPaddle.height / 2);
@@ -782,11 +782,10 @@ function restartingRound() {
     gameLLoop();
 }
 function anotherRound(){
-	EL = elapsedTime;
+	el = elapsedTime;
 	const speedFactor = 1 + Math.floor(elapsedTime / speedIncrease) * speedInc;
 	if (Balls.x - Balls.radius <= 0) {
 		 player2.score++;
-		 console.log("Arrows has scored: " + player2.score);
 		 if (player2.score === 2){
 			  gameover = true;
 			  return;
@@ -808,7 +807,6 @@ function anotherRound(){
 	}
 	if (Balls.x + Balls.radius >= Canvaas.width) {
 		 player1.score++;
-		 console.log("wasd has scored: " + player1.score);
 		 if (player1.score === 2){
 			  gameover = true;
 			  return;
@@ -904,7 +902,6 @@ function gameLLoop() {
 	let frameID = requestAnimationFrame(() => gameLLoop());
 	animationFramesIDs.push(frameID);
 	if (gameover) {
-		 console.log(animationFramesIDs);
 		 backtooriginalvalues();
 		 gameActive = false;
 		 return;

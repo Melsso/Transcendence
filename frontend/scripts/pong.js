@@ -241,9 +241,9 @@ function moveBall() {
     }
 
     if (
-        ball.x - ball.radius < playerPaddle.x + playerPaddle.width &&
-        ball.y > playerPaddle.y &&
-        ball.y < playerPaddle.y + playerPaddle.height
+        ball.x - ball.radius <= playerPaddle.x + playerPaddle.width &&
+        ball.y >= playerPaddle.y &&
+        ball.y <= playerPaddle.y + playerPaddle.height
     ) {
         var relativeIntersectY = (playerPaddle.y + playerPaddle.height / 2) - ball.y;
         var normrelIntersectY = relativeIntersectY / (playerPaddle.height / 2);
@@ -297,7 +297,6 @@ function newRound(){
     const speedFactor = 1 + Math.floor(window.elapsedTime / speedIncreaseInterval) * speedIncrement;
     if (ball.x - ball.radius <= 0) {
         player2.score++;
-        console.log("Player 2 score: " + player2.score);
         if (player2.score === 2){
             gameover = true;
             return;
@@ -323,7 +322,6 @@ function newRound(){
     }
     if (ball.x + ball.radius >= canvas.width) {
         player1.score++;
-        console.log("Player 1 score: " + player1.score);
         if (player1.score === 2){
             gameover = true;
             return;
@@ -456,7 +454,6 @@ function gameLoop(difficulty) {
     drawBall(ball.x, ball.y, ball.radius);
     movePlayerPaddle();
     window.moveAIPaddle(difficulty);
-    console.log("slm");
     window.didItHit();
     window.didAiHit();
     window.drawaiBlock();
@@ -525,7 +522,6 @@ aibutton.addEventListener('click', function (event) {
 ai_easy.addEventListener('click', function (event) {
     event.preventDefault();
     gameActive = true;
-    console.log('slm');
     gameLoop('easy');
 });
 
@@ -598,5 +594,4 @@ function endGameStats() {
     window.data.gameStats.full_time = fullTime; // done
     window.data.gameStats.winner = player1.Score > player2.Score ? 1 : 2; // should work, to be tested //
 
-    console.log("Game stats updated:", window.data);
 }

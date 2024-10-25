@@ -157,7 +157,6 @@ window.redoGame = redoGame;
 document.addEventListener('keydown', (event) => {
 	if (window.GOscreen === true){
 		if (event.code === 'KeyR'){
-				console.log ("trying to do so");
 				player1.score = 0;
 				player2.score = 0;
 				redoGame();
@@ -630,7 +629,6 @@ function removeGameOverScreen() {
 	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height); // Clear the window.canvas
 	window.GOscreen = false; // Hide game over screen
 	gameover = false; // Reset game over flag
-	console.log("we made it here");
 	window.isingame = false; // Set the game as active again
 }
 window.removeGameOverScreen = removeGameOverScreen;

@@ -4,6 +4,7 @@ const baseUrl = process.env.ACTIVE_HOST;
 const menu = document.getElementById('menuuu');
 const lo = document.getElementById('1v1');
 window.lobbySettings;
+let gameInterval = null;
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
@@ -58,6 +59,11 @@ lo.addEventListener('click', async function (){
         return ;
     }
     try {
+        if (window.userData.pong_socket) {
+            window.userData.pong_socket.close();
+            window.userData.pong_socket = null;
+			window.userData.r_name = null;
+        }
         const data = await getRoomName();
         window.userData.r_name = data.room_name;
         const u = new URL(baseUrl);
@@ -76,10 +82,17 @@ lo.addEventListener('click', async function (){
 });
 
 function sendGameState(sock) {
-    userData.pong_socket.send(JSON.stringify({
-        action: 'update_game_state',
-        state: gameState
-    }));
+    if (window.userData.pong_socket) {
+        window.userData.pong_socket.send(JSON.stringify({
+            action: 'update_game_state',
+            state: gameState
+        }));
+    } else {
+        if (gameInterval !== null) {
+            clearInterval(gameInterval);
+        }
+        return ;
+    }
 }
 
 export async function startGameSocket() {
@@ -89,8 +102,8 @@ export async function startGameSocket() {
     window.userData.pong_socket.onclose = function(e) {
         console.log("GAMESOCKET--OFF")
     }
-    if (window.userData.pong_socket || window.userData.pong_socket.readyState === WebSocket.OPEN) {
-        setInterval(sendGameState, 1000);
+    if (window.userData.pong_socket) {
+       gameInterval = setInterval(sendGameState, 1000);
     }
     else {
         return ;

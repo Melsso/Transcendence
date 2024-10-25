@@ -13,6 +13,7 @@ import './R-AvatarSelection.js';
 import './RR-creater.js';
 import './RR.js';
 import './gameSystem.js';
+import './gameSystemT.js';
 
 window.ACTIVE_HOST = process.env.ACTIVE_HOST;
 window.userData = {};

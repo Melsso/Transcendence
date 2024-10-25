@@ -100,15 +100,16 @@ export async function loadProfile(requestData) {
 }
 
 const statspage = document.getElementById('stats-tab');
-statspage.addEventListener('click', function () {
-    if (statspage.getAttribute('selected') === 'true') {
-        Notification('Profile Action', 'You are already viewing the pong stats!', 2, 'alert');
+statspage.addEventListener('click', function (event) {
+    event.preventDefault();
+    if (statspage.getAttribute('aria-selected') === 'true' && statspage.getAttribute('on') === 'true') {
+        // Notification('Profile Action', 'You are already viewing the pong stats!', 2, 'alert');
         return ;
     }
     const historyTab = document.getElementById('History');
-    statspage.setAttribute('selected', 'true');
-    historyTab.setAttribute('selected', 'false');
-});
+    statspage.setAttribute('on', 'true');
+    historyTab.setAttribute('on', 'false');
+}, { once: true });
 
 function loadProfileInfo(user) {
     const profileUsername = document.getElementById('username');
@@ -254,21 +255,23 @@ function loadStats(games) {
 export function loadMatchHistory(games) {
     const historyTab = document.getElementById('History');
     const matchHistoryContainer = document.querySelector('.match-history-container');
-    historyTab.addEventListener('click', function () {
-        if (historyTab.getAttribute('selected') === 'true') {
-            Notification('Profile Action', 'You are already viewing the match history tab!', 2, 'alert');
+    historyTab.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (historyTab.getAttribute('aria-selected') === 'true' && historyTab.getAttribute('on') === 'true') {
+            // Notification('Profile Action', 'You are already viewing the match history tab!', 2, 'alert');
             return ;
+        } else {
+            historyTab.setAttribute('on', 'true');
+            statspage.setAttribute('on', 'false');
+            matchHistoryContainer.innerHTML = '';
+            try {
+                loadMatchHistory(games);
+                return ;
+            } catch (error) {
+                Notification('Profile Action', `Failed To Get Match History: ${error}`, 2, 'alert');
+            }
         }
-        statspage.setAttribute('selected', 'false');
-		matchHistoryContainer.innerHTML = '';
-        historyTab.setAttribute('selected', 'true');
-		try {
-			loadMatchHistory(games);
-            return ;
-		} catch (error) {
-			Notification('Profile Action', `Failed To Get Match History: ${error}`, 2, 'alert');
-        }
-	});
+	}, { once: true });
 
     loadStats(games);
 

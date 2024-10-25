@@ -355,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const Instructions = document.getElementById('Instructions-box');
 	const lobby = document.getElementById('pong-inv-container');
 	const menu = document.getElementById('menuuu');
+	const tourniLobby = document.getElementById('tournament');
 
 	mainOne.style.display = 'none';
 	log1.style.display = 'none';
@@ -389,8 +390,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (window.userData.pong_socket) {
 			window.userData.pong_socket.close();
 			window.userData.pong_socket = null;
-			window.userData.room_name = null;
+			window.userData.r_name = null;
 		}
+		tourniLobby.style.display = 'none';
 		inv_menu.style.display = 'none';
 		ai_menu.style.display = 'none';
 		Instructions.style.display = 'none';
@@ -599,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		} catch (error) {
 			Notification('Profile Action', `Failed to logout because: ${error}`,2, 'alert');
 		}
-
+		//empty sockets!!!!!!! chat and game
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
 		document.getElementById('login-form-container').style.display = 'block';
