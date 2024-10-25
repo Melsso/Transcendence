@@ -64,9 +64,9 @@ window.aiTargetY = null;
 window.GOscreen = false;
 
 function	resets(){
-	GOscreen = false;
+	window.GOscreen = false;
 	gameover = false; 
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
 	if (wasHit === true){
 		aiPaddle.height *= 2;
 		wasHit = false;
@@ -75,9 +75,9 @@ function	resets(){
 		playerPaddle.height *= 2;
 		aiDidHit = false;
 	}
-	crossCount = 0;
-	AttackCount = 0;
-	BigPadCount = 0;
+	window.crossCount = 0;
+	window.AttackCount = 0;
+	window.BigPadCount = 0;
 	playerPaddle.dy = 7;
 	aiPaddle.dy = 7;
 	ball.dy = 6;
@@ -100,17 +100,18 @@ function	resets(){
 	player1.score = 0;
 	player2.score = 0;
 }
+window.resets = resets;
 
 function	redoGame(){
-	ResetTime = Date.now();
-	GOscreen = false;
+	window.ResetTime = Date.now();
+	window.GOscreen = false;
 	gameover = false; 
-	fullTime += elapsedTime;
-	if (elapsedTime > LongestRound)
-		 LongestRound = elapsedTime;
-	if (elapsedTime < ShortestRound)
-		 ShortestRound = elapsedTime;
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	fullTime += window.elapsedTime;
+	if (window.elapsedTime > LongestRound)
+		 LongestRound = window.elapsedTime;
+	if (window.elapsedTime < ShortestRound)
+		 ShortestRound = window.elapsedTime;
+	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
 	if (wasHit === true){
 		 aiPaddle.height *= 2;
 		 wasHit = false;
@@ -119,12 +120,12 @@ function	redoGame(){
 		 playerPaddle.height *= 2;
 		 aiDidHit = false;
 	}
-	crossCount = 0;
-	ball.x = canvas.width / 2;
-	ball.y = canvas.height / 2;
+	window.crossCount = 0;
+	ball.x = window.canvas.width / 2;
+	ball.y = window.canvas.height / 2;
 	ball.dx *= -1;
-	AttackCount = 0;
-	BigPadCount = 0;
+	window.AttackCount = 0;
+	window.BigPadCount = 0;
 	playerPaddle.dy = 7;
 	setbackoriginalvalues();
 	aiPaddle.dy = 7;
@@ -152,9 +153,9 @@ function	redoGame(){
 	player1.score = 0;
 	player2.score = 0;
 }
-
+window.redoGame = redoGame;
 document.addEventListener('keydown', (event) => {
-	if (GOscreen === true){
+	if (window.GOscreen === true){
 		if (event.code === 'KeyR'){
 				console.log ("trying to do so");
 				player1.score = 0;
@@ -171,21 +172,22 @@ function stopGameLoop() {
 	animationFrameIDs = [];
 	gameActive = false;
 }
+window.stopGameLoop = stopGameLoop;
 
 document.addEventListener('keydown', (event) => {
-	if (GOscreen === true){
+	if (window.GOscreen === true){
 		if (event.code === 'KeyQ' && gameActive === false){
-			ResetTime = null;
-			ball.x = canvas.width / 2;
-			ball.y = canvas.height / 2;
+			window.ResetTime = null;
+			ball.x = window.canvas.width / 2;
+			ball.y = window.canvas.height / 2;
 			ball.dx *= -1;
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
 			stopGameLoop();
 			removeGameOverScreen();
 			resets();
-			GOscreen = false;
+			window.GOscreen = false;
 			gameover = false;
-			isingame = false;
+			window.isingame = false;
 			menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
@@ -242,6 +244,7 @@ function didItHit(){
 			player2.gothit++;
 		}
 }
+window.didItHit = didItHit;
 
 function	AttackPrediction(){
 	if (aiPaddle.y === playerPaddle.y && aiPaddle.aihasanattack === 1){
@@ -251,7 +254,7 @@ function	AttackPrediction(){
 		aiPaddle.aihasanattack = 0;
 	}
 }
-
+window.AttackPrediction = AttackPrediction;
 function didAiHit() {
 	if (aiDidHit === true){
 		player1.gothit++;
@@ -267,16 +270,17 @@ function didAiHit() {
 		aiDidHit = true;
 	}
 }
-
+window.didAiHit = didAiHit;
 function moveBlock() {
 	if (block.visible) {
 		block.x += block.speed;
 
-		if (block.x + block.width >= canvas.width) {
+		if (block.x + block.width >= window.canvas.width) {
 			block.visible = false;
 		}
 	}
 }
+window.moveBlock = moveBlock;
 function moveaiBlock() {
 	if (aiblock.visible) {
 		aiblock.x -= aiblock.speed; 
@@ -286,35 +290,40 @@ function moveaiBlock() {
 		}
 	}
 }
-
+window.moveaiBlock = moveaiBlock;
 function drawBlock() {
 	if (block.visible) {
-		ctx.fillStyle = 'blue';
-		ctx.fillRect(block.x, block.y, block.width, block.height);
+		window.ctx.fillStyle = 'blue';
+		window.ctx.fillRect(block.x, block.y, block.width, block.height);
 	}
 }
+window.drawBlock = drawBlock;
 function drawaiBlock() {
 	if (aiblock.visible) {
-		ctx.fillStyle = 'green';
-		ctx.fillRect(aiblock.x, aiblock.y, aiblock.width, aiblock.height);
+		window.ctx.fillStyle = 'green';
+		window.ctx.fillRect(aiblock.x, aiblock.y, aiblock.width, aiblock.height);
 	}
 }
+window.drawaiBlock = drawaiBlock;
 
 function randomizeBuffX() {
-	const leftBoundary = canvas.width * 0.2;
-	const rightBoundary = canvas.width * 0.8;
+	const leftBoundary = window.canvas.width * 0.2;
+	const rightBoundary = window.canvas.width * 0.8;
 	buff.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
 }
 function randomizeAttackX() {
-	const leftBoundary = canvas.width * 0.2;
-	const rightBoundary = canvas.width * 0.8;
+	const leftBoundary = window.canvas.width * 0.2;
+	const rightBoundary = window.canvas.width * 0.8;
 	Attack.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
 }
 function randomizePadBigX() {
-	const leftBoundary = canvas.width * 0.2;
-	const rightBoundary = canvas.width * 0.8;
+	const leftBoundary = window.canvas.width * 0.2;
+	const rightBoundary = window.canvas.width * 0.8;
 	PaddleBigger.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
 }
+window.randomizeAttackX = randomizeAttackX;
+window.randomizeBuffX = randomizeBuffX;
+window.randomizePadBigX = randomizePadBigX;
 
 function movebuff() {
 	if (buff.visible) {
@@ -322,53 +331,57 @@ function movebuff() {
 		if (buff.y + buff.height <= 52) {
 			buff.speed *= -1;
 		}
-	if (buff.y + buff.height > canvas.height)
+	if (buff.y + buff.height > window.canvas.height)
 		buff.visible = false;
 	}
 }
+window.movebuff = movebuff;
 function moveAttackbuff() {
 	if (Attack.visible) {
 		Attack.y += Attack.speed;
 		if (Attack.y + Attack.height <= 52) {
 			Attack.speed *= -1;
 		}
-	if (Attack.y + Attack.height > canvas.height)
+	if (Attack.y + Attack.height > window.canvas.height)
 		Attack.visible = false;
 	}
 }
+window.moveAttackbuff = moveAttackbuff;
 function movePadBigbuff() {
 	if (PaddleBigger.visible) {
 		PaddleBigger.y += PaddleBigger.speed;
 		if (PaddleBigger.y + PaddleBigger.height <= 52) {
 			PaddleBigger.speed *= -1;
 		}
-	if (PaddleBigger.y + PaddleBigger.height > canvas.height)
+	if (PaddleBigger.y + PaddleBigger.height > window.canvas.height)
 		PaddleBigger.visible = false;
 	}
 }
-
+window.movePadBigbuff = movePadBigbuff;
 
 
 function drawScoreBoard() {
-	ctx.clearRect(0, 0, canvas.width, 50);
-	ctx.fillStyle = 'black';
-	ctx.fillRect(0, 0, canvas.width, 50);
+	window.ctx.clearRect(0, 0, window.canvas.width, 50);
+	window.ctx.fillStyle = 'black';
+	window.ctx.fillRect(0, 0, window.canvas.width, 50);
 	const image1 = new Image();
 	const image2 = new Image();
 	image1.src = player1.icon;
 	image2.src = player2.icon;
-	ctx.drawImage(image1, 10, 5, 40, 40);
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white';
-	ctx.fillText('Player 1', 10*canvas.width/100, 30);
-	ctx.fillText(player1.score, 18*canvas.width/100, 30);
-	ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+	window.ctx.drawImage(image1, 10, 5, 40, 40);
+	window.ctx.font = '20px Arial';
+	window.ctx.fillStyle = 'white';
+	window.ctx.fillText('Player 1', 10*window.canvas.width/100, 30);
+	window.ctx.fillText(player1.score, 18*window.canvas.width/100, 30);
+	window.ctx.drawImage(image2, window.canvas.width - 50, 5, 40, 40);
 	
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white'; 
-	ctx.fillText('Player 2', 90*canvas.width/100, 30);
-	ctx.fillText(player2.score, 82*canvas.width/100, 30);
+	window.ctx.font = '20px Arial';
+	window.ctx.fillStyle = 'white'; 
+	window.ctx.fillText('Player 2', 90*window.canvas.width/100, 30);
+	window.ctx.fillText(player2.score, 82*window.canvas.width/100, 30);
 }
+window.drawScoreBoard = drawScoreBoard;
+
 function giveSpeedBuff(){
 	if (LastpaddletoHit === "player 1")
 		playerPaddle.dy = 12;
@@ -379,6 +392,7 @@ function giveSpeedBuff(){
 	if (playerPaddle.dy === 20 && LastpaddletoHit === "Ai")
 		aiPaddle.dy = 12;
 }
+window.giveSpeedBuff = giveSpeedBuff;
 function giveAttackBuff(){
 	if (LastpaddletoHit === "player 1"){
 		playerPaddle.hasanattack = 1;
@@ -393,6 +407,7 @@ function giveAttackBuff(){
 	if (aiPaddle.aihasanattack === 1 && LastpaddletoHit === "Ai")
 		aiPaddle.aihasanattack = 1;
 }
+window.giveAttackBuff = giveAttackBuff;
 let doubled = false;
 let aidoubled = false;
 function givePadBigBuff(){
@@ -407,14 +422,15 @@ function givePadBigBuff(){
 		aidoubled = true;
 	}
 }
+window.givePadBigBuff = givePadBigBuff;
 
 function drawSpeedBuff() {
 	if (buff.visible) {
-		 ctx.globalAlpha = 0.5;
-		 ctx.fillStyle = "gold";
-		 ctx.fillRect(buff.x, buff.y, buff.width, buff.height);
+		 window.ctx.globalAlpha = 0.5;
+		 window.ctx.fillStyle = "gold";
+		 window.ctx.fillRect(buff.x, buff.y, buff.width, buff.height);
 	}
-	ctx.globalAlpha = 1.0;
+	window.ctx.globalAlpha = 1.0;
 	if ((buff.visible) &&
 		 ball.x + ball.radius > buff.x && 
 		 ball.x - ball.radius < buff.x + buff.width && 
@@ -426,7 +442,7 @@ function drawSpeedBuff() {
 			  else {
 					if (BallinBuff) {
 						 BallinBuff = false;
-						 crossCount++;
+						 window.crossCount++;
 						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
 							giveSpeedBuff();
 							if (LastpaddletoHit === "player 1"){
@@ -438,17 +454,19 @@ function drawSpeedBuff() {
 						 }
 						 }
 					}
-	if (crossCount === 2) {
+	if (window.crossCount === 2) {
 		 buff.visible = false;
 	}
 }
+window.drawSpeedBuff = drawSpeedBuff;
+
 function drawAttackBuff() {
 	if (Attack.visible) {
-		 ctx.globalAlpha = 0.5;
-		 ctx.fillStyle = "red";
-		 ctx.fillRect(Attack.x, Attack.y, Attack.width, Attack.height);
+		 window.ctx.globalAlpha = 0.5;
+		 window.ctx.fillStyle = "red";
+		 window.ctx.fillRect(Attack.x, Attack.y, Attack.width, Attack.height);
 	}
-	ctx.globalAlpha = 1.0;
+	window.ctx.globalAlpha = 1.0;
 	if ((Attack.visible) &&
 		 ball.x + ball.radius > Attack.x && 
 		 ball.x - ball.radius < Attack.x + Attack.width && 
@@ -460,7 +478,7 @@ function drawAttackBuff() {
 			  else{
 					if (BallinAttackBuff) {
 						 BallinAttackBuff = false;
-						 AttackCount++;
+						 window.AttackCount++;
 						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
 							  giveAttackBuff();
 							 if (LastpaddletoHit === "player 1")
@@ -470,16 +488,17 @@ function drawAttackBuff() {
 					 		}
 						}
 					}
-	if (AttackCount === 2)
+	if (window.AttackCount === 2)
 		Attack.visible = false;
 }
+window.drawAttackBuff = drawAttackBuff;
 function drawPadBigBuff() {
 	if (PaddleBigger.visible) {
-		 ctx.globalAlpha = 0.5;
-		 ctx.fillStyle = "cyan";
-		 ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
+		 window.ctx.globalAlpha = 0.5;
+		 window.ctx.fillStyle = "cyan";
+		 window.ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
 	}
-	ctx.globalAlpha = 1.0;
+	window.ctx.globalAlpha = 1.0;
 	if ((PaddleBigger.visible) &&
 		 ball.x + ball.radius > PaddleBigger.x && 
 		 ball.x - ball.radius < PaddleBigger.x + PaddleBigger.width && 
@@ -491,7 +510,7 @@ function drawPadBigBuff() {
 			  else {
 					if (BallinPadBigBuff) {
 						 BallinPadBigBuff = false;
-						 BigPadCount++;
+						 window.BigPadCount++;
 						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
 								givePadBigBuff();
 						 if (LastpaddletoHit === "player 1")
@@ -500,17 +519,20 @@ function drawPadBigBuff() {
 							player2.Btaken++;
 					}
 				}
-	if (BigPadCount === 2) {
+	if (window.BigPadCount === 2) {
 		PaddleBigger.visible = false;
 	}
 }
+window.drawPadBigBuff = drawPadBigBuff;
 
 function drawTimer() {
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white';
-	ctx.textAlign = 'center';
-	ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
+	window.ctx.font = '20px Arial';
+	window.ctx.fillStyle = 'white';
+	window.ctx.textAlign = 'center';
+	window.ctx.fillText(`${window.elapsedTime}`, window.canvas.width /2, 30);
 }
+
+window.drawTimer = drawTimer;
 function moveAIPaddleHard() {
 	if (aiPaddle.aihasanattack === 1){
 		if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048) {
@@ -552,60 +574,69 @@ function moveAIPaddleEasy() {
 		 aiPaddle.y += aiPaddle.dy;
 	}
 }
+window.moveAIPaddleEasy = moveAIPaddleEasy;
+window.moveAIPaddlemid = moveAIPaddlemid;
+window.moveAIPaddleHard = moveAIPaddleHard;
+
 function gameOverScreen(){
 	if (player1.score >= 2){
-		GOscreen = true;
+		window.GOscreen = true;
 		showGameOverScreen();
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#ffffff';
-		ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`WINNER: player1`, canvas.width / 2, canvas.height / 2 - 100);
+		window.ctx.font = '50px "PixelFont", sans-serif';
+		window.ctx.fillStyle = '#FFD700';
+		window.ctx.fillText(`Player 1: ${player1.score}`, window.canvas.width / 3, window.canvas.height / 2 + 10);
+		window.ctx.font = '50px "PixelFont", sans-serif';
+		window.ctx.fillStyle = '#ffffff';
+		window.ctx.fillText(`Player 2: ${player2.score}`, window.canvas.width / 1.5, window.canvas.height / 2 + 10);
+		window.ctx.font = '50px "PixelFont", sans-serif';
+		window.ctx.fillStyle = '#FFD700';
+		window.ctx.fillText(`WINNER: player1`, window.canvas.width / 2, window.canvas.height / 2 - 100);
 		player1.score = 0;
 		gameover = true;
-		isingame = false;
+		window.isingame = false;
 	}
 	else if (player2.score >= 2){
 		showGameOverScreen();
-		GOscreen = true;
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#ffffff';
-		ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`WINNER: player2`, canvas.width / 2, canvas.height / 2 - 100);
+		window.GOscreen = true;
+		window.ctx.font = '50px "PixelFont", sans-serif';
+		window.ctx.fillStyle = '#ffffff';
+		window.ctx.fillText(`Player 1: ${player1.score}`, window.canvas.width / 3, window.canvas.height / 2 + 10);
+		window.ctx.font = '50px "PixelFont", sans-serif';
+		window.ctx.fillStyle = '#FFD700';
+		window.ctx.fillText(`Player 2: ${player2.score}`, window.canvas.width / 1.5, window.canvas.height / 2 + 10);
+		window.ctx.font = '50px "PixelFont", sans-serif';
+		window.ctx.fillStyle = '#FFD700';
+		window.ctx.fillText(`WINNER: player2`, window.canvas.width / 2, window.canvas.height / 2 - 100);
 		gameover = true;
-		isingame = false;
+		window.isingame = false;
 	}
 }
+window.gameOverScreen = gameOverScreen;
+
 function removeGameOverScreen() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-	GOscreen = false; // Hide game over screen
+	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height); // Clear the window.canvas
+	window.GOscreen = false; // Hide game over screen
 	gameover = false; // Reset game over flag
 	console.log("we made it here");
-	isingame = false; // Set the game as active again
+	window.isingame = false; // Set the game as active again
 }
-function showGameOverScreen() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillStyle = '#000';
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	const	font_size = canvas.width * 0.15;
-	ctx.font = `${font_size}px "PixelFont", sans-serif`;
-	ctx.fillStyle = '#ffffff';
-	ctx.textAlign = 'center';
-	ctx.fillText('GAME OVER', canvas.width * 0.5, canvas.height * 0.3);
-	ctx.font = '24px "PixelFont", sans-serif';
-	ctx.fillStyle = '#ff0000';
-	ctx.fillText('Press R to replay, Q to go back to main menu', canvas.width / 2, canvas.height / 2 + 500);
-}
+window.removeGameOverScreen = removeGameOverScreen;
 
+
+function showGameOverScreen() {
+	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
+	window.ctx.fillStyle = '#000';
+	window.ctx.fillRect(0, 0, window.canvas.width, window.canvas.height);
+	const	font_size = window.canvas.width * 0.15;
+	window.ctx.font = `${font_size}px "PixelFont", sans-serif`;
+	window.ctx.fillStyle = '#ffffff';
+	window.ctx.textAlign = 'center';
+	window.ctx.fillText('GAME OVER', window.canvas.width * 0.5, window.canvas.height * 0.3);
+	window.ctx.font = '24px "PixelFont", sans-serif';
+	window.ctx.fillStyle = '#ff0000';
+	window.ctx.fillText('Press R to replay, Q to go back to main menu', window.canvas.width / 2, window.canvas.height / 2 + 500);
+}
+window.showGameOverScreen = showGameOverScreen;
 function	moveAIPaddle(difficulty){
 	switch (difficulty) {
 		case 'easy':
@@ -620,3 +651,4 @@ function	moveAIPaddle(difficulty){
   }
 }
 
+window.moveAIPaddle = moveAIPaddle;

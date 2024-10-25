@@ -1,5 +1,5 @@
-const canvas = document.getElementById('pongCanvas');
-const ctx = canvas.getContext('2d');
+window.canvas = document.getElementById('pongCanvas');
+window.ctx = canvas.getContext('2d');
 const gameModal = document.getElementById('gameModal');
 const gameContainer = document.querySelector('.gameContainer');
 const menu = document.getElementById('menuuu');
@@ -17,6 +17,7 @@ const ins_return = document.getElementById('return-to-menu-ins');
 let paddleWidth;
 let paddleHeight;
 let ballRadius;
+window.window.elapsedTime;
 window.gameActive = false;
 window.flag = 0;
 window.data = {
@@ -38,7 +39,7 @@ window.data = {
     }
 };
 
-let LastpaddletoHit = null;
+window.LastpaddletoHit = null;
 
 window.playerPaddle = {
     x: 0,
@@ -74,7 +75,7 @@ window.scoreboard = {
     height: 50 // Height of the scoreboard, adjust as necessary
 };
 
-let ResetTime = null;
+window.ResetTime = null;
 
 
 function Prediction() {
@@ -161,11 +162,11 @@ let fullTime = null;
 let LongestRound = null;
 let ShortestRound = 2000;
 function restartGame(difficulty) {
-    fullTime += elapsedTime;
-    if (elapsedTime > LongestRound)
-        LongestRound = elapsedTime;
-    if (elapsedTime < ShortestRound)
-        ShortestRound = elapsedTime;
+    fullTime += window.elapsedTime;
+    if (window.elapsedTime > LongestRound)
+        LongestRound = window.elapsedTime;
+    if (window.elapsedTime < ShortestRound)
+        ShortestRound = window.elapsedTime;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (wasHit === true){
         aiPaddle.height *= 2;
@@ -190,8 +191,8 @@ function restartGame(difficulty) {
     Attack.visible = false;
     block.visible = false;
     PaddleBigger.visible = false;
-    ResetTime = null;
-    LastpaddletoHit = null;
+    window.ResetTime = null;
+    window.LastpaddletoHit = null;
     gameover = false;
     if (buff.speed > 0) {
         buff.speed *= -1;
@@ -204,7 +205,7 @@ function restartGame(difficulty) {
     };
 }
 
-let isingame = false;
+window.isingame = false;
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
@@ -227,10 +228,10 @@ function switchOnAI() {
 
 let EL = null;
 function moveBall() {
-    const elapsedTime = Date.now() - ResetTime;
-    const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
-    ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-    ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+    window.elapsedTime = Date.now() - window.ResetTime;
+    const speedF = 1 + Math.floor(window.elapsedTime / speedIncreaseInterval) * speedIncrement;
+    ball.dx = initialSpeed * speedF * (ball.dx > 0 ? 1 : -1);
+    ball.dy = initialSpeed * speedF * (ball.dy > 0 ? 1 : -1);
 
     ball.x += ball.dx;
     ball.y += ball.dy;
@@ -254,7 +255,7 @@ function moveBall() {
         ball.x = playerPaddle.x + playerPaddle.width + ballRadius + 1;
         
         ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-        LastpaddletoHit = "player 1";
+        window.LastpaddletoHit = "player 1";
         switchOnAI();
     }
 
@@ -270,7 +271,7 @@ function moveBall() {
         ball.dy = - ball.speed * Math.sin(bounceAngle);
         ball.x = aiPaddle.x - ballRadius -1;
         ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-        LastpaddletoHit = "Ai";
+        window.LastpaddletoHit = "Ai";
         switchOffAI();
     }
 
@@ -292,8 +293,8 @@ function restartRound() {
 }
 
 function newRound(){
-    EL = elapsedTime;
-    const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
+    EL = window.elapsedTime;
+    const speedFactor = 1 + Math.floor(window.elapsedTime / speedIncreaseInterval) * speedIncrement;
     if (ball.x - ball.radius <= 0) {
         player2.score++;
         console.log("Player 2 score: " + player2.score);
@@ -410,13 +411,13 @@ function gameLoop(difficulty) {
         return;
     }
     window.diffy = difficulty;
-    if (!ResetTime)
-        ResetTime = Date.now();
+    if (!window.ResetTime)
+        window.ResetTime = Date.now();
     ai_menu.style.display = 'none';
-    isingame = true;
+    window.isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
-    if (elapsedTime === storedRandomNumber) {
+    window.elapsedTime = Math.floor((Date.now() - window.ResetTime) / 1000);
+    if (window.elapsedTime === storedRandomNumber) {
         Attack.visible = true;
         Attack.y = canvas.height - Attack.height;
         randomizeAttackX();
@@ -426,7 +427,7 @@ function gameLoop(difficulty) {
     }
     if (AttackCount === 2)
         Attack.visible = false;
-    if (elapsedTime === storedRandomNumber + 10) {
+    if (window.elapsedTime === storedRandomNumber + 10) {
         buff.visible = true;
         buff.y = canvas.height - buff.height;
         randomizeBuffX();
@@ -436,7 +437,7 @@ function gameLoop(difficulty) {
     }
     if (crossCount === 2)
         buff.visible = false;
-    if (elapsedTime === storedRandomNumber + 20) {
+    if (window.elapsedTime === storedRandomNumber + 20) {
         PaddleBigger.visible = true;
         PaddleBigger.y = canvas.height - PaddleBigger.height;
         randomizePadBigX();

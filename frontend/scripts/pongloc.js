@@ -1,13 +1,17 @@
 const	player1 = {name: 'wasd', icon: '../frontend/assets/logo.jpg', score: 0}
 const	player2 = {name: 'Arrows', icon: '../frontend/assets/logo.jpg', score: 0}
-const canvas = document.getElementById('pongCanvas');
-const ctx = canvas.getContext('2d');
-const menu = document.getElementById('menuuu');
-const ins_return = document.getElementById('return-to-menu-ins');
-const gameContainer = document.querySelector('.gameContainer');
-const gameModal = document.getElementById('gameModal');
+const Canvaas = document.getElementById('pongCanvas');
+const ctxx = Canvaas.getContext('2d');
+const menuu = document.getElementById('menuuu');
+const ins_returnn = document.getElementById('return-to-menu-ins');
+const gameContainerr = document.querySelector('.gameContainer');
+const gameModall = document.getElementById('gameModal');
 
-let	buff = {
+let ppaddleWidth;
+let ppaddleHeight;
+let ballsRadius;
+
+let	Powerup = {
 	x: 0,
 	y: 0,
 	width: 70,
@@ -17,7 +21,7 @@ let	buff = {
 	visible: false
 };
 
-let Attack = {
+let Attacking = {
 	x: 0,
 	y: 0,
 	width: 70,
@@ -26,7 +30,7 @@ let Attack = {
 	direction: -1,
 	visible: false
 };
-let PaddleBigger = {
+let BiggerPaddle = {
 	x: 0,
 	y: 0,
 	width: 70,
@@ -55,7 +59,7 @@ let ARblock = {
 };
 
 
-let LastpaddletoHit = null;
+let LastpaddleHit = null;
 
 let wasdPaddle = {
    x: 0,
@@ -75,7 +79,7 @@ let ARPaddle = {
    hasanattack: null
 };
 
-let ball = {
+let Balls = {
    x: 0,
    y: 0,
    radius: 0,
@@ -84,38 +88,29 @@ let ball = {
    dy: 6
 };
 
-let scoreboard = {
-   x: 0,
-   y: 0,
-   width: canvas.width,
-   height: 50
-};
-
 let wasdHit = false;
 let ARHit = false;
-let crossCount = 0;
-let AttackCount = 0;
-let BigPadCount = 0;
-let sbVisible = false;
-let abVisible = true;
-let flag = 0;
-let BallinBuff = false;
-let ResetTime = null;
-let BallinAttackBuff = false;
-let BallinPadBigBuff = false;
-let GOscreen = false;
-let upPressed = false;
-let downPressed = false;
+let SpeedCount = 0;
+let AttackingCount = 0;
+let BiggerPadCount = 0;
+let fflag = 0;
+let BallinsideBuff = false;
+let ResetedTime = null;
+let BallinAttackingBuff = false;
+let BallinBiggerPadBuff = false;
+let GameOverscreen = false;
+let ArrowupPressed = false;
+let ArrowdownPressed = false;
 let wPressed = false;
 let sPressed = false;
 let gameActive = false;
-let animationFrameIDs = [];
+let animationFramesIDs = [];
 //UI
-function	redoGame(){
-	ResetTime = Date.now();
-	GOscreen = false;
+function	redotheGame(){
+	ResetedTime = Date.now();
+	GameOverscreen = false;
 	gameover = false; 
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	if (wasdHit === true){
 		ARPaddle.height *= 2;
 		wasdHit = false;
@@ -124,27 +119,27 @@ function	redoGame(){
 		wasdPaddle.height *= 2;
 		ARHit = false;
 	}
-	crossCount = 0;
-	AttackCount = 0;
-	BigPadCount = 0;
+	SpeedCount = 0;
+	AttackingCount = 0;
+	BiggerPadCount = 0;
 	wasdPaddle.dy = 7;
 	ARPaddle.dy = 7;
-	ball.dy = 6;
-	buff.visible = false;
-	Attack.visible = false;
-	PaddleBigger.visible = false;
+	Balls.dy = 6;
+	Powerup.visible = false;
+	Attacking.visible = false;
+	BiggerPaddle.visible = false;
 	WDblock.visible = false;
 	ARblock.visible = false;
-	LastpaddletoHit = null;
+	LastpaddleHit = null;
 	gameover = false;
-	if (buff.speed > 0) {
-		buff.speed *= -1;
+	if (Powerup.speed > 0) {
+		Powerup.speed *= -1;
 	}
-	if (Attack.speed > 0) {
-		Attack.speed *= -1;
+	if (Attacking.speed > 0) {
+		Attacking.speed *= -1;
 	}
-	if (PaddleBigger.speed > 0) {
-		PaddleBigger.speed *= -1;
+	if (BiggerPaddle.speed > 0) {
+		BiggerPaddle.speed *= -1;
 	}
 	gameActive = true;
 	gameLLoop();
@@ -153,28 +148,28 @@ function	redoGame(){
 }
 
 document.addEventListener('keydown', (event) => {
-	if (GOscreen === true){
+	if (GameOverscreen === true){
 		if (event.code === 'KeyR'){
 				console.log ("trying to do so");
 				player1.score = 0;
 				player2.score = 0;
-				redoGame();
+				redotheGame();
 			}
 	}
 });
 
-function stopGameLoop() {
-	for (let i = 0; i < animationFrameIDs.length; i++) {
-		 cancelAnimationFrame(animationFrameIDs[i]);
+function stopGameLLoop() {
+	for (let i = 0; i < animationFramesIDs.length; i++) {
+		 cancelAnimationFrame(animationFramesIDs[i]);
 	}
-	animationFrameIDs = [];
+	animationFramesIDs = [];
 	gameActive = false;
 }
 
-function	resets(){
-	GOscreen = false;
+function	reseting(){
+	GameOverscreen = false;
 	gameover = false; 
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	if (wasdHit === true){
 		ARPaddle.height *= 2;
 		wasdHit = false;
@@ -183,47 +178,47 @@ function	resets(){
 		wasdPaddle.height *= 2;
 		ARHit = false;
 	}
-	crossCount = 0;
-	AttackCount = 0;
-	BigPadCount = 0;
+	SpeedCount = 0;
+	AttackingCount = 0;
+	BiggerPadCount = 0;
 	wasdPaddle.dy = 7;
 	ARPaddle.dy = 7;
-	ball.dy = 6;
-	buff.visible = false;
-	Attack.visible = false;
-	PaddleBigger.visible = false;
+	Balls.dy = 6;
+	Powerup.visible = false;
+	Attacking.visible = false;
+	BiggerPaddle.visible = false;
 	WDblock.visible = false;
 	ARblock.visible = false;
-	LastpaddletoHit = null;
+	LastpaddleHit = null;
 	gameover = false;
-	if (buff.speed > 0) {
-		buff.speed *= -1;
+	if (Powerup.speed > 0) {
+		Powerup.speed *= -1;
 	}
-	if (Attack.speed > 0) {
-		Attack.speed *= -1;
+	if (Attacking.speed > 0) {
+		Attacking.speed *= -1;
 	}
-	if (PaddleBigger.speed > 0) {
-		PaddleBigger.speed *= -1;
+	if (BiggerPaddle.speed > 0) {
+		BiggerPaddle.speed *= -1;
 	}
 	player1.score = 0;
 	player2.score = 0;
 }
 
 document.addEventListener('keydown', (event) => {
-	if (GOscreen === true){
+	if (GameOverscreen === true){
 		if (event.code === 'KeyQ' && gameActive === false){
-			ResetTime = null;
-			ball.x = canvas.width / 2;
-			ball.y = canvas.height / 2;
-			ball.dx *= -1;
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			stopGameLoop();
-			removeGameOverScreen();
-			resets();
-			GOscreen = false;
+			ResetedTime = null;
+			Balls.x = Canvaas.width / 2;
+			Balls.y = Canvaas.height / 2;
+			Balls.dx *= -1;
+			ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+			stopGameLLoop();
+			removeGameOScreen();
+			reseting();
+			GameOverscreen = false;
 			gameover = false;
-			isingame = false;
-			menu.style.display = 'flex';
+			iscurrentlyingame = false;
+			menuu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
 			gameActive = false;
@@ -262,7 +257,7 @@ document.addEventListener('keydown', (event) => {
 	}
 });
 
-function didItHit(){
+function didIHit(){
 	if (wasdHit === true){
 		return;
 	}
@@ -277,7 +272,7 @@ function didItHit(){
 		}
 }
 
-function didAiHit() {
+function didArrowsiHit() {
 	if (ARHit === true){
 		return;
 	}
@@ -290,16 +285,16 @@ function didAiHit() {
 		ARHit = true;
 	}
 }
-function moveBlock() {
+function shootingBlock() {
 	if (WDblock.visible) {
 		WDblock.x += WDblock.speed;
 
-		if (WDblock.x + WDblock.width >= canvas.width) {
+		if (WDblock.x + WDblock.width >= Canvaas.width) {
 			WDblock.visible = false;
 		}
 	}
 }
-function moveARBlock() {
+function shootingARBlock() {
 	if (ARblock.visible) {
 		ARblock.x -= ARblock.speed; 
 
@@ -311,318 +306,317 @@ function moveARBlock() {
 
 function drawwasdBlock() {
 	if (WDblock.visible) {
-		ctx.fillStyle = 'blue';
-		ctx.fillRect(WDblock.x, WDblock.y, WDblock.width, WDblock.height);
+		ctxx.fillStyle = 'blue';
+		ctxx.fillRect(WDblock.x, WDblock.y, WDblock.width, WDblock.height);
 	}
 }
 function drawARBlock() {
 	if (ARblock.visible) {
-		ctx.fillStyle = 'green';
-		ctx.fillRect(ARblock.x, ARblock.y, ARblock.width, ARblock.height);
+		ctxx.fillStyle = 'green';
+		ctxx.fillRect(ARblock.x, ARblock.y, ARblock.width, ARblock.height);
 	}
 }
 
 
-function randomizeBuffX() {
-	const leftBoundary = canvas.width * 0.2;
-	const rightBoundary = canvas.width * 0.8;
-	buff.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
+function randomBuffX() {
+	const leftBoundary = Canvaas.width * 0.2;
+	const rightBoundary = Canvaas.width * 0.8;
+	Powerup.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
 }
-function randomizeAttackX() {
-	const leftBoundary = canvas.width * 0.2;
-	const rightBoundary = canvas.width * 0.8;
-	Attack.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
+function randomAttackX() {
+	const leftBoundary = Canvaas.width * 0.2;
+	const rightBoundary = Canvaas.width * 0.8;
+	Attacking.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
 }
-function randomizePadBigX() {
-	const leftBoundary = canvas.width * 0.2;
-	const rightBoundary = canvas.width * 0.8;
-	PaddleBigger.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
+function randomPadBigX() {
+	const leftBoundary = Canvaas.width * 0.2;
+	const rightBoundary = Canvaas.width * 0.8;
+	BiggerPaddle.x = Math.random() * (rightBoundary - leftBoundary) + leftBoundary;
 }
 
 
-function movebuff() {
-	if (buff.visible) {
-		buff.y += buff.speed;
-		if (buff.y + buff.height <= 52) {
-			buff.speed *= -1;
+function movingbuff() {
+	if (Powerup.visible) {
+		Powerup.y += Powerup.speed;
+		if (Powerup.y + Powerup.height <= 52) {
+			Powerup.speed *= -1;
 		}
-	if (buff.y + buff.height > canvas.height)
-		buff.visible = false;
+	if (Powerup.y + Powerup.height > Canvaas.height)
+		Powerup.visible = false;
 	}
 }
-function moveAttackbuff() {
-	if (Attack.visible) {
-		Attack.y += Attack.speed;
-		if (Attack.y + Attack.height <= 52) {
-			Attack.speed *= -1;
+function movingAttackbuff() {
+	if (Attacking.visible) {
+		Attacking.y += Attacking.speed;
+		if (Attacking.y + Attacking.height <= 52) {
+			Attacking.speed *= -1;
 		}
-	if (Attack.y + Attack.height > canvas.height)
-		Attack.visible = false;
+	if (Attacking.y + Attacking.height > Canvaas.height)
+		Attacking.visible = false;
 	}
 }
-function movePadBigbuff() {
-	if (PaddleBigger.visible) {
-		PaddleBigger.y += PaddleBigger.speed;
-		if (PaddleBigger.y + PaddleBigger.height <= 52) {
-			PaddleBigger.speed *= -1;
+function movingPadBigbuff() {
+	if (BiggerPaddle.visible) {
+		BiggerPaddle.y += BiggerPaddle.speed;
+		if (BiggerPaddle.y + BiggerPaddle.height <= 52) {
+			BiggerPaddle.speed *= -1;
 		}
-	if (PaddleBigger.y + PaddleBigger.height > canvas.height)
-		PaddleBigger.visible = false;
+	if (BiggerPaddle.y + BiggerPaddle.height > Canvaas.height)
+		BiggerPaddle.visible = false;
 	}
 }
 
-function drawScoreBoard() {
-	ctx.clearRect(0, 0, canvas.width, 50);
-	ctx.fillStyle = 'black';
-	ctx.fillRect(0, 0, canvas.width, 50);
+function drawScore() {
+	ctxx.clearRect(0, 0, Canvaas.width, 50);
+	ctxx.fillStyle = 'black';
+	ctxx.fillRect(0, 0, Canvaas.width, 50);
 	const image1 = new Image();
 	const image2 = new Image();
 	image1.src = player1.icon;
 	image2.src = player2.icon;
-	ctx.drawImage(image1, 10, 5, 40, 40);
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white';
-	ctx.fillText('wasd', 10*canvas.width/100, 30);
-	ctx.fillText(player1.score, 18*canvas.width/100, 30);
-	ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+	ctxx.drawImage(image1, 10, 5, 40, 40);
+	ctxx.font = '20px Arial';
+	ctxx.fillStyle = 'white';
+	ctxx.fillText('wasd', 10*Canvaas.width/100, 30);
+	ctxx.fillText(player1.score, 18*Canvaas.width/100, 30);
+	ctxx.drawImage(image2, Canvaas.width - 50, 5, 40, 40);
 	
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white'; 
-	ctx.fillText('Arrows', 90*canvas.width/100, 30);
-	ctx.fillText(player2.score, 82*canvas.width/100, 30);
+	ctxx.font = '20px Arial';
+	ctxx.fillStyle = 'white'; 
+	ctxx.fillText('Arrows', 90*Canvaas.width/100, 30);
+	ctxx.fillText(player2.score, 82*Canvaas.width/100, 30);
 }
 
-function giveSpeedBuff(){
-	if (LastpaddletoHit === "wasd")
+function givingSpeedBuff(){
+	if (LastpaddleHit === "wasd")
 		wasdPaddle.dy = 12;
-	else if (LastpaddletoHit === "Arrows")
+	else if (LastpaddleHit === "Arrows")
 		ARPaddle.dy = 12;
-	if (wasdPaddle.dy === 20 && LastpaddletoHit === "wasd")
+	if (wasdPaddle.dy === 20 && LastpaddleHit === "wasd")
 		wasdPaddle.dy = 20;
-	if (ARPaddle.dy === 20 && LastpaddletoHit === "Arrows")
+	if (ARPaddle.dy === 20 && LastpaddleHit === "Arrows")
 		ARPaddle.dy = 12;
 }
-function giveAttackBuff(){
-	if (LastpaddletoHit === "wasd")
+function givingAttackBuff(){
+	if (LastpaddleHit === "wasd")
 		wasdPaddle.hasanattack = 1;
-	else if (LastpaddletoHit === "Arrows")
+	else if (LastpaddleHit === "Arrows")
 		ARPaddle.hasanattack = 1;
-	if (wasdPaddle.hasanattack === 1 && LastpaddletoHit === "wasd")
+	if (wasdPaddle.hasanattack === 1 && LastpaddleHit === "wasd")
 		wasdPaddle.hasanattack = 1;
-	if (ARPaddle.hasanattack === 1 && LastpaddletoHit === "Arrows")
+	if (ARPaddle.hasanattack === 1 && LastpaddleHit === "Arrows")
 		ARPaddle.hasanattack = 1;
 }
-let doubled = false;
-let ARdoubled = false;
-function givePadBigBuff(){
+let doubledheight = false;
+let ARdoubledheight = false;
+function givingPadBigBuff(){
 	let heightx2 = wasdPaddle.height * 2;
 	let aiheightx2 = ARPaddle.height * 2;
-	if (LastpaddletoHit === "wasd" && doubled != true){
+	if (LastpaddleHit === "wasd" && doubledheight != true){
 		wasdPaddle.height = heightx2;
-		doubled = true;
+		doubledheight = true;
 	}
-	else if (LastpaddletoHit === "Arrows" && ARdoubled != true){
+	else if (LastpaddleHit === "Arrows" && ARdoubledheight != true){
 		ARPaddle.height = aiheightx2;
-		ARdoubled = true;
+		ARdoubledheight = true;
 	}
 }
-function drawSpeedBuff() {
-	if (buff.visible) {
-		 ctx.globalAlpha = 0.5;
-		 ctx.fillStyle = "gold";
-		 ctx.fillRect(buff.x, buff.y, buff.width, buff.height);
+function drawingSpeedBuff() {
+	if (Powerup.visible) {
+		 ctxx.globalAlpha = 0.5;
+		 ctxx.fillStyle = "gold";
+		 ctxx.fillRect(Powerup.x, Powerup.y, Powerup.width, Powerup.height);
 	}
-	ctx.globalAlpha = 1.0;
-	if ((buff.visible) &&
-		 ball.x + ball.radius > buff.x && 
-		 ball.x - ball.radius < buff.x + buff.width && 
-		 ball.y + ball.radius > buff.y && 
-		 ball.y - ball.radius < buff.y + buff.height) {
-			  if (!BallinBuff)
-					BallinBuff = true;
+	ctxx.globalAlpha = 1.0;
+	if ((Powerup.visible) &&
+		 Balls.x + Balls.radius > Powerup.x && 
+		 Balls.x - Balls.radius < Powerup.x + Powerup.width && 
+		 Balls.y + Balls.radius > Powerup.y && 
+		 Balls.y - Balls.radius < Powerup.y + Powerup.height) {
+			  if (!BallinsideBuff)
+					BallinsideBuff = true;
 			  }
 			  else {
-					if (BallinBuff) {
-						 BallinBuff = false;
-						 crossCount++;
-						 if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
-							giveSpeedBuff();
-							if (LastpaddletoHit === "wasd"){
-								flag = 50;
+					if (BallinsideBuff) {
+						 BallinsideBuff = false;
+						 SpeedCount++;
+						 if (LastpaddleHit === "wasd" || LastpaddleHit === "Arrows"){
+							givingSpeedBuff();
+							if (LastpaddleHit === "wasd"){
+								fflag = 50;
 							}
 						}
 					}
 				}
-	if (crossCount === 2) {
-		 buff.visible = false;
+	if (SpeedCount === 2) {
+		 Powerup.visible = false;
 	}
 }
-function drawPadBigBuff() {
-	if (PaddleBigger.visible) {
-		ctx.globalAlpha = 0.5;
-		ctx.fillStyle = "cyan";
-		ctx.fillRect(PaddleBigger.x, PaddleBigger.y, PaddleBigger.width, PaddleBigger.height);
+function drawingPadBigBuff() {
+	if (BiggerPaddle.visible) {
+		ctxx.globalAlpha = 0.5;
+		ctxx.fillStyle = "cyan";
+		ctxx.fillRect(BiggerPaddle.x, BiggerPaddle.y, BiggerPaddle.width, BiggerPaddle.height);
   }
-  ctx.globalAlpha = 1.0;
-  if ((PaddleBigger.visible) &&
-		ball.x + ball.radius > PaddleBigger.x && 
-		ball.x - ball.radius < PaddleBigger.x + PaddleBigger.width && 
-		ball.y + ball.radius > PaddleBigger.y && 
-		ball.y - ball.radius < PaddleBigger.y + PaddleBigger.height) {
-			 if (!BallinPadBigBuff)
-				  BallinPadBigBuff = true;
+  ctxx.globalAlpha = 1.0;
+  if ((BiggerPaddle.visible) &&
+		Balls.x + Balls.radius > BiggerPaddle.x && 
+		Balls.x - Balls.radius < BiggerPaddle.x + BiggerPaddle.width && 
+		Balls.y + Balls.radius > BiggerPaddle.y && 
+		Balls.y - Balls.radius < BiggerPaddle.y + BiggerPaddle.height) {
+			 if (!BallinBiggerPadBuff)
+				  BallinBiggerPadBuff = true;
 			 }
 			 else {
-				  if (BallinPadBigBuff) {
-						BallinPadBigBuff = false;
-						BigPadCount++;
-						if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
-						  givePadBigBuff();
+				  if (BallinBiggerPadBuff) {
+						BallinBiggerPadBuff = false;
+						BiggerPadCount++;
+						if (LastpaddleHit === "wasd" || LastpaddleHit === "Arrows"){
+						  givingPadBigBuff();
 						}
 					}
 			  }
-  if (BigPadCount === 2) {
-		PaddleBigger.visible = false;
+  if (BiggerPadCount === 2) {
+		BiggerPaddle.visible = false;
   }
 }
-function	drawAttackBuff(){
-	if (Attack.visible) {
-		ctx.globalAlpha = 0.5;
-		ctx.fillStyle = "red";
-		ctx.fillRect(Attack.x, Attack.y, Attack.width, Attack.height);
+function	drawingAttackBuff(){
+	if (Attacking.visible) {
+		ctxx.globalAlpha = 0.5;
+		ctxx.fillStyle = "red";
+		ctxx.fillRect(Attacking.x, Attacking.y, Attacking.width, Attacking.height);
   }
-  ctx.globalAlpha = 1.0;
-  if ((Attack.visible) &&
-		ball.x + ball.radius > Attack.x && 
-		ball.x - ball.radius < Attack.x + Attack.width && 
-		ball.y + ball.radius > Attack.y && 
-		ball.y - ball.radius < Attack.y + Attack.height) {
-			 if (!BallinAttackBuff)
-				  BallinAttackBuff = true;
+  ctxx.globalAlpha = 1.0;
+  if ((Attacking.visible) &&
+		Balls.x + Balls.radius > Attacking.x && 
+		Balls.x - Balls.radius < Attacking.x + Attacking.width && 
+		Balls.y + Balls.radius > Attacking.y && 
+		Balls.y - Balls.radius < Attacking.y + Attacking.height) {
+			 if (!BallinAttackingBuff)
+				  BallinAttackingBuff = true;
 			 }
 			 else {
-				  if (BallinAttackBuff) {
-						BallinAttackBuff = false;
-						AttackCount++;
-						if (LastpaddletoHit === "wasd" || LastpaddletoHit === "Arrows"){
-						  giveAttackBuff();
+				  if (BallinAttackingBuff) {
+						BallinAttackingBuff = false;
+						AttackingCount++;
+						if (LastpaddleHit === "wasd" || LastpaddleHit === "Arrows"){
+						  givingAttackBuff();
 						}
 					}
 			  }
-  if (AttackCount === 2) {
-		Attack.visible = false;
+  if (AttackingCount === 2) {
+		Attacking.visible = false;
   }
 }
 
-function drawTimer() {
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white';
-	ctx.textAlign = 'center';
-	ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
+function drawingTimer() {
+	ctxx.font = '20px Arial';
+	ctxx.fillStyle = 'white';
+	ctxx.textAlign = 'center';
+	ctxx.fillText(`${elapsedTime}`, Canvaas.width /2, 30);
 }
-function gameOverScreen(){
+function gameOScreen(){
 	if (player1.score >= 2){
-		GOscreen = true;
-		showGameOverScreen();
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`wasd: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#ffffff';
-		ctx.fillText(`Arrows: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`WINNER: player1`, canvas.width / 2, canvas.height / 2 - 100);
+		GameOverscreen = true;
+		showGameOScreen();
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`wasd: ${player1.score}`, Canvaas.width / 3, Canvaas.height / 2 + 10);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#ffffff';
+		ctxx.fillText(`Arrows: ${player2.score}`, Canvaas.width / 1.5, Canvaas.height / 2 + 10);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`WINNER: player1`, Canvaas.width / 2, Canvaas.height / 2 - 100);
 		player1.score = 0;
 		gameover = true;
-		isingame = false;
+		iscurrentlyingame = false;
 	}
 	else if (player2.score >= 2){
-		showGameOverScreen();
-		GOscreen = true;
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#ffffff';
-		ctx.fillText(`wasd: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`Arrows: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
-		ctx.font = '50px "PixelFont", sans-serif';
-		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`WINNER: player2`, canvas.width / 2, canvas.height / 2 - 100);
+		showGameOScreen();
+		GameOverscreen = true;
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#ffffff';
+		ctxx.fillText(`wasd: ${player1.score}`, Canvaas.width / 3, Canvaas.height / 2 + 10);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`Arrows: ${player2.score}`, Canvaas.width / 1.5, Canvaas.height / 2 + 10);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`WINNER: player2`, Canvaas.width / 2, Canvaas.height / 2 - 100);
 		gameover = true;
-		isingame = false;
+		iscurrentlyingame = false;
 	}
 }
-function removeGameOverScreen() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	GOscreen = false;
+function removeGameOScreen() {
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	GameOverscreen = false;
 	gameover = false;
 	console.log("we made it here");
-	isingame = false;
+	iscurrentlyingame = false;
 }
-function showGameOverScreen() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillStyle = '#000';
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	const	font_size = canvas.width * 0.15;
-	ctx.font = `${font_size}px "PixelFont", sans-serif`;
-	ctx.fillStyle = '#ffffff';
-	ctx.textAlign = 'center';
-	ctx.fillText('GAME OVER', canvas.width * 0.5, canvas.height * 0.3);
-	ctx.font = '24px "PixelFont", sans-serif';
-	ctx.fillStyle = '#ff0000';
-	ctx.fillText('Press R to replay, Q to go back to main menu', canvas.width / 2, canvas.height / 2 + 500);
+function showGameOScreen() {
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	ctxx.fillStyle = '#000';
+	ctxx.fillRect(0, 0, Canvaas.width, Canvaas.height);
+	const	font_size = Canvaas.width * 0.15;
+	ctxx.font = `${font_size}px "PixelFont", sans-serif`;
+	ctxx.fillStyle = '#ffffff';
+	ctxx.textAlign = 'center';
+	ctxx.fillText('GAME OVER', Canvaas.width * 0.5, Canvaas.height * 0.3);
+	ctxx.font = '24px "PixelFont", sans-serif';
+	ctxx.fillStyle = '#ff0000';
+	ctxx.fillText('Press R to replay, Q to go back to main menuu', Canvaas.width / 2, Canvaas.height / 2 + 500);
 }
 
 //gamelogic
-let gameStartTime;
-const speedIncreaseInterval = 5000;
-const initialSpeed = 4;
-const speedIncrement = 0.22;
+const speedIncrease = 5000;
+const initSpeed = 4;
+const speedInc = 0.22;
 
 
-function drawPaddle(x, y, width, height) {
-	ctx.fillStyle = 'white';
-	if (flag){
-		 ctx.fillStyle = 'gold';
-		 flag--;
+function drawingPaddle(x, y, width, height) {
+	ctxx.fillStyle = 'white';
+	if (fflag){
+		 ctxx.fillStyle = 'gold';
+		 fflag--;
 	}
-	ctx.fillRect(x, y, width, height);
+	ctxx.fillRect(x, y, width, height);
 
 }
 
-function drawBall(x, y, radius) {
-	ctx.beginPath();
-	ctx.arc(x, y, radius, 0, Math.PI * 2);
-	ctx.fillStyle = 'white';
-	ctx.fill();
-	ctx.closePath();
+function drawingBall(x, y, radius) {
+	ctxx.beginPath();
+	ctxx.arc(x, y, radius, 0, Math.PI * 2);
+	ctxx.fillStyle = 'white';
+	ctxx.fill();
+	ctxx.closePath();
 }
 
-function resizeCanvas() {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-    setGameDimensions();
+function resizingCanvas() {
+    Canvaas.width = Canvaas.clientWidth;
+    Canvaas.height = Canvaas.clientHeight;
+    setGameDimension();
 }
 
-function setGameDimensions() {
-   paddleWidth = canvas.width * 0.01;
-   paddleHeight = canvas.height * 0.1;
-   ballRadius = canvas.width * 0.01;
+function setGameDimension() {
+   ppaddleWidth = Canvaas.width * 0.01;
+   ppaddleHeight = Canvaas.height * 0.1;
+   ballsRadius = Canvaas.width * 0.01;
 
-	wasdPaddle.width = paddleWidth;
-	wasdPaddle.height = paddleHeight;
+	wasdPaddle.width = ppaddleWidth;
+	wasdPaddle.height = ppaddleHeight;
 	wasdPaddle.x = 0;
-   wasdPaddle.y = canvas.height / 2 - paddleHeight / 2;
+   wasdPaddle.y = Canvaas.height / 2 - ppaddleHeight / 2;
 
-   ARPaddle.width = paddleWidth;
-   ARPaddle.height = paddleHeight;
-   ARPaddle.x = canvas.width - paddleWidth;
-   ARPaddle.y = canvas.height / 2 - paddleHeight / 2;
+   ARPaddle.width = ppaddleWidth;
+   ARPaddle.height = ppaddleHeight;
+   ARPaddle.x = Canvaas.width - ppaddleWidth;
+   ARPaddle.y = Canvaas.height / 2 - ppaddleHeight / 2;
 
-   ball.radius = ballRadius;
-   ball.x = canvas.width / 2;
-   ball.y = canvas.height / 2;
+   Balls.radius = ballsRadius;
+   Balls.x = Canvaas.width / 2;
+   Balls.y = Canvaas.height / 2;
 }
 
 function countdownBeforeRound(callback) {
@@ -630,14 +624,14 @@ function countdownBeforeRound(callback) {
     
    const intervalID = setInterval(() => {
  
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
-        drawPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
-        drawBall(ball.x, ball.y, ball.radius);
-        drawScoreBoard();
-        ctx.font = '48px sans-serif'; 
-        ctx.fillStyle = '#fff';
-        ctx.fillText(`Round starts in: ${countdown}`, canvas.width / 2 , canvas.height * 0.4);
+        ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+        drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+        drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
+        drawingBall(Balls.x, Balls.y, Balls.radius);
+        drawScore();
+        ctxx.font = '48px sans-serif'; 
+        ctxx.fillStyle = '#fff';
+        ctxx.fillText(`Round starts in: ${countdown}`, Canvaas.width / 2 , Canvaas.height * 0.4);
         
         countdown--;
 
@@ -648,8 +642,8 @@ function countdownBeforeRound(callback) {
    }, 1000);
 }
 
-function restartGame(difficulty) {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+function restartingGame(difficulty) {
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	if (wasdHit === true){
 		ARPaddle.height *= 2;
 		wasdHit = false;
@@ -658,48 +652,48 @@ function restartGame(difficulty) {
 		wasdPaddle.height *= 2;
 		ARHit = false;
 	}
-	crossCount = 0;
-	AttackCount = 0;
-	BigPadCount = 0;
+	SpeedCount = 0;
+	AttackingCount = 0;
+	BiggerPadCount = 0;
 	wasdPaddle.dy = 7;
 	ARPaddle.dy = 7;
-	ball.dy = 4;
-	buff.visible = false;
-	Attack.visible = false;
+	Balls.dy = 4;
+	Powerup.visible = false;
+	Attacking.visible = false;
 	WDblock.visible = false;
 	ARblock.visible = false;
-	PaddleBigger.visible = false;
-	ResetTime = null;
-	LastpaddletoHit = null;
+	BiggerPaddle.visible = false;
+	ResetedTime = null;
+	LastpaddleHit = null;
 	gameover = false;
-	if (buff.speed > 0) {
-		buff.speed *= -1;
+	if (Powerup.speed > 0) {
+		Powerup.speed *= -1;
 	}
-	if (Attack.speed > 0) {
-		Attack.speed *= -1;
+	if (Attacking.speed > 0) {
+		Attacking.speed *= -1;
 	};
-	if (PaddleBigger.speed > 0) {
-		PaddleBigger.speed *= -1;
+	if (BiggerPaddle.speed > 0) {
+		BiggerPaddle.speed *= -1;
 	};
 }
 
 
-let isingame = false;
-resizeCanvas();
-addEventListener('resize', resizeCanvas);
+let iscurrentlyingame = false;
+resizingCanvas();
+addEventListener('resize', resizingCanvas);
 
 function movewasdPaddle() {
 	if (wPressed && wasdPaddle.y > 50) {
 		wasdPaddle.y -= wasdPaddle.dy;
-	} else if (sPressed && wasdPaddle.y < canvas.height - wasdPaddle.height) {
+	} else if (sPressed && wasdPaddle.y < Canvaas.height - wasdPaddle.height) {
 		wasdPaddle.y += wasdPaddle.dy;
 	}
 }
 
 function moveARPaddle() {
-	if (upPressed && ARPaddle.y > 50) {
+	if (ArrowupPressed && ARPaddle.y > 50) {
 		ARPaddle.y -= ARPaddle.dy;
-	} else if (downPressed && ARPaddle.y < canvas.height - ARPaddle.height) {
+	} else if (ArrowdownPressed && ARPaddle.y < Canvaas.height - ARPaddle.height) {
 		ARPaddle.y += ARPaddle.dy;
 	}
 }
@@ -716,209 +710,209 @@ document.addEventListener('keyup', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
-	if (e.code === 'ArrowUp') upPressed = true;
-	if (e.code === 'ArrowDown') downPressed = true;
+	if (e.code === 'ArrowUp') ArrowupPressed = true;
+	if (e.code === 'ArrowDown') ArrowdownPressed = true;
 });
 
 document.addEventListener('keyup', (e) => {
-	if (e.code === 'ArrowUp') upPressed = false;
-	if (e.code === 'ArrowDown') downPressed = false;
+	if (e.code === 'ArrowUp') ArrowupPressed = false;
+	if (e.code === 'ArrowDown') ArrowdownPressed = false;
 });
-function moveBall() {
-	const elapsedTime = Date.now() - ResetTime;
-	const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
-	ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-	ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+function movingBall() {
+	const elapsedTime = Date.now() - ResetedTime;
+	const speedFactor = 1 + Math.floor(elapsedTime / speedIncrease) * speedInc;
+	Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
+	Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 
-	ball.x += ball.dx;
-	ball.y += ball.dy;
+	Balls.x += Balls.dx;
+	Balls.y += Balls.dy;
 
-	if (ball.y + ball.radius < 70 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
-		 ball.dy *= -1;
+	if (Balls.y + Balls.radius < 70 ||Balls.y + Balls.radius > Canvaas.height || Balls.y - Balls.radius < 0) {
+		 Balls.dy *= -1;
 	}
 
 	if (
-		 ball.x - ball.radius < wasdPaddle.x + wasdPaddle.width &&
-		 ball.y > wasdPaddle.y &&
-		 ball.y < wasdPaddle.y + wasdPaddle.height
+		 Balls.x - Balls.radius < wasdPaddle.x + wasdPaddle.width &&
+		 Balls.y > wasdPaddle.y &&
+		 Balls.y < wasdPaddle.y + wasdPaddle.height
 	) {
-		 var relativeIntersectY = (wasdPaddle.y + wasdPaddle.height / 2) - ball.y;
+		 var relativeIntersectY = (wasdPaddle.y + wasdPaddle.height / 2) - Balls.y;
 		 var normrelIntersectY = relativeIntersectY / (wasdPaddle.height / 2);
 		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
 
-		 ball.dx = ball.speed * Math.cos(bounceAngle);
-		 ball.dy = -ball.speed * Math.sin(bounceAngle);
+		 Balls.dx = Balls.speed * Math.cos(bounceAngle);
+		 Balls.dy = -Balls.speed * Math.sin(bounceAngle);
 		 
-		 ball.x = wasdPaddle.x + wasdPaddle.width + ballRadius + 1;
+		 Balls.x = wasdPaddle.x + wasdPaddle.width + ballsRadius + 1;
 		 
-		 ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-		 LastpaddletoHit = "wasd";
+		 Balls.dx = Balls.speed * (Balls.dx > 0 ? 1 : -1);
+		 LastpaddleHit = "wasd";
 	}
 
 	if (
-		 ball.x + ball.radius > ARPaddle.x &&
-		 ball.y > ARPaddle.y &&
-		 ball.y < ARPaddle.y + ARPaddle.height
+		 Balls.x + Balls.radius > ARPaddle.x &&
+		 Balls.y > ARPaddle.y &&
+		 Balls.y < ARPaddle.y + ARPaddle.height
 	) {
-		 var relativeIntersectY = (ARPaddle.y + ARPaddle.height / 2) - ball.y;
+		 var relativeIntersectY = (ARPaddle.y + ARPaddle.height / 2) - Balls.y;
 		 var normrelIntersectY = relativeIntersectY / (ARPaddle.height / 2);
 		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
-		 ball.dx = - ball.speed * Math.cos(bounceAngle);
-		 ball.dy = - ball.speed * Math.sin(bounceAngle);
-		 ball.x = ARPaddle.x - ballRadius -1;
-		 ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-		 LastpaddletoHit = "Arrows";
+		 Balls.dx = - Balls.speed * Math.cos(bounceAngle);
+		 Balls.dy = - Balls.speed * Math.sin(bounceAngle);
+		 Balls.x = ARPaddle.x - ballsRadius -1;
+		 Balls.dx = Balls.speed * (Balls.dx > 0 ? 1 : -1);
+		 LastpaddleHit = "Arrows";
 	}
 
-	if ((ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvas.width))
-		 newRound();
+	if ((Balls.x - Balls.radius <= 0 || Balls.x + Balls.radius >= Canvaas.width))
+		 anotherRound();
 }
 
 
-function stopGameLoop() {
-	for (let i = 0; i < animationFrameIDs.length; i++) {
-		 cancelAnimationFrame(animationFrameIDs[i]);
+function stopGameLLoop() {
+	for (let i = 0; i < animationFramesIDs.length; i++) {
+		 cancelAnimationFrame(animationFramesIDs[i]);
 	}
-	animationFrameIDs = [];
+	animationFramesIDs = [];
 	gameActive = false;
 }
 
 
-function restartRound() {
+function restartingRound() {
     gameLLoop();
 }
-function newRound(){
+function anotherRound(){
 	EL = elapsedTime;
-	const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
-	if (ball.x - ball.radius <= 0) {
+	const speedFactor = 1 + Math.floor(elapsedTime / speedIncrease) * speedInc;
+	if (Balls.x - Balls.radius <= 0) {
 		 player2.score++;
 		 console.log("Arrows has scored: " + player2.score);
 		 if (player2.score === 2){
 			  gameover = true;
 			  return;
 		 }
-		 stopGameLoop();
+		 stopGameLLoop();
 		 
-		 ball.x = canvas.width / 2;
-		 ball.y = canvas.height / 2;
-		 ball.dx *= -1;
-		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+		 Balls.x = Canvaas.width / 2;
+		 Balls.y = Canvaas.height / 2;
+		 Balls.dx *= -1;
+		 Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
+		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 		 countdownBeforeRound(() => {
 			gameActive = true;
-			setbackoriginalvalues();
-			restartRound();
-			restartGame();
+			backtooriginalvalues();
+			restartingRound();
+			restartingGame();
 		 });
 		 return; 
 	}
-	if (ball.x + ball.radius >= canvas.width) {
+	if (Balls.x + Balls.radius >= Canvaas.width) {
 		 player1.score++;
 		 console.log("wasd has scored: " + player1.score);
 		 if (player1.score === 2){
 			  gameover = true;
 			  return;
 		 }
-		 stopGameLoop();
-		 ball.x = canvas.width / 2;
-		 ball.y = canvas.height / 2;
-		 ball.dx *= -1;
-		 ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
-		 ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+		 stopGameLLoop();
+		 Balls.x = Canvaas.width / 2;
+		 Balls.y = Canvaas.height / 2;
+		 Balls.dx *= -1;
+		 Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
+		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 		 countdownBeforeRound(() => {
 			 gameActive = true;
-			 setbackoriginalvalues();
-			 restartRound();
-			 restartGame();
+			 backtooriginalvalues();
+			 restartingRound();
+			 restartingGame();
 			});
 		 return; 
 	}
 }
 let gameover = false;
 
-function    setbackoriginalvalues(){
-	wasdPaddle.width = canvas.width * 0.01;
-	ARPaddle.width = canvas.width * 0.01;
-	wasdPaddle.height = canvas.height * 0.1;
-	ARPaddle.height = canvas.height * 0.1;
-	wasdPaddle.y = canvas.height / 2 - wasdPaddle.height / 2;
-	ARPaddle.y = canvas.height / 2 - wasdPaddle.height / 2;
+function    backtooriginalvalues(){
+	wasdPaddle.width = Canvaas.width * 0.01;
+	ARPaddle.width = Canvaas.width * 0.01;
+	wasdPaddle.height = Canvaas.height * 0.1;
+	ARPaddle.height = Canvaas.height * 0.1;
+	wasdPaddle.y = Canvaas.height / 2 - wasdPaddle.height / 2;
+	ARPaddle.y = Canvaas.height / 2 - wasdPaddle.height / 2;
 }
-function getRandomNumber() {
+function generateARandomNumber() {
 	const randomNumber = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
 	return randomNumber;
 }
 
-let storedRandomNumber = getRandomNumber();
+let reallyRandom = generateARandomNumber();
 
 function gameLLoop() {
 	if (!gameActive) {
 		 return;
 	}
-	if (!ResetTime)
-		 ResetTime = Date.now();
-	isingame = true;
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
+	if (!ResetedTime)
+		 ResetedTime = Date.now();
+	iscurrentlyingame = true;
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	elapsedTime = Math.floor((Date.now() - ResetedTime) / 1000);
 	if (elapsedTime === 1) {
-		Attack.visible = true;
-		Attack.y = canvas.height - Attack.height;
-		randomizeAttackX();
+		Attacking.visible = true;
+		Attacking.y = Canvaas.height - Attacking.height;
+		randomAttackX();
 	}
-	if (Attack.visible)
-		 moveAttackbuff();
-	if (AttackCount === 2)
-		 Attack.visible = false;
+	if (Attacking.visible)
+		 movingAttackbuff();
+	if (AttackingCount === 2)
+		 Attacking.visible = false;
 	if (elapsedTime === 4) {
-		buff.visible = true;
-		buff.y = canvas.height - buff.height;
-		randomizeBuffX();
+		Powerup.visible = true;
+		Powerup.y = Canvaas.height - Powerup.height;
+		randomBuffX();
 	}
-	if (buff.visible) {
-		movebuff();
+	if (Powerup.visible) {
+		movingbuff();
 	}
-	if (crossCount === 2)
-		buff.visible = false;
+	if (SpeedCount === 2)
+		Powerup.visible = false;
 	if (elapsedTime === 5) {
-		PaddleBigger.visible = true;
-		PaddleBigger.y = canvas.height - PaddleBigger.height;
-		randomizePadBigX();
+		BiggerPaddle.visible = true;
+		BiggerPaddle.y = Canvaas.height - BiggerPaddle.height;
+		randomPadBigX();
   }
-  if (PaddleBigger.visible) {
-		movePadBigbuff();
+  if (BiggerPaddle.visible) {
+		movingPadBigbuff();
   }
-  if (BigPadCount === 2)
-		PaddleBigger.visible = false;
-	drawPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
-	drawPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
-	drawBall(ball.x, ball.y, ball.radius);
+  if (BiggerPadCount === 2)
+		BiggerPaddle.visible = false;
+	drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+	drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
+	drawingBall(Balls.x, Balls.y, Balls.radius);
 	movewasdPaddle();
 	moveARPaddle();
-	didItHit();
-	didAiHit();
+	didIHit();
+	didArrowsiHit();
 	drawARBlock();
 	drawwasdBlock();
-	moveBlock();
-	moveARBlock();
-	drawSpeedBuff();
-	drawAttackBuff();
-	drawPadBigBuff();
-	moveBall();
-	drawScoreBoard();
-	drawTimer();
-	gameOverScreen();
+	shootingBlock();
+	shootingARBlock();
+	drawingSpeedBuff();
+	drawingAttackBuff();
+	drawingPadBigBuff();
+	movingBall();
+	drawScore();
+	drawingTimer();
+	gameOScreen();
 	let frameID = requestAnimationFrame(() => gameLLoop());
-	animationFrameIDs.push(frameID);
+	animationFramesIDs.push(frameID);
 	if (gameover) {
-		 console.log(animationFrameIDs);
-		 setbackoriginalvalues();
+		 console.log(animationFramesIDs);
+		 backtooriginalvalues();
 		 gameActive = false;
 		 return;
 	}
 }
 
 document.getElementById('pong-local').addEventListener('click', () => {
-	menu.style.display = 'none';
+	menuu.style.display = 'none';
 	gameActive = true;
 	gameLLoop();
 })
