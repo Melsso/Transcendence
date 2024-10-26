@@ -1,8 +1,8 @@
-const inv_menu = document.getElementById('inv-menu');
-const ai_menu = document.getElementById('ai-menu');
-const Instructions = document.getElementById('Instructions-box');
+// const inv_menu = document.getElementById('inv-menu');
+// const ai_menu = document.getElementById('ai-menu');
+// const Instructions = document.getElementById('Instructions-box');
 const Tlobby = document.getElementById('pong-tournament');
-const menu = document.getElementById('menuuu');
+// const menu = document.getElementById('menuuu');
 const tourniLobby = document.getElementById('tournament');
 let lobbysettings;
 const gamer2Template = {
@@ -13,7 +13,7 @@ const gamer2Template = {
 	level: '7.34'
 };
 
-const gamers = Array(1).fill().map(() => ({ ...gamer2Template }));
+const gamers = Array(8).fill().map(() => ({ ...gamer2Template }));
 
 document.getElementById('PONG-button').addEventListener('click', function () {
 	const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
@@ -33,10 +33,11 @@ tourniLobby.addEventListener('click', function () {
 	Tlobby.style.display = 'block';
 	displayTourniLobby(lobbysettings, gamers);
 });
+let readyPlayers = 0;
+const Tcontainer = document.getElementById('tournament-cards');
+const lobbyNameElement = document.getElementById('tournament-name');
 
 function displayTourniLobby(lobbysettings, TourniPlayers) {
-	const Tcontainer = document.getElementById('tournament-cards');
-	const lobbyNameElement = document.getElementById('tournament-name');
 	lobbyNameElement.innerHTML = `
 		<div class="map">Map:   ${lobbysettings.map}</div>
 		<h1>Tournament</h1>
@@ -48,7 +49,6 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 		let playerContainer = document.createElement('div');
 		playerContainer.classList.add('pong-tournament-players');
 		
-		// If player data is available, fill it in; otherwise, create an empty slot
 		if (player) {
 			 playerContainer.id = player.username;
 
@@ -74,12 +74,15 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 
 			 playerButton.addEventListener('click', function () {
 				  if (playerButton.classList.contains('ready')) {
+						readyPlayers--;
 						playerButton.classList.remove('ready');
 						playerButton.textContent = 'Not Ready';
 				  } else {
+						readyPlayers++;
 						playerButton.classList.add('ready');
 						playerButton.textContent = 'Ready!';
 				  }
+				  checkReadyStatus(TourniPlayers);
 			 });
 
 			 avatarContainer.appendChild(playerAvatar);
@@ -112,7 +115,6 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 				let overlay = 'modal-overlay' + i;
 				let docs = document.getElementById(overlay);
 				doc.style.display = 'block';
-				// docs.style.display = 'block';
 			})
 
 			let modalContent = document.createElement('div');
@@ -147,7 +149,6 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 			let submitButton = document.createElement('button');
 			submitButton.className = 'modal-btn';
 			submitButton.textContent = 'Submit';
-			// submitButton.addEventListener('click', submitInvite);
 			
 			buttonContainer.appendChild(closeButton);
 			buttonContainer.appendChild(submitButton);
@@ -168,6 +169,139 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 		}
 
 		Tcontainer.appendChild(playerContainer);
-  }
-  
+	}
+	
+}
+function checkReadyStatus(TourniPlayers) {
+	console.log(readyPlayers);
+	if (readyPlayers === 1) {
+		Tcontainer.style.display = 'none';
+		lobbyNameElement.style.display = 'none';
+		generateTournamentBracket(TourniPlayers);
+	}
+};
+
+function generateTournamentBracket(TourniPlayers) {
+	let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
+	let matchups = [];
+	
+	
+	for (let i = 0; i < 8; i += 2) {
+		 matchups.push([shuffledPlayers[i] || { username: '?' }, shuffledPlayers[i + 1] || { username: '?' }]);
+	}
+
+	const bracketContainer = document.getElementById('bracket-container');
+	bracketContainer.innerHTML = '';
+
+	const rounds = [
+		 matchups,                     
+		
+		
+	];
+
+	
+	rounds.forEach((round) => {
+		 let roundDiv = document.createElement('div');
+		 roundDiv.classList.add('bracket-round');
+
+		 round.forEach((matchup) => {
+			  let matchupDiv = document.createElement('div');
+			  matchupDiv.classList.add('bracket-matchup');
+
+			  let player1Div = document.createElement('div');
+			  player1Div.classList.add('bracket-player');
+			  player1Div.textContent = matchup[0] ? matchup[0].username : '?';
+			  if (!matchup[0] || matchup[0].username === '?') player1Div.classList.add('placeholder');
+
+			  
+			  let versusDiv = document.createElement('div');
+			  versusDiv.classList.add('bracket-versus');
+			  versusDiv.textContent = 'vs';
+
+			  
+			  let player2Div = document.createElement('div');
+			  player2Div.classList.add('bracket-player');
+			  player2Div.textContent = matchup[1] ? matchup[1].username : '?';
+			  if (!matchup[1] || matchup[1].username === '?') player2Div.classList.add('placeholder');
+
+			  matchupDiv.appendChild(player1Div);
+			  matchupDiv.appendChild(versusDiv);
+			  matchupDiv.appendChild(player2Div);
+
+			  roundDiv.appendChild(matchupDiv);
+		 });
+
+		 bracketContainer.appendChild(roundDiv);
+	});
+
+	let rounds2 = [
+		 Array(2).fill([null, null]), 
+	];
+	rounds2.forEach(round => {
+		let roundDiv = document.createElement('div');
+		roundDiv.classList.add('bracket-round-2');
+		 round.forEach(matchup => {
+			let matchupDiv = document.createElement('div');
+			  matchupDiv.classList.add('bracket-matchup');
+
+			  let player1Div = document.createElement('div');
+			  player1Div.classList.add('bracket-player');
+			  player1Div.textContent = matchup[0] ? matchup[0].username : '?';
+			  if (!matchup[0] || matchup[0].username === '?') player1Div.classList.add('placeholder');
+
+			  
+			  let versusDiv = document.createElement('div');
+			  versusDiv.classList.add('bracket-versus');
+			  versusDiv.textContent = 'vs';
+
+			  
+			  let player2Div = document.createElement('div');
+			  player2Div.classList.add('bracket-player');
+			  player2Div.textContent = matchup[1] ? matchup[1].username : '?';
+			  if (!matchup[1] || matchup[1].username === '?') player2Div.classList.add('placeholder');
+			  matchupDiv.appendChild(player1Div);
+			  matchupDiv.appendChild(versusDiv);
+			  matchupDiv.appendChild(player2Div);
+
+			  roundDiv.appendChild(matchupDiv);
+		 });
+		 bracketContainer.appendChild(roundDiv);
+	});
+
+	let rounds3 = [
+		[[null, null]], 
+  ];
+  let roundDiv = document.createElement('div');
+		roundDiv.classList.add('bracket-round-3');
+		rounds3.forEach(matchup => {
+			let matchupDiv = document.createElement('div');
+			matchupDiv.classList.add('bracket-matchup');
+	  
+			
+			let player1Div = document.createElement('div');
+			player1Div.classList.add('bracket-player');
+			player1Div.textContent = matchup[0] && matchup[0][0] ? matchup[0][0].username : '?';
+			if (!matchup[0] || matchup[0][0] === null) player1Div.classList.add('placeholder');
+	  
+			
+			let versusDiv = document.createElement('div');
+			versusDiv.classList.add('bracket-versus');
+			versusDiv.textContent = 'vs';
+	  
+			
+			let player2Div = document.createElement('div');
+			player2Div.classList.add('bracket-player');
+			player2Div.textContent = matchup[0] && matchup[0][1] ? matchup[0][1].username : '?';
+			if (!matchup[0] || matchup[0][1] === null) player2Div.classList.add('placeholder');
+	  
+			
+			matchupDiv.appendChild(player1Div);
+			matchupDiv.appendChild(versusDiv);
+			matchupDiv.appendChild(player2Div);
+	  
+			
+			roundDiv.appendChild(matchupDiv);
+	  });
+	  
+		bracketContainer.appendChild(roundDiv);
 }
