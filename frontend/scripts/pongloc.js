@@ -6,7 +6,7 @@ const menuu = document.getElementById('menuuu');
 const ins_returnn = document.getElementById('return-to-menu-ins');
 const gameContainerr = document.querySelector('.gameContainer');
 const gameModall = document.getElementById('gameModal');
-
+let sett = null;
 let elapsedTime;
 let el;
 let ppaddleWidth;
@@ -517,7 +517,7 @@ function drawingTimer() {
 	ctxx.fillText(`${elapsedTime / 1000}`, Canvaas.width /2, 30);
 }
 function gameOScreen(){
-	if (player1.score >= 2){
+	if (player1.score >= 7){
 		GameOverscreen = true;
 		showGameOScreen();
 		ctxx.font = '50px "PixelFont", sans-serif';
@@ -533,7 +533,7 @@ function gameOScreen(){
 		gameover = true;
 		iscurrentlyingame = false;
 	}
-	else if (player2.score >= 2){
+	else if (player2.score >= 7){
 		showGameOScreen();
 		GameOverscreen = true;
 		ctxx.font = '50px "PixelFont", sans-serif';
@@ -786,7 +786,7 @@ function anotherRound(){
 	const speedFactor = 1 + Math.floor(elapsedTime / speedIncrease) * speedInc;
 	if (Balls.x - Balls.radius <= 0) {
 		 player2.score++;
-		 if (player2.score === 2){
+		 if (player2.score === 7){
 			  gameover = true;
 			  return;
 		 }
@@ -807,7 +807,7 @@ function anotherRound(){
 	}
 	if (Balls.x + Balls.radius >= Canvaas.width) {
 		 player1.score++;
-		 if (player1.score === 2){
+		 if (player1.score === 7){
 			  gameover = true;
 			  return;
 		 }
@@ -843,7 +843,11 @@ function generateARandomNumber() {
 
 let reallyRandom = generateARandomNumber();
 
-function gameLLoop() {
+function gameLLoop(settings) {
+	if (settings === null) {
+		settings.mode = 'Default Mode';
+		settings.map = 'Map 1';
+	}
 	if (!gameActive) {
 		 return;
 	}
@@ -852,49 +856,53 @@ function gameLLoop() {
 	iscurrentlyingame = true;
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	elapsedTime = Math.floor((Date.now() - ResetedTime) / 1000);
-	if (elapsedTime === 1) {
-		Attacking.visible = true;
-		Attacking.y = Canvaas.height - Attacking.height;
-		randomAttackX();
+	if (sett.mode === "Buff Mode") {
+		if (elapsedTime === reallyRandom) {
+			Attacking.visible = true;
+			Attacking.y = Canvaas.height - Attacking.height;
+			randomAttackX();
+		}
+		if (Attacking.visible)
+			 movingAttackbuff();
+		if (AttackingCount === 2)
+			 Attacking.visible = false;
+		if (elapsedTime === reallyRandom + 10) {
+			Powerup.visible = true;
+			Powerup.y = Canvaas.height - Powerup.height;
+			randomBuffX();
+		}
+		if (Powerup.visible) {
+			movingbuff();
+		}
+		if (SpeedCount === 2)
+			Powerup.visible = false;
+		if (elapsedTime === reallyRandom + 20) {
+			BiggerPaddle.visible = true;
+			BiggerPaddle.y = Canvaas.height - BiggerPaddle.height;
+			randomPadBigX();
+	  }
+	  if (BiggerPaddle.visible) {
+			movingPadBigbuff();
+	  }
+	  if (BiggerPadCount === 2)
+			BiggerPaddle.visible = false;
 	}
-	if (Attacking.visible)
-		 movingAttackbuff();
-	if (AttackingCount === 2)
-		 Attacking.visible = false;
-	if (elapsedTime === 4) {
-		Powerup.visible = true;
-		Powerup.y = Canvaas.height - Powerup.height;
-		randomBuffX();
-	}
-	if (Powerup.visible) {
-		movingbuff();
-	}
-	if (SpeedCount === 2)
-		Powerup.visible = false;
-	if (elapsedTime === 5) {
-		BiggerPaddle.visible = true;
-		BiggerPaddle.y = Canvaas.height - BiggerPaddle.height;
-		randomPadBigX();
-  }
-  if (BiggerPaddle.visible) {
-		movingPadBigbuff();
-  }
-  if (BiggerPadCount === 2)
-		BiggerPaddle.visible = false;
 	drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
 	drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
 	drawingBall(Balls.x, Balls.y, Balls.radius);
 	movewasdPaddle();
 	moveARPaddle();
-	didIHit();
-	didArrowsiHit();
-	drawARBlock();
-	drawwasdBlock();
-	shootingBlock();
-	shootingARBlock();
-	drawingSpeedBuff();
-	drawingAttackBuff();
-	drawingPadBigBuff();
+	if (sett.mode === 'Buff Mode') {
+		didIHit();
+		didArrowsiHit();
+		drawARBlock();
+		drawwasdBlock();
+		shootingBlock();
+		shootingARBlock();
+		drawingSpeedBuff();
+		drawingAttackBuff();
+		drawingPadBigBuff();
+	}
 	movingBall();
 	drawScore();
 	drawingTimer();
@@ -911,5 +919,15 @@ function gameLLoop() {
 document.getElementById('pong-local').addEventListener('click', () => {
 	menuu.style.display = 'none';
 	gameActive = true;
-	gameLLoop();
+	gameLLoop(sett);
 })
+
+document.getElementById('PONG-button').addEventListener('click', function () {
+	const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
+	const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
+	sett = {
+		 mode: gameMode,
+		 map: selectedMap
+	};
+	
+});
