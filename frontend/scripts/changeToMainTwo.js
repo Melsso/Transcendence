@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			window.userData.pong_socket = null;
 			window.userData.r_name = null;
 		}
-		tourniLobby.style.display = 'none';
+		// tourniLobby.style.display = 'none';
 		inv_menu.style.display = 'none';
 		ai_menu.style.display = 'none';
 		Instructions.style.display = 'none';

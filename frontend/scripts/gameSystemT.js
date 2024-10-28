@@ -1,8 +1,10 @@
-// const inv_menu = document.getElementById('inv-menu');
-// const ai_menu = document.getElementById('ai-menu');
-// const Instructions = document.getElementById('Instructions-box');
+const baseUrl = process.env.ACTIVE_HOST;
+
+const inv_menu = document.getElementById('inv-menu');
+const ai_menu = document.getElementById('ai-menu');
+const Instructions = document.getElementById('Instructions-box');
 const Tlobby = document.getElementById('pong-tournament');
-// const menu = document.getElementById('menuuu');
+const menu = document.getElementById('menuuu');
 const tourniLobby = document.getElementById('tournament');
 let lobbysettings;
 const gamer2Template = {
@@ -25,14 +27,90 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 	
 });
 
-tourniLobby.addEventListener('click', function () {
-	menu.style.display = 'none';
-	ai_menu.style.display = 'none';
-	inv_menu.style.display = 'none';
-	Instructions.style.display = 'none';
-	Tlobby.style.display = 'block';
-	displayTourniLobby(lobbysettings, gamers);
+async function getTournamentName() {
+	const access_token = localStorage.getItem('accessToken');
+    if (!access_token) {
+        Notification();
+        return ;
+    }
+
+    const url = baseUrl + 'api/games/create-tournament-room/';
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse);
+    }
+    const data = await response.json();
+    return data;
+}
+
+function startTournamentSocket() {
+	window.userData.pong_socket.onopen = function(e) {
+		console.log("TOURNAMENTSOCKET-ON");
+	}
+	window.userData.pong_socket.onclose = function(e) {
+		console.log("TOURNAMENTSOCKET-OFF");
+	}
+	window.userData.pong_socket.onmessage = function(e) {
+		const data = JSON.parse(e.data);
+		if (data.action == 'update_game_state') {
+			gameState = data.gameState;
+		} else if (data.action === 'current_players') {
+			// adjust some styling here probably
+			menu.style.display = 'none';
+			ai_menu.style.display = 'none';
+			inv_menu.style.display = 'none';
+			Instructions.style.display = 'none';
+			Tlobby.style.display = 'block';
+			console.log('Current players in the room: ', data.players);
+			displayTourniLobby(lobbysettings, data.players);
+		}
+	}
+}
+
+tourniLobby.addEventListener('click', async function (event) {
+	event.preventDefault();
+	// menu.style.display = 'none';
+	// ai_menu.style.display = 'none';
+	// inv_menu.style.display = 'none';
+	// Instructions.style.display = 'none';
+	// Tlobby.style.display = 'block';
+	const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+		Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+        return ;
+    }
+	try {
+		if (window.userData.pong_socket) {
+			window.userData.pong_socket.close();
+			window.userData.pong_socket = null;
+			window.userData.r_name = null;
+		}
+		const result = await getTournamentName();
+		const u = new URL(baseUrl);
+		window.userData.pong_socket = new WebSocket(`ws://${u.host}/ws/tournament/${result['tournament_room_name']}/?token=${accessToken}`);
+		window.userData.r_name = result.tournament_room_name;
+		// load the socket or smth
+		startTournamentSocket();
+	} catch(error) {
+		Notification('Game Action', `Failed To Create A Tournament: ${error}`, 2, 'alert');
+		window.userData.r_name = null;
+        if (window.userData.pong_socket) {
+            window.userData.pong_socket.close();
+        }
+        window.userData.pong_socket = null;
+        return ;
+	}
+	// displayTourniLobby(lobbysettings, gamers);
 });
+
 let readyPlayers = 0;
 const Tcontainer = document.getElementById('tournament-cards');
 const lobbyNameElement = document.getElementById('tournament-name');
