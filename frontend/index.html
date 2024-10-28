@@ -395,7 +395,19 @@
                     <div class="pong-players-2" id="tournament-cards">
                         
                     </div>
-                    <div id="bracket-container" class="bracket-container"></div>
+                    <div id="bracket-container" class="bracket-container" style="display:none;">
+                        <div id="matchupCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner"></div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#matchupCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#matchupCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>  
                 <div class="ai-menu" id="ai-menu">
                     <button type="button" class="btn btn-primary btn-play" id="PongEasy">Easy</button>
@@ -572,12 +584,12 @@
             </div>
         </div>
     </div>
-    <script src="scripts/main.js" type="module"></script>
-    <script src="dist/bundle.js" type="module"></script>
+    <!-- <script src="scripts/main.js" type="module"></script>
+    <script src="dist/bundle.js" type="module"></script> -->
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="scripts/pong.js"></script>
-    <script src="scripts/pongUI.js"></script> -->
+    <script src="scripts/pong.js"></script>
+    <script src="scripts/pongUI.js"></script>
     <!-- <script src="scripts/pongloc.js"></script> -->
-    <!-- <script src="scripts/tmp.js"></script> -->
+    <script src="scripts/gameSystemT.js"></script>
     <!-- <script src="scripts/BackgroundAnimation.js"></script> -->
 </html>

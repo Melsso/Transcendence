@@ -1,10 +1,11 @@
-const baseUrl = process.env.ACTIVE_HOST;
+// const baseUrl = process.env.ACTIVE_HOST;
 
-const inv_menu = document.getElementById('inv-menu');
-const ai_menu = document.getElementById('ai-menu');
-const Instructions = document.getElementById('Instructions-box');
+// const inv_menu = document.getElementById('inv-menu');
+// const ai_menu = document.getElementById('ai-menu');
+// const Instructions = document.getElementById('Instructions-box');
 const Tlobby = document.getElementById('pong-tournament');
-const menu = document.getElementById('menuuu');
+// const menu = document.getElementById('menuuu');
+const  carousel = document.getElementById('bracket-container');
 const tourniLobby = document.getElementById('tournament');
 let lobbysettings;
 const gamer2Template = {
@@ -27,89 +28,89 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 	
 });
 
-async function getTournamentName() {
-	const access_token = localStorage.getItem('accessToken');
-    if (!access_token) {
-        Notification();
-        return ;
-    }
+// async function getTournamentName() {
+// 	const access_token = localStorage.getItem('accessToken');
+//     if (!access_token) {
+//         Notification();
+//         return ;
+//     }
 
-    const url = baseUrl + 'api/games/create-tournament-room/';
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-            'Content-Type': 'application/json',
-        },
-    });
+//     const url = baseUrl + 'api/games/create-tournament-room/';
+//     const response = await fetch(url, {
+//         method: 'GET',
+//         headers: {
+//             'Authorization': `Bearer ${access_token}`,
+//             'Content-Type': 'application/json',
+//         },
+//     });
 
-    if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse);
-    }
-    const data = await response.json();
-    return data;
-}
+//     if (!response.ok) {
+//         const errorResponse = await response.json();
+//         throw new Error(errorResponse);
+//     }
+//     const data = await response.json();
+//     return data;
+// }
 
-function startTournamentSocket() {
-	window.userData.pong_socket.onopen = function(e) {
-		console.log("TOURNAMENTSOCKET-ON");
-	}
-	window.userData.pong_socket.onclose = function(e) {
-		console.log("TOURNAMENTSOCKET-OFF");
-		Tlobby.style.display = 'none';
-	}
-	window.userData.pong_socket.onmessage = function(e) {
-		const data = JSON.parse(e.data);
-		if (data.action == 'update_game_state') {
-			gameState = data.gameState;
-		} else if (data.action === 'current_players') {
-			// adjust some styling here probably
-			menu.style.display = 'none';
-			ai_menu.style.display = 'none';
-			inv_menu.style.display = 'none';
-			Instructions.style.display = 'none';
-			Tlobby.style.display = 'block';
-			console.log('Current players in the room: ', data.players);
-			displayTourniLobby(lobbysettings, data.players);
-		}
-	}
-}
+// function startTournamentSocket() {
+// 	window.userData.pong_socket.onopen = function(e) {
+// 		console.log("TOURNAMENTSOCKET-ON");
+// 	}
+// 	window.userData.pong_socket.onclose = function(e) {
+// 		console.log("TOURNAMENTSOCKET-OFF");
+// 		Tlobby.style.display = 'none';
+// 	}
+// 	window.userData.pong_socket.onmessage = function(e) {
+// 		const data = JSON.parse(e.data);
+// 		if (data.action == 'update_game_state') {
+// 			gameState = data.gameState;
+// 		} else if (data.action === 'current_players') {
+// 			// adjust some styling here probably
+// 			menu.style.display = 'none';
+// 			ai_menu.style.display = 'none';
+// 			inv_menu.style.display = 'none';
+// 			Instructions.style.display = 'none';
+// 			Tlobby.style.display = 'block';
+// 			console.log('Current players in the room: ', data.players);
+// 			displayTourniLobby(lobbysettings, data.players);
+// 		}
+// 	}
+// }
 
 tourniLobby.addEventListener('click', async function (event) {
 	event.preventDefault();
-	// menu.style.display = 'none';
-	// ai_menu.style.display = 'none';
-	// inv_menu.style.display = 'none';
-	// Instructions.style.display = 'none';
-	// Tlobby.style.display = 'block';
-	const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) {
-		Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
-        return ;
-    }
-	try {
-		if (window.userData.pong_socket) {
-			window.userData.pong_socket.close();
-			window.userData.pong_socket = null;
-			window.userData.r_name = null;
-		}
-		const result = await getTournamentName();
-		const u = new URL(baseUrl);
-		window.userData.pong_socket = new WebSocket(`ws://${u.host}/ws/tournament/${result['tournament_room_name']}/?token=${accessToken}`);
-		window.userData.r_name = result.tournament_room_name;
-		// load the socket or smth
-		startTournamentSocket();
-	} catch(error) {
-		Notification('Game Action', `Failed To Create A Tournament: ${error}`, 2, 'alert');
-		window.userData.r_name = null;
-        if (window.userData.pong_socket) {
-            window.userData.pong_socket.close();
-        }
-        window.userData.pong_socket = null;
-        return ;
-	}
-	// displayTourniLobby(lobbysettings, gamers);
+	menu.style.display = 'none';
+	ai_menu.style.display = 'none';
+	inv_menu.style.display = 'none';
+	Instructions.style.display = 'none';
+	Tlobby.style.display = 'block';
+	// const accessToken = localStorage.getItem('accessToken');
+   //  if (!accessToken) {
+	// 	Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+   //      return ;
+   //  }
+	// try {
+	// 	if (window.userData.pong_socket) {
+	// 		window.userData.pong_socket.close();
+	// 		window.userData.pong_socket = null;
+	// 		window.userData.r_name = null;
+	// 	}
+	// 	const result = await getTournamentName();
+	// 	const u = new URL(baseUrl);
+	// 	window.userData.pong_socket = new WebSocket(`ws://${u.host}/ws/tournament/${result['tournament_room_name']}/?token=${accessToken}`);
+	// 	window.userData.r_name = result.tournament_room_name;
+	// 	// load the socket or smth
+	// 	startTournamentSocket();
+	// } catch(error) {
+	// 	Notification('Game Action', `Failed To Create A Tournament: ${error}`, 2, 'alert');
+	// 	window.userData.r_name = null;
+   //      if (window.userData.pong_socket) {
+   //          window.userData.pong_socket.close();
+   //      }
+   //      window.userData.pong_socket = null;
+   //      return ;
+	// }
+	displayTourniLobby(lobbysettings, gamers);
 });
 
 let readyPlayers = 0;
@@ -256,131 +257,59 @@ function checkReadyStatus(TourniPlayers) {
 	if (readyPlayers === 1) {
 		Tcontainer.style.display = 'none';
 		lobbyNameElement.style.display = 'none';
-		generateTournamentBracket(TourniPlayers);
+		carousel.style.display = 'flex';
+		generateTournamentCarousel(TourniPlayers);
 	}
 };
 
-function generateTournamentBracket(TourniPlayers) {
+function generateTournamentCarousel(TourniPlayers) {
 	let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
 	let matchups = [];
 	
-	
 	for (let i = 0; i < 8; i += 2) {
-		 matchups.push([shuffledPlayers[i] || { username: '?' }, shuffledPlayers[i + 1] || { username: '?' }]);
+		 matchups.push([
+			  shuffledPlayers[i] || { username: '?', avatar: 'placeholder.png' }, 
+			  shuffledPlayers[i + 1] || { username: '?', avatar: 'placeholder.png' }
+		 ]);
 	}
 
-	const bracketContainer = document.getElementById('bracket-container');
-	bracketContainer.innerHTML = '';
+	const carouselInner = document.querySelector('#matchupCarousel .carousel-inner');
+	carouselInner.innerHTML = '';
 
-	const rounds = [
-		 matchups,                     
-		
-		
-	];
+	matchups.forEach((matchup, index) => {
+		 const carouselItem = document.createElement('div');
+		 carouselItem.classList.add('carousel-item');
+		 if (index === 0) carouselItem.classList.add('active'); 
 
-	
-	rounds.forEach((round) => {
-		 let roundDiv = document.createElement('div');
-		 roundDiv.classList.add('bracket-round');
+		 const matchupContainer = document.createElement('div');
+		 matchupContainer.classList.add('matchup-container', 'd-flex', 'justify-content-around', 'align-items-center', 'p-4');
 
-		 round.forEach((matchup) => {
-			  let matchupDiv = document.createElement('div');
-			  matchupDiv.classList.add('bracket-matchup');
+		 const player1Div = document.createElement('div');
+		 player1Div.classList.add('player');
+		 player1Div.innerHTML = `
+			  <img src="${matchup[0].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 1 Avatar">
+			  <p class="username">${matchup[0].username}</p>
+		 `;
 
-			  let player1Div = document.createElement('div');
-			  player1Div.classList.add('bracket-player');
-			  player1Div.textContent = matchup[0] ? matchup[0].username : '?';
-			  if (!matchup[0] || matchup[0].username === '?') player1Div.classList.add('placeholder');
+		 const player2Div = document.createElement('div');
+		 player2Div.classList.add('player');
+		 player2Div.innerHTML = `
+			  <img src="${matchup[1].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 2 Avatar">
+			  <p class="username">${matchup[1].username}</p>
+		 `;
 
-			  
-			  let versusDiv = document.createElement('div');
-			  versusDiv.classList.add('bracket-versus');
-			  versusDiv.textContent = 'vs';
 
-			  
-			  let player2Div = document.createElement('div');
-			  player2Div.classList.add('bracket-player');
-			  player2Div.textContent = matchup[1] ? matchup[1].username : '?';
-			  if (!matchup[1] || matchup[1].username === '?') player2Div.classList.add('placeholder');
+		 matchupContainer.appendChild(player1Div);
+		 
+		 const versusDiv = document.createElement('div');
+		 versusDiv.classList.add('versus');
+		 versusDiv.innerHTML = '<h3>VS</h3>';
+		 matchupContainer.appendChild(versusDiv);
+		 
+		 matchupContainer.appendChild(player2Div);
 
-			  matchupDiv.appendChild(player1Div);
-			  matchupDiv.appendChild(versusDiv);
-			  matchupDiv.appendChild(player2Div);
-
-			  roundDiv.appendChild(matchupDiv);
-		 });
-
-		 bracketContainer.appendChild(roundDiv);
+		 carouselItem.appendChild(matchupContainer);
+		 carouselInner.appendChild(carouselItem);
 	});
-
-	let rounds2 = [
-		 Array(2).fill([null, null]), 
-	];
-	rounds2.forEach(round => {
-		let roundDiv = document.createElement('div');
-		roundDiv.classList.add('bracket-round-2');
-		 round.forEach(matchup => {
-			let matchupDiv = document.createElement('div');
-			  matchupDiv.classList.add('bracket-matchup');
-
-			  let player1Div = document.createElement('div');
-			  player1Div.classList.add('bracket-player');
-			  player1Div.textContent = matchup[0] ? matchup[0].username : '?';
-			  if (!matchup[0] || matchup[0].username === '?') player1Div.classList.add('placeholder');
-
-			  
-			  let versusDiv = document.createElement('div');
-			  versusDiv.classList.add('bracket-versus');
-			  versusDiv.textContent = 'vs';
-
-			  
-			  let player2Div = document.createElement('div');
-			  player2Div.classList.add('bracket-player');
-			  player2Div.textContent = matchup[1] ? matchup[1].username : '?';
-			  if (!matchup[1] || matchup[1].username === '?') player2Div.classList.add('placeholder');
-			  matchupDiv.appendChild(player1Div);
-			  matchupDiv.appendChild(versusDiv);
-			  matchupDiv.appendChild(player2Div);
-
-			  roundDiv.appendChild(matchupDiv);
-		 });
-		 bracketContainer.appendChild(roundDiv);
-	});
-
-	let rounds3 = [
-		[[null, null]], 
-  ];
-  let roundDiv = document.createElement('div');
-		roundDiv.classList.add('bracket-round-3');
-		rounds3.forEach(matchup => {
-			let matchupDiv = document.createElement('div');
-			matchupDiv.classList.add('bracket-matchup');
-	  
-			
-			let player1Div = document.createElement('div');
-			player1Div.classList.add('bracket-player');
-			player1Div.textContent = matchup[0] && matchup[0][0] ? matchup[0][0].username : '?';
-			if (!matchup[0] || matchup[0][0] === null) player1Div.classList.add('placeholder');
-	  
-			
-			let versusDiv = document.createElement('div');
-			versusDiv.classList.add('bracket-versus');
-			versusDiv.textContent = 'vs';
-	  
-			
-			let player2Div = document.createElement('div');
-			player2Div.classList.add('bracket-player');
-			player2Div.textContent = matchup[0] && matchup[0][1] ? matchup[0][1].username : '?';
-			if (!matchup[0] || matchup[0][1] === null) player2Div.classList.add('placeholder');
-	  
-			
-			matchupDiv.appendChild(player1Div);
-			matchupDiv.appendChild(versusDiv);
-			matchupDiv.appendChild(player2Div);
-	  
-			
-			roundDiv.appendChild(matchupDiv);
-	  });
-	  
-		bracketContainer.appendChild(roundDiv);
 }
+
