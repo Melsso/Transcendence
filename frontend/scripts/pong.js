@@ -17,6 +17,16 @@ const ins_return = document.getElementById('return-to-menu-ins');
 let paddleWidth;
 let paddleHeight;
 let ballRadius;
+
+document.getElementById('PONG-button').addEventListener('click', function () {
+    const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
+    const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
+    Settings = {
+        mode: gameMode,
+        map: selectedMap
+    };
+});
+
 window.window.elapsedTime;
 window.gameActive = false;
 window.flag = 0;
@@ -135,6 +145,7 @@ function countdownBeforeRound(callback) {
     const intervalID = setInterval(() => {
  
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawMap();
         drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
         drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
         drawBall(ball.x, ball.y, ball.radius);
@@ -163,6 +174,7 @@ function restartGame(difficulty) {
     if (window.elapsedTime < ShortestRound)
         ShortestRound = window.elapsedTime;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMap();
     if (wasHit === true){
         aiPaddle.height *= 2;
         wasHit = false;
@@ -407,6 +419,156 @@ function calculateAccuracy(){
 let player1AttackAcc = null; 
 window.animationFrameIDs = [];
 
+const treeColors = [
+    '#0f2e0f',
+    '#1b3d1b',
+    '#2e4d2f',
+    '#4c6f4c',
+    '#7a9b7a'
+];
+
+const trees = [
+    { x: canvas.width * 0.9, height: canvas.height * 0.8, width: canvas.width * 0.04, colorIndex: 0 },
+    { x: canvas.width * 0.75, height: canvas.height * 0.76, width: canvas.width * 0.02, colorIndex: 1 },
+    { x: canvas.width * 0.64, height: canvas.height, width: canvas.width * 0.03, colorIndex: 2},
+    { x: canvas.width * 0.52, height: canvas.height * 0.84, width: canvas.width * 0.04, colorIndex: 1},
+    { x: canvas.width * 0.4, height: canvas.height, width: canvas.width * 0.05, colorIndex: 2},
+    { x: canvas.width * 0.25, height: canvas.height * 0.78, width: canvas.width * 0.034, colorIndex: 2},
+    { x: canvas.width * 0.1, height: canvas.height * 0.8, width: canvas.width * 0.04, colorIndex: 0},
+];
+
+let groundHeightArray = [
+    canvas.height * 0.9, canvas.height * 0.9, 
+    canvas.height * 0.9, canvas.height * 0.9, canvas.height * 0.99, canvas.height * 0.9, canvas.height * 0.9,
+    canvas.height * 0.94, canvas.height * 0.9, canvas.height * 0.99,
+    canvas.height * 0.9, canvas.height * 0.9, canvas.height * 0.94, canvas.height * 0.97,
+    canvas.height * 0.9, canvas.height * 0.9, canvas.height * 0.9,
+    canvas.height * 0.9, canvas.height * 0.91, canvas.height * 0.92,
+    canvas.height * 0.99, canvas.height * 0.94, canvas.height * 0.9, canvas.height * 0.9, canvas.height * 0.9,
+    canvas.height * 0.94, canvas.height * 0.9, canvas.height * 0.9,
+    canvas.height * 0.9, canvas.height * 0.9,
+];
+let grassGroundArray = [
+    canvas.height * 0.98, canvas.height * 0.98, 
+    canvas.height * 0.91, canvas.height * 0.95, canvas.height * 0.989, canvas.height * 0.98, canvas.height * 0.98,
+    canvas.height, canvas.height * 0.94, canvas.height * 0.989,
+    canvas.height * 0.98, canvas.height * 0.98, canvas.height * 0.984, canvas.height * 0.97,
+    canvas.height * 0.98, canvas.height * 0.98, canvas.height * 0.98,
+    canvas.height * 0.98, canvas.height * 0.981, canvas.height * 0.982,
+    canvas.height * 0.989, canvas.height * 0.984, canvas.height * 0.98, canvas.height * 0.98, canvas.height * 0.98,
+    canvas.height * 0.984, canvas.height * 0.98, canvas.height * 0.98,
+    canvas.height * 0.98, canvas.height * 0.98,
+];
+function drawMap() {
+    const cont = document.getElementById('gameContainer');
+    cont.style.backgroundColor = '#1b2e1b';
+    window.ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+    // window.ctx.lineTo(canvas.width, canvas.height);
+    // window.ctx.lineTo(0, canvas.height);
+    // window.ctx.closePath();
+    // window.ctx.fill();
+
+
+    window.ctx.fillStyle = '#1b2e1b';
+    window.ctx.beginPath();
+    window.ctx.moveTo(0, groundHeightArray[0]);
+
+    for (let i = 1; i < canvas.width; i++) {
+        window.ctx.lineTo(i, groundHeightArray[i] || groundHeightArray[groundHeightArray.length - 1]);
+    }
+
+    window.ctx.lineTo(canvas.width, canvas.height);
+    window.ctx.lineTo(0, canvas.height);
+    window.ctx.closePath();
+    window.ctx.fill();
+
+    // Background gradient for the upper part of the canvas
+    let gradient = window.ctx.createLinearGradient(0, groundHeightArray[0], 0, 0);
+    gradient.addColorStop(0, '#2e4d2f');  // Mid green just above the ground
+    gradient.addColorStop(1, '#7a9b7a');  // 
+
+    window.ctx.fillStyle = gradient;
+    window.ctx.fillRect(0, 0, canvas.width, groundHeightArray[0]);
+    drawGrass();
+    trees.forEach(tree => {
+        window.ctx.fillStyle = treeColors[tree.colorIndex];
+
+        const baseHeight = groundHeightArray[Math.floor(tree.x)] || groundHeightArray[0];
+        window.ctx.beginPath();
+        window.ctx.moveTo(tree.x - tree.width / 2, baseHeight);
+        window.ctx.lineTo(tree.x + tree.width / 2, baseHeight);
+        window.ctx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+        window.ctx.lineTo(tree.x + tree.width / 2, baseHeight);
+        window.ctx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+        window.ctx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+        window.ctx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+        window.ctx.closePath();
+        window.ctx.fill();
+
+        window.ctx.lineWidth = 2;
+        window.ctx.strokeStyle = treeColors[tree.colorIndex];
+        window.ctx.beginPath();
+        window.ctx.moveTo(tree.x, baseHeight - tree.height);
+        window.ctx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.3);
+        window.ctx.lineTo(tree.x + tree.x * 0.02, baseHeight - tree.height * 0.4);
+        window.ctx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.1);
+        window.ctx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+        window.ctx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+        window.ctx.lineTo(tree.x - tree.x * 0.03, baseHeight - tree.height * 0.1);
+        window.ctx.lineTo(tree.x + tree.x * 0.01, baseHeight - tree.height * 0.8);
+        window.ctx.stroke();
+    });
+
+    window.ctx.fillStyle = 'rgba(120, 200, 120, 0.1)';
+    window.ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+let grassPositions = []; // Array to hold grass positions
+
+function generateGrassPositions() {
+    const grassSpacing = 5; // Closer spacing between grass blades
+    const maxGrassPerX = 3; // Max grass blades at the same X position
+    const maxHeightVariation = 15; // Max height variation for each grass blade
+
+    // Clear the previous positions
+    grassPositions = [];
+
+    // Iterate through the width of the canvas to create grass blades
+    for (let x = 0; x < canvas.width; x += grassSpacing) {
+        const baseHeight = groundHeightArray[Math.floor(x / 50)] || canvas.height; // Base height for the grass
+
+        // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
+        const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
+
+        for (let i = 0; i < numGrassBlades; i++) {
+            // Generate a random height within a range, ensuring it's below the baseHeight
+            const randomY = Math.floor(baseHeight - (Math.random() * maxHeightVariation + 5)); // Adjusting range for random heights
+            grassPositions.push({ x, y: randomY }); // Store the position and height
+        }
+    }
+}
+
+function drawGrass() {
+    const grassColor = '#3c6e47'; // Color for the grass
+    window.ctx.strokeStyle = grassColor;
+    window.ctx.lineWidth = 2; // Thickness of the grass blades
+
+    // Draw the static grass based on pre-generated positions
+    grassPositions.forEach(grass => {
+        const { x, y } = grass; // Destructure to get x and y
+
+        // Draw a blade of grass at the pre-defined height
+        window.ctx.beginPath();
+        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]); // Starting at ground level
+        window.ctx.lineTo(x - 2, y); // Leaning to the left
+        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]);
+        window.ctx.lineTo(x + 2, y); // Leaning to the right
+        window.ctx.stroke();
+    });
+}
+generateGrassPositions();
 function gameLoop(difficulty) {
     if (!gameActive) {
         return;
@@ -417,6 +579,7 @@ function gameLoop(difficulty) {
     ai_menu.style.display = 'none';
     window.isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMap();
     window.elapsedTime = Math.floor((Date.now() - window.ResetTime) / 1000);
     if (window.elapsedTime === storedRandomNumber) {
         Attack.visible = true;
@@ -517,21 +680,28 @@ aibutton.addEventListener('click', function (event) {
     inv_menu.style.display = 'none';
     menu.style.display = 'none';
     ai_menu.style.display = 'flex';
+    Instructions.style.display = 'none';
 });
 
 ai_easy.addEventListener('click', function (event) {
     event.preventDefault();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMap();
     gameActive = true;
     gameLoop('easy');
 });
 
 ai_medium.addEventListener('click', function(event) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     event.preventDefault();
+    drawMap();
     gameActive = true;
     gameLoop('medium');
 });
 
 ai_hard.addEventListener('click', function(event) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMap();
     event.preventDefault();
     gameActive = true;
     gameLoop('hard');

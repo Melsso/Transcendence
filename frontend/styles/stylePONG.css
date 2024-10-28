@@ -19,6 +19,7 @@ canvas {
 	height: 100%;
 	display: block;
 	z-index: 900;
+	/* background-color: #006400; */
 }
 
 .pong-tournament-name {

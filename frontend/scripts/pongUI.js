@@ -361,7 +361,7 @@ window.movePadBigbuff = movePadBigbuff;
 
 function drawScoreBoard() {
 	window.ctx.clearRect(0, 0, window.canvas.width, canvas.height * 0.0436);
-	window.ctx.fillStyle = 'black';
+	window.ctx.fillStyle =  'rgba(0, 0, 0, 0)';
 	window.ctx.fillRect(0, 0, window.canvas.width, canvas.height * 0.0436);
 	const image1 = new Image();
 	const image2 = new Image();
