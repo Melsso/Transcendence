@@ -6,6 +6,7 @@ const globalbtn = document.getElementById('revert_to_global');
 const open = document.createElement('button');
 const gameaccept = document.createElement('button');
 const baseUrl = process.env.ACTIVE_HOST;
+import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket  } from "./gameSystem.js";
 let tar;
 
@@ -55,7 +56,7 @@ globalbtn.addEventListener('click', async function(event) {
 	}
 });
 
-function addMessage(message, isSender = false, data) {
+async function addMessage(message, isSender = false, data) {
 	if (message.trim() === '') return;
 
 	const messageElement = document.createElement('div');
@@ -64,9 +65,22 @@ function addMessage(message, isSender = false, data) {
 	messageElement.classList.add(isSender ? 'right' : 'left');
 	 
 	const avatarElement = document.createElement('img');
-
 	avatarElement.src = isSender ? window.userData.avatar : data.av;
 	avatarElement.alt = isSender ? window.userData.username : data.username;
+
+	avatarElement.style.cursor = 'pointer';
+   avatarElement.addEventListener('click', async function() {
+		try {
+			const result = await userLookUp(avatarElement.alt);
+			if (result['user'] !== null) {
+				window.navigateTo('profile', result);
+			} else {
+				Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+			}
+		} catch (error) {
+			Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+		}
+    });
 
 	const contentElement = document.createElement('div');
 	contentElement.classList.add('message-content');
@@ -288,7 +302,7 @@ export async function getMessages(uname=null) {
 	return data;
 }
 
-export function loadMessages(data) {
+export async function loadMessages(data) {
 	data.forEach(message => {
 		if (message.content.trim() === '') return;
 		const messageElement = document.createElement('div');
@@ -305,6 +319,20 @@ export function loadMessages(data) {
 			avatarElement.src = avtar;
 			avatarElement.alt = message.username;
 		}
+
+		avatarElement.style.cursor = 'pointer';
+		avatarElement.addEventListener('click', async function() {
+			try {
+				const result = await userLookUp(avatarElement.alt);
+				if (result['user'] !== null) {
+					window.navigateTo('profile', result);
+				} else {
+					Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+				}
+			} catch (error) {
+				Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+			}
+		 });
 
 		const contentElement = document.createElement('div');
 		contentElement.classList.add('message-content');

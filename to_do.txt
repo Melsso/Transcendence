@@ -32,4 +32,4 @@ MINOR:
 		//fix accordion not opening till inspect is opened
 		//fix tourni lobby, a bit of a diffy 
 		//make rendering version of game for websockets
-		//make it so if clciked on the avatar pic in chat it takes to profile
+

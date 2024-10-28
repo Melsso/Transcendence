@@ -1,5 +1,5 @@
-import { getMessages, loadMessages, handleSend } from "./chat";
-import { userLookUp} from "./changeToMainTwo";
+import { getMessages, loadMessages, handleSend } from "./chat.js";
+import { userLookUp} from "./changeToMainTwo.js";
 
 const baseUrl = process.env.ACTIVE_HOST;
 
