@@ -10,8 +10,6 @@ import './pongloc.js';
 import './populateFriends.js';
 import './populatePageHelpers.js';
 import './R-AvatarSelection.js';
-import './RR-creater.js';
-import './RR.js';
 import './gameSystem.js';
 import './gameSystemT.js';
 

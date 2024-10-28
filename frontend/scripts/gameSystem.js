@@ -212,37 +212,45 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             }
         });
     } else {
+        const id = 'modal1' + gamer1.username;
+        const id2 = 'modal1-close' + gamer1.username;
+        const id3 = 'pong-modal-1' + gamer1.username;
+        const id4 = 'modal-overlay' + gamer1.username;
+        const id5 = 'modal-submit' + gamer1.username;
         gamer2Container.innerHTML = `
-        <div id="modal-overlay" class="modal-overlay"></div>
+        <div id="${id4}" class="modal-overlay"></div>
         <div id="pong-p-c">
-            <div class="plus-btn" id="modal1">+</div>
-            <div id="pong-modal-1" class="search-modal">
+            <div class="plus-btn" id="${id}">+</div>
+            <div id="${id3}" class="search-modal">
                 <div class="search-modal-content">
                     <h2 style="color: #ffcc00; text-align: center;">Search for Player</h2>
                     <input type="text" placeholder="Enter player name..." id="search-input" />
                     <div class="search-modal-buttons">
-                        <button id="modal1-close" class="modal-btn">Close</button>
-                        <button onclick="submitInvite()" class="modal-btn">Submit</button>
+                        <button id="${id2}" class="modal-btn">Close</button>
+                        <button id="${id5}" class="modal-btn">Submit</button>
                     </div>
                 </div>
             </div>
         </div>
     `;
+        document.getElementById(id).addEventListener('click', function () {
+            document.getElementById(id3).classList.add('active');
+            document.getElementById(id4).classList.add('active');
+        });
+
+        document.getElementById(id2).addEventListener('click', function () {
+            document.getElementById(id3).classList.remove('active');
+            document.getElementById(id4).classList.remove('active');
+        });
+
+        document.getElementById(id5).addEventListener('click', function () {
+            console.log('inviting');
+        });
     }
 
     
     lobbyContainer.style.display = 'block';
-    // const modal = document.getElementById('modal1');
-    // const modalClose = document.getElementById('modal1-close');
 
-    // modal.addEventListener('click', function () {
-    //     document.getElementById('pong-modal-1').classList.add('active');
-    //     document.getElementById('modal-overlay').classList.add('active');
-    // })
-    // modalClose.addEventListener('click', function () {
-    //     document.getElementById('pong-modal-1').classList.remove('active');
-    //     document.getElementById('modal-overlay').classList.remove('active');
-    // })
 }
 
 function getWinPercentage(wins, losses) {

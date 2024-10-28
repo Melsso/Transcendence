@@ -27,4 +27,9 @@ MINOR:
 - Multiple language supports YYYYYYYY
 
 
-		//lobby set default settings always
+		//fix lobby, not showing for the one who accepts the game, it takes him to the menu instead!
+		//fix pong game not stopping if play button i lcicked aagain or if clicked to go to another page
+		//fix accordion not opening till inspect is opened
+		//fix tourni lobby, a bit of a diffy 
+		//make rendering version of game for websockets
+		//make it so if clciked on the avatar pic in chat it takes to profile

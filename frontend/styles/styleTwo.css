@@ -98,9 +98,9 @@ overflow: hidden;
 .my-bar {
 	background-color: #7982b2;
 	position: absolute;
-	top: 60%;
+	top: 70%;
 	left: 10%;
-	height: 10%;
+	height: 20%;
 	width: 80%;
 	color: black;
 }
@@ -229,6 +229,16 @@ overflow: hidden;
 	align-items: center;
 }
 
+.match-card .player-left {
+	flex-direction: row;
+	text-align: left;
+}
+
+.match-card .player-right {
+	flex-direction: row-reverse;
+	text-align: right;
+}
+
 .match-card img {
 	width: 40px;
 	height: 40px;
@@ -236,12 +246,22 @@ overflow: hidden;
 	margin-right: 10px;
 }
 
+.match-card .player-right img {
+	margin-left: 10px;
+	margin-right: 0;
+}
+
 .match-card .score {
 	font-weight: bold;
 }
 
-.match-card .game-name {
-	font-size: 14px;
+.match-card .player-info-2 .username {
+	font-weight: bold;
+	font-size: 1.1rem;
+}
+
+.match-card .player-info-2 .game-name {
+	font-size: 0.9rem;
 	color: #666;
 }
 
@@ -274,11 +294,24 @@ overflow: hidden;
 	margin-bottom: 5px;
 }
 
+
+.progress-text {
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	z-index: 1; /* Keep text above the bar background */
+	color: #fff;
+	text-shadow: 1px 1px 2px #000;
+}
+
 .progress-bar {
 	background-color: #007bff;
 	height: 100%;
 	text-align: center;
-	color: white;
+	justify-content: center;
+	font-weight: bold;
+	color: black;
+	text-shadow: 1px 1px 2px #000; 
 	line-height: 20px;
 }
 

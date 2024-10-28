@@ -103,7 +103,6 @@ const statspage = document.getElementById('stats-tab');
 statspage.addEventListener('click', function (event) {
     event.preventDefault();
     if (statspage.getAttribute('aria-selected') === 'true' && statspage.getAttribute('on') === 'true') {
-        // Notification('Profile Action', 'You are already viewing the pong stats!', 2, 'alert');
         return ;
     }
     const historyTab = document.getElementById('History');
@@ -116,7 +115,7 @@ function loadProfileInfo(user) {
     const avatarElement = document.getElementById('profile-avatar');
     const bio = document.getElementById('profile-bio');
     const expBar1 = document.getElementById('exp-pong');
-    const expBar2 = document.getElementById('exp-ogame');
+    const expText1 = document.getElementById('exp-txt');
     
     profileUsername.textContent = user.username;
     profileUsername.setAttribute('user_id', user.id);
@@ -125,12 +124,14 @@ function loadProfileInfo(user) {
 
     bio.textContent = user.biography;
 
-    expBar1.style.width = 78;
-    expBar1.textContent = `Game 1 - Level ${user.bar_exp_game1/1000}`;
-    expBar1.setAttribute('aria-valuenow', user.bar_exp_game1%1000);
-    expBar2.style.width = 200;
-    expBar2.textContent = `Game 2 - Level ${user.bar_exp_game2/1000}`;
-    expBar2.setAttribute('aria-valuenow', user.bar_exp_game2%1000);
+    const expGame1Percentage = Math.max((user.bar_exp_game1 % 1000) / 10, 1);
+    
+    const levelGame1 = Math.floor(user.bar_exp_game1 / 1000);
+
+    expBar1.style.width = `${expGame1Percentage}%`;
+    expText1.textContent = `Game 1 - Level ${levelGame1}`;
+    expBar1.setAttribute('aria-valuenow', expGame1Percentage);
+
 }
 
 export function computeStats(games) {
@@ -258,7 +259,6 @@ export function loadMatchHistory(games) {
     historyTab.addEventListener('click', function (event) {
         event.preventDefault();
         if (historyTab.getAttribute('aria-selected') === 'true' && historyTab.getAttribute('on') === 'true') {
-            // Notification('Profile Action', 'You are already viewing the match history tab!', 2, 'alert');
             return ;
         } else {
             historyTab.setAttribute('on', 'true');
@@ -293,23 +293,23 @@ export function loadMatchHistory(games) {
             matchCard.classList.add('lost');
         }
 
-        matchCard.innerHTML =`
-            <div class="player">
-                <img src="${ally.user.avatar}" alt="Avatar of ${ally.user.username}">
-                <div>
-                    <div>${ally.user.username}</div>
-                    <div class="game-name">${ally.game_id}</div>
-                </div>
+        matchCard.innerHTML = `
+        <div class="player player-left">
+            <img src="${ally.user.avatar}" alt="Avatar of ${ally.user.username}">
+            <div class="player-info-2">
+                <div>${ally.user.username}</div>
+                <div class="game-name">${ally.game_id}</div>
             </div>
-            <div class="score">${ally.score}-${enemy.score}</div>
-            <div class="player">
-                <div>
-                    <div>${enemy.user.username}</div>
-                    <div class="game-name">${enemy.game_id}</div>
-                </div>
-                <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
+        </div>
+        <div class="score">${ally.score}-${enemy.score}</div>
+        <div class="player player-right">
+            <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
+            <div class="player-info-2">
+                <div>${enemy.user.username}</div>
+                <div class="game-name">${enemy.game_id}</div>
             </div>
-        `;
+        </div>
+    `;
         matchHistoryContainer.appendChild(matchCard);
     });
 }
