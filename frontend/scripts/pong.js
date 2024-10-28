@@ -371,7 +371,7 @@ document.addEventListener('keyup', (e) => {
 
 
 function drawPaddle(x, y, width, height) {
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = 'black';
     if (flag){
         ctx.fillStyle = 'gold';
         flag--;
@@ -383,7 +383,7 @@ function drawPaddle(x, y, width, height) {
 function drawBall(x, y, radius) {
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = 'black';
     ctx.fill();
     ctx.closePath();
 }
@@ -568,6 +568,39 @@ function drawGrass() {
         window.ctx.stroke();
     });
 }
+function drawRetroTrianglePattern() {
+    const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
+    const numTriangles = 36; // Number of triangles/wedges
+    const centerX = window.canvas.width / 2;
+    const centerY = window.canvas.height / 2;
+    const radius = Math.hypot(window.canvas.width, window.canvas.height); // Ensures triangles extend beyond canvas
+    const angleIncrement = (2 * Math.PI) / numTriangles;
+
+    for (let i = 0; i < numTriangles; i++) {
+        const angle = i * angleIncrement;
+        
+        // Set color for each triangle
+        window.ctx.fillStyle = colors[i % colors.length];
+        
+        // Start drawing the triangle
+        window.ctx.beginPath();
+        window.ctx.moveTo(centerX, centerY); // Center point
+
+        // Calculate points at the edge of the canvas
+        const x1 = centerX + radius * Math.cos(angle);
+        const y1 = centerY + radius * Math.sin(angle);
+        const x2 = centerX + radius * Math.cos(angle + angleIncrement);
+        const y2 = centerY + radius * Math.sin(angle + angleIncrement);
+
+        // Draw the triangle wedge
+        window.ctx.lineTo(x1, y1);
+        window.ctx.lineTo(x2, y2);
+        window.ctx.closePath();
+        window.ctx.fill();
+    }
+}
+
+
 generateGrassPositions();
 function gameLoop(difficulty) {
     if (!gameActive) {
@@ -579,7 +612,8 @@ function gameLoop(difficulty) {
     ai_menu.style.display = 'none';
     window.isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawMap();
+    //drawMap();
+    drawRetroTrianglePattern();
     window.elapsedTime = Math.floor((Date.now() - window.ResetTime) / 1000);
     if (window.elapsedTime === storedRandomNumber) {
         Attack.visible = true;
