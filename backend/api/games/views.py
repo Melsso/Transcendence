@@ -70,3 +70,11 @@ class CreateGameRoomView(generics.CreateAPIView):
         uname = request.user.username
         room_name = f"{uname}_{str(uuid.uuid4())}"
         return Response({'room_name': room_name}, status=HTTP_200_OK)
+
+class CreateTournamentRoomView(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        uname = request.user.username
+        tournament_room_name = f'tournament_{uname}_{str(uuid.uuid4())}'
+        return Response({'tournament_room_name': tournament_room_name}, status=HTTP_200_OK)
