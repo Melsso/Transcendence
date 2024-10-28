@@ -57,6 +57,7 @@ function startTournamentSocket() {
 	}
 	window.userData.pong_socket.onclose = function(e) {
 		console.log("TOURNAMENTSOCKET-OFF");
+		Tlobby.style.display = 'none';
 	}
 	window.userData.pong_socket.onmessage = function(e) {
 		const data = JSON.parse(e.data);

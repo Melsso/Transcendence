@@ -105,7 +105,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		player_usernames = [username.decode('utf-8') if isinstance(username, bytes) else username for username in player_usernames]
 		user_profiles = await database_sync_to_async(lambda: list(UserProfile.objects.filter(username__in=player_usernames)))()
 		serializer = UserProfileSerializer(user_profiles, many=True)
-		logger.warning(serializer.data)
 		return serializer.data
 
 	async def send_current_players(self, players):

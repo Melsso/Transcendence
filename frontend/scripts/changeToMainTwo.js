@@ -384,15 +384,16 @@ document.addEventListener('DOMContentLoaded', function () {
 	const sendFriendRequestButton = document.getElementById('add-friend');
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
-	
+	const Tlobby = document.getElementById('pong-tournament');
 	
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
 			window.userData.pong_socket.close();
 			window.userData.pong_socket = null;
 			window.userData.r_name = null;
+			// Tlobby.style.display = 'none';
+			// tourniLobby.style.display = 'none';
 		}
-		// tourniLobby.style.display = 'none';
 		inv_menu.style.display = 'none';
 		ai_menu.style.display = 'none';
 		Instructions.style.display = 'none';
