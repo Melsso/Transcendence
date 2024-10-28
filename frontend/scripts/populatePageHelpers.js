@@ -293,23 +293,23 @@ export function loadMatchHistory(games) {
             matchCard.classList.add('lost');
         }
 
-        matchCard.innerHTML =`
-            <div class="player">
-                <img src="${ally.user.avatar}" alt="Avatar of ${ally.user.username}">
-                <div>
-                    <div>${ally.user.username}</div>
-                    <div class="game-name">${ally.game_id}</div>
-                </div>
+        matchCard.innerHTML = `
+        <div class="player player-left">
+            <img src="${ally.user.avatar}" alt="Avatar of ${ally.user.username}">
+            <div class="player-info-2">
+                <div>${ally.user.username}</div>
+                <div class="game-name">${ally.game_id}</div>
             </div>
-            <div class="score">${ally.score}-${enemy.score}</div>
-            <div class="player">
-                <div>
-                    <div>${enemy.user.username}</div>
-                    <div class="game-name">${enemy.game_id}</div>
-                </div>
-                <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
+        </div>
+        <div class="score">${ally.score}-${enemy.score}</div>
+        <div class="player player-right">
+            <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
+            <div class="player-info-2">
+                <div>${enemy.user.username}</div>
+                <div class="game-name">${enemy.game_id}</div>
             </div>
-        `;
+        </div>
+    `;
         matchHistoryContainer.appendChild(matchCard);
     });
 }

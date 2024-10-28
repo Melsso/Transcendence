@@ -33,4 +33,3 @@ MINOR:
 		//fix tourni lobby, a bit of a diffy 
 		//make rendering version of game for websockets
 		//make it so if clciked on the avatar pic in chat it takes to profile
-		//fix match history, stuff in upsiode down for oppponent
