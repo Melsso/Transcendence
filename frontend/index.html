@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="styles/styleOne.css">
     <link rel="stylesheet" href="styles/styleSettings.css">
     <link rel="stylesheet" href="styles/styleSidebars.css">
-    <link rel="stylesheet" href="styles/styleRR.css">
     <link rel="stylesheet" href="styles/styleTwo.css">
     <link rel="stylesheet" href="styles/styleBg.css">
     <link rel="stylesheet" href="styles/styleChat.css">
@@ -84,39 +83,6 @@
                         </div>
                     </div>  
                 </div>
-                <div class="">
-                    <button class="btn btn-primary game-setting-2" type="button" data-bs-toggle="collapse" data-bs-target="#Game-2-settings" aria-expanded="false" aria-controls="Game-2-settings">
-                        Riccochet Robots
-                    </button>
-                    <div class="collapse settings-container-2 mt-2" id="Game-2-settings">
-                        <div class="mb-3 text-center">
-                            <label class="form-label">Choose A Map:</label>
-                            <div class="d-flex justify-content-center">
-                                <div class="form-check me-3">
-                                    <input class="form-check-input" type="radio" name="mapSelection-2" id="map1" value="map1" checked>
-                                    <label class="form-check-label" for="map1">
-                                        Map 1
-                                    </label>
-                                </div>
-                                <div class="form-check me-3">
-                                    <input class="form-check-input" type="radio" name="mapSelection-2" id="map2" value="map2">
-                                    <label class="form-check-label" for="map2">
-                                        Map 2
-                                    </label>
-                                </div>
-                                <div class="form-check me-3">
-                                    <input class="form-check-input" type="radio" name="mapSelection-2" id="map3" value="map3">
-                                    <label class="form-check-label" for="map3">
-                                        Map 3
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-grid">
-                            <button class="btn btn-primary mx-auto" id="S&L-play" type="button">Play Game</button>
-                        </div>
-                    </div>  
-                </div>
             </div>
         </div>
         <div class="sidebar left-sidebar" id="left-sidebar">
@@ -175,15 +141,9 @@
                              role="progressbar" 
                              aria-valuenow="0" 
                              aria-valuemin="0" 
-                             aria-valuemax="100">Loading...</div>
-                    </div>
-                    <div class="progress my-bar-two" id="exp-bar">
-                        <div id="exp-ogame" class="progress-bar progress-bar-striped progress-bar-animated" 
-                             style="background-color: rgb(56, 4, 102);" 
-                             role="progressbar" 
-                             aria-valuenow="0" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">Loading...</div>
+                             aria-valuemax="100">
+                        </div>
+                        <span class="progress-text"id="exp-txt">Loading...</span>
                     </div>
                 </div>
                 <div class="my-tabs" id="profile-tabs">
@@ -193,9 +153,6 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pong" type="button" role="tab" aria-controls="stats-pong" aria-selected="false">Stats-PONG</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#stats-snake" type="button" role="tab" aria-controls="stats-snake" aria-selected="false">Stats-S&L</button>
                         </li>
                     </ul>                
                     <div class="tab-content mt-4">
@@ -325,46 +282,6 @@
                     <input type="file" id="new-avatar" name="avatar" accept="image/*">
                     <button id="updateavatar-btn" type="button" class="btn btn-primary">Update Avatar</button>
                 </form>
-            </div>
-        </div>
-        <div class="two-container-game-2" id="S&L-page">
-            <div id="rr-mover-counter" class="rr-mover">Moves: <span id="move-count">0</span></div>
-            <div id="robot-buttons" class="buttons-rr-container">
-                <div id="rr-timer" class="timer-display">00:00</div>
-                <div id="highlighted-item" class="highlighted-item">
-                    <img id="highlighted-img" src="" alt="Highlighted Robot" style="display:none; width: 100px; height: auto;">
-                </div>
-                <button id="reset-robot-button" class="btn rbt-btn">Reset</button>
-                <button id="green-robot-button" class="btn rbt-btn">Green Robot</button>
-                <button id="yellow-robot-button" class="btn rbt-btn">Yellow Robot</button>
-                <button id="gray-robot-button" class="btn rbt-btn">Gray Robot</button>
-                <button id="blue-robot-button" class="btn rbt-btn">Blue Robot</button>
-                <button id="red-robot-button" class="btn rbt-btn">Red Robot</button>
-            </div>
-            <div id="rr-players" class="rr-container-players">
-                <div class="rr-player">
-                    <div class="rr-player-header">
-                        <img src="assets/avatar1.svg" alt="Avatar" class="rr-player-avatar">
-                        <span class="rr-player-name">Player 1</span>
-                    </div>
-                    <span class="rr-player-points">Points: 10</span>
-                </div>
-                <div class="rr-player">
-                    <div class="rr-player-header">
-                        <img src="assets/avatar2.svg" alt="Avatar" class="rr-player-avatar">
-                        <span class="rr-player-name">Player 2</span>
-                    </div>
-                    <span class="rr-player-points">Points: 20</span>
-                </div>
-            </div>
-            <div id="game-board"></div>
-            <div id="rr-menu" class="RRmenu">
-                <div class="rr-menu" id="rr-main-menu">
-                    <button type="button" class="btn btn-primary btn-play" id="rr-ai-btn">Play vs AI</button>
-                    <button type="button" class="btn btn-primary btn-play" id="rr-invite-btn">Send Invites</button>
-                </div>
-                <div class="rr-invite-menu" id="rr-inv-menu">
-                </div>
             </div>
         </div>
         <div class="two-container-game-2" id="PONG-game">
@@ -584,12 +501,12 @@
             </div>
         </div>
     </div>
-    <!-- <script src="scripts/main.js" type="module"></script>
-    <script src="dist/bundle.js" type="module"></script> -->
+    <script src="scripts/main.js" type="module"></script>
+    <script src="dist/bundle.js" type="module"></script>
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="scripts/pong.js"></script>
-    <script src="scripts/pongUI.js"></script>
+    <!-- <script src="scripts/pong.js"></script>
+    <script src="scripts/pongUI.js"></script> -->
     <!-- <script src="scripts/pongloc.js"></script> -->
-    <script src="scripts/gameSystemT.js"></script>
+    <!-- <script src="scripts/gameSystemT.js"></script> -->
     <!-- <script src="scripts/BackgroundAnimation.js"></script> -->
 </html>

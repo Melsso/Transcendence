@@ -346,7 +346,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	const mainTwo = document.getElementById('mainTwo');
 	const mainBody = document.getElementById('mainTwo-body');
 	const mainSettings = document.getElementById('setting-page');
-	const mainSLgame = document.getElementById('S&L-page');
 	const mainPONGgame = document.getElementById('PONG-game');
 	const forgotcontainer = document.getElementById('forgot-container');
 	const newpass = document.getElementById('create-new-pass');
@@ -364,7 +363,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainTwo.style.display = 'flex';
 	mainBody.style.display = 'flex';
 	mainSettings.style.display = 'none';
-	mainSLgame.style.display = 'none';
 	mainPONGgame.style.display = 'none';
 	
 	const confirmButton = document.getElementById('pass-verf-code');
@@ -374,7 +372,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	const nextButton = document.getElementById('next-btn');
 	const logoutButton = document.getElementById('logout');
 	const searchButton = document.getElementById('search-user');
-	const SLButton = document.getElementById('S&L-play');
 	const settingButton = document.getElementById('to-settings');
 	const PONGButton = document.getElementById('PONG-button');
 	const updateUsernameButton = document.getElementById('updateUsername-btn');
@@ -408,7 +405,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		mainTwo.style.display = 'none';
 		mainBody.style.display = 'none';
 		mainSettings.style.display = 'none';
-		mainSLgame.style.display = 'none';
 		mainPONGgame.style.display = 'none';
 
 		if (view === 'login') {
@@ -455,9 +451,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else if (view === 'settings') {
 			mainTwo.style.display = 'flex';
 			mainSettings.style.display = 'flex';
-		} else if (view === 'S&L') {
-			mainTwo.style.display = 'flex';
-			mainSLgame.style.display = 'flex';
 		} else if (view === 'PONG') {
 			inv_menu.style.display = 'none';
 			ai_menu.style.display = 'none';
@@ -654,10 +647,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	profileButton.addEventListener('click', function () {
 		navigateTo('profile', null);
-	});
-
-	SLButton.addEventListener('click', function () {
-		navigateTo('S&L', null);
 	});
 
 	PONGButton.addEventListener('click', function () {

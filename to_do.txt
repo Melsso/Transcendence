@@ -27,4 +27,10 @@ MINOR:
 - Multiple language supports YYYYYYYY
 
 
-		//lobby set default settings always
+
+		//fix font on match History
+		//fix pong game not stopping if play button i lcicked aagain or if clicked to go to another page
+		//make rendering version of game for websockets
+		//fix accordion not opening till inspect is opened
+		//fix 1v1 modal id's
+		//fix tourni lobby, a bit of a diffy 
