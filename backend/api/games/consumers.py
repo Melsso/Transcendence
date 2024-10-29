@@ -9,6 +9,7 @@ from channels.db import database_sync_to_async
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 from .models import PongGame, RrGame, Game
+from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
 
@@ -20,15 +21,23 @@ class GameConsumer(AsyncWebsocketConsumer):
 		user = self.scope['user']
 		if user.is_anonymous:
 			await self.close()
+
 		self.redis_key = self.redis_room_prefix + self.room_group_name
- 		
-		players_in_room = await self.get_players_in_room()
+		query_string = self.scope['query_string'].decode('utf-8')
+		query_params = parse_qs(query_string)
 		
+		screen_width = query_params.get('width', [None])[0]
+		screen_height = query_params.get('height', [None])[0]
+		if screen_width and screen_height:
+			screen_width = int(screen_width)
+			screen_height = int(screen_height)
+
+		players_in_room = await self.get_players_in_room()
 		if len(players_in_room) >= 2:
 			await self.close()
 			return 
 		
-		await self.add_player_to_room(user.username)
+		await self.add_player_to_room(user.username, screen_width, screen_height)
 		await self.channel_layer.group_add(
 			self.room_group_name,
 			self.channel_name
@@ -70,7 +79,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 				ready_status = state['ready']
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
-				await self.send_current_players(players_in_room)  
+				await self.send_current_players(players_in_room)
 			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
@@ -97,11 +106,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 		}))
 	
 
-	async def add_player_to_room(self, player_name):
+	async def add_player_to_room(self, player_name, screen_width, screen_height):
 		redis = await aioredis.from_url("redis://redis:6379")
 		player_data = {
 			"username": player_name,
-			"ready": False
+			"ready": False,
+			"screen_dimensions": {
+				"width": screen_width,
+				"height": screen_height
+			}
 		}
 		await redis.hset(self.redis_key, player_name, json.dumps(player_data))
 		await redis.close()
@@ -114,6 +127,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
+		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -144,8 +158,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def send_current_players(self, players):
 		user_profiles = await self.get_user_profiles(players)
 		ready_status = {username: data['ready'] for username, data in players.items()}
+		screen_dimensions = {username: data.get('screen_dimensions', {}) for username, data in players.items()}
+
 		for profile in user_profiles:
 			profile['ready'] = ready_status.get(profile['username'], False)
+			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
+
 		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
@@ -159,21 +177,28 @@ class GameConsumer(AsyncWebsocketConsumer):
 class TournamentConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'tournament_room_'
 	async def connect(self):
-		logger.warning(self.scope)
-		self.room_name = self.scope['url_route']['kwargs']['tournament_room_name']
+		self.room_name = self.scope['url_route']['kwargs']['room_name']
 		self.room_group_name = f'{self.room_name}'
 		user = self.scope['user']
 		if user.is_anonymous:
 			await self.close()
+
 		self.redis_key = self.redis_room_prefix + self.room_group_name
- 		
-		players_in_room = await self.get_players_in_room()
+		query_string = self.scope['query_string'].decode('utf-8')
+		query_params = parse_qs(query_string)
 		
+		screen_width = query_params.get('width', [None])[0]
+		screen_height = query_params.get('height', [None])[0]
+		if screen_width and screen_height:
+			screen_width = int(screen_width)
+			screen_height = int(screen_height)
+
+		players_in_room = await self.get_players_in_room()
 		if len(players_in_room) >= 8:
 			await self.close()
 			return 
 		
-		await self.add_player_to_room(user.username)
+		await self.add_player_to_room(user.username, screen_width, screen_height)
 		await self.channel_layer.group_add(
 			self.room_group_name,
 			self.channel_name
@@ -215,7 +240,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				ready_status = state['ready']
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
-				await self.send_current_players(players_in_room)  
+				await self.send_current_players(players_in_room)
 			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
@@ -242,11 +267,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		}))
 	
 
-	async def add_player_to_room(self, player_name):
+	async def add_player_to_room(self, player_name, screen_width, screen_height):
 		redis = await aioredis.from_url("redis://redis:6379")
 		player_data = {
 			"username": player_name,
-			"ready": False
+			"ready": False,
+			"screen_dimensions": {
+				"width": screen_width,
+				"height": screen_height
+			}
 		}
 		await redis.hset(self.redis_key, player_name, json.dumps(player_data))
 		await redis.close()
@@ -259,6 +288,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
+		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -289,8 +319,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def send_current_players(self, players):
 		user_profiles = await self.get_user_profiles(players)
 		ready_status = {username: data['ready'] for username, data in players.items()}
+		screen_dimensions = {username: data.get('screen_dimensions', {}) for username, data in players.items()}
+
 		for profile in user_profiles:
 			profile['ready'] = ready_status.get(profile['username'], False)
+			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
+
 		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,

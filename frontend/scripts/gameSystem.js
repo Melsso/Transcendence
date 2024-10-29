@@ -68,7 +68,9 @@ lo.addEventListener('click', async function (){
         const data = await getRoomName();
         window.userData.r_name = data.room_name;
         const u = new URL(baseUrl);
-        const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}`);
+        const screenHeight = 500;
+        const screenWidth = 400;
+        const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
         window.userData['pong_socket'] = gameSocket;
         startGameSocket();
     } catch (error) {
@@ -114,10 +116,18 @@ function sendGameStatus(username, ready) {
 
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
-        console.log("GAMESOCKET--ON")
+        console.log("GAMESOCKET--ON");
+        const screenData = {
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+        window.userData.pong_socket.send(JSON.stringify({
+            action: 'screen_dimensions',
+            state: screenData
+        }));
     }
     window.userData.pong_socket.onclose = function(e) {
-        console.log("GAMESOCKET--OFF")
+        console.log("GAMESOCKET--OFF");
     }
     if (window.userData.pong_socket) {
        gameInterval = setInterval(sendGameState, 1000);

@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 from channels.db import database_sync_to_async
 from users.models import UserProfile
 import logging
+from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +15,8 @@ class JWTAuthMiddleware(BaseMiddleware):
         logger.warning(scope)
         if 'query_string' in scope:
             query_string = scope['query_string'].decode('utf-8')
-            if 'token' in query_string:
-                token = query_string.split('token=')[1]
+            parsed_qs = parse_qs(query_string)
+            token = parsed_qs.get('token', [None])[0]
         
         if token:
             try:
