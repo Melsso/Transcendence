@@ -89,6 +89,18 @@ window.scoreboard = {
 
 window.ResetTime = null;
 
+function    drawMaps(){
+    if (setting.map === 'Map 1'){}
+    else if (setting.map === 'Map 2'){
+        drawMap();
+    }
+    else if (setting.map === 'Map 3'){
+        drawRetroTrianglePattern();
+        drawBBall(ball.x, ball.y, ball.radius);
+        drawBPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
+        drawBPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+    }
+}
 
 function Prediction() {
     let predictedY = ball.y;
@@ -149,7 +161,7 @@ function countdownBeforeRound(callback) {
     const intervalID = setInterval(() => {
  
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawMap();
+        drawMaps();
         drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
         drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
         drawBall(ball.x, ball.y, ball.radius);
@@ -175,16 +187,21 @@ function altFfour(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	gameover = false; 
     removeGameOverScreen();
-    // switchOffAI();
 	if (wasHit === true){
-		aiPaddle.height *= 2;
+        aiPaddle.height *= 2;
 		wasHit = false;
 	}
 	if (aiDidHit === true){
-		playerPaddle.height *= 2;
+        playerPaddle.height *= 2;
 		aiDidHit = false;
 	}
+    setbackoriginalvalues();
+    ball.y = canvas.height / 2;
+    ball.x = canvas.width / 2;
+    elapsedTime = 0;
+    EL = 0;
 	crossCount = 0;
+    ResetTime = 0;
 	AttackCount = 0;
 	BigPadCount = 0;
     playerPaddle.dy = 7;
@@ -510,7 +527,7 @@ window.grassGroundArray = [
 ];
 function drawMap() {
     const cont = document.getElementById('gameContainer');
-    cont.style.backgroundColor = '#1b2e1b';
+
     window.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
@@ -665,14 +682,7 @@ function gameLoop(difficulty, setting) {
         ResetTime = Date.now();
     isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if  (setting.map === 'Map 2')
-        drawMap();
-    else if (setting.map === 'Map 3'){
-        drawRetroTrianglePattern();
-        drawBPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height)
-        drawBPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height)
-        drawBBall(ball.x, ball.y, ball.radius);
-    }
+    drawMaps();
     ai_menu.style.display = 'none';
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
     if (setting.mode === 'Buff Mode'){ 
@@ -785,7 +795,7 @@ aibutton.addEventListener('click', function (event) {
 ai_easy.addEventListener('click', function (event) {
     event.preventDefault();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawMap();
+    drawMaps();
     gameActive = true;
     gameLoop('easy', setting);
 });
@@ -793,14 +803,14 @@ ai_easy.addEventListener('click', function (event) {
 ai_medium.addEventListener('click', function(event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     event.preventDefault();
-    drawMap();
+    drawMaps();
     gameActive = true;
     gameLoop('medium', setting);
 });
 
 ai_hard.addEventListener('click', function(event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawMap();
+    drawMaps();
     event.preventDefault();
     gameActive = true;
     gameLoop('hard', setting);
