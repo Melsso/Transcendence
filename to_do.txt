@@ -32,4 +32,4 @@ MINOR:
 		//fix tourni lobby, a bit of a diffy 
 		//make rendering version of game for websockets
 		//global chat aint refreshing
-
+		//fix not closing game socket correctly

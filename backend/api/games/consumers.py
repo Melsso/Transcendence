@@ -2,12 +2,15 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels_redis.core import RedisChannelLayer
 import aioredis
 import json
+import logging
 import asyncio
 from django.conf import settings
 from channels.db import database_sync_to_async
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 from .models import PongGame, RrGame, Game
+
+logger = logging.getLogger(__name__)
 
 class GameConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'game_room_'
@@ -36,7 +39,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await self.send_current_players(players_in_room)
 
 	async def disconnect(self, close_code):
-		await self.remove_player_from_room(self.channel_name)
+		user = self.scope['user']
+		await self.remove_player_from_room(user.username)
+		players_in_room = await self.get_players_in_room()
+
+		if players_in_room:
+			await self.send_current_players(players_in_room)
+
 		await self.channel_layer.group_discard(
 			self.room_group_name,
 			self.channel_name
@@ -95,8 +104,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	async def remove_player_from_room(self, player_name):
 		redis = await aioredis.from_url("redis://redis:6379")
+		logger.warning(player_name)
 		await redis.lrem(self.redis_key, 0, player_name)
 		players = await redis.lrange(self.redis_key, 0, -1)
+		logger.warning(players)
 		if not players:
 			await redis.delete(self.redis_key)
 		await redis.close()

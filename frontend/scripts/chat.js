@@ -4,7 +4,7 @@ const sendButton = document.getElementById('send-button');
 const noChat = document.getElementById('no-chat');
 const globalbtn = document.getElementById('revert_to_global');
 const open = document.createElement('button');
-const gameaccept = document.createElement('button');
+let gameaccept = document.createElement('button');
 const menu = document.getElementById('menuuu');
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
@@ -118,13 +118,17 @@ export async function	launchSocket() {
 				return ;
 			}
 			if (data.action == 'Notification' && data.target == window.userData.username) {
+				if (gameaccept) {
+					gameaccept = null;
+					gameaccept = document.createElement('button');
+				}
 				GameNotification('Game Action', "Invited you to a pong game!", data.username);
 				gameaccept.addEventListener('click', async function () {
 					console.log('datachat: ', data);
-					if (window.userData['pong_socket']) {
-						window.userData['pong_socket'].close();
-						delete window.userData['pong_socket'];
-					}
+					// if (window.userData['pong_socket']) {
+					// 	window.userData['pong_socket'].close();
+					// 	delete window.userData['pong_socket'];
+					// }
 					const u = new URL(baseUrl);
 					const accessToken = localStorage.getItem('accessToken');
 					if (!accessToken) {
@@ -134,6 +138,7 @@ export async function	launchSocket() {
 					window.navigateTo('PONG', null);
 					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data.room_name}/?token=${accessToken}`);
 					window.userData['pong_socket'] = gameSocket;
+					window.userData.r_name = data.room_name;
 					menu.style.display = 'none';
 					ai_menu.style.display = 'none';
 					inv_menu.style.display = 'none';
@@ -399,6 +404,7 @@ function GameNotification(title, message, target) {
 	gameaccept.style.padding = '0.25rem 0.5rem'; 
 	gameaccept.style.fontSize = '0.75rem';
 	gameaccept.style.marginLeft = '10px';
+	gameaccept.style.id = 'game-btn' + target;
 
 	header.appendChild(header_msg);
 	header.appendChild(gameaccept);

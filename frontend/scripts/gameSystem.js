@@ -119,7 +119,6 @@ export async function startGameSocket() {
             inv_menu.style.display = 'none';
             Instructions.style.display = 'none';
             lobby.style.display = 'flex';
-            console.log('Current players in the room:', data.players);
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
         }
     }
