@@ -10,9 +10,11 @@ const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
+const Tlobby = document.getElementById('pong-tournament');
 const baseUrl = process.env.ACTIVE_HOST;
 import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket  } from "./gameSystem.js";
+import { startTournamentSocket } from "./gameSystemT.js";
 let tar;
 
 export function handleSend(username, r_name, action) {
@@ -124,29 +126,47 @@ export async function	launchSocket() {
 				}
 				GameNotification('Game Action', "Invited you to a pong game!", data.username);
 				gameaccept.addEventListener('click', async function () {
-					console.log('datachat: ', data);
-					// if (window.userData['pong_socket']) {
-					// 	window.userData['pong_socket'].close();
-					// 	delete window.userData['pong_socket'];
-					// }
-					const u = new URL(baseUrl);
-					const accessToken = localStorage.getItem('accessToken');
-					if (!accessToken) {
-						Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+					if (data.room_name.includes('tournament')) {
+						const u = new URL(baseUrl);
+						const accessToken = localStorage.getItem('accessToken');
+						if (!accessToken) {
+							Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+							return ;
+						}
+						window.navigateTo('PONG', null);
+						const gameSocket = new WebSocket(`ws://${u.host}/ws/tournament/${data.room_name}/?token=${accessToken}`);
+						window.userData['pong_socket'] = gameSocket;
+						window.userData.r_name = data.room_name;
+						menu.style.display = 'none';
+						ai_menu.style.display = 'none';
+						inv_menu.style.display = 'none';
+						Instructions.style.display = 'none';
+						lobby.style.display = 'none';
+						Tlobby.style.display = 'block';
+						window.lobbySettings = data.lobbySettings;
+						startTournamentSocket();
+						return ;
+					} else {
+						const u = new URL(baseUrl);
+						const accessToken = localStorage.getItem('accessToken');
+						if (!accessToken) {
+							Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+							return ;
+						}
+						window.navigateTo('PONG', null);
+						const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data.room_name}/?token=${accessToken}`);
+						window.userData['pong_socket'] = gameSocket;
+						window.userData.r_name = data.room_name;
+						menu.style.display = 'none';
+						ai_menu.style.display = 'none';
+						inv_menu.style.display = 'none';
+						Instructions.style.display = 'none';
+						Tlobby.style.display = 'none';
+						lobby.style.display = 'flex';
+						window.lobbySettings = data.lobbySettings;
+						startGameSocket();
 						return ;
 					}
-					window.navigateTo('PONG', null);
-					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data.room_name}/?token=${accessToken}`);
-					window.userData['pong_socket'] = gameSocket;
-					window.userData.r_name = data.room_name;
-					menu.style.display = 'none';
-					ai_menu.style.display = 'none';
-					inv_menu.style.display = 'none';
-					Instructions.style.display = 'none';
-					lobby.style.display = 'flex';
-					window.lobbySettings = data.lobbySettings;
-					startGameSocket();
-					return ;
 				});
 				return ;
 			}

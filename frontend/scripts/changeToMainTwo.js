@@ -355,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	const Instructions = document.getElementById('Instructions-box');
 	const lobby = document.getElementById('pong-inv-container');
 	const menu = document.getElementById('menuuu');
-	const tourniLobby = document.getElementById('tournament');
 
 	mainOne.style.display = 'none';
 	log1.style.display = 'none';
@@ -393,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			// tourniLobby.style.display = 'none';
 		}
 		window.altFfour();
+		Tlobby.style.display = 'none';
 		inv_menu.style.display = 'none';
 		ai_menu.style.display = 'none';
 		Instructions.style.display = 'none';

@@ -7,7 +7,6 @@ const Tlobby = document.getElementById('pong-tournament');
 const menu = document.getElementById('menuuu');
 const  carousel = document.getElementById('bracket-container');
 const tourniLobby = document.getElementById('tournament');
-let lobbysettings;
 // const gamer2Template = {
 // 	username: "Player 1",
 // 	avatar: "assets/avatar2.svg",
@@ -17,16 +16,6 @@ let lobbysettings;
 // };
 
 // const gamers = Array(8).fill().map(() => ({ ...gamer2Template }));
-
-document.getElementById('PONG-button').addEventListener('click', function () {
-	const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
-	const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
-	lobbysettings = {
-		 mode: gameMode,
-		 map: selectedMap
-	};
-	
-});
 
 async function getTournamentName() {
 	const access_token = localStorage.getItem('accessToken');
@@ -52,7 +41,7 @@ async function getTournamentName() {
     return data;
 }
 
-async function startTournamentSocket() {
+export async function startTournamentSocket() {
 	window.userData.pong_socket.onopen = function(e) {
 		console.log("TOURNAMENTSOCKET-ON");
 	}
@@ -71,8 +60,24 @@ async function startTournamentSocket() {
 			Instructions.style.display = 'none';
 			Tlobby.style.display = 'block';
 			console.log('Current players in the room: ', data.players);
-			displayTourniLobby(lobbysettings, data.players);
+			displayTourniLobby(lobbySettings, data.players);
 		}
+	}
+}
+
+function sendGameStatus(username, ready) {
+	if (window.userData.pong_socket) {
+		 const stateData = {
+			  'username': username,
+			  'ready': ready,
+		 }
+		 window.userData.pong_socket.send(JSON.stringify({
+			  action: 'player_action',
+			  state: stateData
+		 }));
+	} else {
+		 return ;
+		 // here have to handle the error or rather changing view this shouldnt be reached in anycase anyway
 	}
 }
 
@@ -115,6 +120,7 @@ const Tcontainer = document.getElementById('tournament-cards');
 const lobbyNameElement = document.getElementById('tournament-name');
 
 function displayTourniLobby(lobbysettings, TourniPlayers) {
+	Tcontainer.innerHTML = '';
 	lobbyNameElement.innerHTML = `
 		<div class="map">Map:   ${lobbysettings.map}</div>
 		<h1>Tournament</h1>
@@ -125,7 +131,7 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 
 		let playerContainer = document.createElement('div');
 		playerContainer.classList.add('pong-tournament-players');
-		
+		console.log(player);
 		if (player) {
 			playerContainer.id = player.username;
 			let avatarContainer = document.createElement('div');
@@ -143,6 +149,11 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 			playerButton.type = 'button';
 			playerButton.id = 'ready-button-' + player.username;
 			playerButton.classList.add('btn', 'btn-readyT');
+			if (player.ready) {
+				readyPlayers++;
+				playerButton.classList.add('ready');
+				playerButton.textContent = 'Ready!';
+			}
 			playerButton.addEventListener('click', function () {
 			const username = playerButton.id.split('-').pop();
 			if (username === window.userData.username) {
@@ -150,11 +161,14 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 					readyPlayers--;
 					playerButton.classList.remove('ready');
 					playerButton.textContent = 'Not Ready';
+					player.ready = false;
 				} else {
 					readyPlayers++;
 					playerButton.classList.add('ready');
 					playerButton.textContent = 'Ready!';
+					player.ready = true;
 				}
+				sendGameStatus(player.username, player.ready);
 				checkReadyStatus(TourniPlayers);
 			}
 			});
@@ -247,8 +261,7 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 	
 }
 function checkReadyStatus(TourniPlayers) {
-	console.log(readyPlayers);
-	if (readyPlayers === 1) {
+	if (readyPlayers === 8) {
 		Tcontainer.style.display = 'none';
 		lobbyNameElement.style.display = 'none';
 		carousel.style.display = 'flex';
