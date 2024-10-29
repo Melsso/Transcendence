@@ -26,6 +26,8 @@ document.getElementById('PONG-button').addEventListener('click', function () {
         mode: gameMode,
         map: selectedMap
     };
+    window.stopGameLoop();
+    window.resets();
 });
 
 window.window.elapsedTime;
@@ -595,18 +597,17 @@ function drawRetroTrianglePattern() {
 
 generateGrassPositions();
 function gameLoop(difficulty, setting) {
-    console.log(setting);
     if (setting === null){
         setting.mode = 'Default mode';
         setting.map = 'Map 1';
     }
     if (!gameActive) {
+        console.log('ALLO');
         return;
     }
     window.diffy = difficulty;
     if (!window.ResetTime)
         window.ResetTime = Date.now();
-    ai_menu.style.display = 'none';
     window.isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     //drawMap();

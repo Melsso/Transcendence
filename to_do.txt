@@ -32,4 +32,5 @@ MINOR:
 		//fix accordion not opening till inspect is opened
 		//fix tourni lobby, a bit of a diffy 
 		//make rendering version of game for websockets
+		//global chat aint refreshing
 

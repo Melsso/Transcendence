@@ -87,7 +87,6 @@ function	resets(){
 	block.visible = false;
 	aiblock.visible = false;
 	window.LastpaddletoHit = null;
-	gameover = false;
 	if (buff.speed > 0) {
 		buff.speed *= -1;
 	}
@@ -100,6 +99,7 @@ function	resets(){
 	player1.score = 0;
 	player2.score = 0;
 }
+
 window.resets = resets;
 
 function	redoGame(){
@@ -148,7 +148,7 @@ function	redoGame(){
 	if (PaddleBigger.speed > 0) {
 		 PaddleBigger.speed *= -1;
 	}
-	gameActive = true;
+	window.gameActive = true;
 	window.gameLoop(diffy, window.setting);
 	player1.score = 0;
 	player2.score = 0;
@@ -165,17 +165,17 @@ document.addEventListener('keydown', (event) => {
 });
 
 function stopGameLoop() {
-	for (let i = 0; i < animationFrameIDs.length; i++) {
-		 cancelAnimationFrame(animationFrameIDs[i]);
+	window.gameActive = false;
+	for (let i = 0; i < window.animationFrameIDs.length; i++) {
+		 cancelAnimationFrame(window.animationFrameIDs[i]);
 	}
-	animationFrameIDs = [];
-	gameActive = false;
+	window.animationFrameIDs = [];
 }
 window.stopGameLoop = stopGameLoop;
 
 document.addEventListener('keydown', (event) => {
 	if (window.GOscreen === true){
-		if (event.code === 'KeyQ' && gameActive === false){
+		if (event.code === 'KeyQ' && window.gameActive === false){
 			window.ResetTime = null;
 			ball.x = window.canvas.width / 2;
 			ball.y = window.canvas.height / 2;
@@ -190,7 +190,7 @@ document.addEventListener('keydown', (event) => {
 			window.menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
-			gameActive = false;
+			window.gameActive = false;
 		}
 	}
 });
