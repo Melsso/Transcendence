@@ -159,7 +159,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 class TournamentConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'tournament_room_'
 	async def connect(self):
-		self.room_name = self.scope['url_route']['kwargs']['room_name']
+		logger.warning(self.scope)
+		self.room_name = self.scope['url_route']['kwargs']['tournament_room_name']
 		self.room_group_name = f'{self.room_name}'
 		user = self.scope['user']
 		if user.is_anonymous:

@@ -8,15 +8,15 @@ const menu = document.getElementById('menuuu');
 const  carousel = document.getElementById('bracket-container');
 const tourniLobby = document.getElementById('tournament');
 let lobbysettings;
-const gamer2Template = {
-	username: "Player 1",
-	avatar: "assets/avatar2.svg",
-	wins: '3',
-	losses: '0',
-	level: '7.34'
-};
+// const gamer2Template = {
+// 	username: "Player 1",
+// 	avatar: "assets/avatar2.svg",
+// 	wins: '3',
+// 	losses: '0',
+// 	level: '7.34'
+// };
 
-const gamers = Array(8).fill().map(() => ({ ...gamer2Template }));
+// const gamers = Array(8).fill().map(() => ({ ...gamer2Template }));
 
 document.getElementById('PONG-button').addEventListener('click', function () {
 	const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
@@ -52,7 +52,7 @@ async function getTournamentName() {
     return data;
 }
 
-function startTournamentSocket() {
+async function startTournamentSocket() {
 	window.userData.pong_socket.onopen = function(e) {
 		console.log("TOURNAMENTSOCKET-ON");
 	}
@@ -65,7 +65,6 @@ function startTournamentSocket() {
 		if (data.action == 'update_game_state') {
 			gameState = data.gameState;
 		} else if (data.action === 'current_players') {
-			// adjust some styling here probably
 			menu.style.display = 'none';
 			ai_menu.style.display = 'none';
 			inv_menu.style.display = 'none';
@@ -79,11 +78,11 @@ function startTournamentSocket() {
 
 tourniLobby.addEventListener('click', async function (event) {
 	event.preventDefault();
-	// menu.style.display = 'none';
-	// ai_menu.style.display = 'none';
-	// inv_menu.style.display = 'none';
-	// Instructions.style.display = 'none';
-	// Tlobby.style.display = 'block';
+	menu.style.display = 'none';
+	ai_menu.style.display = 'none';
+	inv_menu.style.display = 'none';
+	Instructions.style.display = 'none';
+	Tlobby.style.display = 'block';
 	const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
 		Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
@@ -96,10 +95,9 @@ tourniLobby.addEventListener('click', async function (event) {
 			window.userData.r_name = null;
 		}
 		const result = await getTournamentName();
+		window.userData.r_name = result.tournament_room_name;
 		const u = new URL(baseUrl);
 		window.userData.pong_socket = new WebSocket(`ws://${u.host}/ws/tournament/${result['tournament_room_name']}/?token=${accessToken}`);
-		window.userData.r_name = result.tournament_room_name;
-		// load the socket or smth
 		startTournamentSocket();
 	} catch(error) {
 		Notification('Game Action', `Failed To Create A Tournament: ${error}`, 2, 'alert');
@@ -110,7 +108,6 @@ tourniLobby.addEventListener('click', async function (event) {
         window.userData.pong_socket = null;
         return ;
 	}
-	displayTourniLobby(lobbysettings, gamers);
 });
 
 let readyPlayers = 0;
@@ -130,46 +127,43 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 		playerContainer.classList.add('pong-tournament-players');
 		
 		if (player) {
-			 playerContainer.id = player.username;
+			playerContainer.id = player.username;
+			let avatarContainer = document.createElement('div');
+			avatarContainer.classList.add('avatarT');
+			let playerAvatar = document.createElement('img');
+			playerAvatar.classList.add('avatar-imageT');
+			playerAvatar.src = player.avatar;
+			playerAvatar.alt = player.username;
+			let infoContainer = document.createElement('div');
+			infoContainer.classList.add('player-infoT');
+			let playerHeader = document.createElement('h3');
+			playerHeader.textContent = player.username;
+			let playerButton = document.createElement('button');
+			playerButton.textContent = 'Not Ready';
+			playerButton.type = 'button';
+			playerButton.id = 'ready-button-' + player.username;
+			playerButton.classList.add('btn', 'btn-readyT');
+			playerButton.addEventListener('click', function () {
+			const username = playerButton.id.split('-').pop();
+			if (username === window.userData.username) {
+				if (playerButton.classList.contains('ready')) {
+					readyPlayers--;
+					playerButton.classList.remove('ready');
+					playerButton.textContent = 'Not Ready';
+				} else {
+					readyPlayers++;
+					playerButton.classList.add('ready');
+					playerButton.textContent = 'Ready!';
+				}
+				checkReadyStatus(TourniPlayers);
+			}
+			});
 
-			 let avatarContainer = document.createElement('div');
-			 avatarContainer.classList.add('avatarT');
-
-			 let playerAvatar = document.createElement('img');
-			 playerAvatar.classList.add('avatar-imageT');
-			 playerAvatar.src = player.avatar;
-			 playerAvatar.alt = player.username;
-
-			 let infoContainer = document.createElement('div');
-			 infoContainer.classList.add('player-infoT');
-
-			 let playerHeader = document.createElement('h3');
-			 playerHeader.textContent = player.username;
-
-			 let playerButton = document.createElement('button');
-			 playerButton.textContent = 'Not Ready';
-			 playerButton.type = 'button';
-			 playerButton.id = player.username + 'ready';
-			 playerButton.classList.add('btn', 'btn-readyT');
-
-			 playerButton.addEventListener('click', function () {
-				  if (playerButton.classList.contains('ready')) {
-						readyPlayers--;
-						playerButton.classList.remove('ready');
-						playerButton.textContent = 'Not Ready';
-				  } else {
-						readyPlayers++;
-						playerButton.classList.add('ready');
-						playerButton.textContent = 'Ready!';
-				  }
-				  checkReadyStatus(TourniPlayers);
-			 });
-
-			 avatarContainer.appendChild(playerAvatar);
-			 playerContainer.appendChild(avatarContainer);
-			 infoContainer.appendChild(playerHeader);
-			 playerContainer.appendChild(infoContainer);
-			 playerContainer.appendChild(playerButton);
+			avatarContainer.appendChild(playerAvatar);
+			playerContainer.appendChild(avatarContainer);
+			infoContainer.appendChild(playerHeader);
+			playerContainer.appendChild(infoContainer);
+			playerContainer.appendChild(playerButton);
 		} else {
 			let modalOverlay = document.createElement('div');
 			modalOverlay.id = 'modal-overlay' + i;
