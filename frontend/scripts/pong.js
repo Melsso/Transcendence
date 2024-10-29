@@ -31,6 +31,7 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 window.elapsedTime = null;
 window.gameActive = false;
 window.flag = 0;
+window.fflag = 0;
 window.data = {
     playerStats1: {
         score: 0,
@@ -97,8 +98,8 @@ function    drawMaps(){
     else if (setting.map === 'Map 3'){
         drawRetroTrianglePattern();
         drawBBall(ball.x, ball.y, ball.radius);
+        drawBaiPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
         drawBPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
-        drawBPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     }
 }
 
@@ -202,6 +203,8 @@ function altFfour(){
     EL = 0;
 	crossCount = 0;
     ResetTime = 0;
+    flag = 0;
+    fflag = 0;
 	AttackCount = 0;
 	BigPadCount = 0;
     playerPaddle.dy = 7;
@@ -256,6 +259,8 @@ function restartGame(difficulty) {
     AttackCount = 0;
     BigPadCount = 0;
     playerPaddle.dy = 7;
+    flag = 0;
+    fflag = 0;
     aiPaddle.dy = 7;
     ball.dy = 6;
     playerPaddle.hasanattack = 0;
@@ -263,6 +268,7 @@ function restartGame(difficulty) {
     buff.visible = false;
     Attack.visible = false;
     block.visible = false;
+    aiblock.visible = false;
     PaddleBigger.visible = false;
     ResetTime = null;
     LastpaddletoHit = null;
@@ -369,6 +375,8 @@ function newRound(){
         aiblock.visible = false;
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
+        flag = 0;
+        fflag = 0;
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
@@ -424,20 +432,34 @@ function drawPaddle(x, y, width, height) {
     ctx.fillStyle = 'white';
     if (flag){
         ctx.fillStyle = 'gold';
-        flag--;
     }
     ctx.fillRect(x, y, width, height);
 }
+function drawaiPaddle(x, y, width, height) {
+    ctx.fillStyle = 'white';
+    if (fflag){
+        ctx.fillStyle = 'gold';
+    }
+    ctx.fillRect(x, y, width, height);
+}
+window.drawaiPaddle = drawaiPaddle;
 window.drawPaddle = drawPaddle;
 function drawBPaddle(x, y, width, height) {
     ctx.fillStyle = 'black';
     if (flag){
         ctx.fillStyle = 'gold';
-        flag--;
+    }
+    ctx.fillRect(x, y, width, height);
+}
+function drawBaiPaddle(x, y, width, height) {
+    ctx.fillStyle = 'black';
+    if (fflag){
+        ctx.fillStyle = 'gold';
     }
     ctx.fillRect(x, y, width, height);
 }
 window.drawBPaddle = drawBPaddle;
+window.drawBaiPaddle = drawBPaddle;
 
 function drawBall(x, y, radius) {
     ctx.beginPath();
@@ -720,7 +742,7 @@ function gameLoop(difficulty, setting) {
     switchOnAI();
     if (setting.map === 'Map 1' || setting.map === 'Map 2'){
         drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
-        drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+        drawaiPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
         drawBall(ball.x, ball.y, ball.radius);
     }
     movePlayerPaddle();

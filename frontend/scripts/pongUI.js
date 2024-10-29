@@ -55,8 +55,6 @@ window.aiDidHit = false;
 window.crossCount = 0;
 window.AttackCount = 0;
 window.BigPadCount = 0;
-window.sbVisible = false;
-window.abVisible = true;
 window.BallinBuff = false;
 window.BallinAttackBuff = false;
 window.BallinPadBigBuff = false;
@@ -136,6 +134,7 @@ function	redoGame(){
 	Attack.visible = false;
 	PaddleBigger.visible = false;
 	block.visible = false;
+	aiblock.visible = false;
 	switchOnAI();
 	LastpaddletoHit = null;
 	gameover = false;
@@ -299,7 +298,7 @@ function drawBlock() {
 window.drawBlock = drawBlock;
 function drawaiBlock() {
 	if (aiblock.visible) {
-		window.ctx.fillStyle = 'green';
+		window.ctx.fillStyle = 'green';	
 		window.ctx.fillRect(aiblock.x, aiblock.y, aiblock.width, aiblock.height);
 	}
 }
@@ -446,10 +445,12 @@ function drawSpeedBuff() {
 							giveSpeedBuff();
 							if (LastpaddletoHit === "player 1"){
 								player1.Btaken++;
-								flag = 50;
+								flag = 1;
 							}
-							else
+							else if (LastpaddletoHit === "Ai"){
 								player2.Btaken++;
+								fflag = 1;
+							}
 						 }
 						 }
 					}
