@@ -96,6 +96,22 @@ function sendGameState(sock) {
     }
 }
 
+function sendGameStatus(username, ready) {
+    if (window.userData.pong_socket) {
+        const stateData = {
+            'username': username,
+            'ready': ready,
+        }
+        window.userData.pong_socket.send(JSON.stringify({
+            action: 'player_action',
+            state: stateData
+        }));
+    } else {
+        return ;
+        // here have to handle the error or rather changing view this shouldnt be reached in anycase anyway
+    }
+}
+
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
         console.log("GAMESOCKET--ON")
@@ -170,17 +186,26 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         <button type="button" id="${btnid}" class="btn btn-ready">Not Ready</button>
     `;
     const readyButton1 = document.getElementById(btnid);
-    readyButton1.textContent = 'Not Ready';
+    if (gamer1.ready) {
+        readyButton1.classList.add('ready');
+        readyButton1.textContent = 'Ready!';
+    }else {
+        readyButton1.textContent = 'Not Ready';
+        readyButton1.classList.remove('ready');
+    }
     readyButton1.addEventListener('click', function () {
         const username = btnid.split('-').pop();
         if (username === window.userData.username) {
             if (readyButton1.classList.contains('ready')) {
                 readyButton1.classList.remove('ready');
                 readyButton1.textContent = 'Not Ready';
+                gamer1.ready = false;
             } else {
                 readyButton1.classList.add('ready');
                 readyButton1.textContent = 'Ready!';
+                gamer1.ready = true;
             }
+            sendGameStatus(gamer1.username, gamer1.ready);
         }
     });
     
@@ -205,17 +230,26 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         <button type="button" id="${btnid2}" class="btn btn-ready">Not Ready</button>
     `;
         const readyButton2 = document.getElementById(btnid2);
-        readyButton2.textContent = 'Not Ready'; 
+        if (gamer2.ready) {
+            readyButton2.classList.add('ready');
+            readyButton2.textContent = 'Ready!';
+        }else {
+            readyButton2.textContent = 'Not Ready'; 
+            readyButton2.classList.remove('ready');
+        }
         readyButton2.addEventListener('click', function () {
             const username2 = btnid2.split('-').pop();
             if (username2 === window.userData.username) {
                 if (readyButton2.classList.contains('ready')) {
                     readyButton2.classList.remove('ready');
                     readyButton2.textContent = 'Not Ready';
+                    gamer2.ready = false;
                 } else {
                     readyButton2.classList.add('ready');
                     readyButton2.textContent = 'Ready!';
+                    gamer2.ready = true;
                 }
+                sendGameStatus(gamer2.username, gamer2.ready);
             }
         });
     } else {

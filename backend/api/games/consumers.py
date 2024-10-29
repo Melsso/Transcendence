@@ -66,14 +66,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 					}
 				)
 			elif action == 'player_action':
-				await self.channel_layer.group_send(
-					self.room_group_name,
-					{
-						'type': 'player_action',
-						'action': action,
-						'state': state
-					}
-				)
+				username = state['username']
+				ready_status = state['ready']
+				await self.update_player_ready(username, ready_status)
+				players_in_room = await self.get_players_in_room()
+				await self.send_current_players(players_in_room)  
+			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
 		except Exception as e:
@@ -83,11 +81,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def player_action(self, event):
 		action = event['action']
 		players = event['players']
-
-		await self.send(text_data=json.dumps({
-			'action': action,
-			'players': players
-		}))
+		if players:
+			await self.send(text_data=json.dumps({
+				'action': action,
+				'players': players
+			}))
 
 	async def game_action(self, event):
 		action = event['action']
@@ -106,23 +104,22 @@ class GameConsumer(AsyncWebsocketConsumer):
 			"ready": False
 		}
 		await redis.hset(self.redis_key, player_name, json.dumps(player_data))
-		# await redis.rpush(self.redis_key, player_name)
 		await redis.close()
 
 	async def get_players_in_room(self):
 		redis = await aioredis.from_url("redis://redis:6379")
 		players_dict = await redis.hgetall(self.redis_key)
 		await redis.close()
-		players = {k.decode('utf-8'): json.loads(v) for k, v in players_dict.items()}
+		players = {
+        	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
+        	for k, v in players_dict.items()
+    	}
 		return players
 
 	async def remove_player_from_room(self, player_name):
 		redis = await aioredis.from_url("redis://redis:6379")
-		logger.warning(player_name)
 		await redis.hdel(self.redis_key, player_name)
-		# await redis.lrem(self.redis_key, 0, player_name)
 		players = await redis.hgetall(self.redis_key)
-		logger.warning(players)
 		if not players:
 			await redis.delete(self.redis_key)
 		await redis.close()
@@ -146,8 +143,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	async def send_current_players(self, players):
 		user_profiles = await self.get_user_profiles(players)
+		ready_status = {username: data['ready'] for username, data in players.items()}
 		for profile in user_profiles:
-			profile['ready'] = players[profile['username']]['ready']
+			profile['ready'] = ready_status.get(profile['username'], False)
+		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {
@@ -158,7 +157,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		)
 
 class TournamentConsumer(AsyncWebsocketConsumer):
-	redis_room_prefix = 'game_room_'
+	redis_room_prefix = 'tournament_room_'
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
 		self.room_group_name = f'{self.room_name}'
@@ -196,21 +195,27 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			self.channel_name
 		)
 
-
 	async def receive(self, text_data):
 		try:
 			data = json.loads(text_data)
 			action = data['action']
 			state = data['state']
-			await self.channel_layer.group_send(
-				self.room_group_name,
-				{
-					'type': 'game_action',
-					'action': action,
-					'state': state
-				}
-			)
-
+			if action == 'game_action':
+				await self.channel_layer.group_send(
+					self.room_group_name,
+					{
+						'type': 'game_action',
+						'action': action,
+						'state': state
+					}
+				)
+			elif action == 'player_action':
+				username = state['username']
+				ready_status = state['ready']
+				await self.update_player_ready(username, ready_status)
+				players_in_room = await self.get_players_in_room()
+				await self.send_current_players(players_in_room)  
+			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
 		except Exception as e:
@@ -220,11 +225,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def player_action(self, event):
 		action = event['action']
 		players = event['players']
-
-		await self.send(text_data=json.dumps({
-			'action': action,
-			'players': players
-		}))
+		if players:
+			await self.send(text_data=json.dumps({
+				'action': action,
+				'players': players
+			}))
 
 	async def game_action(self, event):
 		action = event['action']
@@ -238,33 +243,54 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def add_player_to_room(self, player_name):
 		redis = await aioredis.from_url("redis://redis:6379")
-		await redis.rpush(self.redis_key, player_name)
+		player_data = {
+			"username": player_name,
+			"ready": False
+		}
+		await redis.hset(self.redis_key, player_name, json.dumps(player_data))
 		await redis.close()
 
 	async def get_players_in_room(self):
 		redis = await aioredis.from_url("redis://redis:6379")
-		players = await redis.lrange(self.redis_key, 0, -1)
+		players_dict = await redis.hgetall(self.redis_key)
 		await redis.close()
+		players = {
+        	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
+        	for k, v in players_dict.items()
+    	}
 		return players
 
 	async def remove_player_from_room(self, player_name):
 		redis = await aioredis.from_url("redis://redis:6379")
-		logger.warning(player_name)
-		await redis.lrem(self.redis_key, 0, player_name)
-		players = await redis.lrange(self.redis_key, 0, -1)
-		logger.warning(players)
+		await redis.hdel(self.redis_key, player_name)
+		players = await redis.hgetall(self.redis_key)
 		if not players:
 			await redis.delete(self.redis_key)
 		await redis.close()
 	
-	async def get_user_profiles(self, player_usernames):
+	async def update_player_ready(self, player_name, ready_status):
+		redis = await aioredis.from_url("redis://redis:6379")
+		player_data_raw = await redis.hget(self.redis_key, player_name)
+		if player_data_raw:
+			player_data = json.loads(player_data_raw)
+			player_data["ready"] = ready_status
+			await redis.hset(self.redis_key, player_name, json.dumps(player_data))
+		await redis.close()
+
+	async def get_user_profiles(self, players):
+		player_usernames = [player_data['username'] for player_data in players.values()]
 		player_usernames = [username.decode('utf-8') if isinstance(username, bytes) else username for username in player_usernames]
+
 		user_profiles = await database_sync_to_async(lambda: list(UserProfile.objects.filter(username__in=player_usernames)))()
 		serializer = UserProfileSerializer(user_profiles, many=True)
 		return serializer.data
 
 	async def send_current_players(self, players):
 		user_profiles = await self.get_user_profiles(players)
+		ready_status = {username: data['ready'] for username, data in players.items()}
+		for profile in user_profiles:
+			profile['ready'] = ready_status.get(profile['username'], False)
+		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {
