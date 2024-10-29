@@ -1,6 +1,7 @@
 import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
+import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
 // This variable is used to store user data
 
 // This variable is needed to catch the useremail after registering and before email verification
@@ -360,8 +361,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	log1.style.display = 'none';
 	forgotcontainer.style.display = 'none';
 	newpass.style.display = 'none';
-	mainTwo.style.display = 'flex';
-	mainBody.style.display = 'flex';
+	mainTwo.style.display = 'none';
+	mainBody.style.display = 'none';
 	mainSettings.style.display = 'none';
 	mainPONGgame.style.display = 'none';
 	
@@ -445,7 +446,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			
 				mainTwo.style.display = 'flex';
 				mainBody.style.display = 'flex';
-
+				setAccordionMaxHeight();
+				adjustAccordionHeight();
 			} catch (error) {
 				Notification('Profile Action', "Error: changeToMainTwo.js:379", 2, 'alert'); // check
 			}
