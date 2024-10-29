@@ -129,6 +129,11 @@ export async function	launchSocket() {
 					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data.room_name}/?token=${accessToken}`);
 					window.userData['pong_socket'] = gameSocket;
 					window.navigateTo('PONG', null);
+					menu.style.display = 'none';
+					ai_menu.style.display = 'none';
+					inv_menu.style.display = 'none';
+					Instructions.style.display = 'none';
+					lobby.style.display = 'flex';
 					window.lobbySettings = data.lobbySettings;
 					startGameSocket();
 					return ;
