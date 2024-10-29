@@ -1,14 +1,15 @@
 import { computeStats } from "./populatePageHelpers";
+import { handleSend } from "./chat.js";
 const baseUrl = process.env.ACTIVE_HOST;
 
-const menu = document.getElementById('menuuu');
 const lo = document.getElementById('1v1');
-window.lobbySettings;
-let gameInterval = null;
+const menu = document.getElementById('menuuu');
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
+window.lobbySettings;
+let gameInterval = null;
 let gameState = {
     ball: { x:0, y:0 },
     player1: { y:0 },
@@ -217,6 +218,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         const id3 = 'pong-modal-1' + gamer1.username;
         const id4 = 'modal-overlay' + gamer1.username;
         const id5 = 'modal-submit' + gamer1.username;
+        const id6 = 'search-modal' + gamer1.username;
         gamer2Container.innerHTML = `
         <div id="${id4}" class="modal-overlay"></div>
         <div id="pong-p-c">
@@ -224,7 +226,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             <div id="${id3}" class="search-modal">
                 <div class="search-modal-content">
                     <h2 style="color: #ffcc00; text-align: center;">Search for Player</h2>
-                    <input type="text" placeholder="Enter player name..." id="search-input" />
+                    <input type="text" placeholder="Enter player name..." id="${id6}" />
                     <div class="search-modal-buttons">
                         <button id="${id2}" class="modal-btn">Close</button>
                         <button id="${id5}" class="modal-btn">Submit</button>
@@ -244,7 +246,18 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         });
 
         document.getElementById(id5).addEventListener('click', function () {
-            console.log('inviting');
+            if (window.userData.socket) {
+				if (window.userData.pong_socket) {
+					handleSend(document.getElementById(id6).value , window.userData.r_name, 'Notification');
+					Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
+				}
+				else {
+					Notification('Game Action', 'You Are Not In A Lobby! Join A Lobby First!', 2, 'alert');
+				}
+			}
+			else {
+				Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+			}
         });
     }
 

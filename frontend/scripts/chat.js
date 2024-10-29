@@ -5,6 +5,11 @@ const noChat = document.getElementById('no-chat');
 const globalbtn = document.getElementById('revert_to_global');
 const open = document.createElement('button');
 const gameaccept = document.createElement('button');
+const menu = document.getElementById('menuuu');
+const inv_menu = document.getElementById('inv-menu');
+const ai_menu = document.getElementById('ai-menu');
+const Instructions = document.getElementById('Instructions-box');
+const lobby = document.getElementById('pong-inv-container');
 const baseUrl = process.env.ACTIVE_HOST;
 import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket  } from "./gameSystem.js";
@@ -123,12 +128,12 @@ export async function	launchSocket() {
 					const u = new URL(baseUrl);
 					const accessToken = localStorage.getItem('accessToken');
 					if (!accessToken) {
-						Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+						Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
 						return ;
 					}
+					window.navigateTo('PONG', null);
 					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data.room_name}/?token=${accessToken}`);
 					window.userData['pong_socket'] = gameSocket;
-					window.navigateTo('PONG', null);
 					menu.style.display = 'none';
 					ai_menu.style.display = 'none';
 					inv_menu.style.display = 'none';
