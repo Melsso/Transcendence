@@ -149,7 +149,7 @@ function	redoGame(){
 		 PaddleBigger.speed *= -1;
 	}
 	gameActive = true;
-	window.gameLoop(diffy);
+	window.gameLoop(diffy, window.setting);
 	player1.score = 0;
 	player2.score = 0;
 }

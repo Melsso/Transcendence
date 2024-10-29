@@ -14,6 +14,7 @@ const ai_easy = document.getElementById('PongEasy');
 const ai_medium = document.getElementById('PongMedium');
 const ai_hard = document.getElementById('PongHard');
 const ins_return = document.getElementById('return-to-menu-ins');
+window.setting = null;
 let paddleWidth;
 let paddleHeight;
 let ballRadius;
@@ -21,7 +22,7 @@ let ballRadius;
 document.getElementById('PONG-button').addEventListener('click', function () {
     const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
     const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
-    Settings = {
+    window.setting = {
         mode: gameMode,
         map: selectedMap
     };
@@ -291,17 +292,8 @@ function moveBall() {
         newRound();
 }
 
-function stopGameLoop() {
-	for (let i = 0; i < animationFrameIDs.length; i++) {
-		 cancelAnimationFrame(animationFrameIDs[i]);
-	}
-	animationFrameIDs = [];
-	gameActive = false;
-}
-
-
 function restartRound() {
-    gameLoop(diffy);
+    gameLoop(diffy, window.setting);
 }
 
 function newRound(){
@@ -313,7 +305,7 @@ function newRound(){
             gameover = true;
             return;
         }
-        stopGameLoop();
+        window.stopGameLoop();
         playerPaddle.hasanattack = 0;
         aiPaddle.hasanattack = 0;
         block.visible = false;
@@ -338,7 +330,7 @@ function newRound(){
             gameover = true;
             return;
         }
-        stopGameLoop();
+        window.stopGameLoop();
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
@@ -602,7 +594,12 @@ function drawRetroTrianglePattern() {
 
 
 generateGrassPositions();
-function gameLoop(difficulty) {
+function gameLoop(difficulty, setting) {
+    console.log(setting);
+    if (setting === null){
+        setting.mode = 'Default mode';
+        setting.map = 'Map 1';
+    }
     if (!gameActive) {
         return;
     }
@@ -615,57 +612,60 @@ function gameLoop(difficulty) {
     //drawMap();
     drawRetroTrianglePattern();
     window.elapsedTime = Math.floor((Date.now() - window.ResetTime) / 1000);
-    if (window.elapsedTime === storedRandomNumber) {
-        Attack.visible = true;
-        Attack.y = canvas.height - Attack.height;
-        randomizeAttackX();
+    if (setting.mode === 'Buff Mode'){ 
+        if (window.elapsedTime === storedRandomNumber) {
+            Attack.visible = true;
+            Attack.y = canvas.height - Attack.height;
+            randomizeAttackX();
+        }
+        if (Attack.visible) {
+            moveAttackbuff();
+        }
+        if (AttackCount === 2)
+            Attack.visible = false;
+        if (window.elapsedTime === storedRandomNumber + 10) {
+            buff.visible = true;
+            buff.y = canvas.height - buff.height;
+            randomizeBuffX();
+        }
+        if (buff.visible) {
+            movebuff();
+        }
+        if (crossCount === 2)
+            buff.visible = false;
+        if (window.elapsedTime === storedRandomNumber + 20) {
+            PaddleBigger.visible = true;
+            PaddleBigger.y = canvas.height - PaddleBigger.height;
+            randomizePadBigX();
+        }
+        if (PaddleBigger.visible) {
+            movePadBigbuff();
+        }
+        if (BigPadCount === 2)
+            PaddleBigger.visible = false;
     }
-    if (Attack.visible) {
-        moveAttackbuff();
-    }
-    if (AttackCount === 2)
-        Attack.visible = false;
-    if (window.elapsedTime === storedRandomNumber + 10) {
-        buff.visible = true;
-        buff.y = canvas.height - buff.height;
-        randomizeBuffX();
-    }
-    if (buff.visible) {
-        movebuff();
-    }
-    if (crossCount === 2)
-        buff.visible = false;
-    if (window.elapsedTime === storedRandomNumber + 20) {
-        PaddleBigger.visible = true;
-        PaddleBigger.y = canvas.height - PaddleBigger.height;
-        randomizePadBigX();
-    }
-    if (PaddleBigger.visible) {
-        movePadBigbuff();
-    }
-    if (BigPadCount === 2)
-        PaddleBigger.visible = false;
     switchOnAI();
     drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
     drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
     drawBall(ball.x, ball.y, ball.radius);
     movePlayerPaddle();
     window.moveAIPaddle(difficulty);
-    window.didItHit();
-    window.didAiHit();
-    window.drawaiBlock();
-    window.drawBlock();
-    window.moveBlock();
-    window.moveaiBlock();
-    window.drawSpeedBuff();
-    window.drawAttackBuff();
-    window.drawPadBigBuff();
+    if (setting.mode === 'Buff Mode'){
+        window.didItHit();
+        window.didAiHit();
+        window.drawaiBlock();
+        window.drawBlock();
+        window.moveBlock();
+        window.moveaiBlock();
+        window.drawSpeedBuff();
+        window.drawAttackBuff();
+        window.drawPadBigBuff();
+    }
     moveBall();
     window.drawScoreBoard();
     window.drawTimer();
-    // player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit);
     window.gameOverScreen();
-    let frameID = requestAnimationFrame(() => gameLoop(difficulty));
+    let frameID = requestAnimationFrame(() => gameLoop(difficulty, setting));
     animationFrameIDs.push(frameID);
     if (gameover) {
         setbackoriginalvalues();
@@ -722,7 +722,7 @@ ai_easy.addEventListener('click', function (event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMap();
     gameActive = true;
-    gameLoop('easy');
+    gameLoop('easy', window.setting);
 });
 
 ai_medium.addEventListener('click', function(event) {
@@ -730,7 +730,7 @@ ai_medium.addEventListener('click', function(event) {
     event.preventDefault();
     drawMap();
     gameActive = true;
-    gameLoop('medium');
+    gameLoop('medium', window.setting);
 });
 
 ai_hard.addEventListener('click', function(event) {
@@ -738,7 +738,7 @@ ai_hard.addEventListener('click', function(event) {
     drawMap();
     event.preventDefault();
     gameActive = true;
-    gameLoop('hard');
+    gameLoop('hard', window.setting);
 });
 
 //  function applyBlurEffect() {
