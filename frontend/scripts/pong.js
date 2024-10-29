@@ -28,7 +28,7 @@ document.getElementById('PONG-button').addEventListener('click', function () {
     };
 });
 
-window.window.elapsedTime;
+window.elapsedTime = null;
 window.gameActive = false;
 window.flag = 0;
 window.data = {
@@ -51,6 +51,7 @@ window.data = {
 };
 
 window.LastpaddletoHit = null;
+
 
 window.playerPaddle = {
     x: 0,
@@ -108,10 +109,10 @@ function Prediction() {
 }
 window.Prediction = Prediction;
 
-let gameStartTime;
-const speedIncreaseInterval = 5000;
-const initialSpeed = 4;
-const speedIncrement = 0.22;
+window.gameStartTime;
+window.speedIncreaseInterval = 5000;
+window.initialSpeed = 4;
+window.speedIncrement = 0.22;
 
 
 function resizeCanvas() {
@@ -119,6 +120,7 @@ function resizeCanvas() {
     canvas.height = canvas.clientHeight;
     setGameDimensions();
 }
+window.resizeCanvas = resizeCanvas;
 
 function setGameDimensions() {
     paddleWidth = canvas.width * 0.01;
@@ -139,6 +141,7 @@ function setGameDimensions() {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
 }
+window.setGameDimension = setGameDimensions;
 
 function countdownBeforeRound(callback) {
     let countdown = 3;
@@ -163,47 +166,48 @@ function countdownBeforeRound(callback) {
         }
     }, 1000);
 }
+window.countdownBeforeRound = countdownBeforeRound;
 
 function altFfour(){
     console.log('we\'re reseting the game vars');
-    window.stopGameLoop();
-    window.GOscreen = false;
-	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
-	window.gameover = false; 
-    window.removeGameOverScreen();
-    // window.switchOffAI();
+    stopGameLoop();
+    GOscreen = false;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	gameover = false; 
+    removeGameOverScreen();
+    // switchOffAI();
 	if (wasHit === true){
-		window.aiPaddle.height *= 2;
+		aiPaddle.height *= 2;
 		wasHit = false;
 	}
 	if (aiDidHit === true){
-		window.playerPaddle.height *= 2;
+		playerPaddle.height *= 2;
 		aiDidHit = false;
 	}
-	window.crossCount = 0;
-	window.AttackCount = 0;
-	window.BigPadCount = 0;
-    window.playerPaddle.dy = 7;
-	window.aiPaddle.dy = 7;
-	window.ball.dy = 6;
-	window.buff.visible = false;
-	window.Attack.visible = false;
-	window.PaddleBigger.visible = false;
-	window.block.visible = false;
-	window.aiblock.visible = false;
-	window.LastpaddletoHit = null;
-	if (window.buff.speed > 0) {
-		window.buff.speed *= -1;
+	crossCount = 0;
+	AttackCount = 0;
+	BigPadCount = 0;
+    playerPaddle.dy = 7;
+	aiPaddle.dy = 7;
+	ball.dy = 6;
+	buff.visible = false;
+	Attack.visible = false;
+	PaddleBigger.visible = false;
+	block.visible = false;
+	aiblock.visible = false;
+	LastpaddletoHit = null;
+	if (buff.speed > 0) {
+		buff.speed *= -1;
 	}
-	if (window.Attack.speed > 0) {
-		window.Attack.speed *= -1;
+	if (Attack.speed > 0) {
+		Attack.speed *= -1;
 	}
-	if (window.PaddleBigger.speed > 0) {
-		window.PaddleBigger.speed *= -1;
+	if (PaddleBigger.speed > 0) {
+		PaddleBigger.speed *= -1;
 	}
-	window.player1.score = 0;
-	window.player2.score = 0;
-    window.gameActive = false;
+	player1.score = 0;
+	player2.score = 0;
+    gameActive = false;
 }
 window.altFfour = altFfour;
 
@@ -211,11 +215,11 @@ window.fullTime = null;
 window.LongestRound = null;
 window.ShortestRound = 2000;
 function restartGame(difficulty) {
-    fullTime += window.elapsedTime;
-    if (window.elapsedTime > LongestRound)
-        LongestRound = window.elapsedTime;
-    if (window.elapsedTime < ShortestRound)
-        ShortestRound = window.elapsedTime;
+    fullTime += elapsedTime;
+    if (elapsedTime > LongestRound)
+        LongestRound = elapsedTime;
+    if (elapsedTime < ShortestRound)
+        ShortestRound = elapsedTime;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMap();
     if (wasHit === true){
@@ -243,8 +247,8 @@ function restartGame(difficulty) {
     Attack.visible = false;
     block.visible = false;
     PaddleBigger.visible = false;
-    window.ResetTime = null;
-    window.LastpaddletoHit = null;
+    ResetTime = null;
+    LastpaddletoHit = null;
     gameover = false;
     if (buff.speed > 0) {
         buff.speed *= -1;
@@ -256,9 +260,10 @@ function restartGame(difficulty) {
         PaddleBigger.speed *= -1;
     };
 }
+window.restartGame = restartGame;
 
 window.isingame = false;
-resizeCanvas();
+window.resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 function movePlayerPaddle() {
@@ -271,20 +276,11 @@ function movePlayerPaddle() {
 
 
 window.aitoop = false;
-function switchOffAI() {
-    window.aitoop = true;
-}
-function switchOnAI() {
-    if (window.aitoop = true)
-        window.aitoop = false;
-}
-window.switchOnAI = switchOnAI;
 
-
-let EL = null;
+window.EL = null;
 function moveBall() {
-    window.elapsedTime = Date.now() - window.ResetTime;
-    const speedF = 1 + Math.floor(window.elapsedTime / speedIncreaseInterval) * speedIncrement;
+    elapsedTime = Date.now() - ResetTime;
+    const speedF = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
     ball.dx = initialSpeed * speedF * (ball.dx > 0 ? 1 : -1);
     ball.dy = initialSpeed * speedF * (ball.dy > 0 ? 1 : -1);
 
@@ -310,7 +306,7 @@ function moveBall() {
         ball.x = playerPaddle.x + playerPaddle.width + ballRadius + 1;
         
         ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-        window.LastpaddletoHit = "player 1";
+        LastpaddletoHit = "player 1";
         switchOnAI();
     }
 
@@ -326,28 +322,30 @@ function moveBall() {
         ball.dy = - ball.speed * Math.sin(bounceAngle);
         ball.x = aiPaddle.x - ballRadius -1;
         ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-        window.LastpaddletoHit = "Ai";
+        LastpaddletoHit = "Ai";
         switchOffAI();
     }
 
     if ((ball.x - ball.radius < ball.radius / 2 || ball.x + ball.radius >= canvas.width + ball.radius / 6) && fullTime >= 0)
         newRound();
 }
+window.moveBall = moveBall;
 
 function restartRound() {
-    gameLoop(diffy, window.setting);
+    gameLoop(diffy, setting);
 }
+window.restartRound = restartRound;
 
 function newRound(){
-    EL = window.elapsedTime;
-    const speedFactor = 1 + Math.floor(window.elapsedTime / speedIncreaseInterval) * speedIncrement;
+    EL = elapsedTime;
+    const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
     if (ball.x - ball.radius <= 0) {
         player2.score++;
         if (player2.score === 2){
             gameover = true;
             return;
         }
-        window.stopGameLoop();
+        stopGameLoop();
         playerPaddle.hasanattack = 0;
         aiPaddle.hasanattack = 0;
         block.visible = false;
@@ -372,7 +370,7 @@ function newRound(){
             gameover = true;
             return;
         }
-        window.stopGameLoop();
+        stopGameLoop();
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
@@ -388,9 +386,10 @@ function newRound(){
         return; 
     }
 }
+window.newRound = newRound;
 
-let upPressed = false;
-let downPressed = false;
+window.upPressed = false;
+window.downPressed = false;
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowUp') upPressed = true;
@@ -411,8 +410,8 @@ function drawPaddle(x, y, width, height) {
         flag--;
     }
     ctx.fillRect(x, y, width, height);
-
 }
+window.drawPaddle = drawPaddle;
 function drawBPaddle(x, y, width, height) {
     ctx.fillStyle = 'black';
     if (flag){
@@ -420,8 +419,8 @@ function drawBPaddle(x, y, width, height) {
         flag--;
     }
     ctx.fillRect(x, y, width, height);
-
 }
+window.drawBPaddle = drawBPaddle;
 
 function drawBall(x, y, radius) {
     ctx.beginPath();
@@ -430,6 +429,7 @@ function drawBall(x, y, radius) {
     ctx.fill();
     ctx.closePath();
 }
+window.drawBall = drawBall;
 function drawBBall(x, y, radius) {
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -437,14 +437,13 @@ function drawBBall(x, y, radius) {
     ctx.fill();
     ctx.closePath();
 }
+window.drawBBall = drawBBall;
 
 function    setbackoriginalvalues(){
     playerPaddle.width = canvas.width * 0.01;
     aiPaddle.width = canvas.width * 0.01;
     playerPaddle.height = canvas.height * 0.1;
     aiPaddle.height = canvas.height * 0.1;
-    // playerPaddle.x = 0;
-    // aiPaddle.x = 0;
     playerPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
     aiPaddle.y = canvas.height / 2 - playerPaddle.height / 2;
 }
@@ -453,8 +452,9 @@ function getRandomNumber() {
     const randomNumber = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
     return randomNumber;
 }
+window.setbackoriginalvalues = setbackoriginalvalues;
 
-let storedRandomNumber = getRandomNumber();
+window.storedRandomNumber = getRandomNumber();
 
 function calculateAccuracy(){
     let averageHits = player2.gothit / player1.ABR
@@ -462,6 +462,7 @@ function calculateAccuracy(){
         return 0;
     return averageHits;
 }
+
 
 
 let player1AttackAcc = null; 
@@ -475,7 +476,7 @@ const treeColors = [
     '#7a9b7a'
 ];
 
-const trees = [
+window.trees = [
     { x: canvas.width * 0.9, height: canvas.height * 0.8, width: canvas.width * 0.04, colorIndex: 0 },
     { x: canvas.width * 0.75, height: canvas.height * 0.76, width: canvas.width * 0.02, colorIndex: 1 },
     { x: canvas.width * 0.64, height: canvas.height, width: canvas.width * 0.03, colorIndex: 2},
@@ -485,7 +486,7 @@ const trees = [
     { x: canvas.width * 0.1, height: canvas.height * 0.8, width: canvas.width * 0.04, colorIndex: 0},
 ];
 
-let groundHeightArray = [
+window.groundHeightArray = [
     canvas.height * 0.9, canvas.height * 0.9, 
     canvas.height * 0.9, canvas.height * 0.9, canvas.height * 0.99, canvas.height * 0.9, canvas.height * 0.9,
     canvas.height * 0.94, canvas.height * 0.9, canvas.height * 0.99,
@@ -496,7 +497,7 @@ let groundHeightArray = [
     canvas.height * 0.94, canvas.height * 0.9, canvas.height * 0.9,
     canvas.height * 0.9, canvas.height * 0.9,
 ];
-let grassGroundArray = [
+window.grassGroundArray = [
     canvas.height * 0.98, canvas.height * 0.98, 
     canvas.height * 0.91, canvas.height * 0.95, canvas.height * 0.989, canvas.height * 0.98, canvas.height * 0.98,
     canvas.height, canvas.height * 0.94, canvas.height * 0.989,
@@ -572,8 +573,8 @@ function drawMap() {
     window.ctx.fillStyle = 'rgba(120, 200, 120, 0.1)';
     window.ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
-
-let grassPositions = []; // Array to hold grass positions
+window.drawMap = drawMap;
+window.grassPositions = []; // Array to hold grass positions
 
 function generateGrassPositions() {
     const grassSpacing = 5; // Closer spacing between grass blades
@@ -597,7 +598,7 @@ function generateGrassPositions() {
         }
     }
 }
-
+window.generateGrassPositions = generateGrassPositions;
 function drawGrass() {
     const grassColor = '#3c6e47'; // Color for the grass
     window.ctx.strokeStyle = grassColor;
@@ -616,23 +617,24 @@ function drawGrass() {
         window.ctx.stroke();
     });
 }
+window.drawGrass = drawGrass;
 function drawRetroTrianglePattern() {
     const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
     const numTriangles = 36; // Number of triangles/wedges
-    const centerX = window.canvas.width / 2;
-    const centerY = window.canvas.height / 2;
-    const radius = Math.hypot(window.canvas.width, window.canvas.height); // Ensures triangles extend beyond canvas
+    const centerX =canvas.width / 2;
+    const centerY =canvas.height / 2;
+    const radius = Math.hypot(window.canvas.width,canvas.height); // Ensures triangles extend beyond canvas
     const angleIncrement = (2 * Math.PI) / numTriangles;
 
     for (let i = 0; i < numTriangles; i++) {
         const angle = i * angleIncrement;
         
         // Set color for each triangle
-        window.ctx.fillStyle = colors[i % colors.length];
+       ctx.fillStyle = colors[i % colors.length];
         
         // Start drawing the triangle
-        window.ctx.beginPath();
-        window.ctx.moveTo(centerX, centerY); // Center point
+       ctx.beginPath();
+       ctx.moveTo(centerX, centerY); // Center point
 
         // Calculate points at the edge of the canvas
         const x1 = centerX + radius * Math.cos(angle);
@@ -641,13 +643,13 @@ function drawRetroTrianglePattern() {
         const y2 = centerY + radius * Math.sin(angle + angleIncrement);
 
         // Draw the triangle wedge
-        window.ctx.lineTo(x1, y1);
-        window.ctx.lineTo(x2, y2);
-        window.ctx.closePath();
-        window.ctx.fill();
+       ctx.lineTo(x1, y1);
+       ctx.lineTo(x2, y2);
+       ctx.closePath();
+       ctx.fill();
     }
 }
-
+window.drawRetroTrianglePattern = drawRetroTrianglePattern;
 
 generateGrassPositions();
 function gameLoop(difficulty, setting) {
@@ -659,9 +661,9 @@ function gameLoop(difficulty, setting) {
         return;
     }
     window.diffy = difficulty;
-    if (!window.ResetTime)
-        window.ResetTime = Date.now();
-    window.isingame = true;
+    if (!ResetTime)
+        ResetTime = Date.now();
+    isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if  (setting.map === 'Map 2')
         drawMap();
@@ -672,9 +674,9 @@ function gameLoop(difficulty, setting) {
         drawBBall(ball.x, ball.y, ball.radius);
     }
     ai_menu.style.display = 'none';
-    window.elapsedTime = Math.floor((Date.now() - window.ResetTime) / 1000);
+    elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
     if (setting.mode === 'Buff Mode'){ 
-        if (window.elapsedTime === storedRandomNumber) {
+        if (elapsedTime === storedRandomNumber) {
             Attack.visible = true;
             Attack.y = canvas.height - Attack.height;
             randomizeAttackX();
@@ -684,7 +686,7 @@ function gameLoop(difficulty, setting) {
         }
         if (AttackCount === 2)
             Attack.visible = false;
-        if (window.elapsedTime === storedRandomNumber + 10) {
+        if (elapsedTime === storedRandomNumber + 10) {
             buff.visible = true;
             buff.y = canvas.height - buff.height;
             randomizeBuffX();
@@ -694,7 +696,7 @@ function gameLoop(difficulty, setting) {
         }
         if (crossCount === 2)
             buff.visible = false;
-        if (window.elapsedTime === storedRandomNumber + 20) {
+        if (elapsedTime === storedRandomNumber + 20) {
             PaddleBigger.visible = true;
             PaddleBigger.y = canvas.height - PaddleBigger.height;
             randomizePadBigX();
@@ -712,22 +714,22 @@ function gameLoop(difficulty, setting) {
         drawBall(ball.x, ball.y, ball.radius);
     }
     movePlayerPaddle();
-    window.moveAIPaddle(difficulty);
+    moveAIPaddle(difficulty);
     if (setting.mode === 'Buff Mode'){
-        window.didItHit();
-        window.didAiHit();
-        window.drawaiBlock();
-        window.drawBlock();
-        window.moveBlock();
-        window.moveaiBlock();
-        window.drawSpeedBuff();
-        window.drawAttackBuff();
-        window.drawPadBigBuff();
+        didItHit();
+        didAiHit();
+        drawaiBlock();
+        drawBlock();
+        moveBlock();
+        moveaiBlock();
+        drawSpeedBuff();
+        drawAttackBuff();
+        drawPadBigBuff();
     }
     moveBall();
-    window.drawScoreBoard();
-    window.drawTimer();
-    window.gameOverScreen();
+    drawScoreBoard();
+    drawTimer();
+    gameOverScreen();
     let frameID = requestAnimationFrame(() => gameLoop(difficulty, setting));
     animationFrameIDs.push(frameID);
     if (gameover) {
@@ -785,7 +787,7 @@ ai_easy.addEventListener('click', function (event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMap();
     gameActive = true;
-    gameLoop('easy', window.setting);
+    gameLoop('easy', setting);
 });
 
 ai_medium.addEventListener('click', function(event) {
@@ -793,7 +795,7 @@ ai_medium.addEventListener('click', function(event) {
     event.preventDefault();
     drawMap();
     gameActive = true;
-    gameLoop('medium', window.setting);
+    gameLoop('medium', setting);
 });
 
 ai_hard.addEventListener('click', function(event) {
@@ -801,7 +803,7 @@ ai_hard.addEventListener('click', function(event) {
     drawMap();
     event.preventDefault();
     gameActive = true;
-    gameLoop('hard', window.setting);
+    gameLoop('hard', setting);
 });
 
 //  function applyBlurEffect() {
@@ -845,20 +847,20 @@ function endGameStats() {
     window.player2AttackAcc = calculateAccuracy(player2.ABR, player1.gothit); // Replace with actual accuracy calculation
 
     // Fill in player stats
-    window.data.playerStats1.score = player1.score; //done
-    window.data.playerStats1.buffs_taken = player1.Btaken; //done
-    window.data.playerStats1.attack_acc = player1AttackAcc;
+    data.playerStats1.score = player1.score; //done
+    data.playerStats1.buffs_taken = player1.Btaken; //done
+    data.playerStats1.attack_acc = player1AttackAcc;
 
-    window.data.playerStats2.score = player2.score; // done
-    window.data.playerStats2.buffs_taken = player2.Btaken; // done
-    window.data.playerStats2.attack_acc = player2AttackAcc;
+    data.playerStats2.score = player2.score; // done
+    data.playerStats2.buffs_taken = player2.Btaken; // done
+    data.playerStats2.attack_acc = player2AttackAcc;
 
     // Fill in game stats
-    window.data.gameStats.average_round_time = calculateAverageRoundTime(); // done
-    window.data.gameStats.fastest_round = ShortestRound; // done
-    window.data.gameStats.longest_round = LongestRound; // done
-    window.data.gameStats.map_played = 1; // Replace with actual map played
-    window.data.gameStats.full_time = fullTime; // done
-    window.data.gameStats.winner = player1.Score > player2.Score ? 1 : 2; // should work, to be tested //
+    data.gameStats.average_round_time = calculateAverageRoundTime(); // done
+    data.gameStats.fastest_round = ShortestRound; // done
+    data.gameStats.longest_round = LongestRound; // done
+    data.gameStats.map_played = 1; // Replace with actual map played
+    data.gameStats.full_time = fullTime; // done
+    data.gameStats.winner = player1.Score > player2.Score ? 1 : 2; // should work, to be tested //
 
 }
