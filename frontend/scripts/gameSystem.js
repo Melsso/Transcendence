@@ -151,6 +151,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         <div class="mode">Mode:   ${lobbySettings.mode}</div>
     `;
     const gamer1Container = document.querySelector('.player1-container');
+    const btnid = 'ready-button-' + gamer1.username;
     gamer1Container.innerHTML = `
         <div class="avatar">
             <img src="${gamer1.avatar}" alt="${gamer1.username} Avatar" class="avatar-image">
@@ -166,23 +167,26 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
                 <div class="winrate-bar" style="width: ${getWinPercentage(gamer1Wins, gamer1Losses)}%;"></div>
             </div>
         </div>
-        <button type="button" id="ready-1" class="btn btn-ready">Not Ready</button>
+        <button type="button" id="${btnid}" class="btn btn-ready">Not Ready</button>
     `;
-    const readyButton1 = document.getElementById('ready-1');
+    const readyButton1 = document.getElementById(btnid);
     readyButton1.textContent = 'Not Ready';
     readyButton1.addEventListener('click', function () {
-        if (readyButton1.classList.contains('ready')) {
-            readyButton1.classList.remove('ready');
-            readyButton1.textContent = 'Not Ready';
-        } else {
-            readyButton1.classList.add('ready');
-            readyButton1.textContent = 'Ready!';
+        const username = btnid.split('-').pop();
+        if (username === window.userData.username) {
+            if (readyButton1.classList.contains('ready')) {
+                readyButton1.classList.remove('ready');
+                readyButton1.textContent = 'Not Ready';
+            } else {
+                readyButton1.classList.add('ready');
+                readyButton1.textContent = 'Ready!';
+            }
         }
     });
     
     const gamer2Container = document.querySelector('.player2-container');
     if (gamer2) {
-        
+        const btnid2 = 'ready-button-' + gamer2.username;
         gamer2Container.innerHTML = `
         <div class="avatar">
             <img src="${gamer2.avatar}" alt="${gamer2.username} Avatar" class="avatar-image">
@@ -198,17 +202,20 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
                 <div class="winrate-bar" style="width: ${getWinPercentage(gamer2Wins, gamer2Losses)}%;"></div>
             </div>
         </div>
-        <button type="button" id="ready-2" class="btn btn-ready">Not Ready</button>
+        <button type="button" id="${btnid2}" class="btn btn-ready">Not Ready</button>
     `;
-        const readyButton2 = document.getElementById('ready-2');
+        const readyButton2 = document.getElementById(btnid2);
         readyButton2.textContent = 'Not Ready'; 
         readyButton2.addEventListener('click', function () {
-            if (readyButton2.classList.contains('ready')) {
-                readyButton2.classList.remove('ready');
-                readyButton2.textContent = 'Not Ready';
-            } else {
-                readyButton2.classList.add('ready');
-                readyButton2.textContent = 'Ready!';
+            const username2 = btnid2.split('-').pop();
+            if (username2 === window.userData.username) {
+                if (readyButton2.classList.contains('ready')) {
+                    readyButton2.classList.remove('ready');
+                    readyButton2.textContent = 'Not Ready';
+                } else {
+                    readyButton2.classList.add('ready');
+                    readyButton2.textContent = 'Ready!';
+                }
             }
         });
     } else {
