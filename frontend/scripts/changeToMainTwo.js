@@ -391,9 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			// Tlobby.style.display = 'none';
 			// tourniLobby.style.display = 'none';
 		}
-		console.log('dkhelna');
-		window.stopGameLoop();
-		window.resets();
+		window.altFfour();
 		inv_menu.style.display = 'none';
 		ai_menu.style.display = 'none';
 		Instructions.style.display = 'none';

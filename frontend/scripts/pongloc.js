@@ -929,6 +929,6 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 		 mode: gameMode,
 		 map: selectedMap
 	};
-	window.stopGameLoop();
-	window.resets();
+	// window.stopGameLoop();
+	// window.resets();
 });

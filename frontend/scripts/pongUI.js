@@ -534,10 +534,12 @@ let aitoop;
 function switchOffAI() {
    aitoop = true;
 }
+window.switchOffAI = switchOffAI;
 function switchOnAI() {
-    if (aitoop = true)
-        aitoop = false;
+	if (aitoop = true)
+		aitoop = false;
 }
+window.switchOnAI = switchOnAI;
 
 window.drawTimer = drawTimer;
 function moveAIPaddleHard() {

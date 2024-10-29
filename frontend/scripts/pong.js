@@ -18,7 +18,7 @@ window.setting = null;
 let paddleWidth;
 let paddleHeight;
 let ballRadius;
-
+window.gameover = false;
 document.getElementById('PONG-button').addEventListener('click', function () {
     const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
     const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
@@ -26,8 +26,6 @@ document.getElementById('PONG-button').addEventListener('click', function () {
         mode: gameMode,
         map: selectedMap
     };
-    window.stopGameLoop();
-    window.resets();
 });
 
 window.window.elapsedTime;
@@ -166,6 +164,48 @@ function countdownBeforeRound(callback) {
     }, 1000);
 }
 
+function altFfour(){
+    console.log('we\'re reseting the game vars');
+    window.stopGameLoop();
+    window.GOscreen = false;
+	window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
+	window.gameover = false; 
+    window.removeGameOverScreen();
+    // window.switchOffAI();
+	if (wasHit === true){
+		window.aiPaddle.height *= 2;
+		wasHit = false;
+	}
+	if (aiDidHit === true){
+		window.playerPaddle.height *= 2;
+		aiDidHit = false;
+	}
+	window.crossCount = 0;
+	window.AttackCount = 0;
+	window.BigPadCount = 0;
+    window.playerPaddle.dy = 7;
+	window.aiPaddle.dy = 7;
+	window.ball.dy = 6;
+	window.buff.visible = false;
+	window.Attack.visible = false;
+	window.PaddleBigger.visible = false;
+	window.block.visible = false;
+	window.aiblock.visible = false;
+	window.LastpaddletoHit = null;
+	if (window.buff.speed > 0) {
+		window.buff.speed *= -1;
+	}
+	if (window.Attack.speed > 0) {
+		window.Attack.speed *= -1;
+	}
+	if (window.PaddleBigger.speed > 0) {
+		window.PaddleBigger.speed *= -1;
+	}
+	window.player1.score = 0;
+	window.player2.score = 0;
+    window.gameActive = false;
+}
+window.altFfour = altFfour;
 
 window.fullTime = null;
 window.LongestRound = null;
@@ -365,6 +405,15 @@ document.addEventListener('keyup', (e) => {
 
 
 function drawPaddle(x, y, width, height) {
+    ctx.fillStyle = 'white';
+    if (flag){
+        ctx.fillStyle = 'gold';
+        flag--;
+    }
+    ctx.fillRect(x, y, width, height);
+
+}
+function drawBPaddle(x, y, width, height) {
     ctx.fillStyle = 'black';
     if (flag){
         ctx.fillStyle = 'gold';
@@ -377,12 +426,17 @@ function drawPaddle(x, y, width, height) {
 function drawBall(x, y, radius) {
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.closePath();
+}
+function drawBBall(x, y, radius) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fillStyle = 'black';
     ctx.fill();
     ctx.closePath();
 }
-
-window.gameover = false;
 
 function    setbackoriginalvalues(){
     playerPaddle.width = canvas.width * 0.01;
@@ -602,7 +656,6 @@ function gameLoop(difficulty, setting) {
         setting.map = 'Map 1';
     }
     if (!gameActive) {
-        console.log('ALLO');
         return;
     }
     window.diffy = difficulty;
@@ -610,8 +663,15 @@ function gameLoop(difficulty, setting) {
         window.ResetTime = Date.now();
     window.isingame = true;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //drawMap();
-    drawRetroTrianglePattern();
+    if  (setting.map === 'Map 2')
+        drawMap();
+    else if (setting.map === 'Map 3'){
+        drawRetroTrianglePattern();
+        drawBPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height)
+        drawBPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height)
+        drawBBall(ball.x, ball.y, ball.radius);
+    }
+    ai_menu.style.display = 'none';
     window.elapsedTime = Math.floor((Date.now() - window.ResetTime) / 1000);
     if (setting.mode === 'Buff Mode'){ 
         if (window.elapsedTime === storedRandomNumber) {
@@ -646,9 +706,11 @@ function gameLoop(difficulty, setting) {
             PaddleBigger.visible = false;
     }
     switchOnAI();
-    drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
-    drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
-    drawBall(ball.x, ball.y, ball.radius);
+    if (setting.map === 'Map 1' || setting.map === 'Map 2'){
+        drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
+        drawPaddle(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+        drawBall(ball.x, ball.y, ball.radius);
+    }
     movePlayerPaddle();
     window.moveAIPaddle(difficulty);
     if (setting.mode === 'Buff Mode'){
