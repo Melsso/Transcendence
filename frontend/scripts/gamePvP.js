@@ -2,6 +2,9 @@ const canvass = document.getElementById('pongCanvas');
 const ctxx = canvass.getContext('2d');
 import { sendGameState } from "./gameSystem.js";
 
+const REFERENCE_WIDTH = 1920;
+const REFERENCE_HEIGHT = 1080;
+
 let paddleWidth;
 let paddleHeight;
 let upPressed;
@@ -64,35 +67,37 @@ function drawSphere(x, y, radius) {
 
 
 function setDimensions(player) {
-	paddleWidth = player.screen_dimensions.width * 0.01;
-	paddleHeight = player.screen_dimensions.height * 0.1;
-	sphereRadius = player.screen_dimensions.width * 0.01;
-	speedincre = player.screen_dimensions.height / 5000;
-	fullcanvas = player.screen_dimensions.height + player.screen_dimensions.width;
-	zbel = (player.screen_dimensions.height + player.screen_dimensions.width) * 2;
+	const widthScale = player.screen_dimensions.width / REFERENCE_WIDTH;
+	const heightScale = player.screen_dimensions.height / REFERENCE_HEIGHT;
+
+
+	paddleWidth = widthScale * 20;     
+	paddleHeight = heightScale * 100;
 
 	playerPaddle1.width = paddleWidth;
 	playerPaddle1.height = paddleHeight;
 	playerPaddle1.x = 0;
-	playerPaddle1.y = player.screen_dimensions.height / 2 - paddleHeight / 2;
-	playerPaddle1.dy = player.screen_dimensions.height / 160;
+	playerPaddle1.y = (player.screen_dimensions.height - paddleHeight) / 2;
+	playerPaddle1.dy = heightScale * 6.75;
 
 	playerPaddle2.width = paddleWidth;
 	playerPaddle2.height = paddleHeight;
 	playerPaddle2.x = player.screen_dimensions.width - paddleWidth;
-	playerPaddle2.y = player.screen_dimensions.height / 2 - paddleHeight / 2;
-	playerPaddle2.dy = player.screen_dimensions.height / 160;
+	playerPaddle2.y = (player.screen_dimensions.height - paddleHeight) / 2;
+	playerPaddle2.dy = heightScale * 6.75;
 
+	sphereRadius = widthScale * 20;  
 	sphere.radius = sphereRadius;
 	sphere.x = player.screen_dimensions.width / 2;
 	sphere.y = player.screen_dimensions.height / 2;
-	sphere.speed = fullcanvas / 545;
-	sphere.dx = fullcanvas / 568;
-	sphere.dy = fullcanvas / 568;
-	sphere.inc = speedincre;
-	sphere.khra = fullcanvas / 975;
-}
 
+
+	sphere.speed = heightScale * 4; 
+	sphere.dx = widthScale * 3.75; 
+	sphere.dy = heightScale * 3.75;
+
+	speedincre = heightScale * 0.2;
+}
 
 document.addEventListener('keydown', (e) => {
 	if (e.key === 'ArrowUp') upPressed = true;
@@ -126,67 +131,59 @@ function movement(player1, player2) {
 	}
 }
 
+
+
 function sphereMovement(player1, player2) {
-	elapsedTime = Date.now() - RestTime;
-	const speedFactor = 1 + Math.floor(elapsedTime / zbel) * sphere.inc;
-	sphere.dx = sphere.speed * speedFactor * (sphere.dx > 0 ? 1 : -1);
-	sphere.dy = sphere.speed * speedFactor * (sphere.dy > 0 ? 1 : -1);
-	let canvasWidth;
-	let canvasHeight;
-	let player ;
+	let  player;
 	if (window.userData.username === player1.username) {
 		player = player1;
 	} else {
 		player = player2;
 	}
-	canvasHeight = player.screen_dimensions.height;
-	canvasWidth = player.screen_dimensions.width;
+
+	const canvasWidth = player.screen_dimensions.width;
+	const canvasHeight = player.screen_dimensions.height;
+
 
 	sphere.x += sphere.dx;
 	sphere.y += sphere.dy;
 
-	if (sphere.y + sphere.radius > canvasHeight || sphere.y - sphere.radius < 0) {
-		 sphere.dy *= -1;
+
+	if (sphere.y - sphere.radius < 0 || sphere.y + sphere.radius > canvasHeight) {
+		sphere.dy = -sphere.dy; 
 	}
 
-	if (
-		 sphere.x - sphere.radius <= playerPaddle1.x + playerPaddle1.width &&
-		 sphere.y >= playerPaddle1.y &&
-		 sphere.y <= playerPaddle1.y + playerPaddle1.height
-	) {
-		 var relativeIntersectY = (playerPaddle1.y + playerPaddle1.height / 2) - sphere.y;
-		 var normrelIntersectY = relativeIntersectY / (playerPaddle1.height / 2);
-		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
-		 
-		 sphere.dx = sphere.khra * Math.cos(bounceAngle);
-		 sphere.dy = -sphere.khra * Math.sin(bounceAngle);
-		 
-		 sphere.x = playerPaddle1.x + playerPaddle1.width + sphere.radius + 1;
-		 
-		 sphere.dx = sphere.khra * (sphere.dx > 0 ? 1 : -1);
-		 console.log(sphere.x, " ", sphere.y, " ", sphere.dx, " ", sphere.dy);
-		//  LastpaddleHit = "wasd";
+	
+	if (sphere.x - sphere.radius < 0 || sphere.x + sphere.radius > canvasWidth) {
+		
+		sphere.x = canvasWidth / 2;
+		sphere.y = canvasHeight / 2;
+		
+		sphere.dx = -sphere.dx;
+	}
+	if (sphere.x + sphere.radius >= playerPaddle2.x &&
+		sphere.y >= playerPaddle2.y &&
+		sphere.y <= playerPaddle2.y + playerPaddle2.height) {
+			sphere.dx *= -1;
+			sphere.dy *= -1;
 	}
 
-	if (
-		 sphere.x + sphere.radius >= playerPaddle2.x &&
-		 sphere.y >= playerPaddle2.y &&
-		 sphere.y <= playerPaddle2.y + playerPaddle2.height
-	) {
-		 var relativeIntersectY = (playerPaddle2.y + playerPaddle2.height / 2) - sphere.y;
-		 var normrelIntersectY = relativeIntersectY / (playerPaddle2.height / 2);
-		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
-		 sphere.dx = - sphere.khra * Math.cos(bounceAngle);
-		 sphere.dy = - sphere.khra * Math.sin(bounceAngle);
-		 sphere.x = playerPaddle2.x - sphereRadius -1;
-		 sphere.dx = sphere.khra * (sphere.dx > 0 ? 1 : -1);
-		 console.log(sphere.x, " ", sphere.y, " ", sphere.dx, " ", sphere.dy);
-		//  LastpaddleHit = "Arrows";
+	if (sphere.x - sphere.radius <= playerPaddle1.x + playerPaddle1.width &&
+		sphere.y >= playerPaddle1.y &&
+		sphere.y <= playerPaddle1.y + playerPaddle1.height) {
+			sphere.dx *= -1;
+			sphere.dy *= -1;
 	}
-	if ((sphere.x - sphere.radius <= 0 || sphere.x + sphere.radius >= canvasWidth)){
-		sphere.dx *= -1;
-		sphere.dy *= -1;
-	}
+}
+
+
+function resetSpherePosition(canvasHeight, canvasWidth) {
+	// Reset sphere to center of the screen with a default speed and angle
+	sphere.x = canvasWidth / 2;
+	sphere.y = canvasHeight / 2;
+	sphere.dx = sphere.khra * (Math.random() < 0.5 ? 1 : -1); // Random direction
+	sphere.dy = sphere.khra * (Math.random() < 0.5 ? 1 : -1);
+	RestTime = Date.now(); // Reset speed increase timer
 }
 
 export function renderOP(y) {
@@ -212,6 +209,7 @@ export function drawAll(player1, player2, settings) {
 	}
 	if (window.userData.username === player1.username) {
 		if (player1.set === false ) {
+
 			setDimensions(player1);
 			playerPaddle1.username = player1.username;
 			playerPaddle2.username = player2.username;
@@ -229,6 +227,11 @@ export function drawAll(player1, player2, settings) {
 	if (RestTime === null) {
 		RestTime = Date.now();
 	}
+	let perc;
+	perc = playerPaddle2.height * 100 / player1.screen_dimensions.height;
+	console.log('rayans\'s paddle percentage :', perc);
+	perc = playerPaddle1.height * 100 / player1.screen_dimensions.height;
+	console.log('sadoon\'s paddle percentage :', perc);
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);

@@ -119,7 +119,6 @@ export async function startGameSocket() {
     // }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        console.log(data);
         if (data.action == 'update_game_state') {
             gameState = data.state;
             if (gameState.ball) {
