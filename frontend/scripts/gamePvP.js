@@ -6,6 +6,12 @@ let paddleWidth;
 let paddleHeight;
 let upPressed;
 let downPressed;
+let speedincre;
+let sphereRadius;
+let elTime = 0;
+let RestTime = null;
+let zbel;
+let fullcanvas;
 let playerPaddle1 = {
 	x: 0,
 	y: 0,
@@ -26,11 +32,13 @@ let playerPaddle2 = {
 	aihasanattack: null
 };
 
-let ball = {
+let sphere = {
 	x: 0,
 	y: 0,
 	radius: 0,
 	speed: 3,
+	khra: 0,
+	inc: 0,
 	dx: 0,
 	dy: 6
 };
@@ -46,11 +54,22 @@ function drawPlayerPaddle2(x, y, width, height) {
 	ctxx.fillRect(x, y, width, height);
 }
 
+function drawSphere(x, y, radius) {
+	ctxx.beginPath();
+	ctxx.arc(x, y, radius, 0, Math.PI * 2);
+	ctxx.fillStyle = 'white';
+	ctxx.fill();
+	ctxx.closePath();
+}
+
 
 function setDimensions(player) {
 	paddleWidth = player.screen_dimensions.width * 0.01;
 	paddleHeight = player.screen_dimensions.height * 0.1;
-	// ballRadius = player.screen_dimensions.width * 0.01;
+	sphereRadius = player.screen_dimensions.width * 0.01;
+	speedincre = player.screen_dimensions.height / 5000;
+	fullcanvas = player.screen_dimensions.height + player.screen_dimensions.width;
+	zbel = (player.screen_dimensions.height + player.screen_dimensions.width) * 2;
 
 	playerPaddle1.width = paddleWidth;
 	playerPaddle1.height = paddleHeight;
@@ -63,7 +82,17 @@ function setDimensions(player) {
 	playerPaddle2.x = player.screen_dimensions.width - paddleWidth;
 	playerPaddle2.y = player.screen_dimensions.height / 2 - paddleHeight / 2;
 	playerPaddle2.dy = player.screen_dimensions.height / 160;
+
+	sphere.radius = sphereRadius;
+	sphere.x = player.screen_dimensions.width / 2;
+	sphere.y = player.screen_dimensions.height / 2;
+	sphere.speed = fullcanvas / 545;
+	sphere.dx = fullcanvas / 568;
+	sphere.dy = fullcanvas / 568;
+	sphere.inc = speedincre;
+	sphere.khra = fullcanvas / 975;
 }
+
 
 document.addEventListener('keydown', (e) => {
 	if (e.key === 'ArrowUp') upPressed = true;
@@ -94,6 +123,69 @@ function movement(player1, player2) {
 	} else if (downPressed && paddle.y < player.screen_dimensions.height - paddle.height) {
 		paddle.y += paddle.dy;
 		sendGameState(0, target.username);
+	}
+}
+
+function sphereMovement(player1, player2) {
+	elapsedTime = Date.now() - RestTime;
+	const speedFactor = 1 + Math.floor(elapsedTime / zbel) * sphere.inc;
+	sphere.dx = sphere.speed * speedFactor * (sphere.dx > 0 ? 1 : -1);
+	sphere.dy = sphere.speed * speedFactor * (sphere.dy > 0 ? 1 : -1);
+	let canvasWidth;
+	let canvasHeight;
+	let player ;
+	if (window.userData.username === player1.username) {
+		player = player1;
+	} else {
+		player = player2;
+	}
+	canvasHeight = player.screen_dimensions.height;
+	canvasWidth = player.screen_dimensions.width;
+
+	sphere.x += sphere.dx;
+	sphere.y += sphere.dy;
+
+	if (sphere.y + sphere.radius > canvasHeight || sphere.y - sphere.radius < 0) {
+		 sphere.dy *= -1;
+	}
+
+	if (
+		 sphere.x - sphere.radius <= playerPaddle1.x + playerPaddle1.width &&
+		 sphere.y >= playerPaddle1.y &&
+		 sphere.y <= playerPaddle1.y + playerPaddle1.height
+	) {
+		 var relativeIntersectY = (playerPaddle1.y + playerPaddle1.height / 2) - sphere.y;
+		 var normrelIntersectY = relativeIntersectY / (playerPaddle1.height / 2);
+		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+		 
+		 sphere.dx = sphere.khra * Math.cos(bounceAngle);
+		 sphere.dy = -sphere.khra * Math.sin(bounceAngle);
+		 
+		 sphere.x = playerPaddle1.x + playerPaddle1.width + sphere.radius + 1;
+		 
+		 sphere.dx = sphere.khra * (sphere.dx > 0 ? 1 : -1);
+		 console.log(sphere.x, " ", sphere.y, " ", sphere.dx, " ", sphere.dy);
+		//  LastpaddleHit = "wasd";
+	}
+
+	if (
+		 sphere.x + sphere.radius >= playerPaddle2.x &&
+		 sphere.y >= playerPaddle2.y &&
+		 sphere.y <= playerPaddle2.y + playerPaddle2.height
+	) {
+		 var relativeIntersectY = (playerPaddle2.y + playerPaddle2.height / 2) - sphere.y;
+		 var normrelIntersectY = relativeIntersectY / (playerPaddle2.height / 2);
+		 var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+		 sphere.dx = - sphere.khra * Math.cos(bounceAngle);
+		 sphere.dy = - sphere.khra * Math.sin(bounceAngle);
+		 sphere.x = playerPaddle2.x - sphereRadius -1;
+		 sphere.dx = sphere.khra * (sphere.dx > 0 ? 1 : -1);
+		 console.log(sphere.x, " ", sphere.y, " ", sphere.dx, " ", sphere.dy);
+		//  LastpaddleHit = "Arrows";
+	}
+	if ((sphere.x - sphere.radius <= 0 || sphere.x + sphere.radius >= canvasWidth)){
+		sphere.dx *= -1;
+		sphere.dy *= -1;
 	}
 }
 
@@ -134,10 +226,14 @@ export function drawAll(player1, player2, settings) {
 			player2.set = true;
 		}
 	}
-	
+	if (RestTime === null) {
+		RestTime = Date.now();
+	}
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+	drawSphere(sphere.x, sphere.y, sphere.radius);
+	sphereMovement(player1, player2);
 	movement(player1, player2);
 	requestAnimationFrame(() => drawAll(player1, player2, settings));
 }

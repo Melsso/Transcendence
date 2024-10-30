@@ -80,7 +80,6 @@ lo.addEventListener('click', async function (){
 
 export function sendGameState(gameState, target) {
     if (window.userData.pong_socket) {
-        console.log('HI MY NAME IS JEFF');
         window.userData.pong_socket.send(JSON.stringify({
             action: 'update_game_state',
             state: gameState,
@@ -122,7 +121,6 @@ export async function startGameSocket() {
         const data = JSON.parse(event.data);
         console.log(data);
         if (data.action == 'update_game_state') {
-            console.log('data is received');
             gameState = data.state;
             if (gameState.ball) {
                 console.log(gameState);
