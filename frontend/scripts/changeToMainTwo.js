@@ -27,7 +27,7 @@ async function homepageData() {
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		localStorage.removeItem('accessToken');
-		navigateTo('login');
+		navigateTo('login', null);
 		throw new Error(errorResponse.detail);
 	}
 	const data = await response.json();
@@ -512,6 +512,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainOne.style.display = 'flex';
 			forgotcontainer.style.display = 'block';
 		} else if (view === '2fa') {
+			mainOne.style.display = 'flex';
 			facontainer.style.display = 'flex';
 		}
 	}
@@ -589,7 +590,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	login2faButton.addEventListener('click', async function () {
 		const v_code = document.getElementById('2fa-input').value;
-		const r_value = document.getElementById('').value;
+		const l1 = document.getElementById('2fa-yes');
+		const r_value = l1.checked;
 		try {
 			const result = await addToKnownLocation(v_code, r_value);
 			if (result.status === 'success') {
@@ -600,7 +602,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			localStorage.removeItem('accessToken');
 			localStorage.removeItem('refreshToken');
 			navigateTo('login', null);
-			// Dunno if redirect or something
 		}
 	});
 
@@ -665,10 +666,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			await logoutUser();
+			if (window.userData.socket) {
+				window.userData.socket.close();
+				window.userData.socket = null;
+				window.userData.target = null;
+			}
+			if (window.userData.pong_socket) {
+				window.userData.pong_socket.close();
+				window.userData.pong_socket = null;
+				window.userData.r_name = null;
+			}
 		} catch (error) {
 			Notification('Profile Action', `Failed to logout because: ${error}`,2, 'alert');
 		}
-		//empty sockets!!!!!!! chat and game
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
 		document.getElementById('login-form-container').style.display = 'block';

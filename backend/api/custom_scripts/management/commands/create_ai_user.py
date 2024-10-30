@@ -26,21 +26,21 @@ class Command(BaseCommand):
             {
                 'username': 'Sofiane',
                 'password': 'strongpass123',
-                'email': 'sofiane@my_pong_website.com',
+                'email': 'melsopvbb@gmail.com',
                 'is_verified': True,
                 'is_active': True
             },
             {
                 'username': 'Sadoon',
                 'password': 'strongpass123',
-                'email': 'sadoon@my_pong_website.com',
+                'email': 'alzubaidisadooon@gmail.com',
                 'is_verified': True,
                 'is_active': True
             },
             {
                 'username': 'Rayan',
                 'password': 'strongpass123',
-                'email': 'rayan@my_pong_website.com',
+                'email': 'rayanmehadjeri6@gmail.com',
                 'is_verified': True,
                 'is_active': True
             },

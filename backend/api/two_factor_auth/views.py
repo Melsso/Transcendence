@@ -42,11 +42,11 @@ class CheckKnownHostDeviceView(generics.GenericAPIView):
 		user.verification_code = veri_code
 		user.save()
 		vali = True
-		Response({'status': 'Unknown', '2fa': vali}, status=HTTP_200_OK)
+		return Response({'status': 'Unknown', '2fa': vali}, status=HTTP_200_OK)
 
 	def post(self, request, *args, **kwargs):
 		user = request.user
-		ip_addr = self.get_client_ip()
+		ip_addr = self.get_client_ip(request)
 		user_agent = request.META.get('HTTP_USER_AGENT')
 		code = request.data.get('code')
 		remember = request.data.get('remember')
