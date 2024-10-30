@@ -390,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const forgotcontainer = document.getElementById('forgot-container');
 	const newpass = document.getElementById('create-new-pass');
 	const inv_menu = document.getElementById('inv-menu');
+	const facontainer = document.getElementById('2fa-container');
 	const ai_menu = document.getElementById('ai-menu');
 	const Instructions = document.getElementById('Instructions-box');
 	const lobby = document.getElementById('pong-inv-container');
@@ -403,10 +404,11 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainBody.style.display = 'none';
 	mainSettings.style.display = 'none';
 	mainPONGgame.style.display = 'none';
+	facontainer.style.display = 'none';
 	
 	const confirmButton = document.getElementById('pass-verf-code');
 	const loginButton = document.getElementById('login');
-	const login2faButton = document.getElementById('');
+	const login2faButton = document.getElementById('2fa-btn');
 	const profileButton = document.getElementById('to-profile');
 	const registerButton = document.getElementById('register');
 	const nextButton = document.getElementById('next-btn');
@@ -437,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		ai_menu.style.display = 'none';
 		Instructions.style.display = 'none';
 		lobby.style.display = 'none';
+		facontainer.style.display = 'none';
 		menu.style.display = 'none';
 		forgotcontainer.style.display = 'none';
 		newpass.style.display = 'none';
@@ -505,9 +508,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else if (view === 'register') {
 			mainOne.style.display = 'flex';
 			reg2.style.display = 'block';
-		} else if (view == 'forgot') {
+		} else if (view === 'forgot') {
 			mainOne.style.display = 'flex';
 			forgotcontainer.style.display = 'block';
+		} else if (view === '2fa') {
+			facontainer.style.display = 'flex';
 		}
 	}
 
@@ -568,13 +573,13 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await loginUser(username, password);
 			const tokens = result.tokens;
 			const host_check = await checkKnownLocation(tokens.access);
+			localStorage.setItem('accessToken', tokens.access);
+			localStorage.setItem('refreshToken', tokens.refresh);
 			if (host_check['2fa'] === false) {
-				localStorage.setItem('accessToken', tokens.access);
-				localStorage.setItem('refreshToken', tokens.refresh);
 				navigateTo('profile', null);
 			}
 			else {
-				// here navigate to some sort of page where you are prompted to input the code
+				navigateTo('2fa', null);
 				return ;
 			}
 		} catch (error) {
@@ -583,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	login2faButton.addEventListener('click', async function () {
-		const v_code = document.getElementById('').value;
+		const v_code = document.getElementById('2fa-input').value;
 		const r_value = document.getElementById('').value;
 		try {
 			const result = await addToKnownLocation(v_code, r_value);
@@ -592,7 +597,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		} catch (error) {
 			Notification('User Action', `Failed To Verify Origin: ${error}`, 1, 'alert');
-			// Navigate('login', null);
+			localStorage.removeItem('accessToken');
+			localStorage.removeItem('refreshToken');
+			navigateTo('login', null);
 			// Dunno if redirect or something
 		}
 	});

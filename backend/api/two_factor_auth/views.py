@@ -30,10 +30,10 @@ class CheckKnownHostDeviceView(generics.GenericAPIView):
 		user_agent = request.META.get('HTTP_USER_AGENT')
 
 		is_known_host = KnownHost.objects.filter(user=user, ip_address=ip_addr).exists()
-		is_known_device = KnownDevice.objects.filter(user=user, user_agent=user_agent).exits()
-
+		is_known_device = KnownDevice.objects.filter(user=user, user_agent=user_agent).exists()
+		nonvali = False
 		if is_known_device and is_known_host:
-			return Response({'status': 'Known', '2fa': False}, status=HTTP_200_OK)
+			return Response({'status': 'Known', '2fa': nonvali}, status=HTTP_200_OK)
 		
 		veri_code = generate_verification_code()
 		subject = 'Your Login Code'
@@ -41,7 +41,8 @@ class CheckKnownHostDeviceView(generics.GenericAPIView):
 		send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
 		user.verification_code = veri_code
 		user.save()
-		Response({'status': 'Unknown', '2fa': True}, status=HTTP_200_OK)
+		vali = True
+		Response({'status': 'Unknown', '2fa': vali}, status=HTTP_200_OK)
 
 	def post(self, request, *args, **kwargs):
 		user = request.user

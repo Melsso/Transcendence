@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('homepage.urls')),
     path('', include('chats.urls')),
     path('', include('games.urls')),
+    path('', include('two_factor_auth.urls')),
 ]
 
 if settings.DEBUG:
