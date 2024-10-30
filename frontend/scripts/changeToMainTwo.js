@@ -3,7 +3,7 @@ import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
 // This variable is used to store user data
-
+const userAgent = navigator.userAgent;
 // This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
@@ -28,7 +28,6 @@ async function homepageData() {
 		const errorResponse = await response.json();
 		localStorage.removeItem('accessToken');
 		navigateTo('login');
-		// Notification('Profile Action', 'Failed to load your profile', 1, 'alert');
 		throw new Error(errorResponse.detail);
 	}
 	const data = await response.json();
@@ -75,7 +74,53 @@ async function registerUser(username, password, email) {
 	});
 
 	if (!response.ok) {
-		// Notification('Registarion', 'Please fill out the needed information!', 1, 'alert');
+		const errorResponse = await response.json();
+		throw new Error(errorResponse);
+	}
+
+	const data = await response.json();
+	return data;
+}
+
+async function checkKnownLocation(access_token) {
+	const url = baseUrl + 'api/new-entity/';
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			"Authorization": `Bearer ${access_token}`,
+		},
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw new Error(errorResponse);
+	}
+
+	const data = await response.json();
+	return data;
+}
+
+async function addToKnownLocation(v_code, remember) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+
+	const url = baseUrl + 'api/new-entity/';
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			"Authorization": `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			code: v_code,
+			remember: remember,
+		}),
+	});
+
+	if (!response.ok) {
 		const errorResponse = await response.json();
 		throw new Error(errorResponse);
 	}
@@ -255,9 +300,6 @@ async function verifyEmail(formData) {
 	const url = baseUrl + 'api/verify-code/';
 	const response = await fetch(url, {
 		method: 'POST',
-		// headers: {
-		// 	'Content-Type': 'application/json',
-		// },
 		body: formData,
 	});
 
@@ -276,13 +318,11 @@ async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
 	if (!refresh_token) {
 		Notification('Profile Action', "No refresh Token", 2, 'alert');
-
 		return ;
 	}
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
-
 		return ;
 	}
 
@@ -304,7 +344,6 @@ async function logoutUser() {
 		//here we have to close  the socket if it's open
 		userData = {};
 		userEmail = "";
-
 	}
 	else {
 		const errorResponse = await response.json();
@@ -367,6 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 	const confirmButton = document.getElementById('pass-verf-code');
 	const loginButton = document.getElementById('login');
+	const login2faButton = document.getElementById('');
 	const profileButton = document.getElementById('to-profile');
 	const registerButton = document.getElementById('register');
 	const nextButton = document.getElementById('next-btn');
@@ -523,14 +563,37 @@ document.addEventListener('DOMContentLoaded', function () {
 		const username = document.getElementById('username-login').value;
 		const password = document.getElementById('password-login').value;
 
+		// need to save wether remember or not for next call
 		try {
 			const result = await loginUser(username, password);
 			const tokens = result.tokens;
-			localStorage.setItem('accessToken', tokens.access);
-			localStorage.setItem('refreshToken', tokens.refresh);
-			navigateTo('profile', null);
+			const host_check = await checkKnownLocation(tokens.access);
+			if (host_check['2fa'] === false) {
+				localStorage.setItem('accessToken', tokens.access);
+				localStorage.setItem('refreshToken', tokens.refresh);
+				navigateTo('profile', null);
+			}
+			else {
+				// here navigate to some sort of page where you are prompted to input the code
+				return ;
+			}
 		} catch (error) {
 			Notification('Profile Action', `Failed to login because: ${error}`, 1,'alert');
+		}
+	});
+
+	login2faButton.addEventListener('click', async function () {
+		const v_code = document.getElementById('').value;
+		const r_value = document.getElementById('').value;
+		try {
+			const result = await addToKnownLocation(v_code, r_value);
+			if (result.status === 'success') {
+				navigateTo('profile', null);
+			}
+		} catch (error) {
+			Notification('User Action', `Failed To Verify Origin: ${error}`, 1, 'alert');
+			// Navigate('login', null);
+			// Dunno if redirect or something
 		}
 	});
 

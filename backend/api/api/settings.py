@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     'games',
     'homepage',
     'custom_scripts',
+	'two_factor_auth',
 ]
 
 REST_FRAMEWORK = {
