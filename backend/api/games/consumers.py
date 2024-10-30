@@ -65,13 +65,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 			data = json.loads(text_data)
 			action = data['action']
 			state = data['state']
-			if action == 'game_action':
+			target = data.get('target') 
+			if action == 'update_game_state':
 				await self.channel_layer.group_send(
 					self.room_group_name,
 					{
 						'type': 'game_action',
 						'action': action,
-						'state': state
+						'state': state,
+						'target': target
 					}
 				)
 			elif action == 'player_action':
@@ -99,10 +101,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def game_action(self, event):
 		action = event['action']
 		state = event['state']
-
+		target = event.get('target')
 		await self.send(text_data=json.dumps({
 			'action': action,
-			'state': state
+			'state': state,
+			'target': target
 		}))
 	
 
