@@ -1,7 +1,8 @@
 import { computeStats } from "./populatePageHelpers";
 import { handleSend } from "./chat.js";
+import { drawAll, renderOP } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
-
+const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
 const menu = document.getElementById('menuuu');
 const inv_menu = document.getElementById('inv-menu');
@@ -15,13 +16,6 @@ let gameState = {
     player1: { y:0 },
     player2: { y:0 },
     aspectRatio: 0,
-};
-const gamer2 = {
-    name: "Player 1",
-    avatar: "assets/avatar2.svg",
-    wins: '3',
-    losses: '0',
-    level: '7.34'
 };
 
 async function getRoomName() {
@@ -68,8 +62,8 @@ lo.addEventListener('click', async function (){
         const data = await getRoomName();
         window.userData.r_name = data.room_name;
         const u = new URL(baseUrl);
-        const screenHeight = 500;
-        const screenWidth = 400;
+        const screenHeight = canvass.clientHeight;
+        const screenWidth = canvass.clientWidth;
         const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
         window.userData['pong_socket'] = gameSocket;
         startGameSocket();
@@ -84,17 +78,14 @@ lo.addEventListener('click', async function (){
     }
 });
 
-function sendGameState(sock) {
+export function sendGameState(gameState, target) {
     if (window.userData.pong_socket) {
+        console.log('HI MY NAME IS JEFF');
         window.userData.pong_socket.send(JSON.stringify({
             action: 'update_game_state',
-            state: gameState
+            state: gameState,
+            target: target
         }));
-    } else {
-        if (gameInterval !== null) {
-            clearInterval(gameInterval);
-        }
-        return ;
     }
 }
 
@@ -117,28 +108,29 @@ function sendGameStatus(username, ready) {
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
         console.log("GAMESOCKET--ON");
-        const screenData = {
-            width: window.innerWidth,
-            height: window.innerHeight
-        };
-        window.userData.pong_socket.send(JSON.stringify({
-            action: 'screen_dimensions',
-            state: screenData
-        }));
     }
     window.userData.pong_socket.onclose = function(e) {
         console.log("GAMESOCKET--OFF");
     }
-    if (window.userData.pong_socket) {
-       gameInterval = setInterval(sendGameState, 1000);
-    }
-    else {
-        return ;
-    }
+    // if (window.userData.pong_socket) {
+    // //    gameInterval = setInterval(sendGameState, 1000);
+    // }
+    // else {
+    //     return ;
+    // }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
+        console.log(data);
         if (data.action == 'update_game_state') {
+            console.log('data is received');
             gameState = data.state;
+            if (gameState.ball) {
+                console.log(gameState);
+            } else {
+                if (data.target === window.userData.username) {
+                    renderOP(data.state);
+                }
+            }
         } else if (data.action === 'current_players') {
             menu.style.display = 'none';
             ai_menu.style.display = 'none';
@@ -178,6 +170,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     `;
     const gamer1Container = document.querySelector('.player1-container');
     const btnid = 'ready-button-' + gamer1.username;
+    gamer1['set'] = false;
     gamer1Container.innerHTML = `
         <div class="avatar">
             <img src="${gamer1.avatar}" alt="${gamer1.username} Avatar" class="avatar-image">
@@ -221,6 +214,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     
     const gamer2Container = document.querySelector('.player2-container');
     if (gamer2) {
+        gamer2['set'] = false;
         const btnid2 = 'ready-button-' + gamer2.username;
         gamer2Container.innerHTML = `
         <div class="avatar">
@@ -313,7 +307,43 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
 
     
     lobbyContainer.style.display = 'block';
-
+    if (gamer1.ready && gamer2.ready) {
+        lobbyContainer.style.display = 'none';
+        const gameContainer = document.getElementById('gameContainer');
+        const countdownOverlay = document.createElement('div');
+        countdownOverlay.classList.add('countdown-overlay');
+        countdownOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+            z-index: 1000;
+        `;
+        gameContainer.appendChild(countdownOverlay);
+    
+        let countdown = 3;
+        countdownOverlay.textContent = countdown;
+    
+        const countdownInterval = setInterval(() => {
+            countdown -= 1;
+            if (countdown > 0) {
+                countdownOverlay.textContent = countdown;
+            } else {
+                clearInterval(countdownInterval);
+                countdownOverlay.textContent = 'Game Start!';
+                setTimeout(() => {
+                    countdownOverlay.remove();
+                    drawAll(gamer1, gamer2, lobbySettings);
+                }, 1000);
+            }
+        }, 1000);
+    }
 }
 
 function getWinPercentage(wins, losses) {

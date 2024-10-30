@@ -12,6 +12,7 @@ import './populatePageHelpers.js';
 import './R-AvatarSelection.js';
 import './gameSystem.js';
 import './gameSystemT.js';
+import './gamePvP.js';
 
 window.ACTIVE_HOST = process.env.ACTIVE_HOST;
 window.userData = {};

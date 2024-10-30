@@ -1,6 +1,7 @@
 const messageContainer = document.getElementById('message-container');
 const chatInput = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
+const canvass = document.getElementById('pongCanvas');
 const noChat = document.getElementById('no-chat');
 const globalbtn = document.getElementById('revert_to_global');
 const open = document.createElement('button');
@@ -154,7 +155,9 @@ export async function	launchSocket() {
 							return ;
 						}
 						window.navigateTo('PONG', null);
-						const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data.room_name}/?token=${accessToken}`);
+						const screenHeight = canvass.clientHeight;
+						const screenWidth = canvass.clientWidth;
+						const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
 						window.userData['pong_socket'] = gameSocket;
 						window.userData.r_name = data.room_name;
 						menu.style.display = 'none';
