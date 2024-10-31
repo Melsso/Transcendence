@@ -5,6 +5,7 @@ import { sendGameState } from "./gameSystem.js";
 const REFERENCE_WIDTH = 1920;
 const REFERENCE_HEIGHT = 1080;
 
+let plankton;
 let paddleWidth;
 let paddleHeight;
 let upPressed;
@@ -91,8 +92,9 @@ function setDimensions(player) {
 	sphere.x = player.screen_dimensions.width / 2;
 	sphere.y = player.screen_dimensions.height / 2;
 
-
-	sphere.speed = heightScale * 4; 
+	plankton = heightScale;
+	sphere.speed = heightScale * 3.75;
+	initialSpeed = heightScale * 2.5;
 	sphere.dx = widthScale * 3.75; 
 	sphere.dy = heightScale * 3.75;
 
@@ -135,11 +137,15 @@ function movement(player1, player2) {
 
 function sphereMovement(player1, player2) {
 	let  player;
+	var  maxbounceAngle = 75 * (Math.PI / 180);
 	if (window.userData.username === player1.username) {
 		player = player1;
 	} else {
 		player = player2;
 	}
+	// const speedFact = plankton + Math.floor(elapsedTime / speedincre) * speedincre * (player.screen_dimensions.width / REFERENCE_WIDTH);
+	// sphere.dx = initialSpeed * speedFact * (sphere.dx > 0 ? 1 : -1);
+	// sphere.dy = initialSpeed * speedFact * (sphere.dy > 0 ? 1 : -1);
 
 	const canvasWidth = player.screen_dimensions.width;
 	const canvasHeight = player.screen_dimensions.height;
@@ -161,19 +167,45 @@ function sphereMovement(player1, player2) {
 		
 		sphere.dx = -sphere.dx;
 	}
-	if (sphere.x + sphere.radius >= playerPaddle2.x &&
-		sphere.y >= playerPaddle2.y &&
-		sphere.y <= playerPaddle2.y + playerPaddle2.height) {
+	if (
+		sphere.x - sphere.radius <= playerPaddle1.x + playerPaddle1.width &&
+		sphere.y + sphere.radius >= playerPaddle1.y &&
+		sphere.y <= playerPaddle1.y + playerPaddle1.height
+	) {
+		if (sphere.y >= playerPaddle1.y + (playerPaddle1.height / 2)) {
+			sphere.dy = sphere.speed * -1;
+		} else {
+			sphere.dy = sphere.speed * 1;
+		}
+		sphere.dx *= -1;
+			// var wherehit = (playerPaddle1.y + playerPaddle1.height / 2) - sphere.y;
+			// var wherego = wherehit / (playerPaddle1.height / 2);
+			// var bAngle = wherego * maxbounceAngle;
+			
+			// sphere.dx = sphere.speed * Math.cos(bAngle);
+			// sphere.dy = sphere.speed * Math.cos(bAngle) * -Math.sign(wherego);
+			// sphere.x = playerPaddle1.x + playerPaddle1.width + sphere.radius + plankton;
+		}
+	if (
+		sphere.x + sphere.radius >= playerPaddle2.x &&
+		sphere.y + sphere.radius >= playerPaddle2.y &&
+		sphere.y <= playerPaddle2.y + playerPaddle2.height
+		) {
+			console.log(playerPaddle2.y);
+			if (sphere.y >= playerPaddle2.y + (playerPaddle2.height / 2)) {
+				sphere.dy = sphere.speed * -1;
+			} else {
+				sphere.dy = sphere.speed * 1;
+			}
 			sphere.dx *= -1;
-			sphere.dy *= -1;
-	}
+			// var wherehit = (playerPaddle2.y + playerPaddle2.height / 2) - sphere.y;
+			// var wherego = wherehit / (playerPaddle2.height / 2);
+			// var bAngle = wherego * maxbounceAngle;
 
-	if (sphere.x - sphere.radius <= playerPaddle1.x + playerPaddle1.width &&
-		sphere.y >= playerPaddle1.y &&
-		sphere.y <= playerPaddle1.y + playerPaddle1.height) {
-			sphere.dx *= -1;
-			sphere.dy *= -1;
-	}
+			// sphere.dx = - sphere.speed * Math.cos(bAngle);
+			// sphere.dy = - sphere.speed * Math.cos(bAngle) * -Math.sign(wherego);
+			// sphere.x = playerPaddle2.x - sphere.radius - plankton;
+	  }
 }
 
 
