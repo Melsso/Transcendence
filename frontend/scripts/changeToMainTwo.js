@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			forgotcontainer.style.display = 'block';
 		} else if (view === '2fa') {
 			mainOne.style.display = 'flex';
-			facontainer.style.display = 'flex';
+			facontainer.style.display = 'block';
 		}
 	}
 
