@@ -2,9 +2,8 @@ import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
-// This variable is used to store user data
+
 const userAgent = navigator.userAgent;
-// This variable is needed to catch the useremail after registering and before email verification
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
 
@@ -395,7 +394,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const Instructions = document.getElementById('Instructions-box');
 	const lobby = document.getElementById('pong-inv-container');
 	const menu = document.getElementById('menuuu');
+	const qContainer = document.getElementById('Queue');
 
+	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
 	log1.style.display = 'none';
 	forgotcontainer.style.display = 'none';
@@ -406,6 +407,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
 	
+	const deleteModal = document.getElementById('deleteModal');
+	const confirmDelete = document.getElementById('confirmDelete');
+	const cancelDelete = document.getElementById('cancelDelete');	
+	const deletebtn = document.getElementById('delete-account');
 	const confirmButton = document.getElementById('pass-verf-code');
 	const loginButton = document.getElementById('login');
 	const login2faButton = document.getElementById('2fa-btn');
@@ -434,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			// tourniLobby.style.display = 'none';
 		}
 		window.altFfour();
+		qContainer.style.display = 'none';
 		Tlobby.style.display = 'none';
 		inv_menu.style.display = 'none';
 		ai_menu.style.display = 'none';
@@ -775,15 +781,23 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	// updateMailButton.addEventListener('click', async function () {
-	// 	const new_mail = document.getElementById('new-email').value;
-	
-	// 	try {
-	// 		const result = await updateMail(new_mail);
-	// 	} catch (error) {
-	// 		console.log('Error: ', error.detail);
-	// 	}
-	// });
+	deletebtn.addEventListener('click', function () {
+		deleteModal.style.display = 'flex';
+	});
+
+	cancelDelete.addEventListener('click', function () {
+		deleteModal.style.display = 'none';
+  });
+  confirmDelete.addEventListener('click', function () {
+	const password = document.getElementById('confirmPassworddelete').value;
+	if (password) {
+		 // Add password verification logic here
+		//  alert('Deletion confirmed with password: ' + password); // Replace with actual delete logic
+		 deleteModal.style.display = 'none';
+	} else {
+		 alert('Please enter your password.');
+	}
+});
 });
 
 

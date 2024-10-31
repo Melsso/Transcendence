@@ -567,6 +567,12 @@ canvas {
 	
 }
 
+.player-container {
+	margin-left: 30%;
+	margin-top: 10%;
+	height: 70%;
+}
+
 .avatar {
 	width: 200px;
 	height: 200px;

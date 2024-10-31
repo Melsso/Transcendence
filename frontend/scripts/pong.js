@@ -182,7 +182,6 @@ function countdownBeforeRound(callback) {
 window.countdownBeforeRound = countdownBeforeRound;
 
 function altFfour(){
-    console.log('we\'re reseting the game vars');
     stopGameLoop();
     GOscreen = false;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -112,3 +112,31 @@
 .settings-form button:hover {
 	background-color: #0056b3;
 }
+
+.modal-delete {
+	display: none; /* Hidden by default */
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+	justify-content: center;
+	align-items: center;
+	z-index: 1000; /* Ensure it’s on top */
+}
+
+.modal-content-delete {
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	max-width: 400px;
+	width: 90%;
+	text-align: center;
+}
+
+.modal-buttons-delete {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 15px;
+}

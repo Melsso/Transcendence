@@ -147,6 +147,7 @@ document.getElementById('PONG-button').addEventListener('click', function () {
         mode: gameMode,
         map: selectedMap
     };
+    console.log('we set em up');
 });
 
 function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {

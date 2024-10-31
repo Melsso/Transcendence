@@ -13,6 +13,7 @@ import './R-AvatarSelection.js';
 import './gameSystem.js';
 import './gameSystemT.js';
 import './gamePvP.js';
+import './matchMaking.js'
 
 window.ACTIVE_HOST = process.env.ACTIVE_HOST;
 window.userData = {};
