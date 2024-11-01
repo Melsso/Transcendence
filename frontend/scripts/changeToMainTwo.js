@@ -226,6 +226,33 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 	return data;
 }
 
+async function deleteAccount(password){
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+
+		return ;
+	}
+	const url = baseUrl + 'api/delete-account/';
+	const response = await fetch (url, {
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			password: password,
+		}),
+	});
+	if (!response.ok){
+		const errorResponse = await response.json();
+		Notification('Profile action', "Account Deletion Failed", 1, 'alert');
+		throw new Error(errorResponse.detail);
+	}
+	Notification('Profile action', "Account deleted successfully!", 0, 'success');
+	return await response.json();
+}
+
 async function updateMail(new_mail) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
@@ -788,12 +815,21 @@ document.addEventListener('DOMContentLoaded', function () {
 	cancelDelete.addEventListener('click', function () {
 		deleteModal.style.display = 'none';
   });
-  confirmDelete.addEventListener('click', function () {
+  confirmDelete.addEventListener('click', async function () {
 	const password = document.getElementById('confirmPassworddelete').value;
 	if (password) {
+		try {
+			await deleteAccount(password);
+			navigateTo("login", null);
+			localStorage.removeItem("accessToken");
+			localStorage.removeItem("refreshToken");
+			deleteModal.style.display = 'none';
+		} catch(error){
+			console.error(error.message);
+			alert('Account deletion failed, please try again');
+		}
 		 // Add password verification logic here
 		//  alert('Deletion confirmed with password: ' + password); // Replace with actual delete logic
-		 deleteModal.style.display = 'none';
 	} else {
 		 alert('Please enter your password.');
 	}
