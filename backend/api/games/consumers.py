@@ -49,17 +49,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 		self.ball = {
 			'x': 0.5, 
 			'y': 0.5,  
-			'dx': 0.01,  
+			'dx': 0.01,
 			'dy': 0.01,  
-			'radius': 10 / REFERENCE_HEIGHT  
+			'radius': 0.05 
 		}
         
-        
-		self.paddle1 = {'y': 0.5, 'height': 0.1, 'dy': 0.01}
-		self.paddle2 = {'y': 0.5, 'height': 0.1, 'dy': 0.01}
-
-        
-		self.loop_task = asyncio.create_task(self.move_ball())
+		self.paddle1 = {'y': 0.45, 'height': 0.1, 'dy': 0.01}
+		self.paddle2 = {'y': 0.45, 'height': 0.1, 'dy': 0.01}
 
 		players_in_room = await self.get_players_in_room()
 		await self.send_current_players(players_in_room)
@@ -87,7 +83,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if action == 'update_game_state':
 				if player == '1':
 					if state == 1:
-						if self.paddle1['y'] > 0: 
+						if self.paddle1['y'] > 0.05: 
 							self.paddle1['y'] -= self.paddle1['dy']
 					else:
 						if self.paddle1['y'] < 1 - self.paddle1['height']: 
@@ -103,7 +99,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 					)
 				else:
 					if state == 1:
-						if self.paddle2['y'] > 0: 
+						if self.paddle2['y'] > 0.05: 
 							self.paddle2['y'] -= self.paddle2['dy']
 					else:
 						if self.paddle2['y'] < 1 - self.paddle2['height']: 
@@ -123,6 +119,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
 				await self.send_current_players(players_in_room)
+				start = True
+				if len(players_in_room) != 2:
+					return 
+				for player in players_in_room:
+					if players_in_room[player]['ready'] == False:
+						start = False
+						break
+				if start == True:
+					self.game_loop = asyncio.create_task(self.move_ball())
 			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
@@ -131,18 +136,20 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	async def move_ball(self):
 		while True:
+			logger.warning(self.ball)
 			self.ball['x'] += self.ball['dx']
 			self.ball['y'] += self.ball['dy']
-
-			if self.ball['y'] <= 0 or self.ball['y'] >= 1:
+			if self.ball['x'] <= 0 or self.ball['x'] >= 1:
+				self.ball['x'] = 0.5
+				self.ball['y'] = 0.5
+			
+			if self.ball['y'] <= 0.05 or self.ball['y'] >= 1:
 				self.ball['dy'] = -self.ball['dy']
-
-            
-			if (self.ball['x'] <= 0.025 and self.paddle1['y'] <= self.ball['y'] <= self.paddle1['y'] + self.paddle1['height']) or \
-				(self.ball['x'] >= 0.975 and self.paddle2['y'] <= self.ball['y'] <= self.paddle2['y'] + self.paddle2['height']):
+			
+			if (self.ball['x'] <= 0.05 and self.paddle1['y'] <= self.ball['y'] <= self.paddle1['y'] + self.paddle1['height']) or \
+				(self.ball['x'] >= 0.95 and self.paddle2['y'] <= self.ball['y'] <= self.paddle2['y'] + self.paddle2['height']):
 				self.ball['dx'] = -self.ball['dx']
-
-            
+			
 			await self.channel_layer.group_send(
 			self.room_group_name,
 				{
@@ -152,13 +159,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 					"y": self.ball['y']
 				}
 			)
-			await asyncio.sleep(0.5)
+			await asyncio.sleep(0.032)
 
 	async def ball_position(self, event):
 		action = event['action']
 		await self.send(text_data=json.dumps({
             "type": "ballState",
-				'aciton': action,
+			'action': action,
             "x": event["x"],
             "y": event["y"]
         }))

@@ -1,6 +1,6 @@
 import { computeStats } from "./populatePageHelpers";
 import { handleSend } from "./chat.js";
-import { drawAll, renderOP } from "./gamePvP.js";
+import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -108,6 +108,10 @@ function sendGameStatus(username, ready) {
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
         console.log("GAMESOCKET--ON");
+        window.userData.screen_dimensions = {
+            width: canvass.getBoundingClientRect().width,
+            height: canvass.getBoundingClientRect().height
+        };
     }
     window.userData.pong_socket.onclose = function(e) {
         console.log("GAMESOCKET--OFF");
@@ -126,7 +130,6 @@ export async function startGameSocket() {
                 console.log(gameState);
             } else {
                 if (data.target === window.userData.username) {
-                    console.log(data);
                     renderOP(data.state);
                 }
             }
@@ -138,7 +141,8 @@ export async function startGameSocket() {
             lobby.style.display = 'flex';
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
         } else if (data.action === 'ball_movment') {
-            changeSpehreVars(data.x, data.y);
+            console.log(data);
+            changeSphereVars(data.x, data.y);
         }
     }
 }
