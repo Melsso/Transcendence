@@ -78,12 +78,13 @@ lo.addEventListener('click', async function (){
     }
 });
 
-export function sendGameState(gameState, target) {
+export function sendGameState(gameState, target, me) {
     if (window.userData.pong_socket) {
         window.userData.pong_socket.send(JSON.stringify({
             action: 'update_game_state',
             state: gameState,
-            target: target
+            target: target,
+            player: me
         }));
     }
 }
@@ -125,6 +126,7 @@ export async function startGameSocket() {
                 console.log(gameState);
             } else {
                 if (data.target === window.userData.username) {
+                    console.log(data);
                     renderOP(data.state);
                 }
             }
@@ -135,6 +137,8 @@ export async function startGameSocket() {
             Instructions.style.display = 'none';
             lobby.style.display = 'flex';
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
+        } else if (data.action === 'ball_movment') {
+            changeSpehreVars(data.x, data.y);
         }
     }
 }

@@ -12,6 +12,8 @@ from .models import PongGame, RrGame, Game
 from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
+REFERENCE_WIDTH = 1920
+REFERENCE_HEIGHT = 1080
 
 class GameConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'game_room_'
@@ -44,6 +46,21 @@ class GameConsumer(AsyncWebsocketConsumer):
 		)
 		await self.accept()
 
+		self.ball = {
+			'x': 0.5, 
+			'y': 0.5,  
+			'dx': 0.01,  
+			'dy': 0.01,  
+			'radius': 10 / REFERENCE_HEIGHT  
+		}
+        
+        
+		self.paddle1 = {'y': 0.5, 'height': 0.1, 'dy': 0.01}
+		self.paddle2 = {'y': 0.5, 'height': 0.1, 'dy': 0.01}
+
+        
+		self.loop_task = asyncio.create_task(self.move_ball())
+
 		players_in_room = await self.get_players_in_room()
 		await self.send_current_players(players_in_room)
 
@@ -65,17 +82,41 @@ class GameConsumer(AsyncWebsocketConsumer):
 			data = json.loads(text_data)
 			action = data['action']
 			state = data['state']
-			target = data.get('target') 
+			target = data.get('target')
+			player = data.get('player')
 			if action == 'update_game_state':
-				await self.channel_layer.group_send(
-					self.room_group_name,
-					{
-						'type': 'game_action',
-						'action': action,
-						'state': state,
-						'target': target
-					}
-				)
+				if player == '1':
+					if state == 1:
+						if self.paddle1['y'] > 0: 
+							self.paddle1['y'] -= self.paddle1['dy']
+					else:
+						if self.paddle1['y'] < 1 - self.paddle1['height']: 
+							self.paddle1['y'] += self.paddle1['dy']
+					await self.channel_layer.group_send(
+						self.room_group_name,
+						{
+							'type': 'game_action',
+							'action': action,
+							'state': self.paddle1['y'],
+							'target': target
+						}
+					)
+				else:
+					if state == 1:
+						if self.paddle2['y'] > 0: 
+							self.paddle2['y'] -= self.paddle2['dy']
+					else:
+						if self.paddle2['y'] < 1 - self.paddle2['height']: 
+							self.paddle2['y'] += self.paddle2['dy']
+					await self.channel_layer.group_send(
+						self.room_group_name,
+						{
+							'type': 'game_action',
+							'action': action,
+							'state': self.paddle2['y'],
+							'target': target
+						}
+					)
 			elif action == 'player_action':
 				username = state['username']
 				ready_status = state['ready']
@@ -88,6 +129,39 @@ class GameConsumer(AsyncWebsocketConsumer):
 		except Exception as e:
 			await self.send(text_data=json.dumps({'error': str(e)}))
 
+	async def move_ball(self):
+		while True:
+			self.ball['x'] += self.ball['dx']
+			self.ball['y'] += self.ball['dy']
+
+			if self.ball['y'] <= 0 or self.ball['y'] >= 1:
+				self.ball['dy'] = -self.ball['dy']
+
+            
+			if (self.ball['x'] <= 0.025 and self.paddle1['y'] <= self.ball['y'] <= self.paddle1['y'] + self.paddle1['height']) or \
+				(self.ball['x'] >= 0.975 and self.paddle2['y'] <= self.ball['y'] <= self.paddle2['y'] + self.paddle2['height']):
+				self.ball['dx'] = -self.ball['dx']
+
+            
+			await self.channel_layer.group_send(
+			self.room_group_name,
+				{
+					"type": 'ball_position',
+					"action": 'ball_movment',
+					"x": self.ball['x'],
+					"y": self.ball['y']
+				}
+			)
+			await asyncio.sleep(0.5)
+
+	async def ball_position(self, event):
+		action = event['action']
+		await self.send(text_data=json.dumps({
+            "type": "ballState",
+				'aciton': action,
+            "x": event["x"],
+            "y": event["y"]
+        }))
 
 	async def player_action(self, event):
 		action = event['action']
@@ -130,7 +204,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
-		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -167,7 +240,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			profile['ready'] = ready_status.get(profile['username'], False)
 			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
 
-		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {
@@ -291,7 +363,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
-		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -328,7 +399,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			profile['ready'] = ready_status.get(profile['username'], False)
 			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
 
-		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {
