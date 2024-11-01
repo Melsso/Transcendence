@@ -30,7 +30,7 @@ function drawSphere(x, y, radius) {
 }
 
 
-function setDimensions(player) {
+function setDimensions() {
 	const widthScale = window.userData.screen_dimensions.width;
 	const heightScale = window.userData.screen_dimensions.height;
 
@@ -91,13 +91,9 @@ function movement(player1, player2) {
 
 export function renderOP(y) {
 	if (window.userData.username === playerPaddle1.username) {
-		console.log(playerPaddle2.y);
 		playerPaddle2.y = y * window.userData.screen_dimensions.height;
-		console.log(playerPaddle2.y);
 	} else {
-		console.log(playerPaddle1.y);
 		playerPaddle1.y = y * window.userData.screen_dimensions.height;
-		console.log(playerPaddle1.y);
 	}
 }
 
@@ -113,23 +109,15 @@ export function drawAll(player1, player2, settings) {
 	}
 	if (window.userData.username === player1.username) {
 		if (player1.set === false ) {
-			// window.userData.screen_dimensions = {
-			// 	width: canvass.getBoundingClientRect().width,
-			// 	height: canvass.getBoundingClientRect().height
-			// };
-			setDimensions(player1);
+			setDimensions();
 			playerPaddle1.username = player1.username;
 			playerPaddle2.username = player2.username;
 			player1.set = true;
 		}
 	}
 	else {
-		if (player2.set === false ) {
-			// window.userData.screen_dimensions = {
-			// 	width: canvass.getBoundingClientRect().width,
-			// 	height: canvass.getBoundingClientRect().height
-			// };
-			setDimensions(player2);
+		if (player2.set === false ) {player2
+			setDimensions();
 			playerPaddle1.username = player1.username;
 			playerPaddle2.username = player2.username;
 			player2.set = true;
