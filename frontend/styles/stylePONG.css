@@ -468,9 +468,7 @@ canvas {
 }
 
 .btn-ready {
-	width: 30%;
-	height: 5%;
-	transform: translateY(400%);
+	margin-top: 20%;
 	z-index: 100;
 	background-color: #8b0000;
 	color: white;
@@ -574,8 +572,9 @@ canvas {
 }
 
 .avatar {
-	width: 200px;
-	height: 200px;
+	width: 40%;
+	height: auto;
+	object-fit: cover;
 	border-radius: 50%;
 	overflow: hidden;
 	margin-bottom: 15px;
@@ -592,6 +591,8 @@ canvas {
 }
 
 .player-info {
+	width: 90%;
+		/* height: 50%; */
 	color: #ffffff; 
 	font-family: 'CustomFont';
 	font-size: 16px;
