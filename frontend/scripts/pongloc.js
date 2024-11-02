@@ -828,6 +828,122 @@ function anotherRound(){
 }
 let gameover = false;
 
+const treecol = [
+	'#0f2e0f',
+	'#1b3d1b',
+	'#2e4d2f',
+	'#4c6f4c',
+	'#7a9b7a'
+];
+
+let trees = [
+	{ x: Canvaas.width * 0.9, height: Canvaas.height * 0.8, width: Canvaas.width * 0.04, colorIndex: 0 },
+	{ x: Canvaas.width * 0.75, height: Canvaas.height * 0.76, width: Canvaas.width * 0.02, colorIndex: 1 },
+	{ x: Canvaas.width * 0.64, height: Canvaas.height, width: Canvaas.width * 0.03, colorIndex: 2},
+	{ x: Canvaas.width * 0.52, height: Canvaas.height * 0.84, width: Canvaas.width * 0.04, colorIndex: 1},
+	{ x: Canvaas.width * 0.4, height: Canvaas.height, width: Canvaas.width * 0.05, colorIndex: 2},
+	{ x: Canvaas.width * 0.25, height: Canvaas.height * 0.78, width: Canvaas.width * 0.034, colorIndex: 2},
+	{ x: Canvaas.width * 0.1, height: Canvaas.height * 0.8, width: Canvaas.width * 0.04, colorIndex: 0},
+];
+
+let gheightArray = [
+	Canvaas.height * 0.9, Canvaas.height * 0.9, 
+	Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.99, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.94, Canvaas.height * 0.9, Canvaas.height * 0.99,
+	Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.94, Canvaas.height * 0.97,
+	Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.9, Canvaas.height * 0.91, Canvaas.height * 0.92,
+	Canvaas.height * 0.99, Canvaas.height * 0.94, Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.94, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.9, Canvaas.height * 0.9,
+];
+
+function grassposgenerator() {
+	const grassSpacing = 5; // Closer spacing between grass blades
+	const maxGrassPerX = 3; // Max grass blades at the same X position
+	const maxHeightVariation = 15; // Max height variation for each grass blade
+
+	// Clear the previous positions
+	grassPositions = [];
+
+	// Iterate through the width of the Canvaas to create grass blades
+	for (let x = 0; x < Canvaas.width; x += grassSpacing) {
+		 const baseHeight = gheightArray[Math.floor(x / 50)] || Canvaas.height; // Base height for the grass
+
+		 // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
+		 const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
+
+		 for (let i = 0; i < numGrassBlades; i++) {
+			  // Generate a random height within a range, ensuring it's below the baseHeight
+			  const randomY = Math.floor(baseHeight - (Math.random() * maxHeightVariation + 5)); // Adjusting range for random heights
+			  grassPositions.push({ x, y: randomY }); // Store the position and height
+		 }
+	}
+}
+
+function grassdraw() {
+	const grassColor = '#3c6e47'; // Color for the grass
+	ctxx.strokeStyle = grassColor;
+	ctxx.lineWidth = 2; // Thickness of the grass blades
+
+	// Draw the static grass based on pre-generated positions
+	grassPositions.forEach(grass => {
+		 const { x, y } = grass; // Destructure to get x and y
+
+		 // Draw a blade of grass at the pre-defined height
+		ctxx.beginPath();
+		ctxx.moveTo(x, gheightArray[Math.floor(x / 50)]); // Starting at ground level
+		ctxx.lineTo(x - 2, y); // Leaning to the left
+		ctxx.moveTo(x, gheightArray[Math.floor(x / 50)]);
+		ctxx.lineTo(x + 2, y); // Leaning to the right
+		ctxx.stroke();
+	});
+}
+
+function map3() {
+	const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
+	const numTriangles = 36; // Number of triangles/wedges
+	const centerX =Canvaas.width / 2;
+	const centerY =Canvaas.height / 2;
+	const radius = Math.hypot(Canvaas.width,Canvaas.height); // Ensures triangles extend beyond Canvaas
+	const angleIncrement = (2 * Math.PI) / numTriangles;
+
+	for (let i = 0; i < numTriangles; i++) {
+		 const angle = i * angleIncrement;
+		 
+		 // Set color for each triangle
+		ctxx.fillStyle = colors[i % colors.length];
+		 
+		 // Start drawing the triangle
+		ctxx.beginPath();
+		ctxx.moveTo(centerX, centerY); // Center point
+
+		 // Calculate points at the edge of the Canvaas
+		 const x1 = centerX + radius * Math.cos(angle);
+		 const y1 = centerY + radius * Math.sin(angle);
+		 const x2 = centerX + radius * Math.cos(angle + angleIncrement);
+		 const y2 = centerY + radius * Math.sin(angle + angleIncrement);
+
+		 // Draw the triangle wedge
+		ctxx.lineTo(x1, y1);
+		ctxx.lineTo(x2, y2);
+		ctxx.closePath();
+		ctxx.fill();
+	}
+}
+function    mapchoice(){
+	if (sett.map === 'Map 1'){}
+	else if (sett.map === 'Map 2'){
+		map2();
+	}
+	else if (sett.map === 'Map 3'){
+		 map3();
+		 drawBBall(Balls.x, Balls.y, Balls.radius);
+		 drawBaiPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
+		 drawBPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+	}
+}
+
 function    backtooriginalvalues(){
 	wasdPaddle.width = Canvaas.width * 0.01;
 	ARPaddle.width = Canvaas.width * 0.01;
@@ -842,7 +958,7 @@ function generateARandomNumber() {
 }
 
 let reallyRandom = generateARandomNumber();
-
+grassposgenerator();
 function gameLLoop(settings) {
 	if (settings === null) {
 		settings.mode = 'Default Mode';
@@ -855,6 +971,7 @@ function gameLLoop(settings) {
 		 ResetedTime = Date.now();
 	iscurrentlyingame = true;
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	mapchoice();
 	elapsedTime = Math.floor((Date.now() - ResetedTime) / 1000);
 	if (sett.mode === "Buff Mode") {
 		if (elapsedTime === reallyRandom) {
@@ -887,9 +1004,11 @@ function gameLLoop(settings) {
 	  if (BiggerPadCount === 2)
 			BiggerPaddle.visible = false;
 	}
-	drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
-	drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
-	drawingBall(Balls.x, Balls.y, Balls.radius);
+	if (settings.map === 'Map 1' || settings.map === 'Map 2'){
+		drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+		drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
+		drawingBall(Balls.x, Balls.y, Balls.radius);
+	}
 	movewasdPaddle();
 	moveARPaddle();
 	if (sett.mode === 'Buff Mode') {
@@ -929,6 +1048,4 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 		 mode: gameMode,
 		 map: selectedMap
 	};
-	// window.stopGameLoop();
-	// window.resets();
 });
