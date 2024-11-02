@@ -27,9 +27,4 @@ MINOR:
 - Multiple language supports YYYYYYYY
 
 
-		//fix pong game not stopping if play button i lcicked aagain or if clicked to go to another page
-		//fix accordion not opening till inspect is opened
-		//fix tourni lobby, a bit of a diffy 
-		//make rendering version of game for websockets
 		//global chat aint refreshing
-		//fix not closing game socket correctly

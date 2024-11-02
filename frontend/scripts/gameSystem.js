@@ -183,8 +183,8 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             <div class="winrate-bar-container">
                 <div class="winrate-bar" style="width: ${getWinPercentage(gamer1Wins, gamer1Losses)}%;"></div>
             </div>
+            <button type="button" id="${btnid}" class="btn btn-ready">Not Ready</button>
         </div>
-        <button type="button" id="${btnid}" class="btn btn-ready">Not Ready</button>
     `;
     const readyButton1 = document.getElementById(btnid);
     if (gamer1.ready) {
@@ -228,8 +228,8 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             <div class="winrate-bar-container">
                 <div class="winrate-bar" style="width: ${getWinPercentage(gamer2Wins, gamer2Losses)}%;"></div>
             </div>
+            <button type="button" id="${btnid2}" class="btn btn-ready">Not Ready</button>
         </div>
-        <button type="button" id="${btnid2}" class="btn btn-ready">Not Ready</button>
     `;
         const readyButton2 = document.getElementById(btnid2);
         if (gamer2.ready) {
