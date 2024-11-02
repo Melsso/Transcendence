@@ -22,10 +22,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 		'y': 0.5,  
 		'dx': 0.01,
 		'dy': 0.01,  
-		'radius': 0.005 
+		'radius': 0.01 
 	}
-	paddle1 = {'y': 0.45, 'height': 0.1, 'dy': 0.01}
-	paddle2 = {'y': 0.45, 'height': 0.1, 'dy': 0.01}
+	paddle1 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
+	paddle2 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
 
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -135,28 +135,44 @@ class GameConsumer(AsyncWebsocketConsumer):
 			await self.send(text_data=json.dumps({'error': str(e)}))
 
 	async def move_ball(self):
+		# WAIT FOR THE ROUND TO START
 		await asyncio.sleep(3)
 		while True:
+			# BALL INCREMENTS
 			self.ball['x'] += self.ball['dx']
 			self.ball['y'] += self.ball['dy']
 
-			if self.ball['x'] - 0.005 <= 0:
-				if self.ball['y'] >= self.paddle1['y'] and self.ball['y'] <= self.paddle1['y'] + 0.1:
-					self.ball['dx'] = -self.ball['dx']
-				else:
-					self.ball['x'] = 0.5
-					self.ball['y'] = 0.5
-			
-			elif self.ball['x'] + 0.005 >= 1:
-				if self.ball['y'] >= self.paddle2['y'] and self.ball['y'] <= self.paddle2['y'] + 0.1:
-					self.ball['dx'] = -self.ball['dx']
-				else:
-					self.ball['x'] = 0.5
-					self.ball['y'] = 0.5
-					
-			elif self.ball['y'] - 0.005 <= 0.05 or self.ball['y'] + 0.005 >= 0.995:
+			# LETS FIRST DEFINE OUR LOSING CONS
+			if self.ball['x'] - self.ball['radius'] <= 0:
+				self.ball['x'] = 0.5
+				self.ball['y'] = 0.5
+				logger.warning('P1 LOST')
+			if self.ball['x'] + self.ball['radius'] >= 1:
+				self.ball['x'] = 0.5
+				self.ball['y'] = 0.5
+				logger.warning('P2 LOST')
+
+			# NEXT LETS HANDLE WALL BOUNCES
+			if self.ball['y'] - self.ball['radius'] <= 0.05:
 				self.ball['dy'] = -self.ball['dy']
-			
+				logger.warning('UPPER WALL BOUNCE')
+			if self.ball['y'] + self.ball['radius'] >= 1:
+				self.ball['dy'] = -self.ball['dy']
+				logger.warning('LOWER WALL BOUNCE')
+
+			# FINALLY WE DEFINE PADDLE BOUNCE
+			if self.ball['x'] - self.ball['radius'] <= self.paddle1['width'] \
+				and self.ball['y'] >= self.paddle1['y'] \
+				and self.ball['y'] <= self.paddle1['y'] + self.paddle1['height']:
+				self.ball['dx'] = -self.ball['dx']
+				logger.warning('P1 BOUNCE')
+			if self.ball['x'] + self.ball['radius'] >= 1 - self.paddle2['width'] \
+				and self.ball['y'] >= self.paddle2['y'] \
+				and self.ball['y'] <= self.paddle2['y'] + self.paddle2['height']:
+				self.ball['dx'] = -self.ball['dx']
+				logger.warning('P2 BOUNCE')
+
+			# BROADCAST BALL POSITION
 			await self.channel_layer.group_send(
 			self.room_group_name,
 				{
@@ -166,7 +182,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 					"y": self.ball['y']
 				}
 			)
-			await asyncio.sleep(0.016)
+
+			# SIMULATE FRAMERATE
+			await asyncio.sleep(0.032)
 
 	async def ball_position(self, event):
 		action = event['action']

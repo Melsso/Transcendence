@@ -34,19 +34,19 @@ function setDimensions() {
 	const widthScale = window.userData.screen_dimensions.width;
 	const heightScale = window.userData.screen_dimensions.height;
 
-	playerPaddle1.width = widthScale / 200;
+	playerPaddle1.width = widthScale / 100;
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle1.x = 0;
 	playerPaddle1.y = (heightScale / 2) - (playerPaddle1.height / 2);
 	playerPaddle1.dy = heightScale / 100;
 
-	playerPaddle2.width = widthScale / 200;
+	playerPaddle2.width = widthScale / 100;
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle2.x = widthScale - playerPaddle2.width;
 	playerPaddle2.y = (heightScale / 2) - (playerPaddle2.height / 2);
 	playerPaddle2.dy = heightScale / 100;
 
-	sphere.radius = widthScale / 200;
+	sphere.radius = widthScale / 100;
 	sphere.x = (widthScale / 2) - (sphere.radius / 2);
 	sphere.y = (heightScale / 2) - (sphere.radius / 2);
 	// sphere.speed = heightScale * 3.75;
