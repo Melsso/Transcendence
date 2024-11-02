@@ -24,6 +24,13 @@ class Command(BaseCommand):
                 'is_active': True
             },
             {
+                'username': 'so',
+                'password': 'strongpass123',
+                'email': 'melsopv@gmail.com',
+                'is_verified': True,
+                'is_active': True
+            },
+            {
                 'username': 'Sofiane',
                 'password': 'strongpass123',
                 'email': 'melsopvbb@gmail.com',

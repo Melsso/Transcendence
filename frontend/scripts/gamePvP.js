@@ -67,38 +67,28 @@ function drawSphere(x, y, radius) {
 }
 
 
-function setDimensions(player) {
-	const widthScale = player.screen_dimensions.width / REFERENCE_WIDTH;
-	const heightScale = player.screen_dimensions.height / REFERENCE_HEIGHT;
+function setDimensions() {
+	const widthScale = window.userData.screen_dimensions.width;
+	const heightScale = window.userData.screen_dimensions.height;
 
-
-	paddleWidth = widthScale * 20;     
-	paddleHeight = heightScale * 100;
-
-	playerPaddle1.width = paddleWidth;
-	playerPaddle1.height = paddleHeight;
+	playerPaddle1.width = widthScale / 100;
+	playerPaddle1.height = heightScale / 10;
 	playerPaddle1.x = 0;
 	playerPaddle1.y = (player.screen_dimensions.height - paddleHeight) / 2;
 	playerPaddle1.dy = heightScale * 6.75;
 
-	playerPaddle2.width = paddleWidth;
-	playerPaddle2.height = paddleHeight;
-	playerPaddle2.x = player.screen_dimensions.width - paddleWidth;
-	playerPaddle2.y = (player.screen_dimensions.height - paddleHeight) / 2;
-	playerPaddle2.dy = heightScale * 6.75;
+	playerPaddle2.width = widthScale / 100;
+	playerPaddle2.height = heightScale / 10;
+	playerPaddle2.x = widthScale - playerPaddle2.width;
+	playerPaddle2.y = (heightScale / 2) - (playerPaddle2.height / 2);
+	playerPaddle2.dy = heightScale / 100;
 
-	sphereRadius = widthScale * 20;  
-	sphere.radius = sphereRadius;
-	sphere.x = player.screen_dimensions.width / 2;
-	sphere.y = player.screen_dimensions.height / 2;
-
-	plankton = heightScale;
-	sphere.speed = heightScale * 3.75;
-	initialSpeed = heightScale * 2.5;
-	sphere.dx = widthScale * 3.75; 
-	sphere.dy = heightScale * 3.75;
-
-	speedincre = heightScale * 0.2;
+	sphere.radius = widthScale / 100;
+	sphere.x = (widthScale / 2) - (sphere.radius / 2);
+	sphere.y = (heightScale / 2) - (sphere.radius / 2);
+	// sphere.speed = heightScale * 3.75;
+	sphere.dx = widthScale / 100;
+	sphere.dy = heightScale / 100;
 }
 
 document.addEventListener('keydown', (e) => {
@@ -220,18 +210,15 @@ function resetSpherePosition(canvasHeight, canvasWidth) {
 
 export function renderOP(y) {
 	if (window.userData.username === playerPaddle1.username) {
-		if (y) {
-			playerPaddle2.y -= playerPaddle2.dy;
-		} else {
-			playerPaddle2.y += playerPaddle2.dy;
-		}
+		playerPaddle2.y = y * window.userData.screen_dimensions.height;
 	} else {
-		if (y) {
-			playerPaddle1.y -= playerPaddle1.dy;
-		} else {
-			playerPaddle1.y += playerPaddle1.dy;
-		}
+		playerPaddle1.y = y * window.userData.screen_dimensions.height;
 	}
+}
+
+export function changeSphereVars(x, y) {
+	sphere.x = x * window.userData.screen_dimensions.width;
+	sphere.y = y * window.userData.screen_dimensions.height;
 }
 
 export function drawAll(player1, player2, settings) {
@@ -241,16 +228,15 @@ export function drawAll(player1, player2, settings) {
 	}
 	if (window.userData.username === player1.username) {
 		if (player1.set === false ) {
-
-			setDimensions(player1);
+			setDimensions();
 			playerPaddle1.username = player1.username;
 			playerPaddle2.username = player2.username;
 			player1.set = true;
 		}
 	}
 	else {
-		if (player2.set === false ) {
-			setDimensions(player2);
+		if (player2.set === false ) {player2
+			setDimensions();
 			playerPaddle1.username = player1.username;
 			playerPaddle2.username = player2.username;
 			player2.set = true;

@@ -15,6 +15,16 @@ logger = logging.getLogger(__name__)
 
 class GameConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'game_room_'
+	ball = {
+		'x': 0.5, 
+		'y': 0.5,  
+		'dx': 0.01,
+		'dy': 0.01,  
+		'radius': 0.01 
+	}
+	paddle1 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
+	paddle2 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
+
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
 		self.room_group_name = f'{self.room_name}'
@@ -43,6 +53,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			self.channel_name
 		)
 		await self.accept()
+
 
 		players_in_room = await self.get_players_in_room()
 		await self.send_current_players(players_in_room)
@@ -88,6 +99,66 @@ class GameConsumer(AsyncWebsocketConsumer):
 		except Exception as e:
 			await self.send(text_data=json.dumps({'error': str(e)}))
 
+	async def move_ball(self):
+		# WAIT FOR THE ROUND TO START
+		await asyncio.sleep(3)
+		while True:
+			# BALL INCREMENTS
+			self.ball['x'] += self.ball['dx']
+			self.ball['y'] += self.ball['dy']
+
+			# LETS FIRST DEFINE OUR LOSING CONS
+			if self.ball['x'] - self.ball['radius'] <= 0:
+				self.ball['x'] = 0.5
+				self.ball['y'] = 0.5
+				logger.warning('P1 LOST')
+			if self.ball['x'] + self.ball['radius'] >= 1:
+				self.ball['x'] = 0.5
+				self.ball['y'] = 0.5
+				logger.warning('P2 LOST')
+
+			# NEXT LETS HANDLE WALL BOUNCES
+			if self.ball['y'] - self.ball['radius'] <= 0.05:
+				self.ball['dy'] = -self.ball['dy']
+				logger.warning('UPPER WALL BOUNCE')
+			if self.ball['y'] + self.ball['radius'] >= 1:
+				self.ball['dy'] = -self.ball['dy']
+				logger.warning('LOWER WALL BOUNCE')
+
+			# FINALLY WE DEFINE PADDLE BOUNCE
+			if self.ball['x'] - self.ball['radius'] <= self.paddle1['width'] \
+				and self.ball['y'] >= self.paddle1['y'] \
+				and self.ball['y'] <= self.paddle1['y'] + self.paddle1['height']:
+				self.ball['dx'] = -self.ball['dx']
+				logger.warning('P1 BOUNCE')
+			if self.ball['x'] + self.ball['radius'] >= 1 - self.paddle2['width'] \
+				and self.ball['y'] >= self.paddle2['y'] \
+				and self.ball['y'] <= self.paddle2['y'] + self.paddle2['height']:
+				self.ball['dx'] = -self.ball['dx']
+				logger.warning('P2 BOUNCE')
+
+			# BROADCAST BALL POSITION
+			await self.channel_layer.group_send(
+			self.room_group_name,
+				{
+					"type": 'ball_position',
+					"action": 'ball_movment',
+					"x": self.ball['x'],
+					"y": self.ball['y']
+				}
+			)
+
+			# SIMULATE FRAMERATE
+			await asyncio.sleep(0.032)
+
+	async def ball_position(self, event):
+		action = event['action']
+		await self.send(text_data=json.dumps({
+            "type": "ballState",
+			'action': action,
+            "x": event["x"],
+            "y": event["y"]
+        }))
 
 	async def player_action(self, event):
 		action = event['action']
