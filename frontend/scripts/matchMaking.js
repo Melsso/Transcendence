@@ -89,7 +89,7 @@ qBtn.addEventListener('click', function() {
 	gContainer.appendChild(playerInfo);
 
 	const spinnerContainer = document.createElement('div');
-	spinnerContainer.classList.add('text-center', 'mt-4');
+	spinnerContainer.classList.add('text-center', 'mt-4', 'spinner-container');
 
 	const spinner = document.createElement('div');
 	spinner.classList.add('spinner-border', 'text-primary');

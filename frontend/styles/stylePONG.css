@@ -483,6 +483,11 @@ canvas {
 	color: white;
 }
 
+.spinner-container {
+	margin-top: 20% !important;
+	text-align: center;
+}
+
 
 .pong-lobby-name {
 	position: absolute;
