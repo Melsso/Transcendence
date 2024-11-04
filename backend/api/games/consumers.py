@@ -11,7 +11,8 @@ from users.serializers import UserProfileSerializer
 from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
-
+REFERENCE_WIDTH = 1920
+REFERENCE_HEIGHT = 1080
 class GameConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'game_room_'
 	ball = {
@@ -19,14 +20,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 		'y': 0.5,  
 		'dx': 0.005,
 		'dy': 0.005,
-		'speed': 0.00125,
 		'radius': 0.01 
 	}
 	paddle1 = {'y': 0.45, 'dy': 0.01}
 	paddle2 = {'y': 0.45, 'dy': 0.01}
 
 	# async def queueCreation(self):
-
 
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -59,8 +58,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			self.channel_name
 		)
 		await self.accept()
-
-
 		players_in_room = await self.get_players_in_room()
 		await self.send_current_players(players_in_room)
 
@@ -83,6 +80,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			action = data['action']
 			state = data['state']
 			target = data.get('target') 
+			player = data.get('player')
 			if action == 'update_game_state':
 				if player == '1':
 					if state == 1:
@@ -122,6 +120,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
 				await self.send_current_players(players_in_room)
+				start = True
+				if len(players_in_room) != 2:
+					return 
+				for player in players_in_room:
+					if players_in_room[player]['ready'] == False:
+						start = False
+						break
+				if start == True:
+					self.game_loop = asyncio.create_task(self.move_ball())
 			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
@@ -133,16 +140,16 @@ class GameConsumer(AsyncWebsocketConsumer):
 		normal_intersect_y = 0
 		angle = 0
 		ball_hits = 0
+		speed = 0.005
 		await asyncio.sleep(3)
 		while True:
 			# BALL INCREMENTS
 			if ball_hits == 8:
 				ball_hits = 0
-				self.ball['speed'] += self.ball['speed']
+				speed += 0.00125
 
 			self.ball['x'] += self.ball['dx']
 			self.ball['y'] += self.ball['dy']
-
 			# LETS FIRST DEFINE OUR LOSING CONS
 			if self.ball['x'] <= 0.01:
 				self.ball['x'] = 0.5
@@ -161,51 +168,22 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if self.ball['x'] <= 0.02 and self.ball['y'] >= self.paddle1['y'] and self.ball['y'] <= self.paddle1['y'] + 0.11:
 				ball_hits += 1
 				normal_intersect_y = (self.paddle1['y'] + 0.05 - self.ball['y']) / 0.05
-				angle =  normal_intersect_y * (75*(math.pi/180))
-				if self.ball['dx'] < 0:
-					self.ball['dx'] += 0.003 + self.ball['speed']
-				else:
-					self.ball['dx'] -= 0.003 - self.ball['speed']
-				if self.ball['dy'] < 0:	
-					self.ball['dy'] += 0.003 + self.ball['speed']
-				else:
-					self.ball['dy'] -= 0.003 - self.ball['speed']
+				angle =  math.radians(normal_intersect_y * 75)
+				# self.ball['dx'] = abs(self.ball['dx']) * math.cos(angle) + math.copysign(speed, self.ball['dx'])
+				# self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle) + math.copysign(speed, self.ball['dy'])
+
 				self.ball['dx'] = abs(self.ball['dx']) * math.cos(angle)
 				self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle)
-				if self.ball['dx'] < 0:
-					self.ball['dx'] -= 0.003 - self.ball['speed']
-				else:
-					self.ball['dx'] += 0.003 + self.ball['speed']
-				if self.ball['dy'] < 0:	
-					self.ball['dy'] -= 0.003 - self.ball['speed']
-				else:
-					self.ball['dy'] += 0.003 + self.ball['speed']
-					
+
 			if self.ball['x'] >= 0.98 and self.ball['y'] >= self.paddle2['y'] and self.ball['y'] <= self.paddle2['y'] + 0.11:
 				ball_hits += 1
 				normal_intersect_y = (self.paddle2['y'] + 0.05 - self.ball['y']) / 0.05
-				angle = normal_intersect_y * (75*(math.pi/180))
-				if self.ball['dx'] < 0:
-					self.ball['dx'] += 0.003
-				else:
-					self.ball['dx'] -= 0.003
-				if self.ball['dy'] < 0:	
-					self.ball['dy'] += 0.003
-				else:
-					self.ball['dy'] -= 0.003
+				angle = math.radians(normal_intersect_y * 75)
+				# self.ball['dx'] = -abs(self.ball['dx']) * math.cos(angle) + math.copysign(speed, self.ball['dx'])
+				# self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle) + math.copysign(speed, self.ball['dy'])
+
 				self.ball['dx'] = -abs(self.ball['dx']) * math.cos(angle)
 				self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle)
-				if self.ball['dx'] < 0:
-					self.ball['dx'] -= 0.003
-				else:
-					self.ball['dx'] += 0.003
-				if self.ball['dy'] < 0:	
-					self.ball['dy'] -= 0.003
-				else:
-					self.ball['dy'] += 0.003
-					
-			logger.warning(self.ball['dx'])
-			logger.warning(self.ball['dy'])
 
 			# BROADCAST BALL POSITION
 			await self.channel_layer.group_send(
@@ -217,7 +195,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 					"y": self.ball['y']
 				}
 			)
-
 			# SIMULATE FRAMERATE
 			await asyncio.sleep(0.016)
 
@@ -271,7 +248,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
-		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -308,7 +284,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			profile['ready'] = ready_status.get(profile['username'], False)
 			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
 
-		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {

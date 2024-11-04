@@ -1,6 +1,6 @@
 import { computeStats } from "./populatePageHelpers";
 import { handleSend } from "./chat.js";
-import { drawAll, renderOP } from "./gamePvP.js";
+import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -79,11 +79,12 @@ lo.addEventListener('click', async function (){
     }
 });
 
-export function sendGameState(gameState, target) {
+export function sendGameState(gameState, target, me) {
     if (window.userData.pong_socket) {
         window.userData.pong_socket.send(JSON.stringify({
             action: 'update_game_state',
             state: gameState,
+            player: me,
             target: target
         }));
     }
@@ -108,6 +109,10 @@ function sendGameStatus(username, ready) {
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
         console.log("GAMESOCKET--ON");
+        window.userData.screen_dimensions = {
+            width: canvass.getBoundingClientRect().width,
+            height: canvass.getBoundingClientRect().height
+        };
     }
     window.userData.pong_socket.onclose = function(e) {
         console.log("GAMESOCKET--OFF");
@@ -120,7 +125,9 @@ export async function startGameSocket() {
     // }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        if (data.action == 'update_game_state') {
+        console.log(data);
+        console.log(data.action === 'ball_movement');
+        if (data.action === 'update_game_state') {
             gameState = data.state;
             if (gameState.ball) {
                 console.log(gameState);
@@ -136,6 +143,8 @@ export async function startGameSocket() {
             Instructions.style.display = 'none';
             lobby.style.display = 'flex';
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
+        } else if (data.action === 'ball_movment') {
+            changeSphereVars(data.x, data.y);
         }
     }
 }
