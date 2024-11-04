@@ -12,6 +12,7 @@ let el;
 let ppaddleWidth;
 let ppaddleHeight;
 let ballsRadius;
+let gameNO = false;
 
 let	Powerup = {
 	x: 0,
@@ -112,7 +113,6 @@ let animationLocID = [];
 function	redotheGame(){
 	ResetedTime = Date.now();
 	GameOverscreen = false;
-	gameover = false; 
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	if (wasdHit === true){
 		ARPaddle.height *= 2;
@@ -170,7 +170,6 @@ function stopGameLLoop() {
 
 function	reseting(){
 	GameOverscreen = false;
-	gameover = false; 
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	if (wasdHit === true){
 		ARPaddle.height *= 2;
@@ -223,7 +222,6 @@ document.addEventListener('keydown', (event) => {
 			menuu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
-			gameOngoing = false;
 		}
 	}
 });
@@ -649,10 +647,15 @@ function setGameDimension() {
 }
 
 function countdownBeforeRound(callback) {
+	if (gameNO)
+		return;
    let countdown = 3;
-    
    const intervalID = setInterval(() => {
- 
+        if (gameNO) {
+            clearInterval(intervalID);
+            countdown = 3;
+            return;
+        }
         ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 		  mapchoice();
         drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
@@ -698,6 +701,7 @@ function restartingGame(difficulty) {
 	ResetedTime = null;
 	LastpaddleHit = null;
 	gameover = false;
+	gameOngoing = true;
 	if (Powerup.speed > 0) {
 		Powerup.speed *= -1;
 	}
@@ -801,16 +805,9 @@ function movingBall() {
 }
 
 
-function stopGameLLoop() {
-	for (let i = 0; i < animationLocID.length; i++) {
-		 cancelAnimationFrame(animationLocID[i]);
-	}
-	animationLocID = [];
-	gameOngoing = false;
-}
-
 
 function restartingRound() {
+	gameOngoing = true;
     gameLLoop(sett);
 }
 
@@ -859,12 +856,16 @@ function	leaving(){
   }
   player1.score = 0;
   player2.score = 0;
-  gameActive = false;
+  console.log('hna');
+  gameOngoing = false;
+  gameNO = true;
 }
 window.leaving = leaving;
 
 function anotherRound(){
 	el = elapsedtimer;
+	// if (!gameOngoing)
+	// 	return;
 	const speedFactor = 1 + Math.floor(elapsedtimer / speedIncrease) * speedInc;
 	if (Balls.x - Balls.radius <= 0) {
 		 player2.score++;
@@ -879,11 +880,12 @@ function anotherRound(){
 		 Balls.dx *= -1;
 		 Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
 		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
+		 if (gameNO)
+			return;
 		 countdownBeforeRound(() => {
-			gameOngoing = true;
-			backtooriginalvalues();
-			restartingRound();
-			restartingGame();
+			 backtooriginalvalues();
+			 restartingRound();
+			 restartingGame();
 		 });
 		 return; 
 	}
@@ -899,8 +901,9 @@ function anotherRound(){
 		 Balls.dx *= -1;
 		 Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
 		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
+		 if (gameNO)
+			return;
 		 countdownBeforeRound(() => {
-			 gameOngoing = true;
 			 backtooriginalvalues();
 			 restartingRound();
 			 restartingGame();
@@ -1097,6 +1100,7 @@ function generateARandomNumber() {
 let reallyRandom = generateARandomNumber();
 grassposgenerator();
 function gameLLoop(settings) {
+	console.log(gameOngoing);
 	if (settings === null) {
 		settings.mode = 'Default Mode';
 		settings.map = 'Map 1';
@@ -1104,6 +1108,8 @@ function gameLLoop(settings) {
 	if (!gameOngoing) {
 		 return;
 	}
+	if (gameNO)
+		return;
 	if (!ResetedTime)
 		 ResetedTime = Date.now();
 	iscurrentlyingame = true;
@@ -1176,6 +1182,7 @@ document.getElementById('pong-local').addEventListener('click', () => {
 	menuu.style.display = 'none';
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	gameOngoing = true;
+	gameNO = false;
 	mapchoice();
 	gameLLoop(sett);
 })
