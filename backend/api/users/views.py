@@ -10,7 +10,6 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_401_UNAUTHORIZED,
     HTTP_500_INTERNAL_SERVER_ERROR,
-    HTTP_409_CONFLICT
 )
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -20,6 +19,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
 from .utils import generate_verification_code
 from .models import UserProfile
+from games.models import PongGame
+from chats.models import Friend
 from django.conf import settings
 from django.core.mail import send_mail
 
@@ -192,6 +193,8 @@ class DeletedUserView(generics.GenericAPIView):
             user.bio = ""
             user.avatar = None
             user.save()
+            Friend.objects.filter(user=user).delete()
+            Friend.objects.filter(friend=user).delete()
             return Response({"detail": "Account deleted successfuly!"}, status=HTTP_200_OK)
         except Exception as e:
             return Response({"detail": str(e)}, status=HTTP_400_BAD_REQUEST)

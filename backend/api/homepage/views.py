@@ -12,7 +12,7 @@ from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 from chats.models import Friend
 from chats.serializers import FriendSerializer
-import logging
+import logging, re
 
 # Create your views here.
 class HomePageView(generics.RetrieveAPIView):
@@ -48,12 +48,11 @@ class SearchUserView(generics.RetrieveAPIView):
 
     def get(self, request):
         query = request.GET.get('search-user-input')
-
         if not query:
             return Response({'results': None}, status=HTTP_200_OK)
         
         result = UserProfile.objects.filter(username__iexact=query).first()
-        if result:
+        if result and not re.match(r"^\[Deleted_User\d+\]$", result.username):
             serializer = self.serializer_class(result)
             return Response({'user': serializer.data}, status=HTTP_200_OK)
         else:
