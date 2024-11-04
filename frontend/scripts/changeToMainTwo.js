@@ -466,6 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			// tourniLobby.style.display = 'none';
 		}
 		window.altFfour();
+		window.leaving();
 		qContainer.style.display = 'none';
 		Tlobby.style.display = 'none';
 		inv_menu.style.display = 'none';
