@@ -161,9 +161,6 @@ export function computeStats(games) {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
         const isPve = enemy.user.username === 'ai';
-        if (ally.game_type !== 'pong') {
-            return ;
-        }
         gameCount++;
         if (ally.is_win) {
             if (isPve) {

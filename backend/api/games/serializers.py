@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from users.serializers import UserProfileSerializer
 
-from .models import PongGame, RrGame
+from .models import PongGame
 
 class PongGameSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)  # Use serializer for the user
@@ -10,9 +10,3 @@ class PongGameSerializer(serializers.ModelSerializer):
         model = PongGame
         fields = ['id', 'user', 'opponent', 'is_win', 'score', 'date_played', 'game_id', 'map_name']
 
-class RrGameSerializer(serializers.ModelSerializer):
-    user = UserProfileSerializer(read_only=True)  # Use serializer for the user
-    opponent = UserProfileSerializer(read_only=True) 
-    class Meta:
-        model = RrGame
-        fields = ['id', 'user', 'opponent', 'is_win', 'score', 'date_played', 'game_id']

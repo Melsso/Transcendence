@@ -2,13 +2,12 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels_redis.core import RedisChannelLayer
 import aioredis
 import json
+import math
 import logging
 import asyncio
-from django.conf import settings
 from channels.db import database_sync_to_async
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
-from .models import PongGame, RrGame, Game
 from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
@@ -18,12 +17,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 	ball = {
 		'x': 0.5, 
 		'y': 0.5,  
-		'dx': 0.01,
-		'dy': 0.01,  
+		'dx': 0.005,
+		'dy': 0.005,
+		'speed': 0.00125,
 		'radius': 0.01 
 	}
-	paddle1 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
-	paddle2 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
+	paddle1 = {'y': 0.45, 'dy': 0.01}
+	paddle2 = {'y': 0.45, 'dy': 0.01}
 
 	# async def queueCreation(self):
 
@@ -84,15 +84,38 @@ class GameConsumer(AsyncWebsocketConsumer):
 			state = data['state']
 			target = data.get('target') 
 			if action == 'update_game_state':
-				await self.channel_layer.group_send(
-					self.room_group_name,
-					{
-						'type': 'game_action',
-						'action': action,
-						'state': state,
-						'target': target
-					}
-				)
+				if player == '1':
+					if state == 1:
+						if self.paddle1['y'] > 0.05: 
+							self.paddle1['y'] -= self.paddle1['dy']
+					else:
+						if self.paddle1['y'] < 0.9: 
+							self.paddle1['y'] += self.paddle1['dy']
+					await self.channel_layer.group_send(
+						self.room_group_name,
+						{
+							'type': 'game_action',
+							'action': action,
+							'state': self.paddle1['y'],
+							'target': target
+						}
+					)
+				else:
+					if state == 1:
+						if self.paddle2['y'] > 0.05: 
+							self.paddle2['y'] -= self.paddle2['dy']
+					else:
+						if self.paddle2['y'] < 0.9: 
+							self.paddle2['y'] += self.paddle2['dy']
+					await self.channel_layer.group_send(
+						self.room_group_name,
+						{
+							'type': 'game_action',
+							'action': action,
+							'state': self.paddle2['y'],
+							'target': target
+						}
+					)
 			elif action == 'player_action':
 				username = state['username']
 				ready_status = state['ready']
@@ -107,41 +130,82 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	async def move_ball(self):
 		# WAIT FOR THE ROUND TO START
+		normal_intersect_y = 0
+		angle = 0
+		ball_hits = 0
 		await asyncio.sleep(3)
 		while True:
 			# BALL INCREMENTS
+			if ball_hits == 8:
+				ball_hits = 0
+				self.ball['speed'] += self.ball['speed']
+
 			self.ball['x'] += self.ball['dx']
 			self.ball['y'] += self.ball['dy']
 
 			# LETS FIRST DEFINE OUR LOSING CONS
-			if self.ball['x'] - self.ball['radius'] <= 0:
+			if self.ball['x'] <= 0.01:
 				self.ball['x'] = 0.5
 				self.ball['y'] = 0.5
-				logger.warning('P1 LOST')
-			if self.ball['x'] + self.ball['radius'] >= 1:
+			if self.ball['x'] >= 0.99:
 				self.ball['x'] = 0.5
 				self.ball['y'] = 0.5
-				logger.warning('P2 LOST')
 
 			# NEXT LETS HANDLE WALL BOUNCES
-			if self.ball['y'] - self.ball['radius'] <= 0.05:
+			if self.ball['y'] <= 0.06:
 				self.ball['dy'] = -self.ball['dy']
-				logger.warning('UPPER WALL BOUNCE')
-			if self.ball['y'] + self.ball['radius'] >= 1:
+			if self.ball['y'] >= 0.99:
 				self.ball['dy'] = -self.ball['dy']
-				logger.warning('LOWER WALL BOUNCE')
 
 			# FINALLY WE DEFINE PADDLE BOUNCE
-			if self.ball['x'] - self.ball['radius'] <= self.paddle1['width'] \
-				and self.ball['y'] >= self.paddle1['y'] \
-				and self.ball['y'] <= self.paddle1['y'] + self.paddle1['height']:
-				self.ball['dx'] = -self.ball['dx']
-				logger.warning('P1 BOUNCE')
-			if self.ball['x'] + self.ball['radius'] >= 1 - self.paddle2['width'] \
-				and self.ball['y'] >= self.paddle2['y'] \
-				and self.ball['y'] <= self.paddle2['y'] + self.paddle2['height']:
-				self.ball['dx'] = -self.ball['dx']
-				logger.warning('P2 BOUNCE')
+			if self.ball['x'] <= 0.02 and self.ball['y'] >= self.paddle1['y'] and self.ball['y'] <= self.paddle1['y'] + 0.11:
+				ball_hits += 1
+				normal_intersect_y = (self.paddle1['y'] + 0.05 - self.ball['y']) / 0.05
+				angle =  normal_intersect_y * (75*(math.pi/180))
+				if self.ball['dx'] < 0:
+					self.ball['dx'] += 0.003 + self.ball['speed']
+				else:
+					self.ball['dx'] -= 0.003 - self.ball['speed']
+				if self.ball['dy'] < 0:	
+					self.ball['dy'] += 0.003 + self.ball['speed']
+				else:
+					self.ball['dy'] -= 0.003 - self.ball['speed']
+				self.ball['dx'] = abs(self.ball['dx']) * math.cos(angle)
+				self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle)
+				if self.ball['dx'] < 0:
+					self.ball['dx'] -= 0.003 - self.ball['speed']
+				else:
+					self.ball['dx'] += 0.003 + self.ball['speed']
+				if self.ball['dy'] < 0:	
+					self.ball['dy'] -= 0.003 - self.ball['speed']
+				else:
+					self.ball['dy'] += 0.003 + self.ball['speed']
+					
+			if self.ball['x'] >= 0.98 and self.ball['y'] >= self.paddle2['y'] and self.ball['y'] <= self.paddle2['y'] + 0.11:
+				ball_hits += 1
+				normal_intersect_y = (self.paddle2['y'] + 0.05 - self.ball['y']) / 0.05
+				angle = normal_intersect_y * (75*(math.pi/180))
+				if self.ball['dx'] < 0:
+					self.ball['dx'] += 0.003
+				else:
+					self.ball['dx'] -= 0.003
+				if self.ball['dy'] < 0:	
+					self.ball['dy'] += 0.003
+				else:
+					self.ball['dy'] -= 0.003
+				self.ball['dx'] = -abs(self.ball['dx']) * math.cos(angle)
+				self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle)
+				if self.ball['dx'] < 0:
+					self.ball['dx'] -= 0.003
+				else:
+					self.ball['dx'] += 0.003
+				if self.ball['dy'] < 0:	
+					self.ball['dy'] -= 0.003
+				else:
+					self.ball['dy'] += 0.003
+					
+			logger.warning(self.ball['dx'])
+			logger.warning(self.ball['dy'])
 
 			# BROADCAST BALL POSITION
 			await self.channel_layer.group_send(
@@ -155,7 +219,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			)
 
 			# SIMULATE FRAMERATE
-			await asyncio.sleep(0.032)
+			await asyncio.sleep(0.016)
 
 	async def ball_position(self, event):
 		action = event['action']

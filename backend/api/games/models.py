@@ -34,22 +34,11 @@ class Game(models.Model):
     class Meta:
         abstract = True
 
-# only one attack
-# we have buffs spawning:
-# One attacking buff
-# one ms buff
 class PongGame(Game):
     score = models.IntegerField(default=0)
     attack_accuracy = models.IntegerField(default=0)
     map_name = models.TextField()
     shield_powerup = models.IntegerField(default=0)
 
-    class Meta:
-        unique_together = ('user', 'game_id')
-
-class RrGame(Game):
-    score = models.IntegerField(default=0)
-    average_moves = models.IntegerField(default=0, null=True)
-    
     class Meta:
         unique_together = ('user', 'game_id')

@@ -72,6 +72,7 @@ lo.addEventListener('click', async function (){
         window.userData.r_name = null;
         if (window.userData.pong_socket) {
             window.userData.pong_socket.close();
+            window.userData.r_name = null;
         }
         window.userData.pong_socket = null;
         return ;

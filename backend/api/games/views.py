@@ -6,9 +6,9 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_401_UNAUTHORIZED,
 )
-from .models import PongGame, RrGame
+from .models import PongGame
 from users.models import UserProfile
-from .serializers import PongGameSerializer, RrGameSerializer
+from .serializers import PongGameSerializer
 from django.shortcuts import get_object_or_404
 import uuid
 
@@ -24,41 +24,20 @@ class MatchHistoryView(generics.ListAPIView):
         ally_pong_data = PongGameSerializer(ally_pong_games, many=True).data
         enemy_pong_games = PongGame.objects.filter(opponent=user)
         enemy_pong_data = PongGameSerializer(enemy_pong_games, many=True).data
-        
-        ally_rr_games = RrGame.objects.filter(user=user)
-        ally_rr_data = RrGameSerializer(ally_rr_games, many=True).data
-        enemy_rr_games = RrGame.objects.filter(opponent=user)
-        enemy_rr_data = RrGameSerializer(enemy_rr_games, many=True).data
 
         pong_games_by_id = {}
         for game in ally_pong_data:
-            game['game_type'] = 'pong'
             pong_games_by_id[game['game_id']] = {'ally': game, 'enemy': None}
         
         for game in enemy_pong_data:
-            game['game_type'] = 'pong'
-  
             if game['game_id'] in pong_games_by_id:
                 pong_games_by_id[game['game_id']]['enemy'] = game
             else:
                 pong_games_by_id[game['game_id']] = {'ally': None, 'enemy': game}
 
-        rr_games_by_id = {}
-        for game in ally_rr_data:
-            game['game_type'] = 'rr'
-            rr_games_by_id[game['game_id']] = {'ally': game, 'enemy': None}
-        
-        for game in enemy_rr_data:
-            game['game_type'] = 'rr'
-            if game['game_id'] in rr_games_by_id:
-                rr_games_by_id[game['game_id']]['enemy'] = game
-            else:
-                rr_games_by_id[game['game_id']] = {'ally': None, 'enemy': game}
+        game_list = {**pong_games_by_id}
 
-
-        combined_games = {**pong_games_by_id, **rr_games_by_id}
-
-        sorted_games = sorted(combined_games.items(), key=lambda x: x[1]['ally']['date_played'] if x[1]['ally'] else x[1]['enemy']['date_played'], reverse=True)
+        sorted_games = sorted(game_list.items(), key=lambda x: x[1]['ally']['date_played'] if x[1]['ally'] else x[1]['enemy']['date_played'], reverse=True)
         sorted_game_list = [{f"game_{i+1}": value} for i, (key, value) in enumerate(sorted_games)]
 
         return Response({"match_history": sorted_game_list}, status=HTTP_200_OK)

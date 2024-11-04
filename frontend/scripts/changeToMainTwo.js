@@ -3,7 +3,6 @@ import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
 
-const userAgent = navigator.userAgent;
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
 
@@ -253,33 +252,6 @@ async function deleteAccount(password){
 	return await response.json();
 }
 
-async function updateMail(new_mail) {
-	const access_token = localStorage.getItem('accessToken');
-	if (!access_token) {
-		Notification('Profile Action', "No access Token!", 2, 'alert');
-
-		return ;
-	}
-	const url = baseUrl + 'api/home/settings/updatemail/';
-	const response = await fetch (url, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${access_token}`,
-		},
-		body: JSON.stringify({
-			mail: new_mail,
-		}),
-	});
-	if (!response.ok) {
-		const errorResponse = await response.json();
-		Notification('Profile Action', "Following error happened: ", 2, 'alert');
-		throw new Error(errorResponse.detail || 'Mail Change failed');
-	}
-	const data = await response.json();
-	return data;
-}
-
 async function checkEmail(email) {
 	const url = baseUrl + 'api/forgot/';
 	const response = await fetch(url, {
@@ -367,9 +339,13 @@ async function logoutUser() {
 	if (response.ok) {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
-		//here we have to close  the socket if it's open
-		userData = {};
-		userEmail = "";
+		if (window.userData.chatSocket) {
+			window.userData.chatSocket.close();
+			window.userData.chatSocket = null;
+			window.userData.r_name = null;
+		}
+		window.userData = {};
+		userEmail = null;
 	}
 	else {
 		const errorResponse = await response.json();
@@ -815,28 +791,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	cancelDelete.addEventListener('click', function () {
 		deleteModal.style.display = 'none';
-  });
-  confirmDelete.addEventListener('click', async function () {
-	const password = document.getElementById('confirmPassworddelete').value;
-	if (password) {
-		try {
-			await deleteAccount(password);
-			navigateTo("login", null);
-			localStorage.removeItem("accessToken");
-			localStorage.removeItem("refreshToken");
-			deleteModal.style.display = 'none';
-		} catch(error){
-			console.error(error.message);
-			alert('Account deletion failed, please try again');
-		}
-		 // Add password verification logic here
-		//  alert('Deletion confirmed with password: ' + password); // Replace with actual delete logic
-	} else {
-		 alert('Please enter your password.');
-	}
-});
-});
+  	});
 
+  	confirmDelete.addEventListener('click', async function () {
+		const password = document.getElementById('confirmPassworddelete').value;
+		if (password) {
+			try {
+				await deleteAccount(password);
+				navigateTo("login", null);
+				localStorage.removeItem("accessToken");
+				localStorage.removeItem("refreshToken");
+				if (window.userData.chatSocket) {
+					window.userData.chatSocket.close();
+					window.userData.r_name = null;
+					window.userData.chatSocket = null;
+				}
+				window.userData = {}
+				userEmail = null;
+				deleteModal.style.display = 'none';
+			} catch(error){
+				Notification('Profile Action', `Failed To Delete The Account: ${error.message}`, 2, 'alert');
+			}
+		} else {
+			Notification('Profile Action', 'Please Enter Your Password First!', 2, 'alert');
+		}
+	});
+});
 
 const updateAvatarbtn = document.getElementById('updateavatar-btn');
 updateAvatarbtn.addEventListener('click',async function () {

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from games.models import RrGame, PongGame
+from games.models import PongGame
 import random
 import string
 import time
