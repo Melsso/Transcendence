@@ -25,8 +25,14 @@ class GameConsumer(AsyncWebsocketConsumer):
 	paddle1 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
 	paddle2 = {'y': 0.45, 'height': 0.1, 'width': 0.01, 'dy': 0.01}
 
+	# async def queueCreation(self):
+
+
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
+		# if "queue_" in self.room_name:
+		# 	queueCreation(self)
+		# 	return
 		self.room_group_name = f'{self.room_name}'
 		user = self.scope['user']
 		if user.is_anonymous:

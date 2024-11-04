@@ -18,7 +18,7 @@ let gameState = {
     aspectRatio: 0,
 };
 
-async function getRoomName() {
+export async function getRoomName() {
     const access_token = localStorage.getItem('accessToken');
     if (!access_token) {
         Notification();
