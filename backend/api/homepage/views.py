@@ -3,18 +3,11 @@ from rest_framework.response import Response
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework.status import (
-    HTTP_201_CREATED,
     HTTP_200_OK,
-    HTTP_205_RESET_CONTENT,
     HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
-    HTTP_401_UNAUTHORIZED,
-    HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_409_CONFLICT
 )
 from django.contrib.auth import authenticate
-from games.models import PongGame, RrGame
-from games.serializers import PongGameSerializer, RrGameSerializer
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 from chats.models import Friend
@@ -139,21 +132,6 @@ class UpdatePwd(generics.RetrieveAPIView):
         user.save()
 
         return Response({'detail': 'Password changed'}, status=HTTP_200_OK)
-
-# class UpdateMail(generics.RetrieveAPIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     def post(self, request, *args, **kwargs):
-#         new_mail = request.data.get('mail')
-
-#         if new_mail is None:
-#             return Response({'detail': 'mail empty'}, status=HTTP_400_BAD_REQUEST)
-#         # check if the mail is valide or already in use
-#         # check might add confirmation from the mail user
-#         curr_user = request.user
-#         curr_user.email = new_mail
-#         curr_user.save()
-
-#         return Response({'detail': 'Mail changed'}, status=HTTP_200_OK)
 
 class   UpdateAvatar(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
