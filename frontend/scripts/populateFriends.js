@@ -114,7 +114,7 @@ export async function loadFriends(data, userid) {
 				const friendRequestContainer = document.createElement('div');
 				friendRequestContainer.className = 'friend-request-container';	
 				const refuseButton = document.createElement('button');
-				refuseButton.id = 'no-btn'
+				refuseButton.id = 'no-btn';
 				refuseButton.setAttribute('user_id', friend_data.id);
 				refuseButton.type = 'button';
 				refuseButton.className = 'btn btn-request-no';

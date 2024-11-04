@@ -22,8 +22,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 		'dy': 0.005,
 		'radius': 0.01 
 	}
-	paddle1 = {'y': 0.45, 'dy': 0.01}
-	paddle2 = {'y': 0.45, 'dy': 0.01}
+	paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01}
+	paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01}
 
 	# async def queueCreation(self):
 
@@ -84,11 +84,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if action == 'update_game_state':
 				if player == '1':
 					if state == 1:
-						if self.paddle1['y'] > 0.05: 
+						if self.paddle1['y'] > 0:
 							self.paddle1['y'] -= self.paddle1['dy']
+							if self.paddle1['y'] < 0:
+								self.paddle1['y'] = 0
 					else:
-						if self.paddle1['y'] < 0.9: 
+						if self.paddle1['y'] < 1 - self.paddle1['height']: 
 							self.paddle1['y'] += self.paddle1['dy']
+							if self.paddle1['y'] > 0.9:
+								self.paddle1['y'] = 0.9
 					await self.channel_layer.group_send(
 						self.room_group_name,
 						{
@@ -100,11 +104,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 					)
 				else:
 					if state == 1:
-						if self.paddle2['y'] > 0.05: 
+						if self.paddle2['y'] > 0: 
 							self.paddle2['y'] -= self.paddle2['dy']
+							if self.paddle2['y'] < 0:
+								self.paddle2['y'] = 0
 					else:
-						if self.paddle2['y'] < 0.9: 
+						if self.paddle2['y'] < 1 - self.paddle2['height']: 
 							self.paddle2['y'] += self.paddle2['dy']
+							if self.paddle2['y'] > 0.9:
+								self.paddle2['y'] = 0.9							
 					await self.channel_layer.group_send(
 						self.room_group_name,
 						{
@@ -219,6 +227,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def game_action(self, event):
 		action = event['action']
 		state = event['state']
+		logger.warning(state);
 		target = event.get('target')
 		await self.send(text_data=json.dumps({
 			'action': action,

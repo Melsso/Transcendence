@@ -84,8 +84,8 @@ export function sendGameState(gameState, target, me) {
         window.userData.pong_socket.send(JSON.stringify({
             action: 'update_game_state',
             state: gameState,
-            player: me,
-            target: target
+            target: target,
+            player: me
         }));
     }
 }
@@ -117,24 +117,11 @@ export async function startGameSocket() {
     window.userData.pong_socket.onclose = function(e) {
         console.log("GAMESOCKET--OFF");
     }
-    // if (window.userData.pong_socket) {
-    // //    gameInterval = setInterval(sendGameState, 1000);
-    // }
-    // else {
-    //     return ;
-    // }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        console.log(data);
-        console.log(data.action === 'ball_movement');
         if (data.action === 'update_game_state') {
-            gameState = data.state;
-            if (gameState.ball) {
-                console.log(gameState);
-            } else {
-                if (data.target === window.userData.username) {
-                    renderOP(data.state);
-                }
+            if (data.target === window.userData.username) {
+                renderOP(data.state);
             }
         } else if (data.action === 'current_players') {
             menu.style.display = 'none';
