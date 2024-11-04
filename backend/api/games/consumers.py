@@ -11,8 +11,6 @@ from users.serializers import UserProfileSerializer
 from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
-REFERENCE_WIDTH = 1920
-REFERENCE_HEIGHT = 1080
 
 class GameConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'game_room_'
@@ -27,8 +25,14 @@ class GameConsumer(AsyncWebsocketConsumer):
 	paddle1 = {'y': 0.45, 'dy': 0.01}
 	paddle2 = {'y': 0.45, 'dy': 0.01}
 
+	# async def queueCreation(self):
+
+
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
+		# if "queue_" in self.room_name:
+		# 	queueCreation(self)
+		# 	return
 		self.room_group_name = f'{self.room_name}'
 		user = self.scope['user']
 		if user.is_anonymous:
@@ -78,8 +82,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			data = json.loads(text_data)
 			action = data['action']
 			state = data['state']
-			target = data.get('target')
-			player = data.get('player')
+			target = data.get('target') 
 			if action == 'update_game_state':
 				if player == '1':
 					if state == 1:
@@ -119,15 +122,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
 				await self.send_current_players(players_in_room)
-				start = True
-				if len(players_in_room) != 2:
-					return 
-				for player in players_in_room:
-					if players_in_room[player]['ready'] == False:
-						start = False
-						break
-				if start == True:
-					self.game_loop = asyncio.create_task(self.move_ball())
 			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
@@ -277,6 +271,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
+		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -313,6 +308,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			profile['ready'] = ready_status.get(profile['username'], False)
 			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
 
+		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {
@@ -436,6 +432,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
+		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -472,6 +469,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			profile['ready'] = ready_status.get(profile['username'], False)
 			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
 
+		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {

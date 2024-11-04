@@ -14,6 +14,7 @@ from rest_framework.status import (
 )
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
@@ -174,6 +175,27 @@ class VerifyCodeView(generics.GenericAPIView):
         except UserProfile.DoesNotExist:
             return Response({"detail": "User not found."}, status=HTTP_404_NOT_FOUND)
         
+class DeletedUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        password = request.data.get('password')
+        delUser = authenticate(username=request.user.username, password=password)
+        user = request.user
+        if delUser is None:
+            return Response({"detail": "Password is incorrect."}, status=HTTP_400_BAD_REQUEST)
+        
+        try:
+            user.username = f"[Deleted_User{user.id}]"
+            user.password = ""
+            user.email = "deleted@deleted.com"
+            user.bio = ""
+            user.avatar = None
+            user.save()
+            return Response({"detail": "Account deleted successfuly!"}, status=HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=HTTP_400_BAD_REQUEST)
+
 
 class LogoutView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]

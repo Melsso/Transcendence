@@ -7,7 +7,7 @@ const ins_returnn = document.getElementById('return-to-menu-ins');
 const gameContainerr = document.querySelector('.gameContainer');
 const gameModall = document.getElementById('gameModal');
 let sett = null;
-let elapsedTime;
+let elapsedtimer;
 let el;
 let ppaddleWidth;
 let ppaddleHeight;
@@ -95,7 +95,8 @@ let ARHit = false;
 let SpeedCount = 0;
 let AttackingCount = 0;
 let BiggerPadCount = 0;
-let fflag = 0;
+let flog = 0;
+let fflog = 0;
 let BallinsideBuff = false;
 let ResetedTime = null;
 let BallinAttackingBuff = false;
@@ -105,8 +106,8 @@ let ArrowupPressed = false;
 let ArrowdownPressed = false;
 let wPressed = false;
 let sPressed = false;
-let gameActive = false;
-let animationFramesIDs = [];
+let gameOngoing = false;
+let animationLocID = [];
 //UI
 function	redotheGame(){
 	ResetedTime = Date.now();
@@ -143,8 +144,8 @@ function	redotheGame(){
 	if (BiggerPaddle.speed > 0) {
 		BiggerPaddle.speed *= -1;
 	}
-	gameActive = true;
-	gameLLoop();
+	gameOngoing = true;
+	gameLLoop(sett);
 	player1.score = 0;
 	player2.score = 0;
 }
@@ -160,11 +161,11 @@ document.addEventListener('keydown', (event) => {
 });
 
 function stopGameLLoop() {
-	for (let i = 0; i < animationFramesIDs.length; i++) {
-		 cancelAnimationFrame(animationFramesIDs[i]);
+	gameOngoing = false;
+	for (let i = 0; i < animationLocID.length; i++) {
+		 cancelAnimationFrame(animationLocID[i]);
 	}
-	animationFramesIDs = [];
-	gameActive = false;
+	animationLocID = [];
 }
 
 function	reseting(){
@@ -207,7 +208,7 @@ function	reseting(){
 
 document.addEventListener('keydown', (event) => {
 	if (GameOverscreen === true){
-		if (event.code === 'KeyQ' && gameActive === false){
+		if (event.code === 'KeyQ' && gameOngoing === false){
 			ResetedTime = null;
 			Balls.x = Canvaas.width / 2;
 			Balls.y = Canvaas.height / 2;
@@ -222,7 +223,7 @@ document.addEventListener('keydown', (event) => {
 			menuu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
-			gameActive = false;
+			gameOngoing = false;
 		}
 	}
 });
@@ -444,7 +445,10 @@ function drawingSpeedBuff() {
 						 if (LastpaddleHit === "wasd" || LastpaddleHit === "Arrows"){
 							givingSpeedBuff();
 							if (LastpaddleHit === "wasd"){
-								fflag = 50;
+								flog = 1;
+							}
+							else if (LastpaddleHit === "Arrows"){
+								fflog = 1;
 							}
 						}
 					}
@@ -514,7 +518,7 @@ function drawingTimer() {
 	ctxx.font = '20px Arial';
 	ctxx.fillStyle = 'white';
 	ctxx.textAlign = 'center';
-	ctxx.fillText(`${elapsedTime / 1000}`, Canvaas.width /2, 30);
+	ctxx.fillText(`${elapsedtimer / 1000}`, Canvaas.width /2, 30);
 }
 function gameOScreen(){
 	if (player1.score >= 7){
@@ -577,12 +581,31 @@ const speedInc = 0.22;
 
 function drawingPaddle(x, y, width, height) {
 	ctxx.fillStyle = 'white';
-	if (fflag){
+	if (flog){
 		 ctxx.fillStyle = 'gold';
-		 fflag--;
+		 flog--;
 	}
 	ctxx.fillRect(x, y, width, height);
-
+}
+function drawingARPaddle(x, y, width, height) {
+	ctxx.fillStyle = 'white';
+	if (fflog)
+		 ctxx.fillStyle = 'gold';
+	ctxx.fillRect(x, y, width, height);
+}
+function drawingBwasdPaddle(x, y, width, height) {
+	ctxx.fillStyle = 'black';
+	if (flog){
+		 ctxx.fillStyle = 'gold';
+	}
+	ctxx.fillRect(x, y, width, height);
+}
+function drawingBARPaddle(x, y, width, height) {
+	ctxx.fillStyle = 'black';
+	if (fflog){
+		 ctxx.fillStyle = 'gold';
+	}
+	ctxx.fillRect(x, y, width, height);
 }
 
 function drawingBall(x, y, radius) {
@@ -592,7 +615,13 @@ function drawingBall(x, y, radius) {
 	ctxx.fill();
 	ctxx.closePath();
 }
-
+function drawingBBall(x, y, radius) {
+	ctxx.beginPath();
+	ctxx.arc(x, y, radius, 0, Math.PI * 2);
+	ctxx.fillStyle = 'black';
+	ctxx.fill();
+	ctxx.closePath();
+}
 function resizingCanvas() {
     Canvaas.width = Canvaas.clientWidth;
     Canvaas.height = Canvaas.clientHeight;
@@ -625,6 +654,7 @@ function countdownBeforeRound(callback) {
    const intervalID = setInterval(() => {
  
         ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+		  mapchoice();
         drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
         drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
         drawingBall(Balls.x, Balls.y, Balls.radius);
@@ -644,6 +674,7 @@ function countdownBeforeRound(callback) {
 
 function restartingGame(difficulty) {
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	mapchoice();
 	if (wasdHit === true){
 		ARPaddle.height *= 2;
 		wasdHit = false;
@@ -652,6 +683,7 @@ function restartingGame(difficulty) {
 		wasdPaddle.height *= 2;
 		ARHit = false;
 	}
+	backtooriginalvalues();
 	SpeedCount = 0;
 	AttackingCount = 0;
 	BiggerPadCount = 0;
@@ -719,8 +751,8 @@ document.addEventListener('keyup', (e) => {
 	if (e.code === 'ArrowDown') ArrowdownPressed = false;
 });
 function movingBall() {
-	elapsedTime = Date.now() - ResetedTime;
-	const speedFactor = 1 + Math.floor(elapsedTime / speedIncrease) * speedInc;
+	elapsedtimer = Date.now() - ResetedTime;
+	const speedFactor = 1 + Math.floor(elapsedtimer / speedIncrease) * speedInc;
 	Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
 	Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 
@@ -770,20 +802,70 @@ function movingBall() {
 
 
 function stopGameLLoop() {
-	for (let i = 0; i < animationFramesIDs.length; i++) {
-		 cancelAnimationFrame(animationFramesIDs[i]);
+	for (let i = 0; i < animationLocID.length; i++) {
+		 cancelAnimationFrame(animationLocID[i]);
 	}
-	animationFramesIDs = [];
-	gameActive = false;
+	animationLocID = [];
+	gameOngoing = false;
 }
 
 
 function restartingRound() {
-    gameLLoop();
+    gameLLoop(sett);
 }
+
+function	leaving(){
+	stopGameLLoop();
+	GOscreen = false;
+  ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+  gameover = false; 
+  removeGameOScreen();
+  if (wasdHit === true){
+		ARPaddle.height *= 2;
+	  wasdHit = false;
+  }
+  if (ARHit === true){
+		wasdPaddle.height *= 2;
+	  ARHit = false;
+  }
+	backtooriginalvalues();
+	Balls.y = Canvaas.height / 2;
+	Balls.x = Canvaas.width / 2;
+	elapsedtimer = 0;
+	el = 0;
+   SpeedCount = 0;
+	ResetedTime = 0;
+	flog = 0;
+	fflog = 0;
+  AttackingCount = 0;
+  BiggerPadCount = 0;
+  wasdPaddle.dy = 7;
+  ARPaddle.dy = 7;
+  Balls.dy = 6;
+  Powerup.visible = false;
+  Attacking.visible = false;
+  BiggerPaddle.visible = false;
+  WDblock.visible = false;
+  ARblock.visible = false;
+  LastpaddleHit = null;
+  if (Powerup.speed > 0) {
+	  Powerup.speed *= -1;
+  }
+  if (Attacking.speed > 0) {
+	  Attacking.speed *= -1;
+  }
+  if (BiggerPaddle.speed > 0) {
+	  BiggerPaddle.speed *= -1;
+  }
+  player1.score = 0;
+  player2.score = 0;
+  gameActive = false;
+}
+window.leaving = leaving;
+
 function anotherRound(){
-	el = elapsedTime;
-	const speedFactor = 1 + Math.floor(elapsedTime / speedIncrease) * speedInc;
+	el = elapsedtimer;
+	const speedFactor = 1 + Math.floor(elapsedtimer / speedIncrease) * speedInc;
 	if (Balls.x - Balls.radius <= 0) {
 		 player2.score++;
 		 if (player2.score === 7){
@@ -798,7 +880,7 @@ function anotherRound(){
 		 Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
 		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 		 countdownBeforeRound(() => {
-			gameActive = true;
+			gameOngoing = true;
 			backtooriginalvalues();
 			restartingRound();
 			restartingGame();
@@ -818,7 +900,7 @@ function anotherRound(){
 		 Balls.dx = initSpeed * speedFactor * (Balls.dx > 0 ? 1 : -1);
 		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 		 countdownBeforeRound(() => {
-			 gameActive = true;
+			 gameOngoing = true;
 			 backtooriginalvalues();
 			 restartingRound();
 			 restartingGame();
@@ -827,6 +909,177 @@ function anotherRound(){
 	}
 }
 let gameover = false;
+
+const treecol = [
+	'#0f2e0f',
+	'#1b3d1b',
+	'#2e4d2f',
+	'#4c6f4c',
+	'#7a9b7a'
+];
+
+let trees = [
+	{ x: Canvaas.width * 0.9, height: Canvaas.height * 0.8, width: Canvaas.width * 0.04, colorIndex: 0 },
+	{ x: Canvaas.width * 0.75, height: Canvaas.height * 0.76, width: Canvaas.width * 0.02, colorIndex: 1 },
+	{ x: Canvaas.width * 0.64, height: Canvaas.height, width: Canvaas.width * 0.03, colorIndex: 2},
+	{ x: Canvaas.width * 0.52, height: Canvaas.height * 0.84, width: Canvaas.width * 0.04, colorIndex: 1},
+	{ x: Canvaas.width * 0.4, height: Canvaas.height, width: Canvaas.width * 0.05, colorIndex: 2},
+	{ x: Canvaas.width * 0.25, height: Canvaas.height * 0.78, width: Canvaas.width * 0.034, colorIndex: 2},
+	{ x: Canvaas.width * 0.1, height: Canvaas.height * 0.8, width: Canvaas.width * 0.04, colorIndex: 0},
+];
+
+let gheightArray = [
+	Canvaas.height * 0.9, Canvaas.height * 0.9, 
+	Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.99, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.94, Canvaas.height * 0.9, Canvaas.height * 0.99,
+	Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.94, Canvaas.height * 0.97,
+	Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.9, Canvaas.height * 0.91, Canvaas.height * 0.92,
+	Canvaas.height * 0.99, Canvaas.height * 0.94, Canvaas.height * 0.9, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.94, Canvaas.height * 0.9, Canvaas.height * 0.9,
+	Canvaas.height * 0.9, Canvaas.height * 0.9,
+];
+function map2() {
+	const cont = document.getElementById('gameContainer');
+
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	ctxx.fillStyle = '#1b2e1b';
+	ctxx.beginPath();
+	ctxx.moveTo(0, gheightArray[0]);
+
+	for (let i = 1; i < Canvaas.width; i++) {
+		ctxx.lineTo(i, gheightArray[i] || gheightArray[gheightArray.length - 1]);
+	}
+
+	ctxx.lineTo(Canvaas.width, Canvaas.height);
+	ctxx.lineTo(0, Canvaas.height);
+	ctxx.closePath();
+	ctxx.fill();
+
+	let gradient =ctxx.createLinearGradient(0, gheightArray[0], 0, 0);
+	gradient.addColorStop(0, '#2e4d2f');
+	gradient.addColorStop(1, '#7a9b7a');
+
+	ctxx.fillStyle = gradient;
+	ctxx.fillRect(0, 0, Canvaas.width, gheightArray[0]);
+	drawGrass();
+	trees.forEach(tree => {
+		ctxx.fillStyle = treecol[tree.colorIndex];
+
+		 const baseHeight = gheightArray[Math.floor(tree.x)] || gheightArray[0];
+		ctxx.beginPath();
+		ctxx.moveTo(tree.x - tree.width / 2, baseHeight);
+		ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
+		ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+		ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
+		ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+		ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+		ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+		ctxx.closePath();
+		ctxx.fill();
+
+		ctxx.lineWidth = 2;
+		ctxx.strokeStyle = treecol[tree.colorIndex];
+		ctxx.beginPath();
+		ctxx.moveTo(tree.x, baseHeight - tree.height);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.3);
+		ctxx.lineTo(tree.x + tree.x * 0.02, baseHeight - tree.height * 0.4);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.1);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+		ctxx.lineTo(tree.x - tree.x * 0.03, baseHeight - tree.height * 0.1);
+		ctxx.lineTo(tree.x + tree.x * 0.01, baseHeight - tree.height * 0.8);
+		ctxx.stroke();
+	});
+
+	ctxx.fillStyle = 'rgba(120, 200, 120, 0.1)';
+	ctxx.fillRect(0, 0, Canvaas.width, Canvaas.height);
+}
+function grassposgenerator() {
+	const grassSpacing = 5; // Closer spacing between grass blades
+	const maxGrassPerX = 3; // Max grass blades at the same X position
+	const maxHeightVariation = 15; // Max height variation for each grass blade
+
+	// Clear the previous positions
+	grassPositions = [];
+
+	// Iterate through the width of the Canvaas to create grass blades
+	for (let x = 0; x < Canvaas.width; x += grassSpacing) {
+		 const baseHeight = gheightArray[Math.floor(x / 50)] || Canvaas.height; // Base height for the grass
+
+		 // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
+		 const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
+
+		 for (let i = 0; i < numGrassBlades; i++) {
+			  // Generate a random height within a range, ensuring it's below the baseHeight
+			  const randomY = Math.floor(baseHeight - (Math.random() * maxHeightVariation + 5)); // Adjusting range for random heights
+			  grassPositions.push({ x, y: randomY }); // Store the position and height
+		 }
+	}
+}
+
+function grassdraw() {
+	const grassColor = '#3c6e47'; // Color for the grass
+	ctxx.strokeStyle = grassColor;
+	ctxx.lineWidth = 2; // Thickness of the grass blades
+
+	// Draw the static grass based on pre-generated positions
+	grassPositions.forEach(grass => {
+		 const { x, y } = grass; // Destructure to get x and y
+
+		 // Draw a blade of grass at the pre-defined height
+		ctxx.beginPath();
+		ctxx.moveTo(x, gheightArray[Math.floor(x / 50)]); // Starting at ground level
+		ctxx.lineTo(x - 2, y); // Leaning to the left
+		ctxx.moveTo(x, gheightArray[Math.floor(x / 50)]);
+		ctxx.lineTo(x + 2, y); // Leaning to the right
+		ctxx.stroke();
+	});
+}
+
+function map3() {
+	const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
+	const numTriangles = 36; // Number of triangles/wedges
+	const centerX =Canvaas.width / 2;
+	const centerY =Canvaas.height / 2;
+	const radius = Math.hypot(Canvaas.width,Canvaas.height); // Ensures triangles extend beyond Canvaas
+	const angleIncrement = (2 * Math.PI) / numTriangles;
+
+	for (let i = 0; i < numTriangles; i++) {
+		 const angle = i * angleIncrement;
+		 
+		 // Set color for each triangle
+		ctxx.fillStyle = colors[i % colors.length];
+		 
+		 // Start drawing the triangle
+		ctxx.beginPath();
+		ctxx.moveTo(centerX, centerY); // Center point
+
+		 // Calculate points at the edge of the Canvaas
+		 const x1 = centerX + radius * Math.cos(angle);
+		 const y1 = centerY + radius * Math.sin(angle);
+		 const x2 = centerX + radius * Math.cos(angle + angleIncrement);
+		 const y2 = centerY + radius * Math.sin(angle + angleIncrement);
+
+		 // Draw the triangle wedge
+		ctxx.lineTo(x1, y1);
+		ctxx.lineTo(x2, y2);
+		ctxx.closePath();
+		ctxx.fill();
+	}
+}
+function    mapchoice(){
+	if (sett.map === 'Map 1'){}
+	else if (sett.map === 'Map 2'){
+		map2();
+	}
+	else if (sett.map === 'Map 3'){
+		 map3();
+		 drawingBBall(Balls.x, Balls.y, Balls.radius);
+		 drawingBARPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
+		 drawingBwasdPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+	}
+}
 
 function    backtooriginalvalues(){
 	wasdPaddle.width = Canvaas.width * 0.01;
@@ -842,22 +1095,23 @@ function generateARandomNumber() {
 }
 
 let reallyRandom = generateARandomNumber();
-
+grassposgenerator();
 function gameLLoop(settings) {
 	if (settings === null) {
 		settings.mode = 'Default Mode';
 		settings.map = 'Map 1';
 	}
-	if (!gameActive) {
+	if (!gameOngoing) {
 		 return;
 	}
 	if (!ResetedTime)
 		 ResetedTime = Date.now();
 	iscurrentlyingame = true;
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
-	elapsedTime = Math.floor((Date.now() - ResetedTime) / 1000);
+	mapchoice();
+	elapsedtimer = Math.floor((Date.now() - ResetedTime) / 1000);
 	if (sett.mode === "Buff Mode") {
-		if (elapsedTime === reallyRandom) {
+		if (elapsedtimer === reallyRandom) {
 			Attacking.visible = true;
 			Attacking.y = Canvaas.height - Attacking.height;
 			randomAttackX();
@@ -866,7 +1120,7 @@ function gameLLoop(settings) {
 			 movingAttackbuff();
 		if (AttackingCount === 2)
 			 Attacking.visible = false;
-		if (elapsedTime === reallyRandom + 10) {
+		if (elapsedtimer === reallyRandom + 10) {
 			Powerup.visible = true;
 			Powerup.y = Canvaas.height - Powerup.height;
 			randomBuffX();
@@ -876,7 +1130,7 @@ function gameLLoop(settings) {
 		}
 		if (SpeedCount === 2)
 			Powerup.visible = false;
-		if (elapsedTime === reallyRandom + 20) {
+		if (elapsedtimer === reallyRandom + 20) {
 			BiggerPaddle.visible = true;
 			BiggerPaddle.y = Canvaas.height - BiggerPaddle.height;
 			randomPadBigX();
@@ -887,9 +1141,11 @@ function gameLLoop(settings) {
 	  if (BiggerPadCount === 2)
 			BiggerPaddle.visible = false;
 	}
-	drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
-	drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
-	drawingBall(Balls.x, Balls.y, Balls.radius);
+	if (settings.map === 'Map 1' || settings.map === 'Map 2'){
+		drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
+		drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
+		drawingBall(Balls.x, Balls.y, Balls.radius);
+	}
 	movewasdPaddle();
 	moveARPaddle();
 	if (sett.mode === 'Buff Mode') {
@@ -907,18 +1163,20 @@ function gameLLoop(settings) {
 	drawScore();
 	drawingTimer();
 	gameOScreen();
-	let frameID = requestAnimationFrame(() => gameLLoop());
-	animationFramesIDs.push(frameID);
+	let frameID = requestAnimationFrame(() => gameLLoop(settings));
+	animationLocID.push(frameID);
 	if (gameover) {
 		 backtooriginalvalues();
-		 gameActive = false;
+		 gameOngoing = false;
 		 return;
 	}
 }
 
 document.getElementById('pong-local').addEventListener('click', () => {
 	menuu.style.display = 'none';
-	gameActive = true;
+	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	gameOngoing = true;
+	mapchoice();
 	gameLLoop(sett);
 })
 
@@ -929,6 +1187,4 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 		 mode: gameMode,
 		 map: selectedMap
 	};
-	// window.stopGameLoop();
-	// window.resets();
 });

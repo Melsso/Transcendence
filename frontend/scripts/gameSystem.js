@@ -1,6 +1,6 @@
 import { computeStats } from "./populatePageHelpers";
 import { handleSend } from "./chat.js";
-import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
+import { drawAll, renderOP } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -18,7 +18,7 @@ let gameState = {
     aspectRatio: 0,
 };
 
-async function getRoomName() {
+export async function getRoomName() {
     const access_token = localStorage.getItem('accessToken');
     if (!access_token) {
         Notification();
@@ -78,13 +78,12 @@ lo.addEventListener('click', async function (){
     }
 });
 
-export function sendGameState(gameState, target, me) {
+export function sendGameState(gameState, target) {
     if (window.userData.pong_socket) {
         window.userData.pong_socket.send(JSON.stringify({
             action: 'update_game_state',
             state: gameState,
-            target: target,
-            player: me
+            target: target
         }));
     }
 }
@@ -108,10 +107,6 @@ function sendGameStatus(username, ready) {
 export async function startGameSocket() {
     window.userData.pong_socket.onopen = function(e) {
         console.log("GAMESOCKET--ON");
-        window.userData.screen_dimensions = {
-            width: canvass.getBoundingClientRect().width,
-            height: canvass.getBoundingClientRect().height
-        };
     }
     window.userData.pong_socket.onclose = function(e) {
         console.log("GAMESOCKET--OFF");
@@ -140,9 +135,6 @@ export async function startGameSocket() {
             Instructions.style.display = 'none';
             lobby.style.display = 'flex';
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
-        } else if (data.action === 'ball_movment') {
-            console.log(data);
-            changeSphereVars(data.x, data.y);
         }
     }
 }
@@ -191,8 +183,8 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             <div class="winrate-bar-container">
                 <div class="winrate-bar" style="width: ${getWinPercentage(gamer1Wins, gamer1Losses)}%;"></div>
             </div>
+            <button type="button" id="${btnid}" class="btn btn-ready">Not Ready</button>
         </div>
-        <button type="button" id="${btnid}" class="btn btn-ready">Not Ready</button>
     `;
     const readyButton1 = document.getElementById(btnid);
     if (gamer1.ready) {
@@ -236,8 +228,8 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             <div class="winrate-bar-container">
                 <div class="winrate-bar" style="width: ${getWinPercentage(gamer2Wins, gamer2Losses)}%;"></div>
             </div>
+            <button type="button" id="${btnid2}" class="btn btn-ready">Not Ready</button>
         </div>
-        <button type="button" id="${btnid2}" class="btn btn-ready">Not Ready</button>
     `;
         const readyButton2 = document.getElementById(btnid2);
         if (gamer2.ready) {
