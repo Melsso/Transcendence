@@ -6,7 +6,6 @@ from django.contrib.auth.models import AbstractUser
 class UserProfile(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     bar_exp_game1 = models.PositiveIntegerField(default=0)
-    bar_exp_game2 = models.PositiveIntegerField(default=0)
     biography = models.TextField(blank=True, null=True)
     verification_code = models.CharField(max_length=64, blank=True, null=True)
     is_verified = models.BooleanField(default=False)

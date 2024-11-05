@@ -20,6 +20,7 @@ class Command(BaseCommand):
                 'username': 'ai',
                 'password': 'strongpass123',
                 'email': 'ai@my_pong_website.com',
+                'bar_exp_game1': 1234,
                 'is_verified': True,
                 'is_active': True
             },
@@ -27,6 +28,7 @@ class Command(BaseCommand):
                 'username': 'so',
                 'password': 'strongpass123',
                 'email': 'melsopv@gmail.com',
+                'bar_exp_game1': 2234,
                 'is_verified': True,
                 'is_active': True
             },
@@ -34,12 +36,14 @@ class Command(BaseCommand):
                 'username': 'Sofiane',
                 'password': 'strongpass123',
                 'email': 'melsopvbb@gmail.com',
+                'bar_exp_game1': 1234,
                 'is_verified': True,
                 'is_active': True
             },
             {
                 'username': 'Sadoon',
                 'password': 'strongpass123',
+                'bar_exp_game1': 234,
                 'email': 'alzubaidisadooon@gmail.com',
                 'is_verified': True,
                 'is_active': True
@@ -47,6 +51,7 @@ class Command(BaseCommand):
             {
                 'username': 'Rayan',
                 'password': 'strongpass123',
+                'bar_exp_game1': 3234,
                 'email': 'rayanmehadjeri6@gmail.com',
                 'is_verified': True,
                 'is_active': True
@@ -58,12 +63,13 @@ class Command(BaseCommand):
             password = user_info['password']
             email = user_info['email']
             is_verified = user_info['is_verified']
-
+            xp = user_info['bar_exp_game1']
             if not UserProfile.objects.filter(username=username).exists():
                 user = UserProfile.objects.create_user(
 					username=username, 
 					password=password, 
-					email=email, 
+					email=email,
+                    bar_exp_game1=xp,
 					is_verified=is_verified,
 					is_active=user_info['is_active']
 				)

@@ -31,7 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = text_data_json["username"]
         target = text_data_json["target"]
 
-        if (action == 'Notification'):
+        if action == 'Notification':
             lobbySettings = text_data_json["lobbySettings"]
             room_name = text_data_json["room_name"]
             await self.channel_layer.group_send(
@@ -44,7 +44,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "lobbySettings": lobbySettings,
                 }
             )
-            return 
+            return
+        # elif action == 'Queue-Notification':
+        #     queue_room_name = text_data_json[""]
         message = text_data_json["message"]
         avatar = text_data_json["av"]
 

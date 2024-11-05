@@ -31,7 +31,6 @@ class Migration(migrations.Migration):
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
                 ('avatar', models.ImageField(blank=True, null=True, upload_to='avatars/')),
                 ('bar_exp_game1', models.PositiveIntegerField(default=0)),
-                ('bar_exp_game2', models.PositiveIntegerField(default=0)),
                 ('biography', models.TextField(blank=True, null=True)),
                 ('verification_code', models.CharField(blank=True, max_length=64, null=True)),
                 ('is_verified', models.BooleanField(default=False)),

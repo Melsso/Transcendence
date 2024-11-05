@@ -1,5 +1,6 @@
 import { computeStats } from "./populatePageHelpers";
 import { handleSend } from "./chat.js";
+import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
@@ -119,6 +120,7 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
+        console.log(data);
         if (data.action === 'update_game_state') {
             if (data.target === window.userData.username) {
                 renderOP(data.state);
@@ -132,6 +134,8 @@ export async function startGameSocket() {
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
         } else if (data.action === 'ball_movment') {
             changeSphereVars(data.x, data.y);
+        } else if (data.action === 'notify_match') {
+            acceptRefuse();
         }
     }
 }

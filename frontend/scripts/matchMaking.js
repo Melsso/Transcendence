@@ -8,7 +8,7 @@ const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
 const baseUrl = process.env.ACTIVE_HOST;
 const lobby = document.getElementById('pong-inv-container');
-import { getRoomName } from "./gameSystem.js";
+import { getRoomName, startGameSocket } from "./gameSystem.js";
 const qSettings = {
 	mode: 'Default mode',
 	map: 'Map 1'
@@ -112,11 +112,11 @@ qBtn.addEventListener('click', function() {
 	gContainer.appendChild(spinnerContainer);
 	qContainer.appendChild(gContainer);
 	qContainer.style.display = 'flex';
-	// creatQueueRoom();
-	acceptRefuse();
+	creatQueueRoom();
+	// acceptRefuse();
 });
 
-function acceptRefuse() {
+export function acceptRefuse() {
 	const gContainer = document.getElementById('Queue-container-me');
 	const modal = document.createElement('div');
 	modal.id = 'queue-match-modal';
@@ -194,11 +194,9 @@ async function creatQueueRoom() {
 		data.room_name = 'queue_' + data.room_name;
 		window.userData.r_name = data.room_name;
 		const u = new URL(baseUrl);
-		const screenHeight = canvass.clientHeight;
-		const screenWidth = canvass.clientWidth;
-		const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+		const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}`);
 		window.userData['pong_socket'] = gameSocket;
-		// startGameSocket();
+		startGameSocket();
   } catch (error) {
 		Notification('Game Action', `Failed to create a room! ${error}`, 2, 'alert');
 		window.userData.r_name = null;
