@@ -118,76 +118,62 @@ qBtn.addEventListener('click', function() {
 
 function acceptRefuse() {
 	const gContainer = document.getElementById('Queue-container-me');
-	// if (document.getElementById('queue-match-modal')){
-	// 	document.getElementById('queue-match-modal').innerHTML = '';
-	// 	const modal = document.getElementById('queue-match-modal');
-	// } else {
-	// }
 	const modal = document.createElement('div');
 	modal.id = 'queue-match-modal';
 	modal.className = 'queue-modal';
  
-	// Create modal content container
 	const modalContent = document.createElement('div');
 	modalContent.className = 'queue-modal-content';
  
-	// Add heading
 	const heading = document.createElement('h2');
 	heading.innerText = 'Match Found!';
 	modalContent.appendChild(heading);
  
-	// Add message
 	const message = document.createElement('p');
 	message.innerText = 'Do you accept the match?';
 	modalContent.appendChild(message);
  
-	// Create button container
 	const buttonContainer = document.createElement('div');
 	buttonContainer.className = 'queue-modal-buttons';
  
-	// Accept button
 	const acceptButton = document.createElement('button');
 	acceptButton.id = 'queue-accept-button';
 	acceptButton.className = 'queue-btn-modal queue-accept';
 	acceptButton.innerText = 'Accept';
 	buttonContainer.appendChild(acceptButton);
  
-	// Refuse button
 	const refuseButton = document.createElement('button');
 	refuseButton.id = 'queue-refuse-button';
 	refuseButton.className = 'queue-btn-modal queue-refuse';
 	refuseButton.innerText = 'Decline';
 	buttonContainer.appendChild(refuseButton);
  
-	// Append buttons to modal content
 	modalContent.appendChild(buttonContainer);
  
-	// Append content to modal
 	modal.appendChild(modalContent);
  
-	// Append modal to body
 	gContainer.appendChild(modal);
  
-	// Show the modal
 	modal.style.display = 'flex';
  
-	// Handle "Accept" button click
 	acceptButton.onclick = function () {
 	  modal.style.display = 'none';
-	  // Handle accept logic here
+	  modal.remove();
+
 	  console.log('Match Accepted!');
 	};
  
-	// Handle "Refuse" button click
 	refuseButton.onclick = function () {
 	  modal.style.display = 'none';
-	  // Handle refuse logic here
+	  modal.remove();
+
 	  console.log('Match Declined.');
 	};
  
 	window.onclick = function (event) {
 	  if (event.target == modal) {
 		 modal.style.display = 'none';
+		 modal.remove();
 	  }
 	};
 }
