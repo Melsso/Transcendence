@@ -18,6 +18,8 @@ window.setting = null;
 let paddleWidth;
 let paddleHeight;
 let ballRadius;
+let NOgame = false;
+window.starter = false;
 window.gameover = false;
 document.getElementById('PONG-button').addEventListener('click', function () {
     const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
@@ -91,7 +93,11 @@ window.scoreboard = {
 window.ResetTime = null;
 
 function    drawMaps(){
-    if (setting.map === 'Map 1'){}
+    if (setting.map === 'Map 1'){
+        const cont = document.getElementById('gameContainer');
+        ctx.fillStyle = 'black';
+        window.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     else if (setting.map === 'Map 2'){
         drawMap();
     }
@@ -157,10 +163,16 @@ function setGameDimensions() {
 window.setGameDimension = setGameDimensions;
 
 function countdownBeforeRound(callback) {
+    if (NOgame)
+        return;
     let countdown = 3;
     
     const intervalID = setInterval(() => {
- 
+        if (NOgame){
+            clearInterval(intervalID);
+            countdown = 3;
+            return;
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawMaps();
         drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
@@ -227,6 +239,8 @@ function altFfour(){
 	player1.score = 0;
 	player2.score = 0;
     gameActive = false;
+    NOgame = true;
+    starter = false;
 }
 window.altFfour = altFfour;
 
@@ -309,7 +323,7 @@ function moveBall() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    if (ball.y + ball.radius < canvas.height * 0.0436 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+    if (ball.y + ball.radius < canvas.height * 0.0732 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.dy *= -1;
     }
 
@@ -353,7 +367,20 @@ function moveBall() {
 }
 window.moveBall = moveBall;
 
+function resizingGame() {
+    navigateTo('profile', null);
+    Notification('Game Action', 'You have Lost the game due to resizing your browser!', 2, 'alert');
+}
+
+addEventListener('resize', function () {
+	if (gameActive)
+		resizingGame();
+	else
+		return;
+});
+
 function restartRound() {
+    gameActive = true;
     gameLoop(diffy, setting);
 }
 window.restartRound = restartRound;
@@ -363,7 +390,7 @@ function newRound(){
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
     if (ball.x - ball.radius <= 0) {
         player2.score++;
-        if (player2.score === 2){
+        if (player2.score === 7){
             gameover = true;
             return;
         }
@@ -379,8 +406,9 @@ function newRound(){
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+        if (NOgame)
+            return;
         countdownBeforeRound(() => {
-            gameActive = true;
             switchOnAI();
             restartRound();
             restartGame();
@@ -390,7 +418,7 @@ function newRound(){
     }
     if (ball.x + ball.radius >= canvas.width) {
         player1.score++;
-        if (player1.score === 2){
+        if (player1.score === 7){
             gameover = true;
             return;
         }
@@ -400,8 +428,9 @@ function newRound(){
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+        if (NOgame)
+            return;
         countdownBeforeRound(() => {
-            gameActive = true;
             switchOnAI();
             restartRound();
             restartGame();
@@ -648,7 +677,7 @@ function drawGrass() {
 
         // Draw a blade of grass at the pre-defined height
         window.ctx.beginPath();
-        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]); // Starting at ground level
+        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]); // starter at ground level
         window.ctx.lineTo(x - 2, y); // Leaning to the left
         window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]);
         window.ctx.lineTo(x + 2, y); // Leaning to the right
@@ -691,6 +720,13 @@ window.drawRetroTrianglePattern = drawRetroTrianglePattern;
 
 generateGrassPositions();
 function gameLoop(difficulty, setting) {
+	if (starter === false) {
+        window.player1.name = window.userData.username;
+		canvas.width = canvas.clientWidth;
+		canvas.height = canvas.clientHeight;
+		setGameDimensions();
+		starter = true;
+	}
     if (setting === null){
         setting.mode = 'Default mode';
         setting.map = 'Map 1';
@@ -699,6 +735,8 @@ function gameLoop(difficulty, setting) {
         return;
     }
     window.diffy = difficulty;
+    if (NOgame)
+        return;
     if (!ResetTime)
         ResetTime = Date.now();
     isingame = true;
@@ -816,6 +854,7 @@ aibutton.addEventListener('click', function (event) {
 ai_easy.addEventListener('click', function (event) {
     event.preventDefault();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    NOgame = false;
     drawMaps();
     gameActive = true;
     gameLoop('easy', setting);
@@ -824,6 +863,7 @@ ai_easy.addEventListener('click', function (event) {
 ai_medium.addEventListener('click', function(event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     event.preventDefault();
+    NOgame = false;
     drawMaps();
     gameActive = true;
     gameLoop('medium', setting);
@@ -832,6 +872,7 @@ ai_medium.addEventListener('click', function(event) {
 ai_hard.addEventListener('click', function(event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMaps();
+    NOgame = false;
     event.preventDefault();
     gameActive = true;
     gameLoop('hard', setting);
@@ -892,6 +933,6 @@ function endGameStats() {
     data.gameStats.longest_round = LongestRound; // done
     data.gameStats.map_played = 1; // Replace with actual map played
     data.gameStats.full_time = fullTime; // done
-    data.gameStats.winner = player1.Score > player2.Score ? 1 : 2; // should work, to be tested //
+    data.gameStats.winner = player1.score > player2.score ? 1 : 2; // should work, to be tested //
 
 }
