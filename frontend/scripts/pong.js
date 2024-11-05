@@ -18,6 +18,7 @@ window.setting = null;
 let paddleWidth;
 let paddleHeight;
 let ballRadius;
+let NOgame = false;
 window.gameover = false;
 document.getElementById('PONG-button').addEventListener('click', function () {
     const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
@@ -157,10 +158,16 @@ function setGameDimensions() {
 window.setGameDimension = setGameDimensions;
 
 function countdownBeforeRound(callback) {
+    if (NOgame)
+        return;
     let countdown = 3;
     
     const intervalID = setInterval(() => {
- 
+        if (NOgame){
+            clearInterval(intervalID);
+            countdown = 3;
+            return;
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawMaps();
         drawPaddle(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
@@ -227,6 +234,7 @@ function altFfour(){
 	player1.score = 0;
 	player2.score = 0;
     gameActive = false;
+    NOgame = true;
 }
 window.altFfour = altFfour;
 
@@ -354,6 +362,7 @@ function moveBall() {
 window.moveBall = moveBall;
 
 function restartRound() {
+    gameActive = true;
     gameLoop(diffy, setting);
 }
 window.restartRound = restartRound;
@@ -379,8 +388,9 @@ function newRound(){
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+        if (NOgame)
+            return;
         countdownBeforeRound(() => {
-            gameActive = true;
             switchOnAI();
             restartRound();
             restartGame();
@@ -400,8 +410,9 @@ function newRound(){
         ball.dx *= -1;
         ball.dx = initialSpeed * speedFactor * (ball.dx > 0 ? 1 : -1);
         ball.dy = initialSpeed * speedFactor * (ball.dy > 0 ? 1 : -1);
+        if (NOgame)
+            return;
         countdownBeforeRound(() => {
-            gameActive = true;
             switchOnAI();
             restartRound();
             restartGame();
@@ -699,6 +710,8 @@ function gameLoop(difficulty, setting) {
         return;
     }
     window.diffy = difficulty;
+    if (NOgame)
+        return;
     if (!ResetTime)
         ResetTime = Date.now();
     isingame = true;
@@ -816,6 +829,7 @@ aibutton.addEventListener('click', function (event) {
 ai_easy.addEventListener('click', function (event) {
     event.preventDefault();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    NOgame = false;
     drawMaps();
     gameActive = true;
     gameLoop('easy', setting);
@@ -824,6 +838,7 @@ ai_easy.addEventListener('click', function (event) {
 ai_medium.addEventListener('click', function(event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     event.preventDefault();
+    NOgame = false;
     drawMaps();
     gameActive = true;
     gameLoop('medium', setting);
@@ -832,6 +847,7 @@ ai_medium.addEventListener('click', function(event) {
 ai_hard.addEventListener('click', function(event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMaps();
+    NOgame = false;
     event.preventDefault();
     gameActive = true;
     gameLoop('hard', setting);

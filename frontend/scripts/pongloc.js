@@ -646,7 +646,7 @@ function setGameDimension() {
    Balls.y = Canvaas.height / 2;
 }
 
-function countdownBeforeRound(callback) {
+function countdownfornewRound(callback) {
 	if (gameNO)
 		return;
    let countdown = 3;
@@ -882,7 +882,7 @@ function anotherRound(){
 		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 		 if (gameNO)
 			return;
-		 countdownBeforeRound(() => {
+		 countdownfornewRound(() => {
 			 backtooriginalvalues();
 			 restartingRound();
 			 restartingGame();
@@ -903,7 +903,7 @@ function anotherRound(){
 		 Balls.dy = initSpeed * speedFactor * (Balls.dy > 0 ? 1 : -1);
 		 if (gameNO)
 			return;
-		 countdownBeforeRound(() => {
+		 countdownfornewRound(() => {
 			 backtooriginalvalues();
 			 restartingRound();
 			 restartingGame();

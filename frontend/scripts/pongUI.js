@@ -63,7 +63,6 @@ window.GOscreen = false;
 
 function	resets(){
 	GOscreen = false;
-	gameover = false; 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	if (wasHit === true){
 		aiPaddle.height *= 2;
@@ -103,7 +102,6 @@ window.resets = resets;
 function	redoGame(){
 	ResetTime = Date.now();
 	GOscreen = false;
-	gameover = false; 
 	fullTime += elapsedTime;
 	if (elapsedTime > LongestRound)
 		 LongestRound = elapsedTime;
@@ -189,7 +187,6 @@ document.addEventListener('keydown', (event) => {
 			menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
-			gameActive = false;
 		}
 	}
 });
