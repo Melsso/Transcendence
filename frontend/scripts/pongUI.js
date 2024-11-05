@@ -1,4 +1,4 @@
-window.player1 = {name: 'player1', icon: '../frontend/assets/logo.jpg',  score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
+window.player1 = {name: '', icon: '../frontend/assets/logo.jpg',  score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
 window.player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
 // const play_again = document.getElementById('playAgain');
 const	change_difficulty = document.getElementById('diffy');
@@ -187,6 +187,7 @@ document.addEventListener('keydown', (event) => {
 			menu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
+			starter = false;
 		}
 	}
 });
@@ -366,13 +367,13 @@ function drawScoreBoard() {
 	ctx.drawImage(image1, 10, 5, 40, 40);
 	ctx.font = '20px Arial';
 	ctx.fillStyle = 'white';
-	ctx.fillText('Player 1', 10*canvas.width/100, 30);
+	ctx.fillText(player1.name, 10*canvas.width/100, 30);
 	ctx.fillText(player1.score, 18*canvas.width/100, 30);
 	ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
 	
 	ctx.font = '20px Arial';
 	ctx.fillStyle = 'white'; 
-	ctx.fillText('Player 2', 90*canvas.width/100, 30);
+	ctx.fillText(player2.name, 90*canvas.width/100, 30);
 	ctx.fillText(player2.score, 82*canvas.width/100, 30);
 }
 window.drawScoreBoard = drawScoreBoard;
@@ -541,14 +542,15 @@ window.switchOnAI = switchOnAI;
 
 window.drawTimer = drawTimer;
 function moveAIPaddleHard() {
+	player2.name = 'Hard AI';
 	if (LastpaddletoHit === "Ai")
 		switchOffAI();
 	else
 		switchOnAI();
 	if (aiPaddle.aihasanattack === 1){
-		if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0436 && aiPaddle.y < canvas.height * 0.9289) {
+		if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0732 && aiPaddle.y < canvas.height * 0.9289) {
 			aiPaddle.y -= aiPaddle.dy;
-	  } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
+	  } else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y + aiPaddle.height < canvas.height * 0.9289) {
 			aiPaddle.y += aiPaddle.dy;
 			}
 		AttackPrediction();
@@ -561,28 +563,30 @@ function moveAIPaddleHard() {
 	const tolerance = 3;
 
 		 if (Math.abs(aiPaddle.y + aiPaddle.height / 2 - predictedY) > tolerance) {
-			  if (predictedY < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > 50 && aiPaddle.y < 1048) {
+			  if (predictedY < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0732 && aiPaddle.y < canvas.height *0.9289) {
 					aiPaddle.y -= aiPaddle.dy;
-			  } else if (predictedY > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
+			  } else if (predictedY > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y + aiPaddle.height < canvas.height * 0.9885) {
 					aiPaddle.y += aiPaddle.dy;
 			  }
 	}
 }
 function moveAIPaddlemid() {
+	player2.name = 'Medium AI';
 	AttackPrediction();
 	if (aitoop)
 		 return;
-	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0436 && aiPaddle.y < canvas.height * 0.9289)
+	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0732 && aiPaddle.y < canvas.height * 0.9289)
 			  aiPaddle.y -= aiPaddle.dy;
-		 else if (ball.y >= aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040)
+		 else if (ball.y >= aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y + aiPaddle.height < canvas.height * 0.9889)
 			  aiPaddle.y += aiPaddle.dy;
 }
 
 function moveAIPaddleEasy() {
+	player2.name = 'Easy AI';
 	AttackPrediction();
-	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0436 && aiPaddle.y < canvas.height * 0.9289) {
+	if (ball.y < aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y > canvas.height * 0.0732 && aiPaddle.y < canvas.height * 0.9289) {
 		 aiPaddle.y -= aiPaddle.dy;
-	} else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y < 1040) {
+	} else if (ball.y > aiPaddle.y + aiPaddle.height / 2 && aiPaddle.y + aiPaddle.height < canvas.height * 0.9889) {
 		 aiPaddle.y += aiPaddle.dy;
 	}
 }
@@ -591,34 +595,34 @@ window.moveAIPaddlemid = moveAIPaddlemid;
 window.moveAIPaddleHard = moveAIPaddleHard;
 
 function gameOverScreen(){
-	if (player1.score >= 2){
+	if (player1.score >= 7){
 		GOscreen = true;
 		showGameOverScreen();
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
+		ctx.fillText(`${player1.name}: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#ffffff';
-		ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
+		ctx.fillText(`${player2.name} ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`WINNER: player1`, canvas.width / 2, canvas.height / 2 - 100);
+		ctx.fillText(`WINNER: ${player1.name}`, canvas.width / 2, canvas.height / 2 - 100);
 		player1.score = 0;
 		gameover = true;
 		isingame = false;
 	}
-	else if (player2.score >= 2){
+	else if (player2.score >= 7){
 		showGameOverScreen();
 		GOscreen = true;
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#ffffff';
-		ctx.fillText(`Player 1: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
+		ctx.fillText(`${player1.name}: ${player1.score}`, canvas.width / 3, canvas.height / 2 + 10);
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`Player 2: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
+		ctx.fillText(`${player2.name}: ${player2.score}`, canvas.width / 1.5, canvas.height / 2 + 10);
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`WINNER: player2`, canvas.width / 2, canvas.height / 2 - 100);
+		ctx.fillText(`WINNER: ${player2.name}`, canvas.width / 2, canvas.height / 2 - 100);
 		gameover = true;
 		isingame = false;
 	}

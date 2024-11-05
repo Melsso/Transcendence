@@ -9,6 +9,7 @@ const gameModall = document.getElementById('gameModal');
 let sett = null;
 let elapsedtimer;
 let el;
+let starting = false;
 let ppaddleWidth;
 let ppaddleHeight;
 let ballsRadius;
@@ -222,6 +223,7 @@ document.addEventListener('keydown', (event) => {
 			menuu.style.display = 'flex';
 			player1.score = 0;
 			player2.score = 0;
+			starting = false;
 		}
 	}
 });
@@ -516,7 +518,8 @@ function drawingTimer() {
 	ctxx.font = '20px Arial';
 	ctxx.fillStyle = 'white';
 	ctxx.textAlign = 'center';
-	ctxx.fillText(`${elapsedtimer / 1000}`, Canvaas.width /2, 30);
+	let seconds = Math.floor(elapsedtimer / 1000);
+	ctxx.fillText(`${seconds}`, Canvaas.width /2, 30);
 }
 function gameOScreen(){
 	if (player1.score >= 7){
@@ -621,9 +624,8 @@ function drawingBBall(x, y, radius) {
 	ctxx.closePath();
 }
 function resizingCanvas() {
-    Canvaas.width = Canvaas.clientWidth;
-    Canvaas.height = Canvaas.clientHeight;
-    setGameDimension();
+		navigateTo('profile', null);
+		Notification('Game Action', 'You have Lost the game due to resizing your browser!', 2, 'alert');
 }
 
 function setGameDimension() {
@@ -675,7 +677,7 @@ function countdownfornewRound(callback) {
    }, 1000);
 }
 
-function restartingGame(difficulty) {
+function restartingGame() {
 	ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	mapchoice();
 	if (wasdHit === true){
@@ -715,8 +717,12 @@ function restartingGame(difficulty) {
 
 
 let iscurrentlyingame = false;
-resizingCanvas();
-addEventListener('resize', resizingCanvas);
+addEventListener('resize', function () {
+	if (gameOngoing)
+		resizingCanvas();
+	else
+		return;
+});
 
 function movewasdPaddle() {
 	if (wPressed && wasdPaddle.y > 50) {
@@ -763,7 +769,7 @@ function movingBall() {
 	Balls.x += Balls.dx;
 	Balls.y += Balls.dy;
 
-	if (Balls.y + Balls.radius < 70 ||Balls.y + Balls.radius > Canvaas.height || Balls.y - Balls.radius < 0) {
+	if (Balls.y + Balls.radius < Canvaas.height * 0.0732 ||Balls.y + Balls.radius > Canvaas.height || Balls.y - Balls.radius < 0) {
 		 Balls.dy *= -1;
 	}
 
@@ -859,6 +865,7 @@ function	leaving(){
   console.log('hna');
   gameOngoing = false;
   gameNO = true;
+  starting = false;
 }
 window.leaving = leaving;
 
@@ -1072,7 +1079,11 @@ function map3() {
 	}
 }
 function    mapchoice(){
-	if (sett.map === 'Map 1'){}
+	if (sett.map === 'Map 1'){
+		const cont = document.getElementById('gameContainer');
+		ctxx.fillStyle = 'black';
+		window.ctx.clearRect(0, 0, Canvaas.width, Canvaas.height);
+	}
 	else if (sett.map === 'Map 2'){
 		map2();
 	}
@@ -1100,6 +1111,12 @@ function generateARandomNumber() {
 let reallyRandom = generateARandomNumber();
 grassposgenerator();
 function gameLLoop(settings) {
+	if (starting === false) {
+		Canvaas.width = Canvaas.clientWidth;
+		Canvaas.height = Canvaas.clientHeight;
+		setGameDimension();
+		starting = true;
+	}
 	console.log(gameOngoing);
 	if (settings === null) {
 		settings.mode = 'Default Mode';

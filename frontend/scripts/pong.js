@@ -19,6 +19,7 @@ let paddleWidth;
 let paddleHeight;
 let ballRadius;
 let NOgame = false;
+window.starter = false;
 window.gameover = false;
 document.getElementById('PONG-button').addEventListener('click', function () {
     const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
@@ -92,7 +93,11 @@ window.scoreboard = {
 window.ResetTime = null;
 
 function    drawMaps(){
-    if (setting.map === 'Map 1'){}
+    if (setting.map === 'Map 1'){
+        const cont = document.getElementById('gameContainer');
+        ctx.fillStyle = 'black';
+        window.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     else if (setting.map === 'Map 2'){
         drawMap();
     }
@@ -235,6 +240,7 @@ function altFfour(){
 	player2.score = 0;
     gameActive = false;
     NOgame = true;
+    starter = false;
 }
 window.altFfour = altFfour;
 
@@ -317,7 +323,7 @@ function moveBall() {
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    if (ball.y + ball.radius < canvas.height * 0.0436 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+    if (ball.y + ball.radius < canvas.height * 0.0732 ||ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.dy *= -1;
     }
 
@@ -361,6 +367,18 @@ function moveBall() {
 }
 window.moveBall = moveBall;
 
+function resizingGame() {
+    navigateTo('profile', null);
+    Notification('Game Action', 'You have Lost the game due to resizing your browser!', 2, 'alert');
+}
+
+addEventListener('resize', function () {
+	if (gameActive)
+		resizingGame();
+	else
+		return;
+});
+
 function restartRound() {
     gameActive = true;
     gameLoop(diffy, setting);
@@ -372,7 +390,7 @@ function newRound(){
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
     if (ball.x - ball.radius <= 0) {
         player2.score++;
-        if (player2.score === 2){
+        if (player2.score === 7){
             gameover = true;
             return;
         }
@@ -400,7 +418,7 @@ function newRound(){
     }
     if (ball.x + ball.radius >= canvas.width) {
         player1.score++;
-        if (player1.score === 2){
+        if (player1.score === 7){
             gameover = true;
             return;
         }
@@ -659,7 +677,7 @@ function drawGrass() {
 
         // Draw a blade of grass at the pre-defined height
         window.ctx.beginPath();
-        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]); // Starting at ground level
+        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]); // starter at ground level
         window.ctx.lineTo(x - 2, y); // Leaning to the left
         window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]);
         window.ctx.lineTo(x + 2, y); // Leaning to the right
@@ -702,6 +720,13 @@ window.drawRetroTrianglePattern = drawRetroTrianglePattern;
 
 generateGrassPositions();
 function gameLoop(difficulty, setting) {
+	if (starter === false) {
+        window.player1.name = window.userData.username;
+		canvas.width = canvas.clientWidth;
+		canvas.height = canvas.clientHeight;
+		setGameDimensions();
+		starter = true;
+	}
     if (setting === null){
         setting.mode = 'Default mode';
         setting.map = 'Map 1';
@@ -908,6 +933,6 @@ function endGameStats() {
     data.gameStats.longest_round = LongestRound; // done
     data.gameStats.map_played = 1; // Replace with actual map played
     data.gameStats.full_time = fullTime; // done
-    data.gameStats.winner = player1.Score > player2.Score ? 1 : 2; // should work, to be tested //
+    data.gameStats.winner = player1.score > player2.score ? 1 : 2; // should work, to be tested //
 
 }
