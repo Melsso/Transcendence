@@ -2,7 +2,7 @@ import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
-
+import { Habess } from "./gamePvP.js";
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
 
@@ -443,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		window.altFfour();
 		window.leaving();
+		Habess();
 		qContainer.style.display = 'none';
 		Tlobby.style.display = 'none';
 		inv_menu.style.display = 'none';

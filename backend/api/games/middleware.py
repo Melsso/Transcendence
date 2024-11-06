@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 class JWTAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
         token = None
-        logger.warning(scope)
         if 'query_string' in scope:
             query_string = scope['query_string'].decode('utf-8')
             parsed_qs = parse_qs(query_string)
@@ -21,21 +20,17 @@ class JWTAuthMiddleware(BaseMiddleware):
         if token:
             try:
                 payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-                logger.debug(f"Decoded JWT payload: {payload}")
                 user_id = payload.get('user_id') 
                 user = await self.get_user(user_id) 
                 scope['user'] = user
             except jwt.ExpiredSignatureError:
-                logger.warning("JWT has expired.")
                 scope['user'] = AnonymousUser()
             except jwt.DecodeError:
-                logger.warning("JWT decode error.")
                 scope['user'] = AnonymousUser()
             except Exception as e:
-                logger.error(f"Error processing token: {e}")
                 scope['user'] = AnonymousUser()
         else:
-            logger.warning(scope)
+            logger.warning('ok')
 
         return await super().__call__(scope, receive, send)
 

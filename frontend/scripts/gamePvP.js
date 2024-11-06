@@ -5,6 +5,7 @@ import { sendGameState } from "./gameSystem.js";
 const REFERENCE_WIDTH = 1920;
 const REFERENCE_HEIGHT = 1080;
 let upPressed = false;
+let animation =  [];
 let downPressed = false;
 let playerPaddle1 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "" };
 let playerPaddle2 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "" };
@@ -28,6 +29,12 @@ function drawSphere(x, y, radius) {
 	ctxx.closePath();
 }
 
+export function Habess() {
+	for (let i = 0; i < animation.length; i++) {
+		cancelAnimationFrame(animation[i]);
+  }
+  animation = []; 
+}
 
 function setDimensions() {
 	const widthScale = window.userData.screen_dimensions.width;
@@ -96,7 +103,6 @@ export function renderOP(y) {
 		playerPaddle2.y = y * window.userData.screen_dimensions.height;
 	} else {
 		playerPaddle1.y = y * window.userData.screen_dimensions.height;
-		console.log(playerPaddle1.y / window.userData.screen_dimensions.height);
 	}
 }
 
@@ -113,6 +119,7 @@ export function drawAll(player1, player2, settings) {
 	if (window.userData.username === player1.username) {
 		if (player1.set === false ) {
 			if (player1.set === false ) {
+				console.log('once');
 				setDimensions();
 				playerPaddle1.username = player1.username;
 				playerPaddle2.username = player2.username;
@@ -133,7 +140,8 @@ export function drawAll(player1, player2, settings) {
 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
 	drawSphere(sphere.x, sphere.y, sphere.radius);
 	movement(player1, player2);
-	requestAnimationFrame(() => drawAll(player1, player2, settings));
+	let frame = requestAnimationFrame(() => drawAll(player1, player2, settings));
+	animation.push(frame);
 }
 
 window.addEventListener('resize', function () {

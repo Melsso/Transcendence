@@ -157,25 +157,33 @@ export function acceptRefuse() {
 	modal.style.display = 'flex';
  
 	acceptButton.onclick = function () {
-	  modal.style.display = 'none';
-	  modal.remove();
-
-	  console.log('Match Accepted!');
+		modal.style.display = 'none';
+		//gray out buttons instead
+		modal.remove();
+		sendQueueStatus(true);
 	};
  
 	refuseButton.onclick = function () {
-	  modal.style.display = 'none';
-	  modal.remove();
-
-	  console.log('Match Declined.');
+		modal.style.display = 'none';
+		modal.remove();
+		sendQueueStatus(false);
+		navigateTo('profile', null);
 	};
  
 	window.onclick = function (event) {
 	  if (event.target == modal) {
 		 modal.style.display = 'none';
 		 modal.remove();
+		 sendQueueStatus(false);
+		 navigateTo('profile', null);
 	  }
 	};
+	setTimeout(function () {
+		modal.style.display = 'none';
+		modal.remove();
+		sendQueueStatus(true, true)
+	}, 10000);
+	// display countdiown on modal
 }
 
 async function creatQueueRoom() {
@@ -205,5 +213,21 @@ async function creatQueueRoom() {
 		}
 		window.userData.pong_socket = null;
 		return ;
+  }
+}
+
+async function sendQueueStatus(accept, flag=null) {
+	if (window.userData.pong_socket) {
+		if (flag) {
+			window.userData.pong_socket.send(JSON.stringify({
+				action: 'game_start',
+			}));
+			return ;
+		}
+		window.userData.pong_socket.send(JSON.stringify({
+			action: 'queue_status',
+			state: accept,
+			player: window.userData.username
+		}));
   }
 }

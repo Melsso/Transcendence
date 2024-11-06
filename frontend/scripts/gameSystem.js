@@ -2,6 +2,7 @@ import { computeStats } from "./populatePageHelpers";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
+import { Habess } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -120,7 +121,9 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        console.log(data);
+        if (data.action !== 'ball_movment') {
+            console.log(data);
+        }
         if (data.action === 'update_game_state') {
             if (data.target === window.userData.username) {
                 renderOP(data.state);
@@ -131,18 +134,62 @@ export async function startGameSocket() {
             inv_menu.style.display = 'none';
             Instructions.style.display = 'none';
             lobby.style.display = 'flex';
+            Habess();
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
         } else if (data.action === 'ball_movment') {
             changeSphereVars(data.x, data.y);
         } else if (data.action === 'notify_match') {
             acceptRefuse();
         } else if (data.action === 'no_match') {
-            console.log('here!!');
             Notification('Game Action', 'We have found no other player in your skill range! Why don\'t you hone up your skills vs our ai?!', 2, 'alert');
+        } else if (data.action == 'start_queue_game') {
+            startQueueGame(data.players);
         }
     }
 }
 
+async function startQueueGame(players) {
+    const queue = document.getElementById('Queue');
+    queue.style.display = 'none';
+    const gameContainer = document.getElementById('gameContainer');
+        const countdownOverlay = document.createElement('div');
+        countdownOverlay.classList.add('countdown-overlay');
+        countdownOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+            z-index: 1000;
+        `;
+    gameContainer.appendChild(countdownOverlay);
+
+    let countdown = 3;
+    countdownOverlay.textContent = countdown;
+    const gamer1 = players[0];
+    const gamer2 = players[1];
+    gamer1['set'] = false;
+    gamer2['set'] = false;
+    // randomize lobby settings here
+    const countdownInterval = setInterval(() => {
+        countdown -= 1;
+        if (countdown > 0) {
+            countdownOverlay.textContent = countdown;
+        } else {
+            clearInterval(countdownInterval);
+            countdownOverlay.textContent = 'Game Start!';
+            setTimeout(() => {
+                countdownOverlay.remove();
+                drawAll(gamer1, gamer2, lobbySettings);
+            }, 1000);
+        }
+    }, 1000);
+}
 
 document.getElementById('PONG-button').addEventListener('click', function () {
     const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
@@ -151,7 +198,6 @@ document.getElementById('PONG-button').addEventListener('click', function () {
         mode: gameMode,
         map: selectedMap
     };
-    console.log('we set em up');
 });
 
 function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {

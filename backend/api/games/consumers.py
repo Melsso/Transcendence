@@ -108,7 +108,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 					min_exp_diff = exp_diff
 					closest_room = room_name
 		if closest_room:
-			logger.warning(room_name)
+			await self.remove_player_from_room(user.username)
 			self.redis_key = room_name
 			await self.add_player_to_queue_room(user.username)
 			self.room_group_name = room_name.replace("game_room_", "")
@@ -116,18 +116,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 				self.room_group_name,
 				self.channel_name
 			)
-			await self.accept()
 			await self.notifyPlayers()
 		else:
 			await self.channel_layer.group_send(
-			self.room_group_name,
-            {
-				'type': 'empty_action',
-				'action': 'no_match',
-			}
-		)
-
-
+				self.room_group_name,
+            	{
+					'type': 'empty_action',
+					'action': 'no_match',
+				}
+			)
 
 	async def queueManager(self):
 		rooms = await self.get_all_rooms()
@@ -138,7 +135,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		if room_name is None:
 			await self.create_queue_room(user.username)
 			rooms = await self.get_all_rooms()
-			await self.matchPlayersWithClosestExp(user)
+			self.checker_loop = asyncio.create_task(self.matchPlayersWithClosestExp(user))
 		else:
 			self.redis_key = room_name
 			await self.add_player_to_queue_room(user.username)
@@ -188,7 +185,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await self.send_current_players(players_in_room)
 
 	async def disconnect(self, close_code):
-			
+		if hasattr(self, 'game_loop') and not self.game_loop.done():
+			self.game_loop.cancel()
+			try:
+				await self.game_loop
+			except asyncio.CancelledError:
+				pass
 		user = self.scope['user']
 		await self.remove_player_from_room(user.username)
 		if "queue_" in self.redis_key:
@@ -206,8 +208,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		try:
 			data = json.loads(text_data)
-			action = data['action']
-			state = data['state']
+			action = data.get('action')
+			state = data.get('state')
 			target = data.get('target') 
 			player = data.get('player')
 			if action == 'update_game_state':
@@ -256,6 +258,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 				ready_status = state['ready']
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
+				players_keys = list(players_in_room.keys())
+				user = self.scope['user']
 				await self.send_current_players(players_in_room)
 				start = True
 				if len(players_in_room) != 2:
@@ -265,16 +269,57 @@ class GameConsumer(AsyncWebsocketConsumer):
 						start = False
 						break
 				if start == True:
-					self.game_loop = asyncio.create_task(self.move_ball())
-			elif action == 'notify_match':
-				logger.warning('ZEBIIIIIIII2')
+					if user.username == players_keys[0]:
+						self.game_loop = asyncio.create_task(self.move_ball())
+			elif action == 'queue_status':
+				if state == False:
+					await self.remove_player_from_room(player)
+				else:
+					await self.update_player_ready(player, state)
+			elif action == 'game_start':
+				await self.gameStart()
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
 		except Exception as e:
 			await self.send(text_data=json.dumps({'error': str(e)}))
 
+	async def gameStart(self):
+		redis = await aioredis.from_url("redis://redis:6379")
+		players_dict = await redis.hgetall(self.redis_key)
+		user = self.scope['user']
+		await redis.close()
+		players = {
+        	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
+        	for k, v in players_dict.items()
+    	}
+		player_keys = list(players.keys())
+
+		if len(players) == 2:
+			p1 = players[player_keys[0]]
+			p2 = players[player_keys[1]]
+			if p1['ready'] == True and p2['ready'] == True:
+				if user.username == player_keys[0]:
+					user_profiles = await database_sync_to_async(lambda: list(UserProfile.objects.filter(username__in=player_keys)))()
+					serializer = UserProfileSerializer(user_profiles, many=True)
+					await self.channel_layer.group_send(
+						self.room_group_name, {
+							'type': 'player_action',
+							'action': 'start_queue_game',
+							'players': serializer.data
+						}
+					)
+					self.game_loop = asyncio.create_task(self.move_ball())
+		elif len(players) == 2:
+			p1 = players[player_keys[0]]
+			if p1['ready'] == True:
+				self.queueManager()
+		else:
+			# here delete the asgi key and this room and whatever else, this shouldnt be reached anyway
+			pass
+
 	async def move_ball(self):
 		# WAIT FOR THE ROUND TO START
+		logger.warning('HERE ONCE 111111111111111111111111111')
 		normal_intersect_y = 0
 		angle = 0
 		ball_hits = 0
@@ -354,8 +399,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def player_action(self, event):
 		action = event['action']
 		players = event['players']
-		logger.warning('ZBEIIIIIIIIIIIIIIIII')
-		logger.warning(players)
 		if players:
 			await self.send(text_data=json.dumps({
 				'action': action,
@@ -365,7 +408,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def game_action(self, event):
 		action = event['action']
 		state = event['state']
-		logger.warning(state);
 		target = event.get('target')
 		await self.send(text_data=json.dumps({
 			'action': action,
@@ -403,6 +445,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 		players = await redis.hgetall(self.redis_key)
 		if not players:
 			await redis.delete(self.redis_key)
+			await self.channel_layer.group_discard(
+				self.room_group_name, self.channel_name
+			)
 		await redis.close()
 	
 	async def update_player_ready(self, player_name, ready_status):
@@ -554,7 +599,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         	k.decode('utf-8'): json.loads(v) if isinstance(v, bytes) else v 
         	for k, v in players_dict.items()
     	}
-		logger.warning(players)
 		return players
 
 	async def remove_player_from_room(self, player_name):
@@ -591,7 +635,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			profile['ready'] = ready_status.get(profile['username'], False)
 			profile['screen_dimensions'] = screen_dimensions.get(profile['username'], {"width": None, "height": None})
 
-		logger.warning(user_profiles)
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {
