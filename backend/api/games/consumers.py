@@ -139,7 +139,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			await self.create_queue_room(user.username)
 			rooms = await self.get_all_rooms()
 			await self.matchPlayersWithClosestExp(user)
-			# after 20 seconds, just get the room with the closest exp and put them together and start the game
 		else:
 			self.redis_key = room_name
 			await self.add_player_to_queue_room(user.username)
@@ -151,7 +150,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			await self.accept()
 			await self.notifyPlayers()
 		
-		# decide what to do with either 1p in room or 2p in room
 		return
 	
 	async def connect(self):
