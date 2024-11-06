@@ -233,7 +233,7 @@ async function handleAction(action, targetId, userid, targetUname) {
 					Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
 				}
 				else {
-					Notification('Game Action', 'You Are Not In A Lobby! Join A Lobby First!', 2, 'alert');
+					Notification('Game Action', 'You have to be in a lobby to invite another user!', 2, 'alert');
 				}
 			}
 			else {

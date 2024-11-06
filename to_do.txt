@@ -32,15 +32,8 @@ MINOR:
 
 
 fixing:
-fix the message to inviting to a game
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.
-changing your name to your own name gives a notif of that name being already taken.
-updating bio to the same bio says it updated successfully, i guess that’s kinda normal
-updating your password “Error: Given token not valid for any token type”
-updating password in it self doesnt work properly
-updating avatar “Failed to update Avatar because: Error: Given token not valid for any token type”
 empty everything after you leave the settings page.
-messages look scrambled, maybe spacing to be fixed.
 an error occured once, i was on my settings page, clicked on profile, maybe afk type of shit 379
 speedlimit on the ball
 paddle not resizing after being hit and then receiving big pad buff.

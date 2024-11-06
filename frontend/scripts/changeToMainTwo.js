@@ -753,6 +753,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	updateUsernameButton.addEventListener('click', async function () {
 		const username = document.getElementById('new-username').value;
+		if (username === window.userData.username) {
+			Notification('Profile Action', 'You are already using that name!', 2, 'alert');
+			return ;
+		}
 		try {
 			const result = await updateUsername(username);
 			Notification('Profile Action', 'You have updated your username!',2, 'profile');
@@ -763,7 +767,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	updateBioButton.addEventListener('click', async function () {
 		const bio = document.getElementById('new-Bio').value;
-	
+		const old_bio = document.getElementById('profile-bio').textContent;
+		if (bio === old_bio) {
+			Notification('Profile Action', 'You are already using that bio', 2, 'alert');
+			return ;
+		}
 		try {
 			const result = await updateBio(bio);
 			Notification('Profile Action', 'You have updated your bio!',2, 'profile');
