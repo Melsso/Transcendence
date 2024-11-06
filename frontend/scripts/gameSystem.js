@@ -136,6 +136,9 @@ export async function startGameSocket() {
             changeSphereVars(data.x, data.y);
         } else if (data.action === 'notify_match') {
             acceptRefuse();
+        } else if (data.action === 'no_match') {
+            console.log('here!!');
+            Notification('Game Action', 'We have found no other player in your skill range! Why don\'t you hone up your skills vs our ai?!', 2, 'alert');
         }
     }
 }

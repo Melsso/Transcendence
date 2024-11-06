@@ -86,6 +86,49 @@ class GameConsumer(AsyncWebsocketConsumer):
 				'players': serializer.data
 			}
 		)
+
+	async def matchPlayersWithClosestExp(self, user):
+		await asyncio.sleep(10)
+		current_players = await self.get_players_in_room()
+		if len(current_players) >= 2:
+			return
+		rooms = await self.get_all_rooms()
+		exp = user.bar_exp_game1 / 1000
+		closest_room = None
+		min_exp_diff = float('inf')
+		for room_name, players_profile in rooms.items():
+			if len(players_profile) == 2:
+				continue
+			if room_name == self.redis_key:
+				continue
+			for player_profile in players_profile:
+				player_exp = player_profile.bar_exp_game1 / 1000
+				exp_diff = abs(player_exp - exp)
+				if exp_diff < min_exp_diff:
+					min_exp_diff = exp_diff
+					closest_room = room_name
+		if closest_room:
+			logger.warning(room_name)
+			self.redis_key = room_name
+			await self.add_player_to_queue_room(user.username)
+			self.room_group_name = room_name.replace("game_room_", "")
+			await self.channel_layer.group_add(
+				self.room_group_name,
+				self.channel_name
+			)
+			await self.accept()
+			await self.notifyPlayers()
+		else:
+			await self.channel_layer.group_send(
+			self.room_group_name,
+            {
+				'type': 'empty_action',
+				'action': 'no_match',
+			}
+		)
+
+
+
 	async def queueManager(self):
 		rooms = await self.get_all_rooms()
 		user = self.scope['user']
@@ -95,6 +138,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		if room_name is None:
 			await self.create_queue_room(user.username)
 			rooms = await self.get_all_rooms()
+			await self.matchPlayersWithClosestExp(user)
 			# after 20 seconds, just get the room with the closest exp and put them together and start the game
 		else:
 			self.redis_key = room_name
@@ -106,8 +150,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			)
 			await self.accept()
 			await self.notifyPlayers()
-			# call notifyplayers
-		
 		
 		# decide what to do with either 1p in room or 2p in room
 		return
@@ -295,6 +337,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 			)
 			# SIMULATE FRAMERATE
 			await asyncio.sleep(0.016)
+
+	async def empty_action(self, event):
+		action = event['action']
+		await self.send(text_data=json.dumps({
+			'action': action,
+		}))
 
 	async def ball_position(self, event):
 		action = event['action']
