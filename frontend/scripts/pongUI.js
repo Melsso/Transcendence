@@ -379,28 +379,28 @@ function drawScoreBoard() {
 window.drawScoreBoard = drawScoreBoard;
 
 function giveSpeedBuff(){
-	if (LastpaddletoHit === "player 1")
+	if (LastpaddletoHit === player1.name)
 		playerPaddle.dy = 12;
-	else if (LastpaddletoHit === "Ai")
+	else if (LastpaddletoHit === player2.name)
 		aiPaddle.dy = 12;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === "player 1")
+	if (playerPaddle.dy === 20 && LastpaddletoHit === player1.name)
 		playerPaddle.dy = 20;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === "Ai")
+	if (playerPaddle.dy === 20 && LastpaddletoHit === player2.name)
 		aiPaddle.dy = 12;
 }
 window.giveSpeedBuff = giveSpeedBuff;
 function giveAttackBuff(){
-	if (LastpaddletoHit === "player 1"){
+	if (LastpaddletoHit === player1.name){
 		playerPaddle.hasanattack = 1;
 		player1.ABR += 1;
 	}
-	else if (LastpaddletoHit === "Ai"){
+	else if (LastpaddletoHit === player2.name){
 		aiPaddle.aihasanattack = 1;
 		player2.ABR += 1;
 	}
-	if (playerPaddle.hasanattack === 1 && LastpaddletoHit === "player 1")
+	if (playerPaddle.hasanattack === 1 && LastpaddletoHit === player1.name)
 		playerPaddle.hasanattack = 1;
-	if (aiPaddle.aihasanattack === 1 && LastpaddletoHit === "Ai")
+	if (aiPaddle.aihasanattack === 1 && LastpaddletoHit === player2.name)
 		aiPaddle.aihasanattack = 1;
 }
 window.giveAttackBuff = giveAttackBuff;
@@ -409,11 +409,11 @@ let aidoubled = false;
 function givePadBigBuff(){
 	let heightx2 = playerPaddle.height * 2;
 	let aiheightx2 = aiPaddle.height * 2;
-	if (LastpaddletoHit === "player 1" && doubled != true){
+	if (LastpaddletoHit === player1.name && doubled != true){
 		playerPaddle.height = heightx2;
 		doubled = true;
 	}
-	else if (LastpaddletoHit === "Ai" && aidoubled != true){
+	else if (LastpaddletoHit === player2.name && aidoubled != true){
 		aiPaddle.height = aiheightx2;
 		aidoubled = true;
 	}
@@ -439,13 +439,13 @@ function drawSpeedBuff() {
 					if (BallinBuff) {
 						 BallinBuff = false;
 						 crossCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
+						 if (LastpaddletoHit === player1.name || LastpaddletoHit === player2.name){
 							giveSpeedBuff();
-							if (LastpaddletoHit === "player 1"){
+							if (LastpaddletoHit === player1.name){
 								player1.Btaken++;
 								flag = 1;
 							}
-							else if (LastpaddletoHit === "Ai"){
+							else if (LastpaddletoHit === player2.name){
 								player2.Btaken++;
 								fflag = 1;
 							}
@@ -477,9 +477,9 @@ function drawAttackBuff() {
 					if (BallinAttackBuff) {
 						 BallinAttackBuff = false;
 						 AttackCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai"){
+						 if (LastpaddletoHit === player1.name || LastpaddletoHit === player2.name){
 							  giveAttackBuff();
-							 if (LastpaddletoHit === "player 1")
+							 if (LastpaddletoHit === player1.name)
 								player1.Btaken++;
 							else
 								player2.Btaken++;
@@ -509,9 +509,9 @@ function drawPadBigBuff() {
 					if (BallinPadBigBuff) {
 						 BallinPadBigBuff = false;
 						 BigPadCount++;
-						 if (LastpaddletoHit === "player 1" || LastpaddletoHit === "Ai")
+						 if (LastpaddletoHit === player1.name || LastpaddletoHit === player2.name)
 								givePadBigBuff();
-						 if (LastpaddletoHit === "player 1")
+						 if (LastpaddletoHit === player1.name)
 							player1.Btaken++;
 						else
 							player2.Btaken++;
@@ -527,7 +527,8 @@ function drawTimer() {
 	ctx.font = '20px Arial';
 	ctx.fillStyle = 'white';
 	ctx.textAlign = 'center';
-	ctx.fillText(`${elapsedTime}`, canvas.width /2, 30);
+	let timeinsec = Math.floor(elapsedTime / 1000);
+	ctx.fillText(`${timeinsec}`, canvas.width /2, 30);
 }
 window.aitoop;
 function switchOffAI() {
@@ -543,7 +544,7 @@ window.switchOnAI = switchOnAI;
 window.drawTimer = drawTimer;
 function moveAIPaddleHard() {
 	player2.name = 'Hard AI';
-	if (LastpaddletoHit === "Ai")
+	if (LastpaddletoHit === player2.name)
 		switchOffAI();
 	else
 		switchOnAI();
@@ -593,8 +594,25 @@ function moveAIPaddleEasy() {
 window.moveAIPaddleEasy = moveAIPaddleEasy;
 window.moveAIPaddlemid = moveAIPaddlemid;
 window.moveAIPaddleHard = moveAIPaddleHard;
+let howmuchgained = null;
+let howmuchlost = null;
+function	expcounter(){
+	if (player2.name === 'Hard AI'){
+		howmuchgained = 250;
+		howmuchlost = 100;
+	}
+	else if (player2.name === 'Medium AI'){
+		howmuchgained = 100;
+		howmuchlost = 50;
+	}
+	else if (player2.name === 'Easy AI'){
+		howmuchgained = 50;
+		howmuchlost = 25;
+	}
+}
 
 function gameOverScreen(){
+	expcounter();
 	if (player1.score >= 7){
 		GOscreen = true;
 		showGameOverScreen();
@@ -607,6 +625,10 @@ function gameOverScreen(){
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
 		ctx.fillText(`WINNER: ${player1.name}`, canvas.width / 2, canvas.height / 2 - 100);
+		player1.score = 0;
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = '#FFD700';
+		ctx.fillText(`You won: ${howmuchgained} exp`, canvas.width / 2, canvas.height / 2 + 100);
 		player1.score = 0;
 		gameover = true;
 		isingame = false;
@@ -623,6 +645,9 @@ function gameOverScreen(){
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
 		ctx.fillText(`WINNER: ${player2.name}`, canvas.width / 2, canvas.height / 2 - 100);
+		ctx.font = '50px "PixelFont", sans-serif';
+		ctx.fillStyle = 'red';
+		ctx.fillText(`You lost: ${howmuchlost} exp`, canvas.width / 2, canvas.height / 2 + 100);
 		gameover = true;
 		isingame = false;
 	}

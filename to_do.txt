@@ -37,3 +37,4 @@ empty everything after you leave the settings page.
 an error occured once, i was on my settings page, clicked on profile, maybe afk type of shit 379
 speedlimit on the ball
 paddle not resizing after being hit and then receiving big pad buff.
+friend request: when someone sends you a friend request and you try to send a request it says already sent a request

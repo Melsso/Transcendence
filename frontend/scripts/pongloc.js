@@ -340,7 +340,7 @@ function randomPadBigX() {
 function movingbuff() {
 	if (Powerup.visible) {
 		Powerup.y += Powerup.speed;
-		if (Powerup.y + Powerup.height <= 52) {
+		if (Powerup.y + Powerup.height <= Canvaas.height * 0.0732) {
 			Powerup.speed *= -1;
 		}
 	if (Powerup.y + Powerup.height > Canvaas.height)
@@ -350,7 +350,7 @@ function movingbuff() {
 function movingAttackbuff() {
 	if (Attacking.visible) {
 		Attacking.y += Attacking.speed;
-		if (Attacking.y + Attacking.height <= 52) {
+		if (Attacking.y + Attacking.height <= Canvaas.height * 0.0732) {
 			Attacking.speed *= -1;
 		}
 	if (Attacking.y + Attacking.height > Canvaas.height)
@@ -360,7 +360,7 @@ function movingAttackbuff() {
 function movingPadBigbuff() {
 	if (BiggerPaddle.visible) {
 		BiggerPaddle.y += BiggerPaddle.speed;
-		if (BiggerPaddle.y + BiggerPaddle.height <= 52) {
+		if (BiggerPaddle.y + BiggerPaddle.height <= Canvaas.height * 0.0732) {
 			BiggerPaddle.speed *= -1;
 		}
 	if (BiggerPaddle.y + BiggerPaddle.height > Canvaas.height)
