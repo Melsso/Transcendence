@@ -342,7 +342,7 @@ function moveBall() {
         ball.x = playerPaddle.x + playerPaddle.width + ballRadius + 1;
         
         ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-        LastpaddletoHit = "player 1";
+        LastpaddletoHit = player1.name;
         switchOnAI();
     }
 
@@ -358,7 +358,7 @@ function moveBall() {
         ball.dy = - ball.speed * Math.sin(bounceAngle);
         ball.x = aiPaddle.x - ballRadius -1;
         ball.dx = ball.speed * (ball.dx > 0 ? 1 : -1);
-        LastpaddletoHit = "Ai";
+        LastpaddletoHit = player2.name;
         switchOffAI();
     }
 
