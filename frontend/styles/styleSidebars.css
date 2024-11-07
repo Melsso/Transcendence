@@ -26,6 +26,18 @@
 	background-color: transparent; 
 }
 
+.online-dot {
+	width: 10px;
+	height: 10px;
+	background-color: green;
+	position: absolute;
+	border-radius: 50%;
+	opacity: 0;
+	visibility: hidden;
+	transform: translate(30%, -150%);
+	transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
 .friend-request-container {
 	position: absolute;
 	right: 2%;
@@ -49,6 +61,7 @@
 	visibility: hidden;
 	transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
+#collapseOne.show .online-dot,
 #collapseOne.show .friend-request-container,
 #collapseOne.show .dropdown {
 	opacity: 1;
