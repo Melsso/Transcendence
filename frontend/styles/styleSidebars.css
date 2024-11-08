@@ -27,14 +27,15 @@
 }
 
 .online-dot {
-	width: 10px;
-	height: 10px;
-	background-color: green;
+	width: 15px;
+	height: 15px;
+	background-color: rgb(2, 163, 2);
+	box-shadow: green;
 	position: absolute;
 	border-radius: 50%;
 	opacity: 0;
 	visibility: hidden;
-	transform: translate(30%, -150%);
+	transform: translate(200%, -150%);
 	transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
