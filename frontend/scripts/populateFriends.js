@@ -105,6 +105,7 @@ export async function loadFriends(data, userid) {
 					li.appendChild(a);
 					dropdownMenu.appendChild(li);
 				});
+
 				nameDropdownDiv.appendChild(nameSpan);
 				dropdownDiv.appendChild(dropdownButton);
 				dropdownDiv.appendChild(dropdownMenu);
@@ -155,7 +156,11 @@ export async function loadFriends(data, userid) {
 						}
 					});
 			}
+			// const onlineDot = document.createElement('div');
+			// onlineDot.className = 'online-dot';
+
 			FriendDiv.appendChild(avatarImg);
+			// FriendDiv.appendChild(onlineDot);
 			FriendDiv.appendChild(nameDropdownDiv);
 			friendsListContainer.appendChild(FriendDiv);
 		});

@@ -843,29 +843,35 @@ canvas {
  }
  
  /* Modal buttons */
- .queue-modal-buttons {
+.queue-modal-buttons {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 20px;
- }
+}
  
- .queue-btn-modal {
+.queue-btn-modal {
 	padding: 10px 20px;
 	font-size: 16px;
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
 	color: #fff;
- }
+}
  
- .queue-accept {
+.queue-accept {
 	background-color: #4CAF50; /* Green */
- }
+}
  
- .queue-refuse {
+.queue-refuse {
 	background-color: #f44336; /* Red */
- }
+}
  
- .queue-btn-modal:hover {
+.queue-btn-modal:hover {
 	opacity: 0.9;
- }
+}
+ .queue-btn-modal:disabled,
+.queue-btn-modal.grayed-out {
+    background-color: #ccc; /* gray color */
+    color: #666;
+    cursor: not-allowed;
+}

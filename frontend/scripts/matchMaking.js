@@ -137,13 +137,13 @@ export function acceptRefuse() {
 	buttonContainer.className = 'queue-modal-buttons';
  
 	const acceptButton = document.createElement('button');
-	acceptButton.id = 'queue-accept-button';
+	acceptButton.id = 'queue-accept-button' + window.userData.id;
 	acceptButton.className = 'queue-btn-modal queue-accept';
 	acceptButton.innerText = 'Accept';
 	buttonContainer.appendChild(acceptButton);
  
 	const refuseButton = document.createElement('button');
-	refuseButton.id = 'queue-refuse-button';
+	refuseButton.id = 'queue-refuse-button' + window.userData.id;
 	refuseButton.className = 'queue-btn-modal queue-refuse';
 	refuseButton.innerText = 'Decline';
 	buttonContainer.appendChild(refuseButton);
@@ -157,15 +157,20 @@ export function acceptRefuse() {
 	modal.style.display = 'flex';
  
 	acceptButton.onclick = function () {
-		modal.style.display = 'none';
+		acceptButton.disabled = true;
+		refuseButton.disabled = true;
+		acceptButton.classList.add('grayed-out');
+		refuseButton.classList.add('grayed-out');
 		//gray out buttons instead
-		modal.remove();
 		sendQueueStatus(true);
 	};
  
 	refuseButton.onclick = function () {
-		modal.style.display = 'none';
-		modal.remove();
+		acceptButton.disabled = true;
+		refuseButton.disabled = true;
+		acceptButton.classList.add('grayed-out');
+		refuseButton.classList.add('grayed-out');
+
 		sendQueueStatus(false);
 		navigateTo('profile', null);
 	};
