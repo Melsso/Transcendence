@@ -5,6 +5,7 @@ import json
 import math
 import logging
 import asyncio
+import time
 from channels.db import database_sync_to_async
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
@@ -317,75 +318,47 @@ class GameConsumer(AsyncWebsocketConsumer):
 			# here delete the asgi key and this room and whatever else, this shouldnt be reached anyway
 			pass
 
+
 	async def move_ball(self):
-		# WAIT FOR THE ROUND TO START
-		#keepingthespeed = 0.005 + (speed * howmanyspeeds)
-		# what we do here is we take for example self.ball['dy'] -= 
+		angleX = 1 
 		angleY = 0
 		ball_hits = 0
-		speed = 0.003
+		howmanyspeeds = 0
+		speed = 0.00125
+		base_speed = 0.005 + (speed * howmanyspeeds)
 		await asyncio.sleep(3)
-		while True:
-			# BALL INCREMENTS
-			if ball_hits == 8:
-				ball_hits = 0
-				speed += 0.00125
 
+		start_time = time.time()
+		new_start = start_time
+
+		while True:
+			current_time = time.time()
+			if current_time - new_start >= 5:
+				howmanyspeeds += 1
+				new_start = current_time
+				base_speed += speed
+
+			self.ball['dx'] = angleX * base_speed
+			self.ball['dy'] = angleY * base_speed
 			self.ball['x'] += self.ball['dx']
 			self.ball['y'] += self.ball['dy']
-			# LETS FIRST DEFINE OUR LOSING CONS
-			if self.ball['x'] <= 0.01:
+			if self.ball['x'] <= 0.01 or self.ball['x'] >= 0.99:
 				self.ball['x'] = 0.5
 				self.ball['y'] = 0.5
-			if self.ball['x'] >= 0.99:
-				self.ball['x'] = 0.5
-				self.ball['y'] = 0.5
+				self.ball['dx'] = 0.005
+				self.ball['dy'] = 0.005
+				angleX = -angleX
+			if self.ball['y'] <= 0.06 or self.ball['y'] >= 0.99:
+				angleY = -angleY
+			if self.ball['x'] <= 0.02 and self.paddle1['y'] <= self.ball['y'] <= self.paddle1['y'] + 0.11:
+				angleX = abs(angleX)
+				impact_point = (self.ball['y'] - self.paddle1['y']) / self.paddle1['height']
+				angleY = (impact_point - 0.5) * 2
 
-			# NEXT LETS HANDLE WALL BOUNCES
-			if self.ball['y'] <= 0.06:
-				self.ball['dy'] = -self.ball['dy']
-			if self.ball['y'] >= 0.99:
-				self.ball['dy'] = -self.ball['dy']
-
-			# FINALLY WE DEFINE PADDLE BOUNCE
-			if self.ball['x'] <= 0.02 and self.ball['y'] >= self.paddle1['y'] and self.ball['y'] <= self.paddle1['y'] + 0.11:
-				if self.ball['y'] <= self.paddle1['y'] + (self.paddle1['height'] / 2):
-					self.ball['dx'] = -self.ball['dx']
-					self.ball['dy'] = -abs(self.ball['dy'])
-				else:
-					self.ball['dx'] = -self.ball['dx']
-					self.ball['dy'] = abs(self.ball['dy'])
-				# self.ball['x'] += self.ball['dx']
-				# self.ball['y'] += self.ball['dy']
-			if self.ball['x'] >= 0.98 and self.ball['y'] >= self.paddle2['y'] and self.ball['y'] <= self.paddle2['y'] + 0.11:
-				if self.ball['y'] <= self.paddle2['y'] +(self.paddle2['height'] / 2):
-					self.ball['dx'] = -self.ball['dx']
-					self.ball['dy'] = -abs(self.ball['dy'])
-				else:
-					self.ball['dx'] = -self.ball['dx']
-					self.ball['dy'] = abs(self.ball['dy'])
-				# self.ball['x'] += self.ball['dx']
-				# self.ball['y'] += self.ball['dy']
-				# ball_hits += 1
-				# normal_intersect_y = (self.paddle1['y'] + 0.05 - self.ball['y']) / 0.05
-				# angle =  math.radians(normal_intersect_y * 75)
-				# self.ball['dx'] = abs(self.ball['dx']) * math.cos(angle) + math.copysign(speed, self.ball['dx'])
-				# self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle) + math.copysign(speed, self.ball['dy'])
-
-				# self.ball['dx'] = abs(self.ball['dx']) * math.cos(angle)
-				# self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle)
-
-			# if self.ball['x'] >= 0.98 and self.ball['y'] >= self.paddle2['y'] and self.ball['y'] <= self.paddle2['y'] + 0.11:
-			# 	ball_hits += 1
-			# 	normal_intersect_y = (self.paddle2['y'] + 0.05 - self.ball['y']) / 0.05
-			# 	angle = math.radians(normal_intersect_y * 75)
-				# self.ball['dx'] = -abs(self.ball['dx']) * math.cos(angle) + math.copysign(speed, self.ball['dx'])
-				# self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle) + math.copysign(speed, self.ball['dy'])
-
-				# self.ball['dx'] = -abs(self.ball['dx']) * math.cos(angle)
-				# self.ball['dy'] = -abs(self.ball['dy']) * math.sin(angle)
-
-			# BROADCAST BALL POSITION
+			elif self.ball['x'] >= 0.98 and self.paddle2['y'] <= self.ball['y'] <= self.paddle2['y'] + 0.11:
+				angleX = -abs(angleX)
+				impact_point = (self.ball['y'] - self.paddle2['y']) / self.paddle2['height']
+				angleY = (impact_point - 0.5) * 2
 			await self.channel_layer.group_send(
 			self.room_group_name,
 				{
@@ -395,7 +368,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 					"y": self.ball['y']
 				}
 			)
-			# SIMULATE FRAMERATE
 			await asyncio.sleep(0.016)
 
 	async def empty_action(self, event):
