@@ -345,6 +345,10 @@ async function logoutUser() {
 			window.userData.r_name = null;
 			window.userData.target = null;
 		}
+		if (window.userData.pong_socket) {
+			window.userData.pong_socket.close();
+			window.userData.pong_socket = null;
+		}
 		window.userData = {};
 		userEmail = null;
 	}
@@ -679,11 +683,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			await logoutUser();
-			if (window.userData.pong_socket) {
-				window.userData.pong_socket.close();
-				window.userData.pong_socket = null;
-				window.userData.r_name = null;
-			}
 		} catch (error) {
 			Notification('Profile Action', `Failed to logout because: ${error}`,2, 'alert');
 		}

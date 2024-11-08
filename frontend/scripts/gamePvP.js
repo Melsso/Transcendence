@@ -3,6 +3,12 @@ const ctxx = canvass.getContext('2d');
 import { sendGameState } from "./gameSystem.js";
 
 const REFERENCE_WIDTH = 1920;
+let gamer1;
+let gamer2;
+let p1;
+let p2;
+let sx;
+let sy;
 const REFERENCE_HEIGHT = 1080;
 let upPressed = false;
 let animation =  [];
@@ -33,7 +39,7 @@ export function Habess() {
 	for (let i = 0; i < animation.length; i++) {
 		cancelAnimationFrame(animation[i]);
   }
-  animation = []; 
+  animation = [];
 }
 
 function setDimensions() {
@@ -44,19 +50,21 @@ function setDimensions() {
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle1.x = 0;
 	playerPaddle1.y = (heightScale / 2) - (playerPaddle1.height / 2);
+	p1 = playerPaddle1.y;
 	playerPaddle1.dy = heightScale / 100;
 
 	playerPaddle2.width = widthScale / 100;
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle2.x = widthScale - playerPaddle2.width;
 	playerPaddle2.y = (heightScale / 2) - (playerPaddle2.height / 2);
+	p2 = playerPaddle2.y;
 	playerPaddle2.dy = heightScale / 100;
 
 	sphere.radius = widthScale / 100;
 	sphere.x = (widthScale / 2);
+	sx = sphere.x;
 	sphere.y = (heightScale / 2);
-	// sphere.dx = widthScale / 100;
-	// sphere.dy = heightScale / 100;
+	sy = sphere.y;
 }
 
 document.addEventListener('keydown', (e) => {
@@ -116,10 +124,12 @@ export function drawAll(player1, player2, settings) {
 		settings.mode = 'Default mode';
 		settings.map = 'Map 1';
 	}
+	// console.log(player1, player2);
 	if (window.userData.username === player1.username) {
 		if (player1.set === false ) {
 			if (player1.set === false ) {
-				console.log('once');
+				gamer1 = player1;
+				gamer2 = player2;
 				setDimensions();
 				playerPaddle1.username = player1.username;
 				playerPaddle2.username = player2.username;
@@ -129,6 +139,8 @@ export function drawAll(player1, player2, settings) {
 	}
 	else {
 		if (player2.set === false ) {
+			gamer1 = player1;
+			gamer2 = player2;
 			setDimensions();
 			playerPaddle1.username = player1.username;
 			playerPaddle2.username = player2.username;
@@ -143,6 +155,49 @@ export function drawAll(player1, player2, settings) {
 	let frame = requestAnimationFrame(() => drawAll(player1, player2, settings));
 	animation.push(frame);
 }
+
+export function displayCountdown() {
+	const gameContainer = document.getElementById('gameContainer');
+	const countdownOverlay = document.createElement('div');
+	countdownOverlay.classList.add('countdown-overlay');
+	countdownOverlay.style.cssText = `
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		color: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 5em;
+		z-index: 1000;
+	`;
+	gameContainer.appendChild(countdownOverlay);
+	
+	let countdown = 3;
+	countdownOverlay.textContent = countdown;
+	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	playerPaddle1.y = p1;
+	playerPaddle2.y = p2;
+	sphere.x = sx;
+	sphere.y = sy;
+	const countdownInterval = setInterval(() => {
+		 countdown -= 1;
+		 if (countdown > 0) {
+			  countdownOverlay.textContent = countdown;
+		 } else {
+			  clearInterval(countdownInterval);
+			  countdownOverlay.textContent = 'Game Start!';
+			  setTimeout(() => {
+					countdownOverlay.remove();
+					console.log(gamer1, gamer2);
+					drawAll(gamer1, gamer2, lobbySettings);
+			  }, 1000);
+		 }
+	}, 1000);
+}
+// window.displayCountdown = displayCountdown;
 
 window.addEventListener('resize', function () {
 	console.log('ak nektha');

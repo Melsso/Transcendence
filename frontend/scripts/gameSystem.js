@@ -2,7 +2,7 @@ import { computeStats } from "./populatePageHelpers";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
-import { Habess } from "./gamePvP.js";
+import { Habess, displayCountdown } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -121,9 +121,6 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        if (data.action !== 'ball_movment') {
-            console.log(data);
-        }
         if (data.action === 'update_game_state') {
             if (data.target === window.userData.username) {
                 renderOP(data.state);
@@ -144,6 +141,10 @@ export async function startGameSocket() {
             Notification('Game Action', 'We have found no other player in your skill range! Why don\'t you hone up your skills vs our ai?!', 2, 'alert');
         } else if (data.action == 'start_queue_game') {
             startQueueGame(data.players);
+        } 
+        else if (data.action === 'restart_round'){
+            Habess();
+            displayCountdown();
         }
     }
 }

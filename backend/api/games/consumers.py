@@ -326,7 +326,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		howmanyspeeds = 0
 		speed = 0.00125
 		base_speed = 0.005 + (speed * howmanyspeeds)
-		await asyncio.sleep(3)
+		await asyncio.sleep(3.5)
 
 		start_time = time.time()
 		new_start = start_time
@@ -348,6 +348,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 				self.ball['dx'] = 0.005
 				self.ball['dy'] = 0.005
 				angleX = -angleX
+				self.paddle1['y'] = 0.45
+				self.paddle2['y'] = 0.45
+				howmanyspeeds = 0
+				base_speed = 0.005
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'r_round',
+						"action": 'restart_round',
+					}
+				)
+				await asyncio.sleep(3.5)
+			
 			if self.ball['y'] <= 0.06 or self.ball['y'] >= 0.99:
 				angleY = -angleY
 			if self.ball['x'] <= 0.02 and self.paddle1['y'] <= self.ball['y'] <= self.paddle1['y'] + 0.11:
@@ -375,6 +388,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({
 			'action': action,
 		}))
+
+	async def r_round(self, event):
+		action = event['action']
+		await self.send(text_data=json.dumps({
+         "type": "restart_round",
+			'action': action,
+        }))
 
 	async def ball_position(self, event):
 		action = event['action']
