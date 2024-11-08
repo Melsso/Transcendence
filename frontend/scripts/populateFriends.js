@@ -156,11 +156,13 @@ export async function loadFriends(data, userid) {
 						}
 					});
 			}
-			// const onlineDot = document.createElement('div');
-			// onlineDot.className = 'online-dot';
-
 			FriendDiv.appendChild(avatarImg);
-			// FriendDiv.appendChild(onlineDot);
+			console.log(window.userData.online);
+			if(window.userData.online && window.userData['online'].includes(friend_data.username)) {
+				const onlineDot = document.createElement('div');
+				onlineDot.className = 'online-dot';
+				FriendDiv.appendChild(onlineDot);
+			}
 			FriendDiv.appendChild(nameDropdownDiv);
 			friendsListContainer.appendChild(FriendDiv);
 		});

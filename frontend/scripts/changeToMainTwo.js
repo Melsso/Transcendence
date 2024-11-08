@@ -339,10 +339,11 @@ async function logoutUser() {
 	if (response.ok) {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
-		if (window.userData.chatSocket) {
-			window.userData.chatSocket.close();
-			window.userData.chatSocket = null;
+		if (window.userData.socket) {
+			window.userData.socket.close();
+			window.userData.socket = null;
 			window.userData.r_name = null;
+			window.userData.target = null;
 		}
 		window.userData = {};
 		userEmail = null;
@@ -475,7 +476,8 @@ document.addEventListener('DOMContentLoaded', function () {
 					window.userData = result["user"];
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
-						const chatSocket = new WebSocket(`ws://${u.host}/ws/`);
+						const accessToken = localStorage.getItem('accessToken');
+						const chatSocket = new WebSocket(`ws://${u.host}/ws/?token=${accessToken}`);
 						window.userData.socket = chatSocket;
 						window.userData["target"] = "Global";
 						launchSocket();
@@ -677,11 +679,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			await logoutUser();
-			if (window.userData.socket) {
-				window.userData.socket.close();
-				window.userData.socket = null;
-				window.userData.target = null;
-			}
 			if (window.userData.pong_socket) {
 				window.userData.pong_socket.close();
 				window.userData.pong_socket = null;

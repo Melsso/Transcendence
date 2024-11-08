@@ -16,6 +16,7 @@ const baseUrl = process.env.ACTIVE_HOST;
 import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket  } from "./gameSystem.js";
 import { startTournamentSocket } from "./gameSystemT.js";
+import { getFriends, loadFriends } from "./populateFriends.js";
 let tar;
 
 export function handleSend(username, r_name, action) {
@@ -116,7 +117,18 @@ export async function	launchSocket() {
 		
 		window.userData.socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
-
+			if (data.action == 'online_status') {
+				window.userData['online'] = data.users;
+				console.log(window.userData.online);
+				try {
+					const result = await getFriends();
+					loadFriends(result, window.userData.id); 
+				} catch (error) {
+					console.log(error);
+					Notification('Profile Action', 'Error: Failed to load Friends', 2, 'alert');
+				}
+				return;
+			}
 			if (window.userData.username === data.username) {
 				return ;
 			}
