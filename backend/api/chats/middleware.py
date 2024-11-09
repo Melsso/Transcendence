@@ -1,11 +1,11 @@
-import jwt
-from channels.middleware import BaseMiddleware
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
+from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
 from users.models import UserProfile
-import logging
 from urllib.parse import parse_qs
+import jwt
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,6 @@ class JWTAuthMiddleware(BaseMiddleware):
             query_string = scope['query_string'].decode('utf-8')
             parsed_qs = parse_qs(query_string)
             token = parsed_qs.get('token', [None])[0]
-        
         if token:
             try:
                 payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
@@ -30,8 +29,7 @@ class JWTAuthMiddleware(BaseMiddleware):
             except Exception as e:
                 scope['user'] = AnonymousUser()
         else:
-            logger.warning('ok')
-
+            logger.warning('Error, No Token Provided')
         return await super().__call__(scope, receive, send)
 
     @database_sync_to_async

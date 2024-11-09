@@ -1,12 +1,12 @@
+from django.conf import settings
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from .models import Message
+from users.models import UserProfile
 import jwt
 import aioredis
 import json
 import logging
-from django.conf import settings
-from users.models import UserProfile
-from .models import Message
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if user.is_anonymous:
             await self.close()
         self.username = user.username
-        logger.warning(self.username)
         await self.channel_layer.group_add(
             self.roomGroupName,
             self.channel_name
@@ -28,7 +27,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send_user_list()
 
     async def disconnect(self, close_code):
-        logger.warning('HELLO HA TETFASSA')
         await self.remove_user_from_redis(self.roomGroupName, self.username)
         await self.send_user_list()
         await self.channel_layer.group_discard(
