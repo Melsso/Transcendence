@@ -37,14 +37,12 @@ globalbtn.addEventListener('click', async function(event) {
 	var name = document.getElementById('chatName');
 	if (window.userData.target !== 'Global') {
 		messageContainer.innerHTML = '';
-		var bsCollapse = new bootstrap.Collapse(collapseElement, {
-		toggle: false
-		});
+		var bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
 		if (collapseElement.classList.contains('show')) {
 			bsCollapse.hide();
 			setTimeout(() => {
 				bsCollapse.show();
-		  }, 600);
+		  	}, 600);
 		}
 		else {
 			bsCollapse.show();
@@ -53,7 +51,7 @@ globalbtn.addEventListener('click', async function(event) {
 			const result = await getMessages();
 			loadMessages(result["list"]);
 		} catch (error) {
-			Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+			Notification('Message Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 		window.userData.target = 'Global';
 		name.textContent = 'Global';
@@ -67,7 +65,6 @@ globalbtn.addEventListener('click', async function(event) {
 
 async function addMessage(message, isSender = false, data) {
 	if (message.trim() === '') return;
-
 	const messageElement = document.createElement('div');
 
 	messageElement.classList.add('message');
@@ -87,7 +84,7 @@ async function addMessage(message, isSender = false, data) {
 				Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
 			}
 		} catch (error) {
-			Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
     });
 
@@ -124,8 +121,7 @@ export async function	launchSocket() {
 					const result = await getFriends();
 					loadFriends(result, window.userData.id); 
 				} catch (error) {
-					console.log(error);
-					Notification('Profile Action', 'Error: Failed to load Friends', 2, 'alert');
+					Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 				}
 				return;
 			}
@@ -297,16 +293,14 @@ function SpecialNotification(title, message, target) {
 	toast.show();
 	tar = target;
 	setTimeout(() => {
-		 toast.hide();
+		toast.hide();
 	}, 5000);
 }
 open.addEventListener('click', async function () {
 	var collapseElement = document.getElementById('collapseTwo');
 	var name = document.getElementById('chatName');
 	messageContainer.innerHTML = '';
-	var bsCollapse = new bootstrap.Collapse(collapseElement, {
-	toggle: false
-	});
+	var bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
 	if (collapseElement.classList.contains('show')) {
 		bsCollapse.hide();
 		setTimeout(() => {
@@ -322,7 +316,7 @@ open.addEventListener('click', async function () {
 		const result = await getMessages(tar);
 		loadMessages(result["list"]);
 	} catch (error) {
-		Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+		Notification('Message Action', `Error: ${error.detail}`, 2, 'alert');
 	}
 });
 
@@ -336,6 +330,7 @@ export async function getMessages(uname=null) {
 	if (uname && uname !== 'Global') { 
 		url = baseUrl + `api/MessageList/${uname}/`;
 	}
+
 	const response = await fetch(url, {
 		method: 'GET',
 		headers: {
@@ -346,8 +341,9 @@ export async function getMessages(uname=null) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail || 'Failed to retrieve messages');
+		throw new Error(errorResponse);
 	}
+
 	const data = await response.json();
 	return data;
 }
@@ -380,9 +376,9 @@ export async function loadMessages(data) {
 					Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
 				}
 			} catch (error) {
-				Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+				Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 			}
-		 });
+		});
 
 		const contentElement = document.createElement('div');
 		contentElement.classList.add('message-content');
@@ -460,6 +456,6 @@ function GameNotification(title, message, target) {
 	toast.show();
 	tar = target;
 	setTimeout(() => {
-		 toast.hide();
+		toast.hide();
 	}, 10000);
 }

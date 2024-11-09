@@ -6,7 +6,6 @@ import { Habess } from "./gamePvP.js";
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
 
-
 async function homepageData() {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
@@ -26,7 +25,7 @@ async function homepageData() {
 		const errorResponse = await response.json();
 		localStorage.removeItem('accessToken');
 		navigateTo('login', null);
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
 	const data = await response.json();
 	return data;
@@ -49,14 +48,13 @@ export async function userLookUp(searchTerm) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
 
 	const data = await response.json();
 	return data;
 }
 
-// This is the function that fetches user data on register
 async function registerUser(username, password, email) {
 	const url = baseUrl + 'api/register/';
 	const response = await fetch(url, {
@@ -166,7 +164,7 @@ async function updateUsername(uname) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
 
 	const data = await response.json();
@@ -179,6 +177,7 @@ async function updateBio(biog) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
 		return ;
 	}
+
 	const url = baseUrl + 'api/home/settings/updatebio/';
 	const response = await fetch (url, {
 		method: 'POST',
@@ -190,10 +189,12 @@ async function updateBio(biog) {
 			bio: biog,
 		}),
 	});
+
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
+
 	const data = await response.json();
 	return data;
 }
@@ -204,6 +205,7 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
 		return ;
 	}
+
 	const url = baseUrl + 'api/home/settings/updatepwd/';
 	const response = await fetch (url, {
 		method: 'POST',
@@ -217,10 +219,12 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 			confirmedPwd: cfm_pwd,
 		}),
 	});
+
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
+
 	const data = await response.json();
 	return data;
 }
@@ -229,9 +233,9 @@ async function deleteAccount(password){
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
-
 		return ;
 	}
+
 	const url = baseUrl + 'api/delete-account/';
 	const response = await fetch (url, {
 		method: 'DELETE',
@@ -243,17 +247,21 @@ async function deleteAccount(password){
 			password: password,
 		}),
 	});
+
 	if (!response.ok){
 		const errorResponse = await response.json();
 		Notification('Profile action', "Account Deletion Failed", 1, 'alert');
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
+
 	Notification('Profile action', "Account deleted successfully!", 0, 'success');
-	return await response.json();
+	const data = await response.json();
+	return data;
 }
 
 async function checkEmail(email) {
 	const url = baseUrl + 'api/forgot/';
+
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -263,16 +271,20 @@ async function checkEmail(email) {
 			email: email,
 		}),
 	});
+
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		console.log(errorResponse.detail);
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
+
+	const data = await response.json();
+	return data;
 }
 
 // This is the function that fetches user data on login
 async function loginUser(usernameOrEmail, password) {
 	const url = baseUrl + 'api/login/';
+
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -287,8 +299,9 @@ async function loginUser(usernameOrEmail, password) {
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		Notification('Profile Action', "Login Failed!", 1, 'alert');
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
+
 	const data = await response.json();
 	return data;
 }
@@ -296,6 +309,7 @@ async function loginUser(usernameOrEmail, password) {
 // This is the function that fetches user data on email verification step
 async function verifyEmail(formData) {
 	const url = baseUrl + 'api/verify-code/';
+
 	const response = await fetch(url, {
 		method: 'POST',
 		body: formData,
@@ -304,7 +318,7 @@ async function verifyEmail(formData) {
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		Notification('Profile Action', 'Please make sure the verification code is correct!', 1, 'alert');
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
 
 	const data = await response.json();
@@ -354,8 +368,11 @@ async function logoutUser() {
 	}
 	else {
 		const errorResponse = await response.json();
-		throw new Error (errorResponse.detail);
+		throw new Error (errorResponse);
 	}
+
+	const data = await response.json();
+	return data;
 }
 
 async function sendFriendRequest(targetId) {
@@ -378,7 +395,7 @@ async function sendFriendRequest(targetId) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
 	const data = await response.json();
 	return data;
@@ -509,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				setAccordionMaxHeight();
 				adjustAccordionHeight();
 			} catch (error) {
-				Notification('Profile Action', "Error: changeToMainTwo.js:379", 2, 'alert'); // check
+				Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 			}
 		} else if (view === 'settings') {
 			mainTwo.style.display = 'flex';
@@ -556,7 +573,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			await checkEmail(input_email);
 			document.getElementById('forgot-container').style.display = 'none';
 			document.getElementById('create-new-pass').style.display = 'block';
-		}catch(error) {
+		} catch(error) {
 			Notification('Profile Action', 'This email doesn\'t belong to any account!', 1, 'alert');
 		}
 		confirmButton.addEventListener('click', async function() {
@@ -601,7 +618,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				return ;
 			}
 		} catch (error) {
-			Notification('Profile Action', `Failed to login because: ${error}`, 1,'alert');
+			Notification('Profile Action', `Failed to login because: ${error.detail}`, 1,'alert');
 		}
 	});
 
@@ -615,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				navigateTo('profile', null);
 			}
 		} catch (error) {
-			Notification('User Action', `Failed To Verify Origin: ${error}`, 1, 'alert');
+			Notification('User Action', `Failed To Verify Origin: ${error.detail}`, 1, 'alert');
 			localStorage.removeItem('accessToken');
 			localStorage.removeItem('refreshToken');
 			navigateTo('login', null);
@@ -636,7 +653,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('register-form-container').style.display = 'none';
 			document.getElementById('second-reg-container').style.display = 'block';
 		} catch (error) {
-			Notification('Profile Action', `Failed to Register because: ${error}`,1, 'alert');
+			Notification('Profile Action', `Failed to Register because: ${error.detail}`,1, 'alert');
 
 			document.getElementById('login-form-container').style.display = 'none';
 			document.getElementById('register-form-container').style.display = 'block';
@@ -663,7 +680,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				const file = new File([blob], selectedImage.src.split('/').pop(), { type: blob.type }) 
 				formData.append('avatar', file);  
 		  	} catch (error) {
-				Notification('Profile Action', `Failed to fetch preset avatar: ${error}`, 1, 'alert');
+				Notification('Profile Action', `Failed to fetch preset avatar: ${error.detail}`, 1, 'alert');
 				return;
 		  	}
 	  } else {
@@ -674,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await verifyEmail(formData);
 			navigateTo('login', null);
 		} catch (error) {
-			Notification('Profile Action', `Failed to verify email because: ${error}`,1, 'alert');
+			Notification('Profile Action', `Failed to verify email because: ${error.detail}`,1, 'alert');
 			navigateTo('register', null); 
 		}
 	});
@@ -684,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			await logoutUser();
 		} catch (error) {
-			Notification('Profile Action', `Failed to logout because: ${error}`,2, 'alert');
+			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
@@ -705,7 +722,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				Notification('Search', 'No such user found!', 2, 'alert');
 			}
 		} catch (error) {
-			Notification('Profile Action', "Error: changeToMainTwo:496", 2, 'alert');// check
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');// check
 		}
 	});
 
@@ -715,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			loadFriends(result, userData.id);
 
 		} catch (error) {
-			Notification('Profile Action', "Error: ", 2, 'alert');
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 	});
 
@@ -727,7 +744,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await sendFriendRequest(target_id);
 			Notification('Friend Action', 'You have sent a friend request!', 2,'request');
 		} catch (error) {
-			Notification('Friend Action', `Friend Request Failed because: ${error}`, 2, 'alert');
+			Notification('Friend Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 	});
 
@@ -758,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await updateUsername(username);
 			Notification('Profile Action', 'You have updated your username!',2, 'profile');
 		} catch (error) {
-			Notification('Profile Action', `Failed to change Username because: ${error}`,2, 'alert');
+			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}
 	});
 
@@ -773,7 +790,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await updateBio(bio);
 			Notification('Profile Action', 'You have updated your bio!',2, 'profile');
 		} catch (error) {
-			Notification('Profile Action', `Failed to change bio because: ${error}`,2, 'alert');
+			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}
 	});
 
@@ -786,7 +803,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await updatePwd(curr_pwd, new_pwd, cfm_pwd);
 			Notification('Profile Action', 'You have updated your password!',2, 'profile');
 		} catch (error) {
-			Notification('Profile Action', `${error}`,2, 'alert');
+			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}
 	});
 
@@ -815,7 +832,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				userEmail = null;
 				deleteModal.style.display = 'none';
 			} catch(error){
-				Notification('Profile Action', `Failed To Delete The Account: ${error.message}`, 2, 'alert');
+				Notification('Profile Action', `Failed To Delete The Account: ${error.detail}`, 2, 'alert');
 			}
 		} else {
 			Notification('Profile Action', 'Please Enter Your Password First!', 2, 'alert');
@@ -836,7 +853,7 @@ updateAvatarbtn.addEventListener('click',async function () {
 		const res = await updateAvatar(formData);
 		Notification('Profile Action', 'You have updated your avatar!',2, 'profile');
 	} catch (error) {
-		Notification('Profile Action', `Failed to update Avatar because: ${error}`,2, 'alert');
+		Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 	}
 
 });
@@ -845,9 +862,9 @@ async function updateAvatar(formData) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
-
 		return ;
 	}
+
 	const url = baseUrl + 'api/home/settings/updateavatar/';
 	const response = await fetch(url, {
 		method: 'POST',
@@ -860,7 +877,7 @@ async function updateAvatar(formData) {
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		Notification('Profile Action', 'Please make sure the verification code is correct!', 2, 'alert');
-		throw new Error(errorResponse.detail);
+		throw new Error(errorResponse);
 	}
 
 	const data = await response.json();

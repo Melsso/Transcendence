@@ -124,7 +124,6 @@ export function drawAll(player1, player2, settings) {
 		settings.mode = 'Default mode';
 		settings.map = 'Map 1';
 	}
-	// console.log(player1, player2);
 	if (window.userData.username === player1.username) {
 		if (player1.set === false ) {
 			if (player1.set === false ) {
