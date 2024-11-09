@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -9,8 +11,6 @@ from .models import KnownHost, KnownDevice
 from .serializers import KnownHostSerializer, KnownDeviceSerializer
 from users.serializers import UserProfileSerializer
 from users.utils import generate_verification_code
-from django.conf import settings
-from django.core.mail import send_mail
 
 class CheckKnownHostDeviceView(generics.GenericAPIView):
 

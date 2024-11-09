@@ -1,6 +1,6 @@
-import secrets
 from django.core.mail import send_mail
 from django.conf import settings
+import secrets
 
 def generate_verification_code(length=6):
     return secrets.token_hex(length)[:length]

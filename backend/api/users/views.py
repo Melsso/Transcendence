@@ -18,9 +18,9 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from .models import UserProfile
-from chats.models import Friend
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
 from .utils import generate_verification_code
+from chats.models import Friend
 
 class RegisterView(generics.CreateAPIView):
 

@@ -1,9 +1,9 @@
-from rest_framework import serializers
-from .models import UserProfile
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate
+from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
+from .models import UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
     
