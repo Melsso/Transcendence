@@ -9,10 +9,12 @@ const Instructions = document.getElementById('Instructions-box');
 const baseUrl = process.env.ACTIVE_HOST;
 const lobby = document.getElementById('pong-inv-container');
 import { getRoomName, startGameSocket } from "./gameSystem.js";
+
 const qSettings = {
 	mode: 'Default mode',
 	map: 'Map 1'
-}
+};
+
 const gamer = {
 	username: "PlayerOne",
 	avatar: "path/to/avatar.png",
@@ -27,7 +29,6 @@ function getWinPercentage(wins, losses) {
 }
 
 qBtn.addEventListener('click', function() {
-	
 	menu.style.display = 'none';
 	ai_menu.style.display = 'none';
 	inv_menu.style.display = 'none';
@@ -37,11 +38,11 @@ qBtn.addEventListener('click', function() {
 	if (existingContainer) {
 	    existingContainer.remove();
 	}
-		qName.innerHTML = `
+	qName.innerHTML = `
         <div class="map">Map:   ${qSettings.map}</div>
         <h1>1vs1 </h1>
         <div class="mode">Mode:   ${qSettings.mode}</div>
-   `;
+	`;
 
 	const gContainer = document.createElement('div');
 	gContainer.classList = 'player-container pong-container-players';
@@ -176,12 +177,12 @@ export function acceptRefuse() {
 	};
  
 	window.onclick = function (event) {
-	  if (event.target == modal) {
-		 modal.style.display = 'none';
-		 modal.remove();
-		 sendQueueStatus(false);
-		 navigateTo('profile', null);
-	  }
+		if (event.target == modal) {
+			modal.style.display = 'none';
+			modal.remove();
+			sendQueueStatus(false);
+			navigateTo('profile', null);
+		}
 	};
 	setTimeout(function () {
 		modal.style.display = 'none';
@@ -193,15 +194,16 @@ export function acceptRefuse() {
 
 async function creatQueueRoom() {
 	const accessToken = localStorage.getItem('accessToken');
-   if (!accessToken) {
-      Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
-      return ;
-   }
+	if (!accessToken) {
+		Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+		return ;
+	}
+	
 	try {
 		if (window.userData.pong_socket) {
-			 window.userData.pong_socket.close();
-			 window.userData.pong_socket = null;
-		 window.userData.r_name = null;
+			window.userData.pong_socket.close();
+			window.userData.pong_socket = null;
+			window.userData.r_name = null;
 		}
 		const data = await getRoomName();
 		data.room_name = 'queue_' + data.room_name;
@@ -210,15 +212,15 @@ async function creatQueueRoom() {
 		const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}`);
 		window.userData['pong_socket'] = gameSocket;
 		startGameSocket();
-  } catch (error) {
+  	} catch (error) {
 		Notification('Game Action', `Failed to create a room! ${error}`, 2, 'alert');
 		window.userData.r_name = null;
 		if (window.userData.pong_socket) {
-			 window.userData.pong_socket.close();
+			window.userData.pong_socket.close();
 		}
 		window.userData.pong_socket = null;
 		return ;
-  }
+	}
 }
 
 async function sendQueueStatus(accept, flag=null) {

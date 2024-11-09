@@ -53,10 +53,12 @@ export async function getMatchHistory(uname) {
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
+
     let url = baseUrl + `api/games/match-history/`;
     if (uname) {
         url = baseUrl + `api/games/match-history/${uname}/`;
     }
+
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -95,7 +97,7 @@ export async function loadProfile(requestData) {
         }
         loadMatchHistory(result['match_history']);
     } catch (error) {
-        Notification('Profile Action', `Failed To Get Match History: ${error}`, 2, 'alert');
+        Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
     }  
 }
 
@@ -131,7 +133,6 @@ function loadProfileInfo(user) {
     expBar1.style.width = `${expGame1Percentage}%`;
     expText1.textContent = `Game 1 - Level ${levelGame1}`;
     expBar1.setAttribute('aria-valuenow', expGame1Percentage);
-
 }
 
 export function computeStats(games) {
@@ -265,7 +266,7 @@ export function loadMatchHistory(games) {
                 loadMatchHistory(games);
                 return ;
             } catch (error) {
-                Notification('Profile Action', `Failed To Get Match History: ${error}`, 2, 'alert');
+                Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
             }
         }
 	}, { once: true });

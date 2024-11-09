@@ -1,5 +1,4 @@
 const baseUrl = process.env.ACTIVE_HOST;
-
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
@@ -67,17 +66,17 @@ export async function startTournamentSocket() {
 
 function sendGameStatus(username, ready) {
 	if (window.userData.pong_socket) {
-		 const stateData = {
-			  'username': username,
-			  'ready': ready,
-		 }
-		 window.userData.pong_socket.send(JSON.stringify({
-			  action: 'player_action',
-			  state: stateData
-		 }));
+		const stateData = {
+			'username': username,
+			'ready': ready,
+		}
+		window.userData.pong_socket.send(JSON.stringify({
+			action: 'player_action',
+			state: stateData
+		}));
 	} else {
-		 return ;
-		 // here have to handle the error or rather changing view this shouldnt be reached in anycase anyway
+		return ;
+		// here have to handle the error or rather changing view this shouldnt be reached in anycase anyway
 	}
 }
 
@@ -105,7 +104,7 @@ tourniLobby.addEventListener('click', async function (event) {
 		window.userData.pong_socket = new WebSocket(`ws://${u.host}/ws/tournament/${result['tournament_room_name']}/?token=${accessToken}`);
 		startTournamentSocket();
 	} catch(error) {
-		Notification('Game Action', `Failed To Create A Tournament: ${error}`, 2, 'alert');
+		Notification('Game Action', `Error: ${error.detail}`, 2, 'alert');
 		window.userData.r_name = null;
         if (window.userData.pong_socket) {
             window.userData.pong_socket.close();
@@ -249,8 +248,6 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 			
 			pongPC.appendChild(plusBtn);
 			pongPC.appendChild(pongModal);
-			
-
 
 			playerContainer.appendChild(modalOverlay);
 			playerContainer.appendChild(pongPC);
@@ -258,8 +255,8 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 
 		Tcontainer.appendChild(playerContainer);
 	}
-	
 }
+
 function checkReadyStatus(TourniPlayers) {
 	if (readyPlayers === 8) {
 		Tcontainer.style.display = 'none';
@@ -274,49 +271,46 @@ function generateTournamentCarousel(TourniPlayers) {
 	let matchups = [];
 	
 	for (let i = 0; i < 8; i += 2) {
-		 matchups.push([
-			  shuffledPlayers[i] || { username: '?', avatar: 'placeholder.png' }, 
-			  shuffledPlayers[i + 1] || { username: '?', avatar: 'placeholder.png' }
-		 ]);
+		matchups.push([
+			shuffledPlayers[i] || { username: '?', avatar: 'placeholder.png' }, 
+			shuffledPlayers[i + 1] || { username: '?', avatar: 'placeholder.png' }
+		]);
 	}
 
 	const carouselInner = document.querySelector('#matchupCarousel .carousel-inner');
 	carouselInner.innerHTML = '';
 
 	matchups.forEach((matchup, index) => {
-		 const carouselItem = document.createElement('div');
-		 carouselItem.classList.add('carousel-item');
-		 if (index === 0) carouselItem.classList.add('active'); 
+		const carouselItem = document.createElement('div');
+		carouselItem.classList.add('carousel-item');
+		if (index === 0) carouselItem.classList.add('active'); 
+		
+		const matchupContainer = document.createElement('div');
+		matchupContainer.classList.add('matchup-container', 'd-flex', 'justify-content-around', 'align-items-center', 'p-4');
 
-		 const matchupContainer = document.createElement('div');
-		 matchupContainer.classList.add('matchup-container', 'd-flex', 'justify-content-around', 'align-items-center', 'p-4');
+		const player1Div = document.createElement('div');
+		player1Div.classList.add('player');
+		player1Div.innerHTML = `
+			<img src="${matchup[0].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 1 Avatar">
+			<p class="username">${matchup[0].username}</p>
+		`;
 
-		 const player1Div = document.createElement('div');
-		 player1Div.classList.add('player');
-		 player1Div.innerHTML = `
-			  <img src="${matchup[0].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 1 Avatar">
-			  <p class="username">${matchup[0].username}</p>
-		 `;
-
-		 const player2Div = document.createElement('div');
-		 player2Div.classList.add('player');
-		 player2Div.innerHTML = `
+		const player2Div = document.createElement('div');
+		player2Div.classList.add('player');
+		player2Div.innerHTML = `
 			  <img src="${matchup[1].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 2 Avatar">
 			  <p class="username">${matchup[1].username}</p>
-		 `;
+		`;
 
-
-		 matchupContainer.appendChild(player1Div);
+		matchupContainer.appendChild(player1Div);
 		 
-		 const versusDiv = document.createElement('div');
-		 versusDiv.classList.add('versus');
-		 versusDiv.innerHTML = '<h3>VS</h3>';
-		 matchupContainer.appendChild(versusDiv);
-		 
-		 matchupContainer.appendChild(player2Div);
+		const versusDiv = document.createElement('div');
+		versusDiv.classList.add('versus');
+		versusDiv.innerHTML = '<h3>VS</h3>';
 
-		 carouselItem.appendChild(matchupContainer);
-		 carouselInner.appendChild(carouselItem);
+		matchupContainer.appendChild(versusDiv); 
+		matchupContainer.appendChild(player2Div);
+		carouselItem.appendChild(matchupContainer);
+		carouselInner.appendChild(carouselItem);
 	});
 }
-

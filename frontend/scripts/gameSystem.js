@@ -70,7 +70,7 @@ lo.addEventListener('click', async function (){
         window.userData['pong_socket'] = gameSocket;
         startGameSocket();
     } catch (error) {
-        Notification('Game Action', `Failed to create a room! ${error}`, 2, 'alert');
+        Notification('Game Action', `Error: ${error.detail}`, 2, 'alert');
         window.userData.r_name = null;
         if (window.userData.pong_socket) {
             window.userData.pong_socket.close();

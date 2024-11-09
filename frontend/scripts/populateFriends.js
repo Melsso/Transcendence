@@ -1,5 +1,5 @@
 import { getMessages, loadMessages, handleSend } from "./chat.js";
-import { userLookUp} from "./changeToMainTwo.js";
+import { userLookUp } from "./changeToMainTwo.js";
 
 const baseUrl = process.env.ACTIVE_HOST;
 
@@ -19,7 +19,7 @@ export async function getFriends() {
 	});
 	if (!response.ok){
 		const errorResponse = await response.json();
-		throw new Error(errorResponse || "Friend List error");
+		throw new Error(errorResponse);
 	}
 
 	const data = await response.json();
@@ -33,26 +33,22 @@ export async function loadFriends(data, userid) {
 	const results = data['friends'];
 	if (results && results.length > 0) {
 		results.forEach(res => {
-			// var user_data;
 			var friend_data;
 			const status = res.status;
 			if (userid === res.user_data.id && status === 'PENDING') {
 				return ;
 			} else {
-				// user_data = res.friend_data;
 				friend_data = res.user_data;
 			}
 			if (userid === res.user_data.id && status === 'FRIENDS') {
 				friend_data = res.friend_data;
 			}
 			const fid = res.id;
-			// Creating the friend Div
 			const FriendDiv = document.createElement('div');
 			FriendDiv.className = 'd-flex align-items-center mb-3';
 			FriendDiv.id = friend_data.id;
 			FriendDiv.setAttribute('Friendship_id', fid);
 
-			// Creating the image link
 			const avatarImg = document.createElement('img');
 			avatarImg.src = friend_data.avatar;
 			avatarImg.alt = friend_data.username;
@@ -139,7 +135,7 @@ export async function loadFriends(data, userid) {
 						loadFriends(r1, userid);
 						Notification('Friend Action', `You refused a friend request from ${friend_data.username}!`, 2,'request');
 					} catch (error) {
-						Notification('Friend Action ERROR', `the following error has occured ${error}`,2,'alert');
+						Notification('Friend Action', `Error: ${error.detail}`,2,'alert');
 					}
 				});
 
@@ -152,7 +148,7 @@ export async function loadFriends(data, userid) {
 						loadFriends(r1, userid);
 						Notification('Friend Action', `You Accepted a friend request from ${friend_data.username}!`, 2,'request');
 						} catch (error) {
-							Notification('Friend Action ERROR', `the following error has occured ${error}`,2,'alert');
+							Notification('Friend Action', `Error: ${error.detail}`,2,'alert');
 						}
 					});
 			}
@@ -187,11 +183,10 @@ async function handleAction(action, targetId, userid, targetUname) {
 				loadFriends(r1, userid);
 				Notification('Friend Action', 'You have deleted a friend!', 2,'request');
 			} catch (error) {
-					Notification('Friend Action ERROR', `the following error has occured ${error}`,2,'alert');
+					Notification('Friend Action', `Error: ${error.detail}`,2,'alert');
 			}
 			break;
 		case 'Send a Message':
-			
 			var name = document.getElementById('chatName');
 			var collapseElement = document.getElementById('collapseTwo');
 			var bsCollapse = new bootstrap.Collapse(collapseElement, {
@@ -214,7 +209,7 @@ async function handleAction(action, targetId, userid, targetUname) {
 				try {
 					const result = await getMessages(targetUname);
 					loadMessages(result["list"]);
-				}catch (error) {
+				} catch (error) {
 					Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
 					break ;
 				}
@@ -254,6 +249,7 @@ async function respondFriendRequest(targetId, nature) {
 	if (!access_token) {
 		throw new Error('User is not authenticated');
 	}
+
 	const url = baseUrl + 'api/FriendRequestManager/';
 	const response = await fetch(url, {
 		method: 'PUT',
@@ -266,10 +262,12 @@ async function respondFriendRequest(targetId, nature) {
 			nature: nature,
 		}),
 	});
+
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		throw new Error(errorResponse);
 	}
+
 	const data = await response.json();
 	return data;
 }

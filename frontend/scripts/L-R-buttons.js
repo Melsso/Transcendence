@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
     document.getElementById('register-btn').addEventListener('click', function () {
         document.getElementById('login-form-container').style.display = 'none';
         document.getElementById('second-reg-container').style.display = 'none';
@@ -39,18 +38,6 @@ function showLoginForm(logButton, regButton) {
     document.getElementById('create-new-pass').style.display  = 'none';
     document.getElementById('login-form-container').style.display = 'block';
 }
-
-
-
-// const mainTwo = document.getElementById('mainTwo');
-
-// const observer = new MutationObserver(() => {
-//     if (mainTwo.offsetParent !== null) { 
-//         observer.disconnect();
-//     }
-// });
-
-// observer.observe(mainTwo, { attributes: true });
 
 function Notification(title, message, file,type) {
     if (file === 2){
