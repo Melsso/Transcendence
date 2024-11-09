@@ -1,19 +1,17 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels_redis.core import RedisChannelLayer
+from channels.db import database_sync_to_async
+from users.models import UserProfile
+from users.serializers import UserProfileSerializer
+from urllib.parse import parse_qs
 import aioredis
 import json
 import math
 import logging
 import asyncio
 import time
-from channels.db import database_sync_to_async
-from users.models import UserProfile
-from users.serializers import UserProfileSerializer
-from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
-REFERENCE_WIDTH = 1920
-REFERENCE_HEIGHT = 1080
 class GameConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'game_room_'
 	ball = {

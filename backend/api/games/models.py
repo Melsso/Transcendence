@@ -4,8 +4,6 @@ import random
 import time
 import string
 
-# Create your models here.
-
 class Game(models.Model):
     game_id = models.CharField(max_length=20, blank=True, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

@@ -1,11 +1,11 @@
-import jwt
-from channels.middleware import BaseMiddleware
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
+from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
 from users.models import UserProfile
-import logging
 from urllib.parse import parse_qs
+import logging
+import jwt
 
 logger = logging.getLogger(__name__)
 
