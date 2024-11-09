@@ -5,8 +5,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
-# This will generate fields based on our model and we can specify what we want regarding which fields can be changed
 class UserProfileSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = UserProfile
         fields = ['id', 
@@ -20,6 +20,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    
     password = serializers.CharField(write_only=True)
     avatar = serializers.ImageField(required=False)
 
@@ -43,41 +44,34 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    def validate(self, attrs):
-            
+    def validate(self, attrs):        
         username = attrs.get('username')
         if not username:
-            raise ValidationError({'detail': 'Username field is required'})
-
+            raise ValidationError({'status':'error', 'detail':'Username field is required'})
         email_val = attrs.get('email')
         if not email_val:
-            raise ValidationError({'detail': 'Email field is required.'})
-        
+            raise ValidationError({'status':'error', 'detail':'Email field is required.'})
         if UserProfile.objects.filter(email=email_val).exists():
-            raise ValidationError({'detail': 'Rmail is already registered.'})        
-        
+            raise ValidationError({'status':'error', 'detail':'Rmail is already registered.'})        
         password = attrs.get('password')
         if not password:
-            raise ValidationError({'detail': 'Password field is required.'})
-
+            raise ValidationError({'status':'error', 'detail':'Password field is required.'})
         validate_password(password)
-        
         return attrs
 
 
 class LoginSerializer(serializers.Serializer):
+    
     username_or_email = serializers.CharField()
     password = serializers.CharField(write_only=True)
-
+    
     def validate(self, attrs):
         username_or_email = attrs.get('username_or_email')
         password = attrs.get('password')
-
         if not password:
-            raise ValidationError({'detail': 'nopassword'})
+            raise ValidationError({'status':'error', 'detail': 'nopassword'})
         if not username_or_email:
-            raise ValidationError({'detail': 'nousername'})
-
+            raise ValidationError({'status':'error', 'detail': 'nousername'})
         user = None
         if '@' in username_or_email and '.' in username_or_email:
             user = UserProfile.objects.filter(email=username_or_email).first()
@@ -85,17 +79,13 @@ class LoginSerializer(serializers.Serializer):
                 if user.is_verified:
                     username_or_email = user.username
                 else:
-                    raise ValidationError({'detail': 'unverifiedemail'})
+                    raise ValidationError({'status':'error', 'detail': 'unverifiedemail'})
             else:
-                raise ValidationError({'detail':'invalidusername'})
-        
+                raise ValidationError({'status':'error', 'detail':'invalidusername'})
         user = authenticate(username=username_or_email, password=password)
-
         if user is None:
             raise AuthenticationFailed('Invalid username or password')
-
         if not user.is_verified:
-            raise ValidationError({'detail': 'unverifiedemail'})
-
+            raise ValidationError({'status':'error', 'detail': 'unverifiedemail'})
         attrs['user'] = user
         return attrs
