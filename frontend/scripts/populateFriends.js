@@ -153,6 +153,7 @@ export async function loadFriends(data, userid) {
 					});
 			}
 			FriendDiv.appendChild(avatarImg);
+			console.log('LIST OF ONLINE PPL', window.userData['online']);
 			if(window.userData.online && window.userData['online'].includes(friend_data.username) && status === 'FRIENDS') {
 				const onlineDot = document.createElement('div');
 				onlineDot.className = 'online-dot';

@@ -494,7 +494,9 @@ document.addEventListener('DOMContentLoaded', function () {
 				if (data === null) {
 					const result = await homepageData();
 					const sock = window.userData.socket;
+					const list = window.userData['online'];
 					window.userData = result["user"];
+					window.userData['online'] = list;
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');
@@ -520,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					}
 					loadProfile(data);						
 				}
-			
+				
 				mainTwo.style.display = 'flex';
 				mainBody.style.display = 'flex';
 				setAccordionMaxHeight();

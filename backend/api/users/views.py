@@ -84,7 +84,7 @@ class LoginView(generics.GenericAPIView):
             if 'nopassword' in error_detail:
                 return Response({'status':'error', 'detail':'No password provided'}, status=HTTP_400_BAD_REQUEST)
             if 'nousername' in error_detail:
-                return Response({'status':'error', 'detail':'No username provided'} status=HTTP_400_BAD_REQUEST)
+                return Response({'status':'error', 'detail':'No username provided'}, status=HTTP_400_BAD_REQUEST)
             if 'unverifiedemail' in error_detail:
                 return Response({'status':'error', 'detail':'Email not verified'}, status=HTTP_401_UNAUTHORIZED)
             if 'invalidusername' in error_detail:
