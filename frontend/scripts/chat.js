@@ -13,6 +13,10 @@ const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
 const Tlobby = document.getElementById('pong-tournament');
 const baseUrl = process.env.ACTIVE_HOST;
+const contextMenu = document.createElement('div');
+contextMenu.className = 'custom-context-menu';
+contextMenu.style.display = 'none';
+document.body.appendChild(contextMenu);
 import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket  } from "./gameSystem.js";
 import { startTournamentSocket } from "./gameSystemT.js";
@@ -63,6 +67,54 @@ globalbtn.addEventListener('click', async function(event) {
 	}
 });
 
+function showContextMenu(event, username) {
+	event.preventDefault();
+	contextMenu.innerHTML = '';
+	const menuOptions = [
+		{ text: 'View Profile', action: () => handleProfileView(username) },
+		{ text: 'invite to game', action: () => handleGameInvite(username) }
+	];
+	menuOptions.forEach(option => {
+			const menuItem = document.createElement('div');
+			menuItem.className = 'context-menu-item';
+			menuItem.textContent = option.text;
+			menuItem.addEventListener('click', option.action);
+			contextMenu.appendChild(menuItem);
+	  });
+ 
+	  contextMenu.style.left = `${event.pageX}px`;
+	  contextMenu.style.top = `${event.pageY}px`;
+	  contextMenu.style.display = 'block';
+}
+
+async function handleGameInvite(username) {
+	if (window.userData.socket) {
+		if (window.userData.pong_socket) {
+			handleSend(username, window.userData.r_name, 'Notification');
+			Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
+		}
+		else {
+			Notification('Game Action', 'You have to be in a lobby to invite another user!', 2, 'alert');
+		}
+	}
+	else {
+		Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+	}
+}
+
+async function handleProfileView(username) {
+	try {
+		const result = await userLookUp(username);
+		if (result['user'] !== null) {
+			window.navigateTo('profile', result);
+		} else {
+			Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+		}
+	} catch (error) {
+		Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
+	}
+}
+
 async function addMessage(message, isSender = false, data) {
 	if (message.trim() === '') return;
 	const messageElement = document.createElement('div');
@@ -74,20 +126,11 @@ async function addMessage(message, isSender = false, data) {
 	avatarElement.src = isSender ? window.userData.avatar : data.av;
 	avatarElement.alt = isSender ? window.userData.username : data.username;
 
-	avatarElement.style.cursor = 'pointer';
-   avatarElement.addEventListener('click', async function() {
-		try {
-			const result = await userLookUp(avatarElement.alt);
-			if (result['user'] !== null) {
-				window.navigateTo('profile', result);
-			} else {
-				Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
-			}
-		} catch (error) {
-			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
-		}
-    });
-
+	avatarElement.addEventListener('contextmenu', (event) => showContextMenu(event, avatarElement.alt));
+	document.addEventListener('click', () => {
+		contextMenu.style.display = 'none';
+  	});
+	
 	const contentElement = document.createElement('div');
 	contentElement.classList.add('message-content');
 	contentElement.textContent = message;
@@ -366,18 +409,9 @@ export async function loadMessages(data) {
 			avatarElement.alt = message.username;
 		}
 
-		avatarElement.style.cursor = 'pointer';
-		avatarElement.addEventListener('click', async function() {
-			try {
-				const result = await userLookUp(avatarElement.alt);
-				if (result['user'] !== null) {
-					window.navigateTo('profile', result);
-				} else {
-					Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
-				}
-			} catch (error) {
-				Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
-			}
+		avatarElement.addEventListener('contextmenu', (event) => showContextMenu(event, avatarElement.alt));
+		document.addEventListener('click', () => {
+			contextMenu.style.display = 'none';
 		});
 
 		const contentElement = document.createElement('div');

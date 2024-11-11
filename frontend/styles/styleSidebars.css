@@ -229,3 +229,23 @@
 	text-align: center;
 	width: 100%;
 }
+
+.custom-context-menu {
+	position: absolute;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+	z-index: 2000;
+	width: 150px;
+}
+
+.context-menu-item {
+	padding: 8px 12px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.context-menu-item:hover {
+	background-color: #f0f0f0;
+}
