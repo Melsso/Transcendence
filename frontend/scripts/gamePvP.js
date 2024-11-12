@@ -35,6 +35,13 @@ function drawSphere(x, y, radius) {
 	ctxx.closePath();
 }
 
+export function drawBuffpvp(x){
+	ctxx.globalAlpha = 0.5;
+	ctxx.fillStyle = "gold";
+	ctxx.fillRect(x, Buffpvp.y, Buffpvp.width, Buffpvp.height);
+	ctxx.globalAlpha = 1.0;
+}
+
 export function Habess() {
 	for (let i = 0; i < animation.length; i++) {
 		cancelAnimationFrame(animation[i]);

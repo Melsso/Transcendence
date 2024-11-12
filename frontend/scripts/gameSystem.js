@@ -2,7 +2,7 @@ import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
-import { Habess, displayCountdown } from "./gamePvP.js";
+import { Habess, displayCountdown, drawBuffpvp } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -145,6 +145,9 @@ export async function startGameSocket() {
         else if (data.action === 'restart_round'){
             Habess();
             displayCountdown();
+        }
+        else if (data.action === 'demandPowerUP'){
+            drawBuffpvp(x);
         }
     }
 }
