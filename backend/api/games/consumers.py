@@ -323,19 +323,27 @@ class GameConsumer(AsyncWebsocketConsumer):
 		ball_hits = 0
 		howmanyspeeds = 0
 		speed = 0.00125
-		base_speed = 0.005 + (speed * howmanyspeeds)
 		await asyncio.sleep(3.5)
 
 		start_time = time.time()
 		new_start = start_time
-
+		continuous_time = start_time
 		while True:
+			base_speed = 0.005 + (speed * howmanyspeeds)
 			current_time = time.time()
-			if current_time - new_start >= 5:
-				howmanyspeeds += 1
-				new_start = current_time
-				base_speed += speed
-
+			if current_time - new_start >= 8:
+				if howmanyspeeds < 5:
+					howmanyspeeds += 1
+					new_start = current_time
+				if current_time - continuous_time >= 12:
+					await self.channel_layer.group_send(
+					self.room_group_name,
+						{
+							"type": 'demandPowerUP',
+							"action": 'Buff',
+							"x": 0
+						}
+					)
 			self.ball['dx'] = angleX * base_speed
 			self.ball['dy'] = angleY * base_speed
 			self.ball['x'] += self.ball['dx']
@@ -343,8 +351,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if self.ball['x'] <= 0.01 or self.ball['x'] >= 0.99:
 				self.ball['x'] = 0.5
 				self.ball['y'] = 0.5
-				self.ball['dx'] = 0.005
-				self.ball['dy'] = 0.005
+				self.ball['dx'] = angleX * base_speed
+				self.ball['dy'] = angleY * base_speed
 				angleX = -angleX
 				self.paddle1['y'] = 0.45
 				self.paddle2['y'] = 0.45
@@ -387,6 +395,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 			'action': action,
 		}))
 
+	async def demandPowerUP(self, event):
+		action = event['action']
+		x = event['x']
+		await self.send(text_data=json.dumps({
+         'x': x,
+			'action': action,
+        }))
 	async def r_round(self, event):
 		action = event['action']
 		await self.send(text_data=json.dumps({
