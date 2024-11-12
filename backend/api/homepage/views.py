@@ -121,3 +121,14 @@ class   UpdateAvatar(generics.GenericAPIView):
         else:
             return Response({'status':'error', 'detail':'Invalid Avatar'}, status=HTTP_400_BAD_REQUEST)
 
+class   UpdateTwoFactorAuth(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        if user.Twofa_auth == False:
+            user.Twofa_auth = True
+        else:
+            user.Twofa_auth = False
+        user.save()
+        return Response({'status':'success', 'detail':'Changed Two_Factor_Auth Status'}, status=HTTP_200_OK)

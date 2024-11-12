@@ -15,6 +15,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'avatar',
             'bar_exp_game1',
             'biography',
+            'Twofa_auth',
         ]
         read_only_fields = ['id', 'email']
 
@@ -39,6 +40,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             avatar=validated_data.get('avatar'),
             bar_exp_game1=0,
             biography='',
+            Twofa_auth=False,
         )
         user.set_password(validated_data['password'])
         user.save()

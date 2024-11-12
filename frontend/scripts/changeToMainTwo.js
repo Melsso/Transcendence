@@ -325,6 +325,29 @@ async function verifyEmail(formData) {
 	return data;
 }
 
+async function UpdateTwoFactorAuth() {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+		return ;
+	}
+	const url = baseUrl + 'api/home/settings/updateTwoFactorAuth/';
+	const response =  await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw new Error(errorResponse);
+	}
+
+	const data = await response.json();
+	return data;
+}
+
 // This is the function that will make sure the tokens are removed in the backend and front
 async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
@@ -422,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const lobby = document.getElementById('pong-inv-container');
 	const menu = document.getElementById('menuuu');
 	const qContainer = document.getElementById('Queue');
-
+	const toggle = document.getElementById('2fa-toggle');
 	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
 	log1.style.display = 'none';
@@ -495,6 +518,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
+					if (result['user'].Twofa_auth === true) {
+						toggle.classList.toggle('on');
+					}
 					const sock = window.userData.socket;
 					const list = window.userData['online'];
 					window.userData = result["user"];
@@ -571,9 +597,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 	window.navigateTo = navigateTo;
 
-	const toggle = document.getElementById('2fa-toggle');
-	toggle.addEventListener('click', function() {
+	toggle.addEventListener('click', async function() {
 		toggle.classList.toggle('on');
+		try {
+			await UpdateTwoFactorAuth();
+			Notification('Profile Action', 'You have changed your 2fa status!', 2, 'profile');
+		} catch(error) {
+			Notification('Profile Action', 'Something Wrong happened, Please reLog to fix it', 2, 'alert');
+		}
 	})
 	TonewpassButton.addEventListener('click', async function() {
 		const input_email = document.getElementById('forgotmail').value;
@@ -615,6 +646,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await loginUser(username, password);
 			const tokens = result.tokens;
+			console.log(result);
 			const host_check = await checkKnownLocation(tokens.access);
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);

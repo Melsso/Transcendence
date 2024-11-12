@@ -11,6 +11,9 @@ from .models import KnownHost, KnownDevice
 from .serializers import KnownHostSerializer, KnownDeviceSerializer
 from users.serializers import UserProfileSerializer
 from users.utils import generate_verification_code
+import logging
+
+logger = logging.getLogger(__name__)
 
 class CheckKnownHostDeviceView(generics.GenericAPIView):
 
@@ -18,11 +21,13 @@ class CheckKnownHostDeviceView(generics.GenericAPIView):
 
 	def get(self, request, *args, **kwargs):
 		user = request.user
+		nonvali = False
+		if user.Twofa_auth == False:
+			return Response({'status':'Known', 'detail':'The Host Is Known','2fa': nonvali}, status=HTTP_200_OK)
 		ip_addr = self.get_client_ip(request)
 		user_agent = request.META.get('HTTP_USER_AGENT')
 		is_known_host = KnownHost.objects.filter(user=user, ip_address=ip_addr).exists()
 		is_known_device = KnownDevice.objects.filter(user=user, user_agent=user_agent).exists()
-		nonvali = False
 		if is_known_device and is_known_host:
 			return Response({'status':'Known', 'detail':'The Host Is Known','2fa': nonvali}, status=HTTP_200_OK)
 		veri_code = generate_verification_code()
