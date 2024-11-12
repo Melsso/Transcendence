@@ -140,3 +140,61 @@
 	justify-content: space-around;
 	margin-top: 15px;
 }
+
+.Twofa-toggle {
+	position: absolute;
+	width: 5%;
+	right:12%;
+	bottom: 10%;
+	/* transform: translateX(800%); */
+	height: 2%;
+	background-color: red; 
+	border-radius: 12px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+.toggle-slider {
+	z-index: 1000;
+	position: absolute;
+	width: 35%;
+	height:90%;
+	top: 2px;
+	left: 2px;
+	border-radius: 50%;
+	background-color: white;
+	transition: left 0.3s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.Twofa-on {
+	color: green;
+	font-size: 16px;
+	display: none; 
+}
+
+.toggle-text {
+	width: 180%;
+	transform: translate(-20%, -100%);
+}
+
+.Twofa-off {
+	color: red;
+	font-size: 16px;
+}
+
+.Twofa-toggle.on {
+	background-color: green;
+}
+
+.Twofa-toggle.on .toggle-slider {
+	left: 65%; 
+}
+
+.Twofa-toggle.on .Twofa-on {
+	display: inline;
+}
+
+.Twofa-toggle.on .Twofa-off {
+	display: none;
+}

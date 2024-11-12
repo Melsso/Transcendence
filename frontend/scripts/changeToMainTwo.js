@@ -402,6 +402,8 @@ async function sendFriendRequest(targetId) {
 }
 
 
+
+
 document.addEventListener('DOMContentLoaded', function () {
 	const reg1 = document.getElementById('register-form-container');
     const log1 = document.getElementById('login-form-container');
@@ -569,6 +571,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 	window.navigateTo = navigateTo;
 
+	const toggle = document.getElementById('2fa-toggle');
+	toggle.addEventListener('click', function() {
+		toggle.classList.toggle('on');
+	})
 	TonewpassButton.addEventListener('click', async function() {
 		const input_email = document.getElementById('forgotmail').value;
 		try {
