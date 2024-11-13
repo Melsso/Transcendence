@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend service
   backend:
@@ -21,8 +19,8 @@ services:
       echo 'Starting Daphne...';
       cd api && daphne -b 0.0.0.0 -p 8000 api.asgi:application"     
     volumes:
-      - ./backend:/app
-      - ./backend/api/media:/app/api/media
+      - ./backend:/app # remove this line when no longer in dev
+      - media:/app/api/media
     depends_on:
       - database
       - redis
@@ -54,7 +52,7 @@ services:
         - ACTIVE_HOST=${ACTIVE_HOST}
     container_name: pong-frontend-container
     volumes:
-      - ./backend/api/media:/usr/share/nginx/html/media
+      - media:/usr/share/nginx/html/media
     ports:
       - "0.0.0.0:80:80"
     depends_on:
@@ -72,8 +70,28 @@ services:
     networks:
       - pong-network
 
+  # Vault service
+  vault:
+    build:
+      context: ./vault
+    container_name: pong-vault-container
+    ports:
+      - "0.0.0.0:8200:8200"
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=root
+    volumes:
+      - vault_data:/vault/data
+      - .vault/secrets/.env:/vault/secrets/.env
+      - ./vault/init-vault.sh:/init-vault.sh
+    networks:
+      - pong-network
+    command: "sh /init-vault.sh && vault server -dev -dev-root-token-id=root -dev-listen-address=0.0.0.0:8200"
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  media:
+  vault_data:
 
 networks:
   pong-network:
