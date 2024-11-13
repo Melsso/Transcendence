@@ -34,7 +34,7 @@ async function getTournamentName() {
 
     if (!response.ok) {
         const errorResponse = await response.json();
-        throw new Error(errorResponse);
+        throw errorResponse;
     }
     const data = await response.json();
     return data;

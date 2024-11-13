@@ -69,7 +69,7 @@ export async function getMatchHistory(uname) {
 
     if (!response.ok) {
         const errorResponse = await response.json();
-        throw new Error(errorResponse);
+        throw errorResponse;
     }
 
     const data = await response.json();

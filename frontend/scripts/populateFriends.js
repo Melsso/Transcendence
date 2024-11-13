@@ -19,7 +19,7 @@ export async function getFriends() {
 	});
 	if (!response.ok){
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -211,7 +211,7 @@ async function handleAction(action, targetId, userid, targetUname) {
 					const result = await getMessages(targetUname);
 					loadMessages(result["list"]);
 				} catch (error) {
-					Notification('Message Action', 'Failed to load previous messages!', 2, 'alert');
+					Notification('Message Action', `Failed to load previous messages: ${error.detail}`, 2, 'alert');
 					break ;
 				}
 			}
@@ -225,7 +225,7 @@ async function handleAction(action, targetId, userid, targetUname) {
 						Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
 					}
 				} catch (error) {
-					Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
+					Notification('Profile Action', `Failed to load friend\'s profile: ${error.detail}`, 2, 'alert');
 				}
 			break;
 		case 'Invite To Game':
@@ -266,7 +266,7 @@ async function respondFriendRequest(targetId, nature) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();

@@ -384,7 +384,7 @@ export async function getMessages(uname=null) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
