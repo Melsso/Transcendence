@@ -5,9 +5,13 @@ import { sendGameState } from "./gameSystem.js";
 const REFERENCE_WIDTH = 1920;
 let gamer1;
 let gamer2;
+let up1 = true;
+let up2 = true;
+let up3 = true;
 let p1;
 let p2;
 let sx;
+let BuffFlag = 0;
 let sy;
 const REFERENCE_HEIGHT = 1080;
 let upPressed = false;
@@ -15,6 +19,9 @@ let animation =  [];
 let downPressed = false;
 let playerPaddle1 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "" };
 let playerPaddle2 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "" };
+let Buffpvp = {y: 0, width: 0, height: 0};
+let Attackpvp = {y: 0, width: 0, height: 0};
+let Bigpadpvp = {y: 0, width: 0, height: 0};
 let sphere = { x: 0, y: 0, radius: 0, dx: 0, dy: 0, speed: 0 };
 
 function drawPlayerPaddle1(x, y, width, height) {
@@ -35,10 +42,27 @@ function drawSphere(x, y, radius) {
 	ctxx.closePath();
 }
 
+export function ChangeFlag(flag) {
+	BuffFlag = flag;
+}
+
 export function drawBuffpvp(x){
 	ctxx.globalAlpha = 0.5;
 	ctxx.fillStyle = "gold";
-	ctxx.fillRect(x, Buffpvp.y, Buffpvp.width, Buffpvp.height);
+	ctxx.fillRect(x * window.userData.screen_dimensions.width, Buffpvp.y, Buffpvp.width, Buffpvp.height);
+	ctxx.globalAlpha = 1.0;
+}
+
+export function drawAttackpvp(x){
+	ctxx.globalAlpha = 0.5;
+	ctxx.fillStyle = "red";
+	ctxx.fillRect(x * window.userData.screen_dimensions.width, Attackpvp.y, Attackpvp.width, Attackpvp.height);
+	ctxx.globalAlpha = 1.0;
+}
+export function drawBigpadpvp(x){
+	ctxx.globalAlpha = 0.5;
+	ctxx.fillStyle = "cyan";
+	ctxx.fillRect(x * window.userData.screen_dimensions.width, Bigpadpvp.y, Bigpadpvp.width, Bigpadpvp.height);
 	ctxx.globalAlpha = 1.0;
 }
 
@@ -59,6 +83,13 @@ function setDimensions() {
 	playerPaddle1.y = (heightScale / 2) - (playerPaddle1.height / 2);
 	p1 = playerPaddle1.y;
 	playerPaddle1.dy = heightScale / 100;
+	Buffpvp.width = widthScale / 20;
+	Buffpvp.height = heightScale / 100;
+	Attackpvp.width = widthScale / 20;
+	Attackpvp.height = heightScale / 100;
+	Bigpadpvp.width = widthScale / 20;
+	Bigpadpvp.height = heightScale / 100;
+	Buffpvp.y = heightScale;
 
 	playerPaddle2.width = widthScale / 100;
 	playerPaddle2.height = heightScale / 10;
@@ -156,6 +187,39 @@ export function drawAll(player1, player2, settings) {
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+	if (BuffFlag === 1) {
+		drawBuffpvp(0.5);
+		if (up1) {
+			Buffpvp.y -= Buffpvp.height / 2;
+		} else {
+			Buffpvp.y += Buffpvp.height / 2;
+		}
+		if (Buffpvp.y <= 0) {
+			up1 = false;
+		}
+	}
+	else if (BuffFlag === 2) {
+		drawAttackpvp(0.5);
+		if (up2) {
+			Attackpvp.y -= Attackpvp.height / 2;
+			} else {
+					Attackpvp.y += Attackpvp.height / 2;
+		}
+		if (Attackpvp.y <= 0) {
+			up2 = false;
+		}
+	}
+	else if (BuffFlag === 3) {
+		drawBigpadpvp(0.5);
+		if (up3) {
+			Bigpadpvp.y -= Bigpadpvp.height / 2;
+		} else {
+			Bigpadpvp.y += Bigpadpvp.height / 2;
+		}
+		if (Bigpadpvp.y <= 0) {
+			up3 = false;
+		}
+	}
 	drawSphere(sphere.x, sphere.y, sphere.radius);
 	movement(player1, player2);
 	let frame = requestAnimationFrame(() => drawAll(player1, player2, settings));
