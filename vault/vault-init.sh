@@ -3,18 +3,15 @@
 VAULT_ADDR="http://localhost:8200"
 VAULT_TOKEN="root"
 
-# Ensure that Vault is initialized
 status=$(curl --silent $VAULT_ADDR/v1/sys/health | jq -r .initialized)
 
 if [ "$status" != "true" ]; then
     echo "Vault is not initialized. Initializing Vault..."
     init_response=$(curl --silent --request POST --data '{"secret_shares": 1, "secret_threshold": 1}' $VAULT_ADDR/v1/sys/init)
 
-    # Capture the unseal keys and root token from the response
     UNSEAL_KEY=$(echo $init_response | jq -r '.unseal_keys_b64[0]')
     ROOT_TOKEN=$(echo $init_response | jq -r '.root_token')
 
-    # Set the unseal key in the environment (for use later)
     export VAULT_UNSEAL_KEY=$UNSEAL_KEY
     export VAULT_ROOT_TOKEN=$ROOT_TOKEN
 
@@ -24,11 +21,9 @@ else
     export VAULT_ROOT_TOKEN=$ROOT_TOKEN
 fi
 
-# Unseal Vault
 echo "Unsealing Vault..."
 curl --silent --request POST --data "{\"key\": \"$VAULT_UNSEAL_KEY\"}" $VAULT_ADDR/v1/sys/unseal
 
-# Now proceed with setting secrets
 echo "Setting secrets in Vault..."
 
 check_and_set_secret() {
