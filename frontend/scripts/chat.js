@@ -272,7 +272,7 @@ export async function	launchSocket() {
 	});
 
 	if (messageContainer.children.length === 0) {
-		 noChat.style.display = 'block';
+		noChat.style.display = 'block';
 	}
 };
 

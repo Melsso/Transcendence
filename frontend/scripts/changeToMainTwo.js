@@ -608,6 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	})
 	TonewpassButton.addEventListener('click', async function() {
 		const input_email = document.getElementById('forgotmail').value;
+		document.getElementById('forgotmail').value = '';
 		try {
 			await checkEmail(input_email);
 			document.getElementById('forgot-container').style.display = 'none';
@@ -616,9 +617,12 @@ document.addEventListener('DOMContentLoaded', function () {
 			Notification('Profile Action', 'This email doesn\'t belong to any account!', 1, 'alert');
 		}
 		confirmButton.addEventListener('click', async function() {
+			const verf = document.getElementById('verf-code').value;
 			const new_pass = document.getElementById('New Password-R').value;
 			const conf_new = document.getElementById('Confirm-New-Password').value;
-			const verf = document.getElementById('verf-code').value;
+			document.getElementById('verf-code').value = '';
+			document.getElementById('New Password-R').value = '';
+			document.getElementById('Confirm-New-Password').value = '';
 			if (new_pass !== conf_new){
 				Notification('Profile Action', 'Make sure the new passwords match!', 1, 'alert');
 				return;
@@ -641,7 +645,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	loginButton.addEventListener('click', async function () {
 		const username = document.getElementById('username-login').value;
 		const password = document.getElementById('password-login').value;
-
+		document.getElementById('username-login').value = '';
+		document.getElementById('password-login').value = '';
 		// need to save wether remember or not for next call
 		try {
 			const result = await loginUser(username, password);
@@ -664,6 +669,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	login2faButton.addEventListener('click', async function () {
 		const v_code = document.getElementById('2fa-input').value;
+		document.getElementById('2fa-input').value = '';
 		const l1 = document.getElementById('2fa-yes');
 		const r_value = l1.checked;
 		try {
@@ -683,7 +689,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		const username = document.getElementById('username-R').value;
 		const password = document.getElementById('password-R').value;
 		const email = document.getElementById('email-R').value;
-
+		document.getElementById('username-R').value = '';
+		document.getElementById('password-R').value = '';
+		document.getElementById('email-R').value = '';
 		try {
 			const result = await registerUser(username, password, email);
 			userEmail = result.user_email;
@@ -706,7 +714,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		const avatarSelectionResult = document.getElementById('avatar-selection-result');
 		const selectedImage = avatarSelectionResult.querySelector('img');
 		const verification_code = document.getElementById('verification-code').value;
-		
+		document.getElementById('verification-code').value = '';
 		const formData = new FormData();
 		formData.append('code', verification_code);
 		formData.append('email', userEmail);
@@ -752,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	searchButton.addEventListener('click', async function () {
 		const uname = document.getElementById('search-user-input').value;
-
+		document.getElementById('search-user-input').value = '';
 		try {
 			const result = await userLookUp(uname);
 			if (result['user'] !== null) {
@@ -807,6 +815,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	updateUsernameButton.addEventListener('click', async function () {
 		const username = document.getElementById('new-username').value;
+		document.getElementById('new-username').value = '';
 		if (username === window.userData.username) {
 			Notification('Profile Action', 'You are already using that name!', 2, 'alert');
 			return ;
@@ -821,6 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	updateBioButton.addEventListener('click', async function () {
 		const bio = document.getElementById('new-Bio').value;
+		document.getElementById('new-Bio').value = '';
 		const old_bio = document.getElementById('profile-bio').textContent;
 		if (bio === old_bio) {
 			Notification('Profile Action', 'You are already using that bio', 2, 'alert');
@@ -838,7 +848,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		const curr_pwd = document.getElementById('current-password').value;
 		const new_pwd = document.getElementById('new-password').value;
 		const cfm_pwd = document.getElementById('new-confirm-password').value;
-	
+		document.getElementById('current-password').value = '';
+		document.getElementById('new-password').value = '';
+		document.getElementById('new-confirm-password').value = '';
 		try {
 			const result = await updatePwd(curr_pwd, new_pwd, cfm_pwd);
 			Notification('Profile Action', 'You have updated your password!',2, 'profile');
@@ -857,6 +869,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   	confirmDelete.addEventListener('click', async function () {
 		const password = document.getElementById('confirmPassworddelete').value;
+		document.getElementById('confirmPassworddelete').value = '';
 		if (password) {
 			try {
 				await deleteAccount(password);
