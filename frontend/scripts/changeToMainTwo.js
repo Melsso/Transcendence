@@ -9,6 +9,7 @@ const baseUrl = process.env.ACTIVE_HOST;
 async function homepageData() {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
+		// Here need to do something more meaningful
 		throw new Error("No access token found.");
 	}
 
@@ -25,7 +26,7 @@ async function homepageData() {
 		const errorResponse = await response.json();
 		localStorage.removeItem('accessToken');
 		navigateTo('login', null);
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 	const data = await response.json();
 	return data;
@@ -34,6 +35,7 @@ async function homepageData() {
 export async function userLookUp(searchTerm) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
+		// Same comment as above
 		throw new Error("No access token found.");
 	}
 
@@ -48,7 +50,7 @@ export async function userLookUp(searchTerm) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -71,7 +73,7 @@ async function registerUser(username, password, email) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -90,7 +92,7 @@ async function checkKnownLocation(access_token) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -118,7 +120,7 @@ async function addToKnownLocation(v_code, remember) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -140,7 +142,7 @@ async function resetPassowrd(email, password, verf_code) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 }
 
@@ -164,7 +166,7 @@ async function updateUsername(uname) {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -192,7 +194,7 @@ async function updateBio(biog) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -222,7 +224,7 @@ async function updatePwd(curr_pwd, new_pwd, cfm_pwd) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -250,11 +252,10 @@ async function deleteAccount(password){
 
 	if (!response.ok){
 		const errorResponse = await response.json();
-		Notification('Profile action', "Account Deletion Failed", 1, 'alert');
-		throw new Error(errorResponse);
+		// Notification('Profile action', "Account Deletion Failed", 1, 'alert');
+		throw errorResponse;
 	}
 
-	Notification('Profile action', "Account deleted successfully!", 0, 'success');
 	const data = await response.json();
 	return data;
 }
@@ -274,7 +275,7 @@ async function checkEmail(email) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -298,8 +299,8 @@ async function loginUser(usernameOrEmail, password) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		Notification('Profile Action', "Login Failed!", 1, 'alert');
-		throw new Error(errorResponse);
+		// Notification('Profile Action', "Login Failed!", 1, 'alert');
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -317,8 +318,8 @@ async function verifyEmail(formData) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		Notification('Profile Action', 'Please make sure the verification code is correct!', 1, 'alert');
-		throw new Error(errorResponse);
+		// Notification('Profile Action', 'Please make sure the verification code is correct!', 1, 'alert');
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -341,7 +342,7 @@ async function UpdateTwoFactorAuth() {
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -391,7 +392,7 @@ async function logoutUser() {
 	}
 	else {
 		const errorResponse = await response.json();
-		throw new Error (errorResponse);
+		throw errorResponse;
 	}
 
 	const data = await response.json();
@@ -418,14 +419,11 @@ async function sendFriendRequest(targetId) {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		throw new Error(errorResponse);
+		throw errorResponse;
 	}
 	const data = await response.json();
 	return data;
 }
-
-
-
 
 document.addEventListener('DOMContentLoaded', function () {
 	const reg1 = document.getElementById('register-form-container');
@@ -603,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			await UpdateTwoFactorAuth();
 			Notification('Profile Action', 'You have changed your 2fa status!', 2, 'profile');
 		} catch(error) {
-			Notification('Profile Action', 'Something Wrong happened, Please reLog to fix it', 2, 'alert');
+			Notification('Profile Action', 'Something Went Wrong, Please Relog', 2, 'alert');
 		}
 	})
 	TonewpassButton.addEventListener('click', async function() {
@@ -651,7 +649,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await loginUser(username, password);
 			const tokens = result.tokens;
-			console.log(result);
 			const host_check = await checkKnownLocation(tokens.access);
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);
@@ -884,6 +881,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				window.userData = {}
 				userEmail = null;
 				deleteModal.style.display = 'none';
+				Notification('Profile action', "Account deleted successfully!", 0, 'success');
 			} catch(error){
 				Notification('Profile Action', `Failed To Delete The Account: ${error.detail}`, 2, 'alert');
 			}
