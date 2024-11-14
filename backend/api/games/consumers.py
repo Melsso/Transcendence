@@ -277,6 +277,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 					await self.update_player_ready(player, state)
 			elif action == 'game_start':
 				await self.gameStart()
+			elif action == 'Buff1':
+				logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIII')
+				if player == 1:
+					self.paddle1['height'] *= 2
+				else:
+					self.paddle2['height'] *= 2
+			
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
 		except Exception as e:
@@ -323,6 +330,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		ball_hits = 0
 		howmanyspeeds = 0
 		speed = 0.00125
+		last_hit = None
 		await asyncio.sleep(3.5)
 
 		start_time = time.time()
@@ -348,8 +356,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 					await self.channel_layer.group_send(
 					self.room_group_name,
 						{
-							"type": 'demandPowerUP',
 							"action": 'Buff',
+							"type": 'demandPowerUP',
 							"flag": 2
 						}
 					)
@@ -391,11 +399,28 @@ class GameConsumer(AsyncWebsocketConsumer):
 				angleX = abs(angleX)
 				impact_point = (self.ball['y'] - self.paddle1['y']) / self.paddle1['height']
 				angleY = (impact_point - 0.5) * 2
-
+				last_hit = 1
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'paddle_hit',
+						"action": 'paddle_hit',
+						"paddle": last_hit,
+					}
+				)
 			elif self.ball['x'] >= 0.98 and self.paddle2['y'] <= self.ball['y'] <= self.paddle2['y'] + 0.11:
 				angleX = -abs(angleX)
 				impact_point = (self.ball['y'] - self.paddle2['y']) / self.paddle2['height']
 				angleY = (impact_point - 0.5) * 2
+				last_hit = 2
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'paddle_hit',
+						"action": 'paddle_hit',
+						"paddle": last_hit,
+					}
+				)
 			await self.channel_layer.group_send(
 			self.room_group_name,
 				{
@@ -435,6 +460,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             "x": event["x"],
             "y": event["y"]
         }))
+
+	async def paddle_hit(self, event):
+		action = event['action']
+		paddle = event['paddle']
+		await self.send(text_data=json.dumps({
+				'action': action,
+				'paddle': paddle
+		}))
+
 
 	async def player_action(self, event):
 		action = event['action']

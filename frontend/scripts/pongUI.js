@@ -383,9 +383,9 @@ function giveSpeedBuff(){
 		playerPaddle.dy = 12;
 	else if (LastpaddletoHit === player2.name)
 		aiPaddle.dy = 12;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === player1.name)
-		playerPaddle.dy = 20;
-	if (playerPaddle.dy === 20 && LastpaddletoHit === player2.name)
+	if (playerPaddle.dy === 12 && LastpaddletoHit === player1.name)
+		playerPaddle.dy = 12;
+	if (playerPaddle.dy === 12 && LastpaddletoHit === player2.name)
 		aiPaddle.dy = 12;
 }
 window.giveSpeedBuff = giveSpeedBuff;

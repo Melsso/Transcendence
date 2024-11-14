@@ -2,7 +2,7 @@ import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars } from "./gamePvP.js";
-import { Habess, displayCountdown, ChangeFlag } from "./gamePvP.js";
+import { Habess, displayCountdown, ChangeFlag, changeLast } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -81,6 +81,16 @@ lo.addEventListener('click', async function (){
     }
 });
 
+export function sendBuffState(Buff, player) {
+	console.log(Buff, player);
+	if (window.userData.pong_socket) {
+		 window.userData.pong_socket.send(JSON.stringify({
+			  action: Buff,
+			  player: player,
+		 }));
+	}
+}
+
 export function sendGameState(gameState, target, me) {
     if (window.userData.pong_socket) {
         window.userData.pong_socket.send(JSON.stringify({
@@ -148,6 +158,8 @@ export async function startGameSocket() {
         }
         else if (data.action === 'Buff'){
             ChangeFlag(data.flag);
+        } else if (data.action === 'paddle_hit') {
+            changeLast(data.paddle);
         }
     }
 }

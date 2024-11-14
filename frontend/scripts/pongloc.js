@@ -394,9 +394,9 @@ function givingSpeedBuff(){
 		wasdPaddle.dy = 12;
 	else if (LastpaddleHit === "Arrows")
 		ARPaddle.dy = 12;
-	if (wasdPaddle.dy === 20 && LastpaddleHit === "wasd")
-		wasdPaddle.dy = 20;
-	if (ARPaddle.dy === 20 && LastpaddleHit === "Arrows")
+	if (wasdPaddle.dy === 12 && LastpaddleHit === "wasd")
+		wasdPaddle.dy = 12;
+	if (ARPaddle.dy === 12 && LastpaddleHit === "Arrows")
 		ARPaddle.dy = 12;
 }
 function givingAttackBuff(){
