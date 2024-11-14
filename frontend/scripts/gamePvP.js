@@ -28,7 +28,8 @@ let Buffpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let Attackpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let Bigpadpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let sphere = { x: 0, y: 0, radius: 0, dx: 0, dy: 0, speed: 0 };
-
+let block1 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
+let block2 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
 function drawPlayerPaddle1(x, y, width, height) {
 	ctxx.fillStyle = 'white';
 	ctxx.fillRect(x, y, width, height);
@@ -76,6 +77,19 @@ export function Habess() {
 		cancelAnimationFrame(animation[i]);
   }
   animation = [];
+}
+
+export function newRound() {
+	const heightScale = window.userData.screen_dimensions.height;
+	ctxx.clearRect(0, 0, canvass.widht, canvass.height);
+	playerPaddle1.height = heightScale / 10;
+	playerPaddle2.height = heightScale / 10;
+	playerPaddle1.dy = heightScale / 100;
+	playerPaddle2.dy = heightScale / 100;
+	Buffpvp.visible = false;
+	Attackpvp.visible = false;
+	Bigpadpvp.visible = false;
+	last_hit = null;
 }
 
 export function changeLast(last) {

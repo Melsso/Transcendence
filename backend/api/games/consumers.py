@@ -356,8 +356,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 					await self.channel_layer.group_send(
 					self.room_group_name,
 						{
-							"action": 'Buff',
 							"type": 'demandPowerUP',
+							"action": 'Buff',
 							"flag": 2
 						}
 					)
