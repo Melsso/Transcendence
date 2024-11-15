@@ -50,6 +50,26 @@ function drawSphere(x, y, radius) {
 
 export function ChangeFlag(flag) {
 	BuffFlag = flag;
+	if (BuffFlag === 1){
+		Buffpvp.visible = true;
+		Attackpvp.visible = false;
+		Bigpadpvp.visible = false;
+	}
+	else if (BuffFlag === 2){
+		Buffpvp.visible = false;
+		Attackpvp.visible = true;
+		Bigpadpvp.visible = false;
+	}
+	else if (BuffFlag === 3){
+		Buffpvp.visible = false;
+		Attackpvp.visible = false;
+		Bigpadpvp.visible = true;
+	}
+	else{
+		Buffpvp.visible = false;
+		Attackpvp.visible = false;
+		Bigpadpvp.visible = false;
+	}
 }
 
 export function drawBuffpvp(x){
@@ -90,6 +110,11 @@ export function newRound() {
 	Attackpvp.visible = false;
 	Bigpadpvp.visible = false;
 	last_hit = null;
+	playerPaddle1.Att = 0;
+	playerPaddle2.Att = 0;
+	block1.visible = false;
+	block2.visible = false;
+	BuffFlag = 0;
 }
 
 export function changeLast(last) {
@@ -310,35 +335,38 @@ export function drawAll(player1, player2, settings) {
 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
 	if (BuffFlag === 1) {
 		drawBuffpvp(0.5);
-		if (up1) {
-			Buffpvp.y -= Buffpvp.height / 2;
-		} else {
-			Buffpvp.y += Buffpvp.height / 2;
-		}
-		if (Buffpvp.y <= 0) {
-			up1 = false;
+		if (Buffpvp.visible === true){
+			if (up1)
+				Buffpvp.y -= Buffpvp.height / 2;
+			else if (!up1)
+				Buffpvp.y += Buffpvp.height / 2;
+			if (Buffpvp.y <= 0){
+				up1 = false;
+			}
 		}
 	}
 	else if (BuffFlag === 2) {
 		drawAttackpvp(0.5);
-		if (up2) {
-			Attackpvp.y -= Attackpvp.height / 2;
-			} else {
-			Attackpvp.y += Attackpvp.height / 2;
-		}
-		if (Attackpvp.y <= 0) {
-			up2 = false;
+		if (Attackpvp.visible === true){
+			if (up2)
+				Attackpvp.y -= Attackpvp.height / 2;
+			else if (!up2)
+				Attackpvp.y += Attackpvp.height / 2;
+			if (Attackpvp.y <= 0){
+				up2 = false;
+			}
 		}
 	}
 	else if (BuffFlag === 3) {
 		drawBigpadpvp(0.5);
-		if (up3) {
-			Bigpadpvp.y -= Bigpadpvp.height / 2;
-		} else {
-			Bigpadpvp.y += Bigpadpvp.height / 2;
-		}
-		if (Bigpadpvp.y <= 0) {
-			up3 = false;
+		if (Bigpadpvp.visible === true){
+			if (up3)
+				Bigpadpvp.y -= Bigpadpvp.height / 2;
+			else if (!up3)
+				Bigpadpvp.y += Bigpadpvp.height / 2;
+			if (Bigpadpvp.y <= 0) {
+				up3 = false;
+			}
 		}
 	}
 	drawSphere(sphere.x, sphere.y, sphere.radius);

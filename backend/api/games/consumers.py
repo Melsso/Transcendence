@@ -328,6 +328,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 		angleX = 1 
 		angleY = 0
 		ball_hits = 0
+		buff1= 0
+		buff2 = 0
+		buff3 = 0
 		howmanyspeeds = 0
 		speed = 0.00125
 		last_hit = None
@@ -342,34 +345,37 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if current_time - new_start >= 8:
 				if howmanyspeeds < 5:
 					howmanyspeeds += 1
-					new_start = current_time
-				if current_time - start_time >= 2:
-					await self.channel_layer.group_send(
-					self.room_group_name,
-						{
-							"type": 'demandPowerUP',
-							"action": 'Buff',
-							"flag": 1
-						}
-					)
-				if current_time - start_time >= 7:
-					await self.channel_layer.group_send(
-					self.room_group_name,
-						{
-							"type": 'demandPowerUP',
-							"action": 'Buff',
-							"flag": 2
-						}
-					)
-				if current_time - start_time >= 12:
-					await self.channel_layer.group_send(
-					self.room_group_name,
-						{
-							"type": 'demandPowerUP',
-							"action": 'Buff',
-							"flag": 3
-						}
-					)
+					# new_start = current_time
+			if current_time - start_time >= 5 and buff1 == 0:
+				buff1 = 1
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'demandPowerUP',
+						"action": 'Buff',
+						"flag": 1
+					}
+				)
+			if current_time - start_time >= 17 and buff2 == 0:
+				buff2 = 1
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'demandPowerUP',
+						"action": 'Buff',
+						"flag": 2
+					}
+				)
+			if current_time - start_time >= 29 and buff3 == 0:
+				buff3 = 1
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'demandPowerUP',
+						"action": 'Buff',
+						"flag": 3
+					}
+				)
 			self.ball['dx'] = angleX * base_speed
 			self.ball['dy'] = angleY * base_speed
 			self.ball['x'] += self.ball['dx']
@@ -377,6 +383,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if self.ball['x'] <= 0.01 or self.ball['x'] >= 0.99:
 				self.ball['x'] = 0.5
 				self.ball['y'] = 0.5
+				start_time = time.time()
 				self.ball['dx'] = angleX * base_speed
 				self.ball['dy'] = angleY * base_speed
 				angleX = -angleX
