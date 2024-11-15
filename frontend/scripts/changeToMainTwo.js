@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				if (data === null) {
 					const result = await homepageData();
-					if (result['user'].Twofa_auth === true) {
+					if (result['user'].Twofa_auth === true && !toggle.classList.contains('on')) {
 						toggle.classList.toggle('on');
 					}
 					const sock = window.userData.socket;
