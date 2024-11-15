@@ -6,6 +6,27 @@ import { Habess } from "./gamePvP.js";
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
 
+async function guestLogin() {
+	const url = baseUrl + 'api/guest-login/';
+
+	
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		Notification('Profile Action', "Login Failed!", 1, 'alert');
+		throw errorResponse;
+	}
+
+	const data = await response.json();
+	return data;
+}
+
 async function homepageData() {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
@@ -361,8 +382,10 @@ async function logoutUser() {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
 		return ;
 	}
-
-	const url = baseUrl + 'api/logout/';
+	let url = baseUrl + 'api/logout/';
+	if (window.userData['guest'] === true) {
+		url = baseUrl+ 'api/guest-logout/'
+	}
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -455,6 +478,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
 	
+	const guestButton = document.getElementById('guest-login');
 	const deleteModal = document.getElementById('deleteModal');
 	const confirmDelete = document.getElementById('confirmDelete');
 	const cancelDelete = document.getElementById('cancelDelete');	
@@ -486,6 +510,10 @@ document.addEventListener('DOMContentLoaded', function () {
 			// Tlobby.style.display = 'none';
 			// tourniLobby.style.display = 'none';
 		}
+		if (view !== 'profile' && view !=='PONG' && window.userData['guest'] === true) {
+			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+			return ;
+		}
 		window.altFfour();
 		window.leaving();
 		Habess();
@@ -514,14 +542,21 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainTwo.style.display = 'none';
 		} else if (view === 'profile') {
 			try {
+				let guest;
 				if (data === null) {
 					const result = await homepageData();
 					if (result['user'].Twofa_auth === true && !toggle.classList.contains('on')) {
 						toggle.classList.toggle('on');
 					}
+					if (window.userData['guest']  && window.userData['guest'] === true) {
+						guest = true;
+					} else {
+						guest = false;
+					}
 					const sock = window.userData.socket;
 					const list = window.userData['online'];
 					window.userData = result["user"];
+					window.userData['guest'] = guest;
 					window.userData['online'] = list;
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
@@ -638,6 +673,19 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 	
 		});
+	});
+
+	guestButton.addEventListener('click', async function() {
+		try {
+			const result = await guestLogin();
+			const tokens = result.tokens;
+			localStorage.setItem('accessToken', tokens.access);
+			localStorage.setItem('refreshToken', tokens.refresh);
+			window.userData['guest'] = true;
+			navigateTo('profile', null);
+		} catch (error) {
+			Notification('Profile Action', `Failed to login because: ${error}`, 1,'alert');
+		}
 	});
 
 	loginButton.addEventListener('click', async function () {
@@ -772,6 +820,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	friendButton.addEventListener('click', async function () {
+		if (window.userData['guest'] === true) {
+			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+			return ;
+	  }
 		try {
 			const result = await getFriends();
 			loadFriends(result, userData.id);
@@ -782,6 +834,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	sendFriendRequestButton.addEventListener('click', async function () {
+		if (window.userData['guest'] === true) {
+			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+			return ;
+	  }
 		const target = document.getElementById('username');
 		const target_id = target.getAttribute('user_id');
 		try {

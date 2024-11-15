@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.conf import settings
+import uuid
 from django.core.mail import send_mail
 from rest_framework import generics, permissions
 from rest_framework.response import Response
@@ -212,3 +213,64 @@ class ResetPasswordView(generics.GenericAPIView):
         
         except UserProfile.DoesNotExist:
             return Response({'status':'error', 'detail':'User not found.'}, status=HTTP_404_NOT_FOUND)
+
+class GuestLoginView(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+
+    def generate_tokens(self, user):
+        refresh = RefreshToken.for_user(user)
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token)
+        }
+
+    def create_guest_user(self):
+        guest_username = f"Guest_{uuid.uuid4().hex[:8]}"
+        guest_email = f"{guest_username}@guest.local"
+        user = UserProfile.objects.create_user(
+            username=guest_username,
+            email=guest_email,
+        )
+        user.is_verified = True
+        user.set_unusable_password()
+        user.save()
+        return user
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = self.create_guest_user()
+            tokens = self.generate_tokens(user)
+            
+            user_data = {
+                "username": user.username,
+                "email": user.email 
+            }
+            
+            return Response({
+                'status': 'success',
+                'user': user_data,
+                'tokens': tokens
+            }, status=HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'detail': f"An unexpected error occurred: {str(e)}"
+            }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+class GuestLogoutView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+
+        try:
+            if user.email.endswith("@guest.local") or user.username.startswith("Guest_"):
+                user.delete()
+                return Response({"status": "success", "detail": "Guest account deleted upon logout."}, status=200)
+
+            request.auth.delete()
+            return Response({"status": "success", "detail": "User logged out successfully."}, status=200)
+
+        except Exception as e:
+            return Response({"status": "error", "detail": f"An error occurred: {str(e)}"}, status=500)

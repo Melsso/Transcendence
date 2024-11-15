@@ -29,6 +29,10 @@ function getWinPercentage(wins, losses) {
 }
 
 qBtn.addEventListener('click', function() {
+	if (window.userData['guest'] === true) {
+		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+		return ;
+  }
 	menu.style.display = 'none';
 	ai_menu.style.display = 'none';
 	inv_menu.style.display = 'none';

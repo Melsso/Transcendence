@@ -159,7 +159,6 @@ export async function	launchSocket() {
 			const data = JSON.parse(e.data);
 			if (data.action == 'online_status') {
 				window.userData['online'] = data.users;
-				console.log(window.userData.online);
 				try {
 					const result = await getFriends();
 					loadFriends(result, window.userData.id); 
@@ -178,6 +177,10 @@ export async function	launchSocket() {
 				}
 				GameNotification('Game Action', "Invited you to a pong game!", data.username);
 				gameaccept.addEventListener('click', async function () {
+					if (window.userData['guest'] === true) {
+						Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+						return ;
+				  }
 					if (data.room_name.includes('tournament')) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');

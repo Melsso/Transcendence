@@ -81,6 +81,10 @@ function sendGameStatus(username, ready) {
 }
 
 tourniLobby.addEventListener('click', async function (event) {
+	if (window.userData['guest'] === true) {
+		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+		return ;
+  }
 	event.preventDefault();
 	menu.style.display = 'none';
 	ai_menu.style.display = 'none';
