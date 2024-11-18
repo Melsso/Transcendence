@@ -285,6 +285,6 @@ class RefreshTokenView(TokenRefreshView):
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as e:
-            return Response({'status':'Error', 'detail': str(e), 'qlawi':'zebi'}, status=HTTP_400_BAD_REQUEST)
+            return Response({'status':'Error', 'detail': str(e)}, status=HTTP_400_BAD_REQUEST)
 
         return Response({'status':'success', 'detail':'Creation success', 'data':serializer.validated_data}, status=HTTP_200_OK)

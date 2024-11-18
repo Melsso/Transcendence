@@ -7,27 +7,58 @@ let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
 
 async function refreshAccessToken() {
-    const refreshToken = localStorage.getItem('refreshToken');
+   const refreshToken = localStorage.getItem('refreshToken');
 
 	const url = baseUrl + 'api/refresh-token/';
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            refresh: refreshToken
-        })
-    });
+   const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          refresh: refreshToken
+      })
+   });
 
-    if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('accessToken', data.data.access);
-        return data.access;
-    } else {
-		const nem = await response.json();
-        console.error('Failed to refresh access token.');
-    }
+   if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('accessToken', data.data.access);
+		localStorage.setItem('refreshToken', data.data.refresh);
+		scheduleTokenRefresh(localStorage.getItem('accessToken'));
+   } else {
+      Notification('Profile Action', 'Failed to refresh your token due to an unkown error, PLease refresh the page and log back in!', 2, 'alert');
+   }
+}
+
+function decodeToken(token) {
+	try {
+		 const payload = JSON.parse(atob(token.split('.')[1]));
+		 return payload;
+	} catch (err) {
+		 console.error('Failed to decode token:', err);
+		 return null;
+	}
+}
+
+
+function scheduleTokenRefresh(token) {
+	const payload = decodeToken(token);
+	if (payload && payload.exp) {
+
+		const expirationTime = payload.exp * 1000;
+		
+		const currentTime = Date.now();
+		const bufferTime = 60 * 1000;
+		const delay = expirationTime - currentTime - bufferTime;
+
+		if (delay > 0) {
+		  setTimeout(() => {
+				refreshAccessToken();
+		  }, delay);
+		} else {
+			Notification('Profile Action', 'Your Token has expired due to an unkown issue, Please refresh the page and log back in!', 2, 'alert');
+		}
+	}
 }
 
 async function guestLogin() {
@@ -729,6 +760,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const host_check = await checkKnownLocation(tokens.access);
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);
+			scheduleTokenRefresh(localStorage.getItem('accessToken'));
 			if (host_check['2fa'] === false) {
 				navigateTo('profile', null);
 			}
