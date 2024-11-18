@@ -697,6 +697,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('password-login').value = '';
 		// need to save wether remember or not for next call
 		try {
+
 			const result = await loginUser(username, password);
 			const tokens = result.tokens;
 			const host_check = await checkKnownLocation(tokens.access);
@@ -810,7 +811,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('search-user-input').value = '';
 		try {
 			const result = await userLookUp(uname);
-			if (result['user'] !== null) {
+			if (result['results'] !== null) {
 				navigateTo('profile', result);
 			}
 			else {
