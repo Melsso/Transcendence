@@ -33,6 +33,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.roomGroupName,
             self.channel_name
         )
+        await self.handle_guest_logout(self.username)
+
+    @database_sync_to_async
+    def handle_guest_logout(self, uname):
+        try:
+            user = UserProfile.objects.get(username=uname)
+            if user.email.endswith("@guest.local") or user.username.startswith("Guest_"):
+                user.delete()
+                print(f"Guest user (ID: {user_id}) disconnected and logged out.")
+            else:
+                pass
+        except UserProfile.DoesNotExist:
+            pass
+        except Exception as e:
+            logger.error(f'Error during guest logout (user ID: {user_id}): {str(e)}')
 
     async def add_user_to_redis(self, group_name, username):
         redis = await aioredis.from_url("redis://redis:6379")

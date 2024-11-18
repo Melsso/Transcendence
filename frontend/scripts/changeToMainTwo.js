@@ -5,6 +5,68 @@ import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password
 import { Habess } from "./gamePvP.js";
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
+let isRefreshed = false;
+
+
+//failed attempt to know when tab is closed, need to fix afterwards
+// window.addEventListener('load', () => {
+// 	const navigationType = performance.getEntriesByType("navigation")[0]?.type || performance.navigation.type;
+ 
+// 	if (navigationType === 'reload' || navigationType === 1) {
+// 	  isRefreshed = true;
+// 	  localStorage.setItem('sessionActive', 'true');
+// 	} else if (localStorage.getItem('sessionActive') === 'false') {
+// 	  console.log('Tab was reopened.');
+// 	} else {
+// 	  console.log('New tab or direct navigation.');
+// 	  localStorage.setItem('sessionActive', 'true');
+// 	}
+//  });
+ 
+//  // Handle beforeunload to differentiate between refresh and close
+//  window.addEventListener('beforeunload', (event) => {
+// 	if (!isRefreshed) {
+// 	  console.log('logout happening!');
+// 	  localStorage.setItem('sessionActive', 'false');
+// 	  logoutSync().catch((err) => console.error('Logout failed:', err));
+// 	}
+//  });
+
+// function logoutSync() {
+// 	const access_token = localStorage.getItem('accessToken');
+// 	const refresh_token = localStorage.getItem('refreshToken');
+
+// 	if (!access_token || !refresh_token) {
+// 		 console.log('No tokens found, unable to log out.');
+// 		 return;
+// 	}
+
+// 	console.log('User logged out.');
+
+// 	// Send logout request
+// 	const url = baseUrl + 'api/guest-logout/';
+
+// 	fetch(url, {
+// 		 method: 'POST',
+// 		 headers: {
+// 			  'Authorization': `Bearer ${access_token}`,
+// 			  'Content-Type': 'application/json',
+// 		 },
+// 		 body: JSON.stringify({ refresh: refresh_token }),
+// 	})
+// 	.then(response => {
+// 		 if (response.ok) {
+// 			  console.log('Logout success');
+// 			  localStorage.removeItem('accessToken');
+// 			  localStorage.removeItem('refreshToken');
+// 		 } else {
+// 			  console.error('Logout failed:', response);
+// 		 }
+// 	})
+// 	.catch(error => {
+// 		 console.error('Logout failed:', error);
+// 	});
+// }
 
 async function refreshAccessToken() {
    const refreshToken = localStorage.getItem('refreshToken');
@@ -423,7 +485,6 @@ async function UpdateTwoFactorAuth() {
 	return data;
 }
 
-// This is the function that will make sure the tokens are removed in the backend and front
 async function logoutUser() {
 	const refresh_token = localStorage.getItem('refreshToken');
 	if (!refresh_token) {
@@ -436,7 +497,7 @@ async function logoutUser() {
 		return ;
 	}
 	let url = baseUrl + 'api/logout/';
-	if (window.userData['guest'] === true) {
+	if (window.userData.guest === true) {
 		url = baseUrl+ 'api/guest-logout/'
 	}
 	const response = await fetch(url, {
@@ -453,13 +514,13 @@ async function logoutUser() {
 	if (response.ok) {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
-		if (window.userData.socket) {
+		if (window.userData?.socket) {
 			window.userData.socket.close();
 			window.userData.socket = null;
 			window.userData.r_name = null;
 			window.userData.target = null;
 		}
-		if (window.userData.pong_socket) {
+		if (window.userData?.pong_socket) {
 			window.userData.pong_socket.close();
 			window.userData.pong_socket = null;
 		}
@@ -563,7 +624,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			// Tlobby.style.display = 'none';
 			// tourniLobby.style.display = 'none';
 		}
-		if (view !== 'profile' && view !=='PONG' && window.userData['guest'] === true) {
+		if (view !== 'profile' && view !=='PONG' && window.userData.guest === true) {
 			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 			return ;
 		}
@@ -601,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					if (result['user'].Twofa_auth === true && !toggle.classList.contains('on')) {
 						toggle.classList.toggle('on');
 					}
-					if (window.userData['guest']  && window.userData['guest'] === true) {
+					if (window.userData?.guest  && window.userData.guest === true) {
 						guest = true;
 					} else {
 						guest = false;
@@ -609,8 +670,8 @@ document.addEventListener('DOMContentLoaded', function () {
 					const sock = window.userData.socket;
 					const list = window.userData['online'];
 					window.userData = result["user"];
-					if (window.userData['guest'] && guest) {
-						window.userData['guest'] = guest;
+					if (guest) {
+						window.userData.guest = guest;
 					}
 					window.userData['online'] = list;
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
@@ -853,6 +914,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	logoutButton.addEventListener('click', async function () {
 
 		try {
+			console.log(window.userData.guest);
 			await logoutUser();
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
@@ -881,7 +943,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	friendButton.addEventListener('click', async function () {
-		if (window.userData['guest'] === true) {
+		if (window.userData.guest === true) {
 			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 			return ;
 	  }
@@ -895,7 +957,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	sendFriendRequestButton.addEventListener('click', async function () {
-		if (window.userData['guest'] === true) {
+		if (window.userData.guest === true) {
 			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 			return ;
 	  }
