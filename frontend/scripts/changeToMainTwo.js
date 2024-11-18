@@ -6,10 +6,33 @@ import { Habess } from "./gamePvP.js";
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
 
+async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem('refreshToken');
+
+	const url = baseUrl + 'api/refresh-token/';
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            refresh: refreshToken
+        })
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('accessToken', data.data.access);
+        return data.access;
+    } else {
+		const nem = await response.json();
+        console.error('Failed to refresh access token.');
+    }
+}
+
 async function guestLogin() {
 	const url = baseUrl + 'api/guest-login/';
 
-	
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -30,7 +53,6 @@ async function guestLogin() {
 async function homepageData() {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
-		// Here need to do something more meaningful
 		throw new Error("No access token found.");
 	}
 
@@ -45,8 +67,8 @@ async function homepageData() {
 
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		localStorage.removeItem('accessToken');
-		navigateTo('login', null);
+		// localStorage.removeItem('accessToken');
+		// navigateTo('login', null);
 		throw errorResponse;
 	}
 	const data = await response.json();
@@ -591,6 +613,10 @@ document.addEventListener('DOMContentLoaded', function () {
 				setAccordionMaxHeight();
 				adjustAccordionHeight();
 			} catch (error) {
+				// check if error is unauthorized
+				// call the refresh function
+				// refreshAccessToken();
+				// navigateTo('profile', data);
 				Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 			}
 		} else if (view === 'settings') {
