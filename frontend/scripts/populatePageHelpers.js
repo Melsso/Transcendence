@@ -131,7 +131,7 @@ function loadProfileInfo(user) {
     const levelGame1 = Math.floor(user.bar_exp_game1 / 1000);
 
     expBar1.style.width = `${expGame1Percentage}%`;
-    expText1.textContent = `Game 1 - Level ${levelGame1}`;
+    expText1.textContent = `Level ${levelGame1}`;
     expBar1.setAttribute('aria-valuenow', expGame1Percentage);
 }
 
