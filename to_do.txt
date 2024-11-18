@@ -1,31 +1,24 @@
 MAJOR:
 
 - use a framework for the backend. done
-- store the score of a tourni in the blockchain YYYYYYYY
-- Standard user management, authentication, users across tournaments. YYYYYYYY
-- Implementing a remote authentication YYYYYYYY
+- store the score of a tourni in the blockchain ?????
+- Standard user management, authentication, users across tournaments. done
 - Remote players YYYYYYYY
-- : Multiplayers YYYYYYYY
-- Add Another Game with User History and Matchmaking  YYYYYYYY
-- Live chat YYYYYYYY
-- Introduce an AI Opponent YYYYYYYY
+- Live chat done
+- Introduce an AI Opponent done
 - Implement WAF/ModSecurity with Hardened Configuration and HashiCorp Vault for Secrets Management. YYYYYYYYY
-- Implement Two-Factor Authentication (2FA) and JWT YYYYYYYYYY
--  Infrastructure Setup for Log Management. YYYYYYYY
+- Implement Two-Factor Authentication (2FA) and JWT done
+- Designing the Backend as Microservices. YYYYYYYY
 
 
 MINOR:
 
-- use a framework for the frontend YYYYYYYY
+- use a framework for the frontend done
 - use a database for the backend done
-- Game Customization Options YYYYYYYY
-- User and Game Stats Dashboards YYYYYYYY
-- GDPR Compliance Options with User Anonymization, Local Data Management, and Account Deletion YYYYYYYYY
-- Monitoring system. YYYYYYYY
-- Designing the Backend as Microservices. in-progress
-- Expanding Browser Compatibility YYYYYYYY
-- Multiple language supports YYYYYYYY
-
+- Game Customization Options done
+- User and Game Stats Dashboards ????
+- GDPR Compliance Options with User Anonymization, Local Data Management, and Account Deletion done
+- Expanding Browser Compatibility done
 
 		//global chat aint refreshing
 		// fix refresh token
@@ -34,7 +27,12 @@ MINOR:
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.
 empty everything after you leave the settings page.
-an error occured once, i was on my settings page, clicked on profile, maybe afk type of shit 379
 speedlimit on the ball
-paddle not resizing after being hit and then receiving big pad buff.
 friend request: when someone sends you a friend request and you try to send a request it says already sent a request
+
+things to be done for he project to be done:
+- Security , not too much left, handled by Sofiane.
+- Fixing the PvP game (buff wise and score), to be handled by Rayan.
+- Sending the end game stats and saving them and adding correct Exp to the user, to be handled by Saadoun.
+- Tournamnet logic to be done , handled by Saadoun and Sofiane.
+- Fixing the error messages and checkig bugs, to be Handled by Rayan.

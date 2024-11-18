@@ -556,7 +556,9 @@ document.addEventListener('DOMContentLoaded', function () {
 					const sock = window.userData.socket;
 					const list = window.userData['online'];
 					window.userData = result["user"];
-					window.userData['guest'] = guest;
+					if (window.userData['guest'] && guest) {
+						window.userData['guest'] = guest;
+					}
 					window.userData['online'] = list;
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
@@ -794,7 +796,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			await logoutUser();
 		} catch (error) {
-			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
