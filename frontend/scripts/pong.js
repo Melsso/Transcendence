@@ -14,6 +14,7 @@ const ai_easy = document.getElementById('PongEasy');
 const ai_medium = document.getElementById('PongMedium');
 const ai_hard = document.getElementById('PongHard');
 const ins_return = document.getElementById('return-to-menu-ins');
+const baseUrl = process.env.ACTIVE_HOST;
 window.setting = null;
 let paddleWidth;
 let paddleHeight;
@@ -390,7 +391,7 @@ function newRound(){
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
     if (ball.x - ball.radius <= 0) {
         player2.score++;
-        if (player2.score === 7){
+        if (player2.score === 1){
             gameover = true;
             return;
         }
@@ -418,7 +419,7 @@ function newRound(){
     }
     if (ball.x + ball.radius >= canvas.width) {
         player1.score++;
-        if (player1.score === 7){
+        if (player1.score === 1){
             gameover = true;
             return;
         }
@@ -910,29 +911,96 @@ function    calculateAverageRoundTime(){
 
 
 // let player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
-function endGameStats() {
-    const player1Score = getPlayer1Score(); 
-    const player2Score = getPlayer2Score(); 
-    const player1BuffsTaken = getPlayer1Buffs();
-    const player2BuffsTaken = getPlayer2Buffs();
-    // window.player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
-    window.player2AttackAcc = calculateAccuracy(player2.ABR, player1.gothit); // Replace with actual accuracy calculation
+export async function endGameStats(winner, loser) {
+    let exp;
+    let game_data = {};
+    if (window.userData.username === winner.name) {
+        game_data.score1 = winner.score;
+        game_data.map = setting.map;
+        game_data.attack_accuracy = 100;
+        game_data.shield_powerup = 50;
+        game_data.score2 = loser.score;
+        if (loser.name.includes('Medium')) {
+            exp = 100;
+        } else if (loser.name.includes('Easy')) {
+            exp = 50;
+        } else if (loser.name.includes('Hard')) {
+            exp = 250;
+        } else {
+            exp = 250;
+        }
+    } else {
+        game_data.score1 = loser.score;
+        game_data.score2 = winner.score;
+        game_data.map = setting.map;
+        game_data.attack_accuracy = 100;
+        game_data.shield_powerup = 50;
+        if (winner.name.includes('Medium')) {
+            exp = 50;
+        } else if (winner.name.includes('Easy')) {
+            exp = 25;
+        } else if (winner.name.includes('Hard')) {
+            exp = 100;
+        } else {
+            exp = 250;
+        }
+    }
+    try {
+        const result = await sendGameResult(exp, winner.name, loser.name, game_data);
+    } catch (error) {
+        Notification('Game Action', `Error: ${error}`, 2, 'alert');
+    }
+    // const player1Score = getPlayer1Score(); 
+    // const player2Score = getPlayer2Score(); 
+    // const player1BuffsTaken = getPlayer1Buffs();
+    // const player2BuffsTaken = getPlayer2Buffs();
+    // // window.player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
+    // window.player2AttackAcc = calculateAccuracy(player2.ABR, player1.gothit); // Replace with actual accuracy calculation
 
-    // Fill in player stats
-    data.playerStats1.score = player1.score; //done
-    data.playerStats1.buffs_taken = player1.Btaken; //done
-    data.playerStats1.attack_acc = player1AttackAcc;
+    // // Fill in player stats
+    // data.playerStats1.score = player1.score; //done
+    // data.playerStats1.buffs_taken = player1.Btaken; //done
+    // data.playerStats1.attack_acc = player1AttackAcc;
 
-    data.playerStats2.score = player2.score; // done
-    data.playerStats2.buffs_taken = player2.Btaken; // done
-    data.playerStats2.attack_acc = player2AttackAcc;
+    // data.playerStats2.score = player2.score; // done
+    // data.playerStats2.buffs_taken = player2.Btaken; // done
+    // data.playerStats2.attack_acc = player2AttackAcc;
 
-    // Fill in game stats
-    data.gameStats.average_round_time = calculateAverageRoundTime(); // done
-    data.gameStats.fastest_round = ShortestRound; // done
-    data.gameStats.longest_round = LongestRound; // done
-    data.gameStats.map_played = 1; // Replace with actual map played
-    data.gameStats.full_time = fullTime; // done
-    data.gameStats.winner = player1.score > player2.score ? 1 : 2; // should work, to be tested //
+    // // Fill in game stats
+    // data.gameStats.average_round_time = calculateAverageRoundTime(); // done
+    // data.gameStats.fastest_round = ShortestRound; // done
+    // data.gameStats.longest_round = LongestRound; // done
+    // data.gameStats.map_played = 1; // Replace with actual map played
+    // data.gameStats.full_time = fullTime; // done
+    // data.gameStats.winner = player1.score > player2.score ? 1 : 2; // should work, to be tested //
 
+}
+
+export async function sendGameResult(exp, winner, loser, game_data) {
+    const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+
+	const url = baseUrl + 'api/games/game_result/';
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+        body: JSON.stringify({
+            exp: exp,
+            winner: winner,
+            loser: loser,
+            stats: game_data,
+        }),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		navigateTo('profile', null);
+		throw errorResponse;
+	}
+	const data = await response.json();
+	return data;
 }

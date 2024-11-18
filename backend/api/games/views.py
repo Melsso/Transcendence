@@ -11,6 +11,12 @@ from .models import PongGame
 from .serializers import PongGameSerializer
 from users.models import UserProfile
 import uuid
+import logging
+import random
+import string
+import time
+
+logger = logging.getLogger(__name__)
 
 class MatchHistoryView(generics.ListAPIView):
 
@@ -54,3 +60,58 @@ class CreateTournamentRoomView(generics.CreateAPIView):
         uname = request.user.username
         tournament_room_name = f'tournament_{uname}_{str(uuid.uuid4())}'
         return Response({'status':'success', 'detail':'Tournament Room Name Generated', 'tournament_room_name': tournament_room_name}, status=HTTP_200_OK)
+    
+class GameResultView(generics.CreateAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def generate_game_id(self, userid_1, userid_2):
+        timestamp_part = str(int(time.time()))[-6:]
+        random_part = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        return f"{userid_1}_{userid_2}_{timestamp_part}_{random_part}"
+
+    def post(self, request):
+        op = None
+        win = False
+        game_id = None
+        exp = request.data.get('exp')
+        stats = request.data.get('stats')
+        loser = request.data.get('loser')
+        winner_uname = request.data.get('winner')
+        user = request.user
+        if user.username == winner_uname:
+            user.bar_exp_game1 += exp
+            win = True
+            op = UserProfile.objects.get(username=loser)
+        else:
+            user.bar_exp_game1 -= exp
+            op = UserProfile.objects.get(username=winner_uname)
+        if user.bar_exp_game1 <= 0:
+            user.bar_exp_game1 = 0
+        user.save()
+        if 'AI' in op.username:
+            game_id = self.generate_game_id(user.id, op.id)
+            PongGame.objects.create(
+                game_id=game_id,
+                user=op,
+                opponent=user,
+                score=stats['score2'],
+                attack_accuracy=stats['attack_accuracy'],
+                map_name=stats['map'],
+                shield_powerup=stats['shield_powerup'],
+                is_win= not win
+        )
+
+
+        PongGame.objects.create(
+                game_id=game_id,
+                user=user,
+                opponent=op,
+                score=stats['score1'],
+                attack_accuracy=stats['attack_accuracy'],
+                map_name=stats['map'],
+                shield_powerup=stats['shield_powerup'],
+                is_win= win
+        )
+
+        return Response({'status':'success', 'detail':'Game Logs Saved'}, status=HTTP_200_OK)

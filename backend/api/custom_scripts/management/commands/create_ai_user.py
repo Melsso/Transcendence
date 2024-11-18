@@ -17,10 +17,26 @@ class Command(BaseCommand):
     def create_users(self):
         users = [
             {
-                'username': 'ai',
+                'username': 'Easy AI',
                 'password': 'strongpass123',
-                'email': 'ai@my_pong_website.com',
-                'bar_exp_game1': 1234,
+                'email': 'easai@my_pong_website.com',
+                'bar_exp_game1': 1000000,
+                'is_verified': True,
+                'is_active': True
+            },
+            {
+                'username': 'Hard AI',
+                'password': 'strongpass123',
+                'email': 'harai@my_pong_website.com',
+                'bar_exp_game1': 1000000,
+                'is_verified': True,
+                'is_active': True
+            },
+            {
+                'username': 'Medium AI',
+                'password': 'strongpass123',
+                'email': 'medai@my_pong_website.com',
+                'bar_exp_game1': 1000000,
                 'is_verified': True,
                 'is_active': True
             },
@@ -36,7 +52,7 @@ class Command(BaseCommand):
                 'username': 'Sofiane',
                 'password': 'strongpass123',
                 'email': 'melsopvbb@gmail.com',
-                'bar_exp_game1': 1234,
+                'bar_exp_game1': 0,
                 'is_verified': True,
                 'is_active': True
             },
@@ -87,16 +103,16 @@ class Command(BaseCommand):
             [
                 {
                     'player': 'Sofiane',
-                    'opponent': 'ai',
+                    'opponent': 'Hard AI',
                     'score': 15,
-                    'map_name': 'Map1',
+                    'map_name': 'Map 1',
                     'is_win': True
                 },
                 {
-                    'player': 'ai',
+                    'player': 'Hard AI',
                     'opponent': 'Sofiane',
                     'score': 13,
-                    'map_name': 'Map1',
+                    'map_name': 'Map 1',
                     'is_win': False
                 },
             ],
@@ -105,14 +121,14 @@ class Command(BaseCommand):
                     'player': 'Rayan',
                     'opponent': 'Sadoon',
                     'score': 16,
-                    'map_name': 'Map2',
+                    'map_name': 'Map 2',
                     'is_win': True
                 },
                 {
                     'player': 'Sadoon',
                     'opponent': 'Rayan',
                     'score': 15,
-                    'map_name': 'Map2',
+                    'map_name': 'Map 2',
                     'is_win': False
                 }
             ]

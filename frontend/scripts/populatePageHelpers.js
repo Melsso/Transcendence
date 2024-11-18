@@ -97,7 +97,7 @@ export async function loadProfile(requestData) {
         }
         loadMatchHistory(result['match_history']);
     } catch (error) {
-        Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
+        Notification('Profile Action', `Error: ${error}`, 2, 'alert');
     }  
 }
 
@@ -142,9 +142,9 @@ export function computeStats(games) {
         pvpWins: 0,
         pvpLosses: 0,
         mapStatistics: {
-            'Map1': { wins: 0, losses: 0 },
-            'Map2': { wins: 0, losses: 0 },
-            'Map3': { wins: 0, losses: 0 },
+            'Map 1': { wins: 0, losses: 0 },
+            'Map 2': { wins: 0, losses: 0 },
+            'Map 3': { wins: 0, losses: 0 },
         },
         pveWinLossData: {
             games: [],
@@ -155,13 +155,12 @@ export function computeStats(games) {
             wins: []
         }
     };
-
     let gameCount = 0;
 
     games.forEach(game => {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
-        const isPve = enemy.user.username === 'ai';
+        const isPve = enemy.user.username.includes('AI');
         gameCount++;
         if (ally.is_win) {
             if (isPve) {
@@ -202,12 +201,12 @@ function loadStats(games) {
     const totalWinRate = totalWins + totalLosses > 0 ? (totalWins / (totalWins + totalLosses)) * 100 : 0;
     const attack1Accuracy = 70;
     const attack2Accuracy = 65;
-    const map1WinRate = stats.mapStatistics['Map1'].wins + stats.mapStatistics['Map1'].losses > 0
-        ? (stats.mapStatistics['Map1'].wins / (stats.mapStatistics['Map1'].wins + stats.mapStatistics['Map1'].losses)) * 100 : 0;
-    const map2WinRate = stats.mapStatistics['Map2'].wins + stats.mapStatistics['Map2'].losses > 0
-        ? (stats.mapStatistics['Map2'].wins / (stats.mapStatistics['Map2'].wins + stats.mapStatistics['Map2'].losses)) * 100 : 0;
-    const map3WinRate = stats.mapStatistics['Map3'].wins + stats.mapStatistics['Map3'].losses > 0
-        ? (stats.mapStatistics['Map3'].wins / (stats.mapStatistics['Map3'].wins + stats.mapStatistics['Map3'].losses)) * 100 : 0;
+    const map1WinRate = stats.mapStatistics['Map 1'].wins + stats.mapStatistics['Map 1'].losses > 0
+        ? (stats.mapStatistics['Map 1'].wins / (stats.mapStatistics['Map 1'].wins + stats.mapStatistics['Map 1'].losses)) * 100 : 0;
+    const map2WinRate = stats.mapStatistics['Map 2'].wins + stats.mapStatistics['Map 2'].losses > 0
+        ? (stats.mapStatistics['Map 2'].wins / (stats.mapStatistics['Map 2'].wins + stats.mapStatistics['Map 2'].losses)) * 100 : 0;
+    const map3WinRate = stats.mapStatistics['Map 3'].wins + stats.mapStatistics['Map 3'].losses > 0
+        ? (stats.mapStatistics['Map 3'].wins / (stats.mapStatistics['Map 3'].wins + stats.mapStatistics['Map 3'].losses)) * 100 : 0;
     
     const pveWinrateElem = document.getElementById('pve-winrate');
     pveWinrateElem.style.width = pveWinRate + '%';
@@ -270,9 +269,7 @@ export function loadMatchHistory(games) {
             }
         }
 	}, { once: true });
-
     loadStats(games);
-
     matchHistoryContainer.innerHTML = '';
     if (games.length === 0) {
         const para = document.createElement('p');

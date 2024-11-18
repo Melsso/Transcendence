@@ -37,6 +37,7 @@ class PongGame(Game):
     attack_accuracy = models.IntegerField(default=0)
     map_name = models.TextField()
     shield_powerup = models.IntegerField(default=0)
+    #add speed powerup
 
     class Meta:
         unique_together = ('user', 'game_id')

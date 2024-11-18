@@ -1,5 +1,6 @@
 window.player1 = {name: '', icon: '../frontend/assets/logo.jpg',  score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
 window.player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
+import { endGameStats } from "./pong.js";
 // const play_again = document.getElementById('playAgain');
 const	change_difficulty = document.getElementById('diffy');
 const	backtomain = document.getElementById('goodbye')
@@ -613,8 +614,9 @@ function	expcounter(){
 
 function gameOverScreen(){
 	expcounter();
-	if (player1.score >= 7){
+	if (player1.score >= 1){
 		GOscreen = true;
+		endGameStats(player1, player2);
 		showGameOverScreen();
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
@@ -633,7 +635,8 @@ function gameOverScreen(){
 		gameover = true;
 		isingame = false;
 	}
-	else if (player2.score >= 7){
+	else if (player2.score >= 1){
+		endGameStats(player2, player1);
 		showGameOverScreen();
 		GOscreen = true;
 		ctx.font = '50px "PixelFont", sans-serif';
