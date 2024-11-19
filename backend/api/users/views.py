@@ -1,8 +1,11 @@
 from django.contrib.auth import authenticate
+from asgiref.sync import async_to_sync
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.conf import settings
 import uuid
+import aioredis
+import logging
 from django.core.mail import send_mail
 from rest_framework import generics, permissions
 from rest_framework.response import Response
@@ -24,7 +27,7 @@ from .models import UserProfile
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
 from .utils import generate_verification_code
 from chats.models import Friend
-
+logger = logging.getLogger(__name__)
 class RegisterView(generics.CreateAPIView):
 
     serializer_class = RegisterSerializer
@@ -288,3 +291,20 @@ class RefreshTokenView(TokenRefreshView):
             return Response({'status':'Error', 'detail': str(e)}, status=HTTP_400_BAD_REQUEST)
 
         return Response({'status':'success', 'detail':'Creation success', 'data':serializer.validated_data}, status=HTTP_200_OK)
+
+
+class GetLogsView(generics.GenericAPIView):
+    async def check_user_in_redis(self, username):
+        redis = await aioredis.from_url("redis://redis:6379")
+        users = await redis.smembers("chat_global_room_users")
+        users = [user.decode("utf-8") for user in users]
+        await redis.close()
+        return username in users
+
+    def post(self, request, *args, **kwargs):
+        uname = request.data.get('username')
+        user_exists = async_to_sync(self.check_user_in_redis)(uname)
+        if user_exists:
+            return Response({'status': 'fail', 'detail': 'User Logged in!', 'flag': True}, status=HTTP_200_OK)
+        else:
+            return Response({'status': 'success', 'detail': 'User not logged in!', 'flag': False}, status=HTTP_200_OK)

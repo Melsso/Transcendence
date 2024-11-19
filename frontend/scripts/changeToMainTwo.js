@@ -382,6 +382,27 @@ async function loginUser(usernameOrEmail, password) {
 	return data;
 }
 
+async function getLogs(uname) {
+	const url = baseUrl + 'api/get-logs/';
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			username: uname,
+		}),
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+	const data = await response.json();
+	return data.flag;
+}
+
 // This is the function that fetches user data on email verification step
 async function verifyEmail(formData) {
 	const url = baseUrl + 'api/verify-code/';
@@ -749,6 +770,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await guestLogin();
 			const tokens = result.tokens;
+			if (localStorage.getItem('accessToken')) {
+				Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
+				return;
+			}
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);
 			window.userData['guest'] = true;
@@ -764,6 +789,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		const password = document.getElementById('password-login').value;
 		document.getElementById('username-login').value = '';
 		document.getElementById('password-login').value = '';
+		let loged_in = false;
+		try {
+			loged_in = await getLogs(username);
+		} catch (error) {
+			console.log('tnaaaaaaaaket');
+		}
+		if (localStorage.getItem('accessToken') || loged_in) {
+			Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
+			return;
+		}
 		// need to save wether remember or not for next call
 		try {
 
