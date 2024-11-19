@@ -5,72 +5,12 @@ import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password
 import { Habess } from "./gamePvP.js";
 let userEmail;
 const baseUrl = process.env.ACTIVE_HOST;
-let isRefreshed = false;
-
-
-//failed attempt to know when tab is closed, need to fix afterwards
-// window.addEventListener('load', () => {
-// 	const navigationType = performance.getEntriesByType("navigation")[0]?.type || performance.navigation.type;
- 
-// 	if (navigationType === 'reload' || navigationType === 1) {
-// 	  isRefreshed = true;
-// 	  localStorage.setItem('sessionActive', 'true');
-// 	} else if (localStorage.getItem('sessionActive') === 'false') {
-// 	  console.log('Tab was reopened.');
-// 	} else {
-// 	  console.log('New tab or direct navigation.');
-// 	  localStorage.setItem('sessionActive', 'true');
-// 	}
-//  });
- 
-//  // Handle beforeunload to differentiate between refresh and close
-//  window.addEventListener('beforeunload', (event) => {
-// 	if (!isRefreshed) {
-// 	  console.log('logout happening!');
-// 	  localStorage.setItem('sessionActive', 'false');
-// 	  logoutSync().catch((err) => console.error('Logout failed:', err));
-// 	}
-//  });
-
-// function logoutSync() {
-// 	const access_token = localStorage.getItem('accessToken');
-// 	const refresh_token = localStorage.getItem('refreshToken');
-
-// 	if (!access_token || !refresh_token) {
-// 		 console.log('No tokens found, unable to log out.');
-// 		 return;
-// 	}
-
-// 	console.log('User logged out.');
-
-// 	// Send logout request
-// 	const url = baseUrl + 'api/guest-logout/';
-
-// 	fetch(url, {
-// 		 method: 'POST',
-// 		 headers: {
-// 			  'Authorization': `Bearer ${access_token}`,
-// 			  'Content-Type': 'application/json',
-// 		 },
-// 		 body: JSON.stringify({ refresh: refresh_token }),
-// 	})
-// 	.then(response => {
-// 		 if (response.ok) {
-// 			  console.log('Logout success');
-// 			  localStorage.removeItem('accessToken');
-// 			  localStorage.removeItem('refreshToken');
-// 		 } else {
-// 			  console.error('Logout failed:', response);
-// 		 }
-// 	})
-// 	.catch(error => {
-// 		 console.error('Logout failed:', error);
-// 	});
-// }
 
 async function refreshAccessToken() {
    const refreshToken = localStorage.getItem('refreshToken');
-
+	if (!refreshToken || refreshToken.trim() === "") {
+		return ;
+	}
 	const url = baseUrl + 'api/refresh-token/';
    const response = await fetch(url, {
       method: 'POST',
@@ -148,7 +88,6 @@ async function homepageData() {
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
-
 	const url = baseUrl + 'api/home/';
 	const response = await fetch(url, {
 		method: 'GET',
@@ -157,11 +96,11 @@ async function homepageData() {
 			'Content-Type': 'application/json',
 		},
 	});
-
 	if (!response.ok) {
 		const errorResponse = await response.json();
-		// localStorage.removeItem('accessToken');
-		// navigateTo('login', null);
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('refreshToken');
+		navigateTo('login', null);
 		throw errorResponse;
 	}
 	const data = await response.json();
@@ -574,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const forgotcontainer = document.getElementById('forgot-container');
 	const newpass = document.getElementById('create-new-pass');
 	const inv_menu = document.getElementById('inv-menu');
-	const facontainer = document.getElementById('2fa-container');
+	const facontainer = document.getElementById('Tfa-container');
 	const ai_menu = document.getElementById('ai-menu');
 	const Instructions = document.getElementById('Instructions-box');
 	const lobby = document.getElementById('pong-inv-container');
@@ -621,15 +560,13 @@ document.addEventListener('DOMContentLoaded', function () {
 			window.userData.pong_socket.close();
 			window.userData.pong_socket = null;
 			window.userData.r_name = null;
-			// Tlobby.style.display = 'none';
-			// tourniLobby.style.display = 'none';
 		}
-		if (view !== 'profile' && view !=='PONG' && window.userData.guest === true) {
-			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
-			return ;
+		if (!localStorage.getItem('accessToken') && window.userData?.guest && window.userData.guest === true) {
+			return;
 		}
-		window.altFfour();
-		window.leaving();
+		
+		altFfour();
+		leaving();
 		Habess();
 		qContainer.style.display = 'none';
 		Tlobby.style.display = 'none';
@@ -658,7 +595,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				let guest;
 				if (data === null) {
+					
 					const result = await homepageData();
+					
 					if (result['user'].Twofa_auth === true && !toggle.classList.contains('on')) {
 						toggle.classList.toggle('on');
 					}
@@ -668,26 +607,33 @@ document.addEventListener('DOMContentLoaded', function () {
 						guest = false;
 					}
 					const sock = window.userData.socket;
+					const target = window.userData.target;
 					const list = window.userData['online'];
 					window.userData = result["user"];
+					window.userData['target'] = target;
 					if (guest) {
 						window.userData.guest = guest;
 					}
 					window.userData['online'] = list;
+					
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');
 						const chatSocket = new WebSocket(`ws://${u.host}/ws/?token=${accessToken}`);
-						window.userData.socket = chatSocket;
+						window.userData.socket = chatSocket;						
 						window.userData["target"] = "Global";
 						launchSocket();
 					} else {
+						
 						window.userData.socket = sock;
 					}
 					sendFriendRequestButton.style.display = 'none';
+					
 					loadProfile(result);
 					const res = await getMessages();
+					
 					loadMessages(res["list"]);
+					console.log('1',window.userData);
 				}
 				else {
 					const calleruser = data['user'];
@@ -745,6 +691,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	function navigateTo(view, data) {
+		if (view !== 'profile' && view !=='PONG' && view !== 'login' && window.userData.guest === true) {
+			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+			return ;
+		}
 		history.pushState({ view: view }, null, `#${view}`);
 		showView(view, data);
 	}
@@ -802,6 +752,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);
 			window.userData['guest'] = true;
+			scheduleTokenRefresh(localStorage.getItem('accessToken'));
 			navigateTo('profile', null);
 		} catch (error) {
 			Notification('Profile Action', `Failed to login because: ${error}`, 1,'alert');
@@ -914,7 +865,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	logoutButton.addEventListener('click', async function () {
 
 		try {
-			console.log(window.userData.guest);
 			await logoutUser();
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');

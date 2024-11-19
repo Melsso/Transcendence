@@ -160,6 +160,9 @@ export async function	launchSocket() {
 			if (data.action == 'online_status') {
 				window.userData['online'] = data.users;
 				try {
+					if (window.userData?.guest && window.userData.guest === true) {
+						return ;
+					}
 					const result = await getFriends();
 					loadFriends(result, window.userData.id); 
 				} catch (error) {

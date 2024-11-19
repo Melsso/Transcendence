@@ -192,12 +192,21 @@
 	border-radius: 50%;
 } */
 
+#login-form-container,
+#create-new-pass,
+#Tfa-container,
+#forgot-container,
+#second-reg-container,
+#register-form-container {
+	display: none;
+}
 
 #forgot-btn {
-	margin-left: auto; /* Align the forgot link to the right */
+	margin-left: auto;
 	text-decoration: none;
 	font-size: 0.9rem;
 }
+
 
 #guest-login{
 	margin-right:auto;
