@@ -8,8 +8,10 @@ let gamer2;
 let up1 = true;
 let up2 = true;
 let up3 = true;
-let sphereinbuff = false;
-let buffcount = 0;
+let sphereinspeed = false;
+let sphereinattack = false;
+let sphereinBigpad = false;
+let SpeedCounting = 0;
 let attackcount = 0;
 let bigpadcount = 0;
 let last_hit = 0;
@@ -52,6 +54,7 @@ export function ChangeFlag(flag) {
 	BuffFlag = flag;
 	if (BuffFlag === 1){
 		Buffpvp.visible = true;
+		console.log('hna');
 		Attackpvp.visible = false;
 		Bigpadpvp.visible = false;
 	}
@@ -131,27 +134,34 @@ function Speedpower(){
 	if (playerPaddle2.dy === 12 && last_hit === 2)
 		playerPaddle2.dy = 12;
 }
-function	Trackballinspeed(){
-	if ( (Buffpvp.visible) &&
+
+function Trackballinspeed() {
+	if (Buffpvp.visible &&
 		sphere.x + sphere.radius > Buffpvp.x &&
 		sphere.x - sphere.radius < Buffpvp.x + Buffpvp.width &&
 		sphere.y + sphere.radius > Buffpvp.y &&
-		sphere.y - sphere.radius < Buffpvp.y + Buffpvp.height){
-			if (!sphereinbuff)
-				sphereinbuff = true;
-		}
-		else	{
-			if (sphereinbuff){
-				sphereinbuff = false;
-				buffcount++;
-				if (last_hit === 1 || last_hit === 2)
-					Speedpower();
+		sphere.y - sphere.radius < Buffpvp.y + Buffpvp.height) 
+		{
+			if (!sphereinspeed) {
+				sphereinspeed = true;
+				console.log("bababoy");}
 			}
-		}
-	if (buffcount === 2){
-		Buffpvp.visible = false;
+			else {
+				if (sphereinspeed) {
+					sphereinspeed = false;
+					console.log("Yemak ta3ti");
+					SpeedCounting++;
+					if (last_hit === 1 || last_hit === 2) {
+						Speedpower();
+					}
+				}
+			}
+		if (SpeedCounting === 2) {
+			console.log("dkhelna hna");
+			Buffpvp.visible = false;
 	}
 }
+
 function Attackpower(){
 	if (last_hit === 1)
 		playerPaddle1.Att = 1;
@@ -168,18 +178,18 @@ function	Trackballinattack(){
 		sphere.x - sphere.radius < Attackpvp.x + Attackpvp.width &&
 		sphere.y + sphere.radius > Attackpvp.y &&
 		sphere.y - sphere.radius < Attackpvp.y + Attackpvp.height){
-			if (!sphereinbuff)
-				sphereinbuff = true;
+			if (!sphereinattack)
+				sphereinattack = true;
 		}
 		else	{
-			if (sphereinbuff){
-				sphereinbuff = false;
-				buffcount++;
+			if (sphereinattack){
+				sphereinattack = false;
+				attackcount++;
 				if (last_hit === 1 || last_hit === 2)
 					Attackpower();
 			}
 		}
-	if (buffcount === 2){
+	if (attackcount === 2){
 		Attackpvp.visible = false;
 	}
 }
@@ -201,18 +211,18 @@ function	TrackballinBigpad(){
 		sphere.x - sphere.radius < Bigpadpvp.x + Bigpadpvp.width &&
 		sphere.y + sphere.radius > Bigpadpvp.y &&
 		sphere.y - sphere.radius < Bigpadpvp.y + Bigpadpvp.height){
-			if (!sphereinbuff)
-				sphereinbuff = true;
+			if (!sphereinBigpad)
+				sphereinBigpad = true;
 		}
 		else	{
-			if (sphereinbuff){
-				sphereinbuff = false;
-				buffcount++;
+			if (sphereinBigpad){
+				sphereinBigpad = false;
+				bigpadcount++;
 				if (last_hit === 1 || last_hit === 2)
 					Attackpower();
 			}
 		}
-	if (buffcount === 2){
+	if (bigpadcount === 2){
 		Bigpadpvp.visible = false;
 	}
 }
@@ -227,13 +237,14 @@ function setDimensions() {
 	playerPaddle1.y = (heightScale / 2) - (playerPaddle1.height / 2);
 	p1 = playerPaddle1.y;
 	playerPaddle1.dy = heightScale / 100;
-	Buffpvp.width = widthScale / 20;
-	Buffpvp.height = heightScale / 100;
+	Buffpvp.width = widthScale / 10;
+	Buffpvp.height = heightScale / 50;
 	Attackpvp.width = widthScale / 20;
 	Attackpvp.height = heightScale / 100;
 	Bigpadpvp.width = widthScale / 20;
 	Bigpadpvp.height = heightScale / 100;
 	Buffpvp.y = heightScale;
+	Buffpvp.x = (widthScale / 2);
 	Attackpvp.y = heightScale;
 	Bigpadpvp.y = heightScale;
 
@@ -333,9 +344,12 @@ export function drawAll(player1, player2, settings) {
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+	TrackballinBigpad();
+	Trackballinattack();
+	Trackballinspeed();
 	if (BuffFlag === 1) {
-		drawBuffpvp(0.5);
 		if (Buffpvp.visible === true){
+			drawBuffpvp(0.45);
 			if (up1)
 				Buffpvp.y -= Buffpvp.height / 2;
 			else if (!up1)
@@ -399,8 +413,8 @@ export function displayCountdown() {
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	playerPaddle1.y = p1;
 	playerPaddle2.y = p2;
-	sphere.x = sx;
-	sphere.y = sy;
+	sphere.x = 0;
+	sphere.y = 0;
 	const countdownInterval = setInterval(() => {
 		 countdown -= 1;
 		 if (countdown > 0) {
