@@ -356,7 +356,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 1
 					}
 				)
-			if current_time - start_time >= 17 and buff2 == 0:
+			if current_time - start_time >= 80 and buff2 == 0:
 				buff2 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -378,9 +378,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 				)
 			self.ball['dx'] = angleX * base_speed
 			self.ball['dy'] = angleY * base_speed
-			self.ball['x'] += self.ball['dx']
-			self.ball['y'] += self.ball['dy']
-			if self.ball['x'] <= 0.01 or self.ball['x'] >= 0.99:
+			self.ball['x'] += 0
+			self.ball['y'] += 0
+			if self.ball['x'] <= 0.015 or self.ball['x'] >= 0.99:
 				self.ball['x'] = 0.5
 				self.ball['y'] = 0.5
 				start_time = time.time()
@@ -402,7 +402,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			
 			if self.ball['y'] <= 0.06 or self.ball['y'] >= 0.99:
 				angleY = -angleY
-			if self.ball['x'] <= 0.02 and self.paddle1['y'] <= self.ball['y'] <= self.paddle1['y'] + 0.11:
+			if self.ball['x'] <= 0.03 and self.paddle1['y'] <= self.ball['y'] <= self.paddle1['y'] + 0.11:
 				angleX = abs(angleX)
 				impact_point = (self.ball['y'] - self.paddle1['y']) / self.paddle1['height']
 				angleY = (impact_point - 0.5) * 2
