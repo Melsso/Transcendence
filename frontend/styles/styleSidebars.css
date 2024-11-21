@@ -55,6 +55,11 @@
 	background-color: #b20101b3;
 }
 
+#dropdown-container-profile .dropdown {
+	visibility: visible;
+	opacity: 1;
+}
+
 .dropdown {
 	position: absolute;
 	right: 0;

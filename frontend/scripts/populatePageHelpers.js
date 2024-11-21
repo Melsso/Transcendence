@@ -82,7 +82,6 @@ export async function loadProfile(requestData) {
         loadProfileInfo(user);
     }
     else {
-        // Do something else relevant here, probably redirect refretch or smth
         console.error("Error: No User Data Found!");
     }
 
@@ -121,7 +120,6 @@ function loadProfileInfo(user) {
     
     profileUsername.textContent = user.username;
     profileUsername.setAttribute('user_id', user.id);
-
     avatarElement.style.backgroundImage = `url(${user.avatar})`;
 
     bio.textContent = user.biography;

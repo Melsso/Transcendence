@@ -552,6 +552,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
 	
+	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
 	const deleteModal = document.getElementById('deleteModal');
 	const confirmDelete = document.getElementById('confirmDelete');
@@ -571,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const updateBioButton = document.getElementById('updateBio-btn');
 	const updatePwdButton = document.getElementById('updatePwd-btn');
 	const friendButton = document.getElementById('friend-list-btn');
-	const sendFriendRequestButton = document.getElementById('add-friend');
+	// const sendFriendRequestButton = document.getElementById('add-friend');
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
 	const Tlobby = document.getElementById('pong-tournament');
@@ -585,7 +586,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (!localStorage.getItem('accessToken') && window.userData?.guest && window.userData.guest === true) {
 			return;
 		}
-		
 		altFfour();
 		leaving();
 		Habess();
@@ -648,21 +648,18 @@ document.addEventListener('DOMContentLoaded', function () {
 						
 						window.userData.socket = sock;
 					}
-					sendFriendRequestButton.style.display = 'none';
-					
+					profileMenu.innerHTML = '';
 					loadProfile(result);
 					const res = await getMessages();
-					
 					loadMessages(res["list"]);
-					console.log('1',window.userData);
 				}
 				else {
 					const calleruser = data['user'];
-					if (userData["username"] !== calleruser['username']) {
-						sendFriendRequestButton.style.display = 'flex';
+					if (window.userData["username"] !== calleruser['username']) {
+						createDropDownProfile(calleruser['username'], calleruser['id']);
 					}
 					else {
-						sendFriendRequestButton.style.display = 'none';
+						profileMenu.innerHTML = '';
 					}
 					loadProfile(data);						
 				}
@@ -712,7 +709,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	function navigateTo(view, data) {
-		if (view !== 'profile' && view !=='PONG' && view !== 'login' && window.userData.guest === true) {
+		if (view !== 'profile' && view !=='PONG' && view !== 'login' && window.userData?.guest &&window.userData.guest === true) {
 			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 			return ;
 		}
@@ -941,21 +938,21 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	sendFriendRequestButton.addEventListener('click', async function () {
-		if (window.userData.guest === true) {
-			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
-			return ;
-	  }
-		const target = document.getElementById('username');
-		const target_id = target.getAttribute('user_id');
-		try {
+	// sendFriendRequestButton.addEventListener('click', async function () {
+	// 	if (window.userData.guest === true) {
+	// 		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+	// 		return ;
+	//   }
+	// 	const target = document.getElementById('username');
+	// 	const target_id = target.getAttribute('user_id');
+	// 	try {
 	
-			const result = await sendFriendRequest(target_id);
-			Notification('Friend Action', 'You have sent a friend request!', 2,'request');
-		} catch (error) {
-			Notification('Friend Action', `Error: ${error.detail}`, 2, 'alert');
-		}
-	});
+	// 		const result = await sendFriendRequest(target_id);
+	// 		Notification('Friend Action', 'You have sent a friend request!', 2,'request');
+	// 	} catch (error) {
+	// 		Notification('Friend Action', `Error: ${error.detail}`, 2, 'alert');
+	// 	}
+	// });
 
 	settingButton.addEventListener('click', function () {
 		navigateTo('settings', null); 
@@ -1097,4 +1094,69 @@ async function updateAvatar(formData) {
 
 	const data = await response.json();
 	return data;
+}
+
+async function createDropDownProfile(friendUname, friendId) {
+	const container = document.getElementById('dropdown-container-profile');
+	if (document.getElementById('profileDropDownMenu')) {
+		document.getElementById('profileDropDownMenu').remove();
+	}
+	const actions = ['Add Friend', 'Block User'];
+	const dropdownDiv = document.createElement('div');
+	dropdownDiv.className = 'dropdown dropend';
+	dropdownDiv.style.display = 'block';
+
+	const uniqueDropdownId = `Button${friendUname}`;
+	const uniqueDropdownMenuId = `Menu${friendUname}`;
+
+	const dropdownButton = document.createElement('button');
+	dropdownButton.className = 'btn';
+	dropdownButton.type = 'button';
+	dropdownButton.style.color = 'white';
+	dropdownButton.id = uniqueDropdownId;
+	dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+	dropdownButton.setAttribute('aria-expanded', 'false');
+	dropdownButton.innerHTML = '&#8226;&#8226;&#8226;';
+
+	const dropdownMenu = document.createElement('ul');
+	dropdownMenu.className = 'dropdown-menu';
+	dropdownMenu.id = uniqueDropdownMenuId;
+	dropdownMenu.setAttribute('aria-labelledby', dropdownButton.id);
+	actions.forEach(action => {
+		const li = document.createElement('li');
+		const a = document.createElement('a');
+		a.className = 'dropdown-item';
+		a.href = '#';
+		a.textContent = action;
+		a.addEventListener('click', (event) => {
+			event.preventDefault();
+			handleprofileAction(action, friendUname, friendId);
+		});
+		li.appendChild(a);
+		dropdownMenu.appendChild(li);
+	});
+
+	dropdownDiv.appendChild(dropdownButton);
+	dropdownDiv.appendChild(dropdownMenu);
+	container.appendChild(dropdownDiv);
+}
+
+async function handleprofileAction(action, targetuname, targetID) {
+	if (window.userData.guest === true) {
+		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+		return ;
+	}
+	switch(action) {
+		case 'Add Friend':
+			try {
+				const result = await sendFriendRequest(targetID);
+				Notification('Friend Action', 'You have sent a friend request!', 2 ,'request');
+			} catch (error) {
+				Notification('Friend Action', `Error ${error.detail}`, 2, 'alert');
+			}
+			break ;
+		case 'Block User':
+			Notification('ALLO', 'AYA NDIRO BONG FDAR PLZ', 2, 'ALERT');
+			break;
+	}
 }
