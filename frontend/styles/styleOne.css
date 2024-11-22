@@ -197,8 +197,8 @@
 #Tfa-container,
 #forgot-container,
 #second-reg-container,
-.policy-details-wrapper,
-.policy-action-wrapper,
+#policy-details-wrapper,
+#policy-action-wrapper,
 #register-form-container {
 	display: none;
 }
@@ -232,11 +232,16 @@
 #policy-details-wrapper {
 	display: 'none';
 	background-color: transparent;
+	width: 100%;
+}
+
+.privacy-btn {
+	background-color: #00008B;
 }
 
 #pol-det {
-	height: 50%;
-	top: 40%;
+	height: 32.5%;
+	top: 15%;
 	position: relative;
 	overflow-y: auto;
 	background-color: #FFFFFF;
