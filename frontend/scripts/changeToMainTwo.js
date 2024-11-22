@@ -4,6 +4,7 @@ import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
 import { Habess } from "./gamePvP.js";
 let userEmail;
+let consentPrompt;
 const baseUrl = process.env.ACTIVE_HOST;
 
 async function refreshAccessToken() {
@@ -523,6 +524,7 @@ async function sendFriendRequest(targetId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+	// here need to display some typa banner which contains a disclaimer as well as what the person decides to opt for
 	const reg1 = document.getElementById('register-form-container');
     const log1 = document.getElementById('login-form-container');
     const reg2 = document.getElementById('second-reg-container');
@@ -541,6 +543,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	const menu = document.getElementById('menuuu');
 	const qContainer = document.getElementById('Queue');
 	const toggle = document.getElementById('2fa-toggle');
+	const privacyPop = document.getElementById('privacy-policy');
+	const policyActionWrapper = document.getElementById('policy-action-wrapper');
+	const policyDetailsWrapper = document.getElementById('policy-details-wrapper');
+	
 	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
 	log1.style.display = 'none';
@@ -551,7 +557,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainSettings.style.display = 'none';
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
-	
+	policyDetailsWrapper.style.display = 'none';
+	privacyPop.style.display = 'flex';
+	policyActionWrapper.style.display = 'flex';
+
 	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
 	const deleteModal = document.getElementById('deleteModal');
@@ -576,7 +585,11 @@ document.addEventListener('DOMContentLoaded', function () {
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
 	const Tlobby = document.getElementById('pong-tournament');
-	
+	const privacyAccept = document.getElementById('privacy-accept');
+	const privacyDetails = document.getElementById('privacy-details');
+	const privacyRefuse = document.getElementById('privacy-refuse');
+	const privacyReturn = document.getElementById('privacy-return');
+
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
 			window.userData.pong_socket.close();
@@ -695,6 +708,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else if (view === '2fa') {
 			mainOne.style.display = 'flex';
 			facontainer.style.display = 'block';
+
 		}
 	}
 
@@ -703,6 +717,32 @@ document.addEventListener('DOMContentLoaded', function () {
 			showView(event.state.view);
 		}
 	});
+	
+	privacyAccept.addEventListener('click', function() {
+		console.log('Privacy Accepted!');
+		privacyPop.style.display = 'none';
+		Notification('User Action', 'You Have Accepted Our Policy Privacy! If You\'ve Changed Your Mind, Please Register And Edit Your Privacy Settings.', 1, 'alert');
+		consentPrompt = true;
+	});
+
+	privacyRefuse.addEventListener('click', function() {
+		console.log('Privacy Refused');
+		privacyPop.style.display = 'none';
+		Notification('User Action', 'You Have Refused Our Policy Privacy, You Can Not Use Our Website... Refresh If You\'ve Changed Your Mind!', 1, 'alert');
+		consentPrompt = false;
+	});
+
+	privacyDetails.addEventListener('click', function() {
+		console.log('Privacy details!');
+		policyActionWrapper.style.display = 'none';
+		policyDetailsWrapper.style.display = 'flex';
+	});
+
+	privacyReturn.addEventListener('click', function() {
+		console.log('Returning from privacy details');
+		policyDetailsWrapper.style.display = 'none';
+		policyActionWrapper.style.display = 'flex';
+	})
 
 	forgotButton.addEventListener('click', function() {
 		navigateTo('forgot', null);

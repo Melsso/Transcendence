@@ -197,8 +197,49 @@
 #Tfa-container,
 #forgot-container,
 #second-reg-container,
+.policy-details-wrapper,
+.policy-action-wrapper,
 #register-form-container {
 	display: none;
+}
+
+#privacy-policy {
+	background-color: #FFFFFF;
+	position: absolute;
+	width: 75%;
+}
+
+#privacy-accept, 
+#privacy-details,
+#privacy-refuse {
+	color: #fff;
+	height: 25%;
+	margin-left: 5;
+	margin-right: 5;
+	padding: 1rem !important;
+}
+
+#privacy-accept {
+	background-color: #00008B;
+}
+#privacy-details {
+	background-color: #FFFF00;
+}
+#privacy-refuse {
+	background-color: #808080;
+}
+
+#policy-details-wrapper {
+	display: 'none';
+	background-color: transparent;
+}
+
+#pol-det {
+	height: 50%;
+	top: 40%;
+	position: relative;
+	overflow-y: auto;
+	background-color: #FFFFFF;
 }
 
 #forgot-btn {
