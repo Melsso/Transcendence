@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import generics, permissions
@@ -45,7 +46,7 @@ class SearchUserView(generics.RetrieveAPIView):
         else:
             return Response({'status':'success', 'user':None}, status=HTTP_200_OK)
 
-class UpdateUName(generics.RetrieveAPIView):
+class UpdateUNameView(generics.RetrieveAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -60,7 +61,7 @@ class UpdateUName(generics.RetrieveAPIView):
         curr_user.save()
         return Response({'status':'success', 'detail':'Username changed'}, status=HTTP_200_OK)
 
-class UpdateBio(generics.RetrieveAPIView):
+class UpdateBioView(generics.RetrieveAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -73,27 +74,34 @@ class UpdateBio(generics.RetrieveAPIView):
         curr_user.save()
         return Response({'status':'success', 'detail':'Bio changed'}, status=HTTP_200_OK)
 
-class UpdateMail(generics.RetriveAPIView):
+class UpdateEmailView(generics.RetrieveAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         new_email = request.data.get('email')
         user = request.user
-        if new_email is None or '@' not in new_email or '.' not in new_email:
-            return Response({'status':'error', 'detail':'Invalid Email!'}, status=HTTP_400_BAD_REQUEST)
+        if new_email is None or '@' not in new_email or '.' not in new_email:            
+            return Response({'status':'error', 'detail':'Invalid Email!{new_email}'}, status=HTTP_400_BAD_REQUEST)
         try:
             subject = 'Email Update'
             message = f'You have updated your email from {user.email} to {new_email}!'
             send_mail(subject, message, settings.EMAIL_HOST_USER, [new_email])
         except Exception as e:
             return Response({'status':'error', 'detail':'Email Could not be reached'}, status=HTTP_400_BAD_REQUEST)
+        
+        try:
+            existing_user = UserProfile.objects.get(email=new_email)
+            if existing_user is not None:
+                return Response({'status':'error', 'detail':'Email Already In Use'}, status=HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            pass
         user.email = new_email
         user.save()
         return Response({'status':'success', 'detail':'Email Changed Successfuly'}, status=HTTP_200_OK)
 
 
-class UpdatePwd(generics.RetrieveAPIView):
+class UpdatePwdView(generics.RetrieveAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
     
@@ -129,7 +137,7 @@ class UpdatePwd(generics.RetrieveAPIView):
         user.save()
         return Response({'status':'success', 'detail':'Password changed'}, status=HTTP_200_OK)
 
-class   UpdateAvatar(generics.GenericAPIView):
+class   UpdateAvatarView(generics.GenericAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -143,7 +151,7 @@ class   UpdateAvatar(generics.GenericAPIView):
         else:
             return Response({'status':'error', 'detail':'Invalid Avatar'}, status=HTTP_400_BAD_REQUEST)
 
-class   UpdateTwoFactorAuth(generics.GenericAPIView):
+class   UpdateTwoFactorAuthView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):

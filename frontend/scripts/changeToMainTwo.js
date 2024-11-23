@@ -249,6 +249,33 @@ async function updateUsername(uname) {
 	return data;
 }
 
+async function updateEmail(email) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+		return ;
+	}
+
+	const url = baseUrl + 'api/home/settings/updateEmail/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			email: email,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+
+	const data = await response.json();
+	return data;
+}
+
 async function updateBio(biog) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
@@ -579,6 +606,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const PONGButton = document.getElementById('PONG-button');
 	const updateUsernameButton = document.getElementById('updateUsername-btn');
 	const updateBioButton = document.getElementById('updateBio-btn');
+	const updateEmailButton = document.getElementById('updateUserEmail-btn');
 	const updatePwdButton = document.getElementById('updatePwd-btn');
 	const friendButton = document.getElementById('friend-list-btn');
 	// const sendFriendRequestButton = document.getElementById('add-friend');
@@ -721,7 +749,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	privacyAccept.addEventListener('click', function() {
 		console.log('Privacy Accepted!');
 		privacyPop.style.display = 'none';
-		Notification('User Action', 'You Have Accepted Our Policy Privacy! If You\'ve Changed Your Mind, Please Register And Edit Your Privacy Settings.', 1, 'alert');
+		Notification('User Action', 'You Have Accepted Our Policy Privacy! If You\'ve Changed Your Mind, Please Register And Edit Your Privacy Settings.', 1, 'profile');
 		consentPrompt = true;
 	});
 
@@ -1023,6 +1051,21 @@ document.addEventListener('DOMContentLoaded', function () {
 			Notification('Profile Action', 'You have updated your username!',2, 'profile');
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
+		}
+	});
+
+	updateEmailButton.addEventListener('click', async function() {
+		const email = document.getElementById('new-useremail').value;
+		document.getElementById('new-useremail').value = '';
+		if (window.userData.email === email) {
+			Notification('Profile Action', 'You are already using that email!', 2, 'alert');
+			return ;
+		}
+		try {
+			const result = await updateEmail(email);
+			Notification('Profile Action', 'You have updated your email!', 2, 'profile');
+		} catch (error) {
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 	});
 

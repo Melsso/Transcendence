@@ -133,6 +133,7 @@
                 </div>
                 <div class="profile-info" id="profile-info">
                     <h1 id="username" class="profile-username">Loading...</h1>
+                    <p class="my-bio" id="profile-email">Loading...</p>
                     <p class="my-bio" id="profile-bio">Loading...</p>
                     <div id="dropdown-container-profile" style="z-index: 1000;"></div>
                     <div class="progress my-bar" id="exp-bar">
@@ -252,6 +253,12 @@
                     <button type="button" class="btn btn-primary" id="updateUsername-btn">Update Username</button>
                 </form>
                 
+                <form id="useremail-form" class="settings-form">
+                    <label for="email">Change Email</label>
+                    <input type="text" id="new-useremail" name="useremail" placeholder="Enter new email" required>
+                    <button type="button" class="btn btn-primary" id="updateUserEmail-btn">Update Email</button>
+                </form>
+
                 <form id="bio-form" class="settings-form">
                     <label for="Bio">Change Bio</label>
                     <input type="text" id="new-Bio" name="Bio" placeholder="Enter new Bio" required>

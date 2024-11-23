@@ -115,6 +115,7 @@ function loadProfileInfo(user) {
     const profileUsername = document.getElementById('username');
     const avatarElement = document.getElementById('profile-avatar');
     const bio = document.getElementById('profile-bio');
+    const email = document.getElementById('profile-email');
     const expBar1 = document.getElementById('exp-pong');
     const expText1 = document.getElementById('exp-txt');
     
@@ -123,7 +124,7 @@ function loadProfileInfo(user) {
     avatarElement.style.backgroundImage = `url(${user.avatar})`;
 
     bio.textContent = user.biography;
-
+    email.textContent = user.email;
     const expGame1Percentage = Math.max((user.bar_exp_game1 % 1000) / 10, 1);
     
     const levelGame1 = Math.floor(user.bar_exp_game1 / 1000);
