@@ -282,6 +282,32 @@
                     <input type="file" id="new-avatar" name="avatar" accept="image/*">
                     <button id="updateavatar-btn" type="button" class="btn btn-primary">Update Avatar</button>
                 </form>
+                
+                <form id="msg-delete-form" class="settings-form">
+                    <label for="del-msg-pass">Delete All Messages</label>
+                    <input type="password" id="delete-message-password" name="del-msg-pass" placeholder="Enter Your Password" required>
+                    <button type="button" class="btn btn-primary" id="delete-messages-btn">Delete All Messages</button>
+                </form>
+
+                <form id="games-delete-form" class="settings-form">
+                    <label for="del-game-pass">Delete All Games</label>
+                    <input type="password" id="delete-games-password" name="del-game-pass" placeholder="Enter Your Password" required>
+                    <button type="button" class="btn btn-primary" id="delete-games-btn">Delete All Games</button>
+                </form>
+
+                <form id="privacy-change-form" class="settings-form">
+                    <div id="priv-toggle" class="Twofa-toggle">
+                        <p class="toggle-text">Privacy Policy Consent</p>
+                        <div class="toggle-slider">
+                            <i class="icon priv-on">✔</i>
+                            <i class="icon priv-off">✖</i>
+                        </div>
+                    </div>
+                    <label for="change-priv-set">Change Privacy Settings</label>
+                    <input type="password" id="change-privacy-password" name="change-priv-set" placeholder="Enter Your Password" required>
+                    <button type="button" class="btn btn-primary" id="change-privacy-settings-btn">Change Privacy Settings</button>
+                </form>
+
                 <button type="button" class="btn btn-danger" id="delete-account">Delete your account</button>
                 <div class="modal-delete" id="deleteModal">
                     <div class="modal-content-delete">

@@ -1,5 +1,5 @@
 import { getMessages, loadMessages, handleSend } from "./chat.js";
-import { userLookUp } from "./changeToMainTwo.js";
+import { userLookUp, deleteMessages } from "./changeToMainTwo.js";
 
 const baseUrl = process.env.ACTIVE_HOST;
 
@@ -69,7 +69,7 @@ export async function loadFriends(data, userid) {
 				if (friendRequestContainer) {
 				    friendRequestContainer.remove();
 				}
-				const actions = ['View Profile', 'Send a Message', 'Unfriend', 'Invite To Game'];
+				const actions = ['View Profile', 'Send a Message', 'Unfriend', 'Invite To Game', 'Delete Messages'];
 				const dropdownDiv = document.createElement('div');
 				dropdownDiv.className = 'dropdown dropend';
 	
@@ -241,6 +241,14 @@ async function handleAction(action, targetId, userid, targetUname) {
 				Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
 			}
 			break;
+		case 'Delete Messages':
+			try {
+				// here display a box, get the password and pass it instead of null
+				const result = await deleteMessages(targetUname, null);
+			} catch (error) {
+				Notification('Message Action', `Failed To Delete Messages: ${error.details}`, 2, 'alert');
+			}
+			break ;
 	}
 }
 

@@ -111,6 +111,10 @@ class DeleteMessagesView(generics.RetrieveAPIView):
     def post(self, request):
         user = request.user
         target = request.data.get('target')
+        password = request.data.get('password')
+        user_check = authenticate(username=request.user.username, password=password)
+        if user_check is None:
+            return Response({'status':'error', 'detail':'Password Is Incorrect'}, status=HTTP_400_BAD_REQUEST)
         try:
             if target:
                 target_user = get_object_or_404(UserProfile, username=target)
@@ -128,6 +132,10 @@ class DeleteGamesView(generics.RetrieveAPIView):
         
     def post(self, request):
         user = request.user
+        password = request.data.get('password')
+        user_check = authenticate(username=request.user.username, password=password)
+        if user_check is None:
+            return Response({'status':'error', 'detail':'Password Is Incorrect'}, status=HTTP_400_BAD_REQUEST)
         try:
             games_to_reset = PongGame.objects.filter(user=user)
             games_to_reset.update(

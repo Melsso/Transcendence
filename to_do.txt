@@ -25,13 +25,14 @@ MINOR:
 
 
 gdpr:
-- obtain consent using clear language and log consent time
-- add consent withdrawal option
-- users can request their personal data, allow mail changing, right to object
+- log consent time
+- Fix consent toggle button in settings page
+- users can request their personal data, right to object
 - update the register function, change the usermodel to include privacy consent
-- add a view for msg/game/profile deletion
-- add button to revoke privacy or pull up privacy terms again (accessible)
+- add button topull up privacy terms again (accessible)
 - fix style for the privacy pop as well as privacy details
+- there is a bug with message deletion as well as global and private chat system, target is messed up
+- add password prompt for message deletion on friends
 
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.

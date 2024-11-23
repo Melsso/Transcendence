@@ -4,7 +4,7 @@ import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
 import { Habess } from "./gamePvP.js";
 let userEmail;
-let consentPrompt;
+let consentPrompt = false;
 const baseUrl = process.env.ACTIVE_HOST;
 
 async function refreshAccessToken() {
@@ -222,7 +222,7 @@ async function resetPassowrd(email, password, verf_code) {
 	}
 }
 
-async function deleteMessages(target) {
+export async function deleteMessages(target, password) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
@@ -238,6 +238,7 @@ async function deleteMessages(target) {
 		},
 		body: JSON.stringify({
 			target: target,
+			password: password,
 		}),
 	});
 	if (!response.ok) {
@@ -249,7 +250,7 @@ async function deleteMessages(target) {
 	return data;
 }
 
-async function deleteGames() {
+async function deleteGames(password) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
@@ -263,6 +264,9 @@ async function deleteGames() {
 			'Content-Type': 'application/json',
 			'Authorization': `Bearer ${access_token}`,
 		},
+		body: JSON.stringify({
+			password: password,
+		}),
 	});
 	if (!response.ok) {
 		const errorResponse = await response.json();
@@ -649,6 +653,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const menu = document.getElementById('menuuu');
 	const qContainer = document.getElementById('Queue');
 	const toggle = document.getElementById('2fa-toggle');
+	const privToggle = document.getElementById('priv-toggle');
 	const privacyPop = document.getElementById('privacy-policy');
 	const policyActionWrapper = document.getElementById('policy-action-wrapper');
 	const policyDetailsWrapper = document.getElementById('policy-details-wrapper');
@@ -696,7 +701,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	const privacyDetails = document.getElementById('privacy-details');
 	const privacyRefuse = document.getElementById('privacy-refuse');
 	const privacyReturn = document.getElementById('privacy-return');
-
+	const delMsgBtn = document.getElementById('delete-messages-btn');
+	const delGamesBtn = document.getElementById('delete-games-btn');
+	const changePolicyBtn = document.getElementById('change-privacy-settings-btn');
+	
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
 			window.userData.pong_socket.close();
@@ -826,21 +834,18 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 	
 	privacyAccept.addEventListener('click', function() {
-		console.log('Privacy Accepted!');
 		privacyPop.style.display = 'none';
 		Notification('User Action', 'You Have Accepted Our Policy Privacy! If You\'ve Changed Your Mind, Please Register And Edit Your Privacy Settings.', 1, 'profile');
 		consentPrompt = true;
 	});
 
 	privacyRefuse.addEventListener('click', function() {
-		console.log('Privacy Refused');
 		privacyPop.style.display = 'none';
 		Notification('User Action', 'You Have Refused Our Policy Privacy, You Can Not Use Our Website... Refresh If You\'ve Changed Your Mind!', 1, 'alert');
 		consentPrompt = false;
 	});
 
 	privacyDetails.addEventListener('click', function() {
-		console.log('Privacy details!');
 		policyActionWrapper.style.display = 'none';
 		policyDetailsWrapper.style.display = 'flex';
 	});
@@ -873,7 +878,12 @@ document.addEventListener('DOMContentLoaded', function () {
 		} catch(error) {
 			Notification('Profile Action', 'Something Went Wrong, Please Relog', 2, 'alert');
 		}
-	})
+	});
+
+	privToggle.addEventListener('click', function() {
+		privToggle.classList.toggle('on');
+	});
+
 	TonewpassButton.addEventListener('click', async function() {
 		const input_email = document.getElementById('forgotmail').value;
 		document.getElementById('forgotmail').value = '';
@@ -933,6 +943,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		const password = document.getElementById('password-login').value;
 		document.getElementById('username-login').value = '';
 		document.getElementById('password-login').value = '';
+		// if (!consentPrompt) {
+		// 	Notification('User Action', 'You Have Not Consented To Our Privacy Policy, Please Log In As A Guest.', 1, 'alert');
+		// 	return ;
+		// }
 		let loged_in = false;
 		try {
 			loged_in = await getLogs(username);
@@ -1007,6 +1021,11 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	registerButton.addEventListener('click', async function () {
+		// if (!consentPrompt) {
+		// 	Notification('User Action', 'You Have Not Consented To Our Privacy Policy, Please Log In As A Guest.', 1, 'alert');
+		// 	return ;
+		// 	// maybe display the consent prompt or take him back to login probably the latter
+		// }
 		const avatarInput = document.getElementById('avatar');
 		const avatarSelectionResult = document.getElementById('avatar-selection-result');
 		const selectedImage = avatarSelectionResult.querySelector('img');
@@ -1158,7 +1177,49 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		try {
 			const result = await updateBio(bio);
-			Notification('Profile Action', 'You have updated your bio!',2, 'profile');
+			Notification('Profile Action', 'You have updated your bio!', 2, 'profile');
+		} catch (error) {
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
+		}
+	});
+
+	delMsgBtn.addEventListener('click', async function() {
+		const pswd = document.getElementById('delete-message-password').value;
+		document.getElementById('delete-message-password').value = '';
+		try {
+			const result = await deleteMessages(null, pswd);
+			if (result.status === 'success') {
+				Notification('Profile Action', 'All Messages Have Been Deleted', 2, 'profile');
+			}
+		} catch (error) {
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
+		}
+	});
+	
+	delGamesBtn.addEventListener('click', async function() {
+		const pswd = document.getElementById('delete-games-password').value;
+		document.getElementById('delete-games-password').value = '';
+		try {
+			const result = await deleteGames(pswd);
+			if (result.status === 'success') {
+				Notification('Profile Action', 'All Games Have Been Deleted', 2, 'profile');
+			}
+		} catch (error) {
+			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
+		}
+	});
+	
+	changePolicyBtn.addEventListener('click', async function() {
+		const pswd = document.getElementById('change-privacy-password').value;
+		document.getElementById('change-privacy-password').value = '';
+		let consent;
+		if (privToggle.classList.contains('on')) {
+			consent = true;
+		} else {
+			consent = false;
+		}
+		try {
+			const result = await updatePrivacy(consent, pswd);
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}
