@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import HomePageView, SearchUserView, UpdateUNameView, UpdateBioView, UpdatePwdView, UpdateAvatarView, UpdateTwoFactorAuthView, UpdateEmailView
+from .views import (
+HomePageView, SearchUserView, UpdateUNameView, 
+UpdateBioView, UpdatePwdView, UpdateAvatarView, 
+UpdateTwoFactorAuthView, UpdateEmailView, DeleteGamesView, 
+DeleteMessagesView, UpdatePrivacyView
+)
 
 urlpatterns = [
     path('api/home/', HomePageView.as_view(), name='home'),
@@ -10,4 +15,7 @@ urlpatterns = [
     path('api/home/settings/updateavatar/', UpdateAvatarView.as_view(),name='update_avatar'),
     path('api/home/settings/updateTwoFactorAuth/', UpdateTwoFactorAuthView.as_view(), name='update_two_factor_auth'),
     path('api/home/settings/updateEmail/', UpdateEmailView.as_view(), name='update_email'),
+    path('api/home/settings/deleteMessages/', DeleteMessagesView.as_view(), name='delete_messages'),
+    path('api/home/settings/deleteGames/', DeleteGamesView.as_view(), name='delete_games'),
+    path('api/home/settings/updatePrivacy/', UpdatePrivacyView.as_view(), name='update_privacy'),
 ]

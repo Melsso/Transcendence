@@ -222,6 +222,85 @@ async function resetPassowrd(email, password, verf_code) {
 	}
 }
 
+async function deleteMessages(target) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+		return ;
+	}
+
+	const url = baseUrl + 'api/home/settings/deleteMessages/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			target: target,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+
+	const data = await response.json();
+	return data;
+}
+
+async function deleteGames() {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+		return ;
+	}
+
+	const url = baseUrl + 'api/home/settings/deleteGames/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+
+	const data = await response.json();
+	return data;
+}
+
+async function updatePrivacy(consent, password) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+		return ;
+	}
+
+	const url = baseUrl + 'api/home/settings/updatePrivacy/';
+	const response = await fetch (url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+		body: JSON.stringify({
+			consent: consent,
+			password: password,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+
+	const data = await response.json();
+	return data;
+}
+
 async function updateUsername(uname) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {

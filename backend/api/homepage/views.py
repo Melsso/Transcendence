@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-
+from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import generics, permissions
@@ -13,8 +13,9 @@ from rest_framework.status import (
 )
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
-from chats.models import Friend
+from chats.models import Friend, Message
 from chats.serializers import FriendSerializer
+from games.models import PongGame
 import re
 
 class HomePageView(generics.RetrieveAPIView):
@@ -73,6 +74,70 @@ class UpdateBioView(generics.RetrieveAPIView):
         curr_user.biography = new_bio
         curr_user.save()
         return Response({'status':'success', 'detail':'Bio changed'}, status=HTTP_200_OK)
+
+class UpdatePrivacyView(generics.RetrieveAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        consent = request.data.get('consent')
+        password = request.data.get('password')
+
+        delUser = authenticate(username=request.user.username, password=password)
+        if delUser is None:
+            return Response({'status':'error', 'detail':'Password Is Incorrect'}, status=HTTP_400_BAD_REQUEST)
+        
+        if consent == True:
+            return Response({'status':'success', 'detail':'Privacy Policy Updated'}, status=HTTP_200_OK)
+        else:
+            try:
+                user.username = f"[Deleted_User{user.id}]"
+                user.password = ""
+                user.email = "deleted@deleted.com"
+                user.bio = ""
+                user.avatar = None
+                user.save()
+                Friend.objects.filter(user=user).delete()
+                Friend.objects.filter(friend=user).delete()
+                return Response({'status':'success', 'detail':'Account deleted successfuly!'}, status=HTTP_200_OK)
+            except Exception as e:
+                return Response({'status':'error', 'detail':str(e)}, status=HTTP_400_BAD_REQUEST)
+
+class DeleteMessagesView(generics.RetrieveAPIView):
+    
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        target = request.data.get('target')
+        try:
+            if target:
+                target_user = get_object_or_404(UserProfile, username=target)
+                deleted_count, _ = Message.objects.filter(sender=user, target_user=target_user).delete()
+                return Response({'status': 'success', 'detail': f'Deleted {deleted_count} messages.'}, status=HTTP_200_OK)
+            else:
+                deleted_count, _ = Message.objects.filter(sender=user).delete()
+                return Response({'status': 'success', 'detail': f'Deleted {deleted_count} messages.'}, status=HTTP_200_OK)
+        except Exception as e:
+            return Response({'status': 'error', 'detail': str(e)}, status=HTTP_400_BAD_REQUEST)
+
+class DeleteGamesView(generics.RetrieveAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+        
+    def post(self, request):
+        user = request.user
+        try:
+            games_to_reset = PongGame.objects.filter(user=user)
+            games_to_reset.update(
+                score = 0,
+                attack_accuracy = 0,
+                shield_powerup = 0,
+            )
+        except Exception as e:
+            return Response({'status':'error', 'detail':str(e)}, status=HTTP_400_BAD_REQUEST)            
+        return Response({'status':'success', 'detail':'Erased Game Records successfuly'}, status=HTTP_200_OK)            
 
 class UpdateEmailView(generics.RetrieveAPIView):
 
