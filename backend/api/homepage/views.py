@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.conf import settings
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -70,6 +72,26 @@ class UpdateBio(generics.RetrieveAPIView):
         curr_user.biography = new_bio
         curr_user.save()
         return Response({'status':'success', 'detail':'Bio changed'}, status=HTTP_200_OK)
+
+class UpdateMail(generics.RetriveAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        new_email = request.data.get('email')
+        user = request.user
+        if new_email is None or '@' not in new_email or '.' not in new_email:
+            return Response({'status':'error', 'detail':'Invalid Email!'}, status=HTTP_400_BAD_REQUEST)
+        try:
+            subject = 'Email Update'
+            message = f'You have updated your email from {user.email} to {new_email}!'
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [new_email])
+        except Exception as e:
+            return Response({'status':'error', 'detail':'Email Could not be reached'}, status=HTTP_400_BAD_REQUEST)
+        user.email = new_email
+        user.save()
+        return Response({'status':'success', 'detail':'Email Changed Successfuly'}, status=HTTP_200_OK)
+
 
 class UpdatePwd(generics.RetrieveAPIView):
 
