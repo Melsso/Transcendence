@@ -1288,6 +1288,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 
 			const result = await updatePrivacy(consent, pswd);
+			if (result.status === 'success' && result.detail === 'Privacy Policy Updated') {
+				Notification('Profile Action', 'You Have Agreed To Our Privacy Policy.', 2, 'profile');
+				return ;
+			}
 			if (window.userData.socket) {
 				window.userData.socket.close();
 			}
@@ -1295,6 +1299,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			localStorage.removeItem('refreshToken');
 			localStorage.removeItem('accessToken');
 			navigateTo('login', null);
+			Notification('Profile Action', 'You Have Refused Our Privacy Policy, Please Use A Guest Account.', 1, 'alert');
 			// here on success immediately log out the user, clear userdata and localstorage and redir to login
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
