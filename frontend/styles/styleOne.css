@@ -197,7 +197,6 @@
 #Tfa-container,
 #forgot-container,
 #second-reg-container,
-#policy-details-wrapper,
 #policy-action-wrapper,
 #register-form-container {
 	display: none;
@@ -207,6 +206,7 @@
 	background-color: #FFFFFF;
 	position: absolute;
 	width: 75%;
+	bottom: 240%;
 }
 
 #privacy-accept, 

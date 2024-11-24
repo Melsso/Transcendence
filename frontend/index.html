@@ -462,77 +462,6 @@
                 </div>
             </div>
             <div class="form-container">
-                <div class="fst-italic rounded m-5 p-3 text-center" id="privacy-policy">
-                    <div id="policy-action-wrapper">
-                        <h1 class="p-3" id="priv">Privacy Policy</h1>
-                        <p class="p-3">We collect your email and username to create and manage your account and to ensure proper access to the game. We use cookies to enhance your experience as well as secure your access for a smooth and safe usage of the website.</p>
-                        <div class="p-3 form-actions">
-                            <button type="button" class="btn" id="privacy-accept">Accept</button>
-                            <button type="button" class="btn" id="privacy-details">Privacy Policy</button>
-                            <button type="button" class="btn" id="privacy-refuse">Refuse</button>
-                        </div>
-                    </div>
-                    <div id="policy-details-wrapper">
-                    <div id="pol-det">
-                        <button type="button" class="btn btn-primary btn-ins" id="close-privacy">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <h2 class="p-3">Introduction</h2>
-                        <p class="p-3">
-                            We are just three developers having a fun time creating an online PongGame!<br>
-                            This privacy policy explains how we collect, use and protect your personal data in accordance with the General Data Protection Regulation (GDPR).<br>
-                            Legal obligations: No action required.<br>
-                        </p>
-                        <h2 class="p-3">What Data We Collect</h2>                
-                        <p class="p-3">Registered Accounts: username, email, profile picture, profile biography, match history of games played, and hostname.<br>
-                            Guest Accounts: temporary session identifiers (e.g., coookies of tokens).<br>
-                            Messaging Data: chat messages are stored for 6months and then deleted afterwards, they can also be deleted on request.<br>
-                            Technical Data: temporary session identifiers (e.g., coookies of tokens.)<br>
-                        </p>                        
-                        <h2 class="p-3">How We Use Your Data.</h2>
-                        <p class="p-3">Account creation and management.<br>
-                            Gameplay functionality (e.g.,matchmaking, storing preferences, match history).<br>
-                            Communication (e.g., messaging between players, global chat).<br>
-                        </p>
-                        <h2 class="p-3">Legal Basis For Processing</h2>
-                        <p class="p-3">Contract: Account creation and gameplay require processing personal data.</p>                        
-                        <h2 class="p-3">How Long We Store Data</h2>
-                        <p class="p-3">Account Data: Until the account is deleted by the user.<br>
-                            Gameplay Data: Retained for 6 months for analytics and better user experience.<br>
-                            Messaging Data: Retained for 6 months, unless deleted by the user.<br>
-                            Cookies: Retention for as long as a user is the website tab is open.<br>
-                        </p>
-                        <h2 class="p-3">Who We Share Data With</h2>
-                        <p class="p-3">Your data is not shared any 3rd party software and or company.</p>                        
-                        <h2 class="p-3">Your Rights Under GDPR</h2>
-                        <p class="p-3">Access: You can request a copy of the personal data we hold about you.<br>
-                            Rectification: You can update or correct inaccurate data in your profile.<br>
-                            Erasure:You can delete your account, which will remove your data from our system.<br>
-                            Objection: You can object to the processing of our data for certain purposes.<br>
-                            Withdraw Consent: You can change your preferences for optional data processing at any time (our website does not contain any optional data processing).<br>
-                        </p>                        
-                        <h2 class="p-3">Security Measures</h2>
-                        <p class="p-3">Encryption for sensistive information (e.g., passwords, communications)<br>
-                            Access controls to limit data exposure.<br>
-                        </p>
-                        <h2 class="p-3">Cookies And Tracking</h2>
-                        <p class="p-3">We are currently using one session cookie which stores your session data, it can be cleared and erased manually through the inspect toolbox.</p>                        
-                        <h2 class="p-3">Data Breaches</h2>
-                        <p class="p-3">Notify authorities within 72 hours.<br>
-                            Inform affected users promptly.<br>
-                        </p>                        
-                        <h2 class="p-3">Changes To The Privacy</h2>
-                        <p class="p-3">Notify users when significant changes are made.<br>
-                            Last updated on 22 November 2024.<br>
-                        </p>
-                        <h2 class="p-3">Contact Information</h2>
-                        <p class="p-3">Email address: your.pong.website@gmail.com</p>
-                        <button type="button" class="btn privacy-btn" id="privacy-return">Return</button>
-                    </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-container">
                 <div class="fst-italic rounded m-5 p-3 text-center my-form" id="Tfa-container">
                     <h1 class="p-3">Please verify your login credentials</h1>
                     <p class="p-3">Enter the verification code that was sent to your email.</p>
@@ -624,8 +553,30 @@
                             <div id="avatar-selection-result" class="avatar-selection"></div>
                             <input type="hidden" id="preset-avatar" name="preset-avatar">
                         </div>
+                        <div class="mb-3">
+                            <button type="button" id="reg-view-terms" class="btn btn-primary">View Privacy Policy</button>
+                        </div>
+                        <div class="term-input mb-3">
+                            <label for="accept-terms" class="form-label" style="padding-right: 20px;">I Agree To The Terms And Conditions</label>
+                            <input type="checkbox" id="terms-checkbox" name="accept-terms" required>
+                        </div>
                         <button type="button" class="btn btn-primary" id="register">Register</button>
                     </form>
+                </div>
+                <div id="terms-display-register">
+
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="fst-italic rounded m-5 p-3 text-center" id="privacy-policy">
+                    <button id="close-privacy-policy-banner" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                    <div id="policy-action-wrapper">
+                        <h1 class="p-3" id="priv">Privacy Policy</h1>
+                        <p class="p-3">We collect your email and username to create and manage your account and to ensure proper access to the game. We do not use cookies.</p>
+                        <button type="button" class="btn btn-primary" id="privacy-details-banner">Privacy Policy</button>
+                    </div>    
+                </div>
+                <div id="terms-display-banner">
                 </div>
             </div>
         </div>

@@ -264,6 +264,7 @@ class RequestUserDataView(generics.GenericAPIView):
             'match_history': match_history_data,
             'messages': messages_data,
             'friend_list': friend_list_data,
+            'consent_date': user.date_joined,
         }
 
         return Response({'status':'success', 'detail':'User Data Fetched', 'data':data}, status=HTTP_200_OK)

@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const privToggle = document.getElementById('priv-toggle');
 	const privacyPop = document.getElementById('privacy-policy');
 	const policyActionWrapper = document.getElementById('policy-action-wrapper');
-	const policyDetailsWrapper = document.getElementById('policy-details-wrapper');
+	// const policyDetailsWrapper = document.getElementById('policy-details-wrapper');
 	
 	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
@@ -693,7 +693,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainSettings.style.display = 'none';
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
-	policyDetailsWrapper.style.display = 'none';
+	// policyDetailsWrapper.style.display = 'none';
 	privacyPop.style.display = 'flex';
 	policyActionWrapper.style.display = 'flex';
 
@@ -722,15 +722,15 @@ document.addEventListener('DOMContentLoaded', function () {
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
 	const Tlobby = document.getElementById('pong-tournament');
-	const privacyAccept = document.getElementById('privacy-accept');
-	const privacyDetails = document.getElementById('privacy-details');
-	const privacyRefuse = document.getElementById('privacy-refuse');
-	const privacyReturn = document.getElementById('privacy-return');
+	const showPrivacyRegisterBtn = document.getElementById('reg-view-terms');
+	const showPrivacyBannerBtn = document.getElementById('privacy-details-banner');
+	const showPrivacyProfileBtn = document.getElementById('main-priv-policy');
+	// const privacyReturnBtn = document.getElementById('privacy-return');
 	const delMsgBtn = document.getElementById('delete-messages-btn');
 	const delGamesBtn = document.getElementById('delete-games-btn');
 	const changePolicyBtn = document.getElementById('change-privacy-settings-btn');
 	const requestUserDataBtn = document.getElementById('request-data-btn');
-	const mainPrivPolBtn = document.getElementById('main-priv-policy');
+	const closeBannerPrivBtn = document.getElementById('close-privacy-policy-banner');
 
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
@@ -850,7 +850,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else if (view === '2fa') {
 			mainOne.style.display = 'flex';
 			facontainer.style.display = 'block';
-
 		}
 	}
 
@@ -859,29 +858,44 @@ document.addEventListener('DOMContentLoaded', function () {
 			showView(event.state.view);
 		}
 	});
+
+	closeBannerPrivBtn.addEventListener('click', function() {
+		privacyPop.style.display = 'none';
+	});
+
+	showPrivacyRegisterBtn.addEventListener('click', function() {
+		console.log('Register Privacy Dislpay button clicked');
+		const wrapper = document.getElementById('terms-display-register');
+		const policyElement = createPolicyDetailsElement();
+		wrapper.appendChild(policyElement);
+		
+		const returnBtn = document.getElementById('privacy-return');
+		returnBtn.addEventListener('click', function() {
+			wrapper.innerHTML = '';
+		});
+	});
+
+	showPrivacyBannerBtn.addEventListener('click', function() {
+		console.log('Banner Privacy Display button clicked');
+		const wrapper = document.getElementById('terms-display-banner');
+		const policyElement = createPolicyDetailsElement();
+		wrapper.appendChild(policyElement);
 	
-	privacyAccept.addEventListener('click', function() {
-		privacyPop.style.display = 'none';
-		Notification('User Action', 'You Have Accepted Our Policy Privacy! If You\'ve Changed Your Mind, Please Register And Edit Your Privacy Settings.', 1, 'profile');
-		consentPrompt = true;
+		const returnBtn = document.getElementById('privacy-return');	
+		returnBtn.addEventListener('click', function() {
+			wrapper.innerHTML = '';
+		});
 	});
 
-	privacyRefuse.addEventListener('click', function() {
-		privacyPop.style.display = 'none';
-		Notification('User Action', 'You Have Refused Our Policy Privacy, You Can Not Use Our Website... Refresh If You\'ve Changed Your Mind!', 1, 'alert');
-		consentPrompt = false;
+	showPrivacyProfileBtn.addEventListener('click', function() {
+		console.log('Profile Privacy Display button clicked');
+		const policyElement = createPolicyDetailsElement();
+		
+		const returnBtn = document.getElementById('privacy-return');
+		returnBtn.addEventListener('click', function() {
+			console.log('profile privacy return button clicked');
+		});
 	});
-
-	privacyDetails.addEventListener('click', function() {
-		policyActionWrapper.style.display = 'none';
-		policyDetailsWrapper.style.display = 'flex';
-	});
-
-	privacyReturn.addEventListener('click', function() {
-		console.log('Returning from privacy details');
-		policyDetailsWrapper.style.display = 'none';
-		policyActionWrapper.style.display = 'flex';
-	})
 
 	forgotButton.addEventListener('click', function() {
 		navigateTo('forgot', null);
@@ -986,7 +1000,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		// need to save wether remember or not for next call
 		try {
-
 			const result = await loginUser(username, password);
 			const tokens = result.tokens;
 			const host_check = await checkKnownLocation(tokens.access);
@@ -994,6 +1007,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			localStorage.setItem('refreshToken', tokens.refresh);
 			scheduleTokenRefresh(localStorage.getItem('accessToken'));
 			if (host_check['2fa'] === false) {
+				privacyPop.style.display = 'none';
 				navigateTo('profile', null);
 			}
 			else {
@@ -1013,6 +1027,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await addToKnownLocation(v_code, r_value);
 			if (result.status === 'success') {
+				privacyPop.style.display = 'none';
 				navigateTo('profile', null);
 			}
 		} catch (error) {
@@ -1053,6 +1068,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		// 	return ;
 		// 	// maybe display the consent prompt or take him back to login probably the latter
 		// }
+		const termsCheckbox = document.getElementById('terms-checkbox');
+		if (!termsCheckbox.checked) {
+			Notification('Register Action', 'You Have Not Agreed To Terms And Conditions, Please Agree To Complete Registration!', 1, 'alert');
+			return ;
+		}
 		const avatarInput = document.getElementById('avatar');
 		const avatarSelectionResult = document.getElementById('avatar-selection-result');
 		const selectedImage = avatarSelectionResult.querySelector('img');
@@ -1087,17 +1107,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	mainPrivPolBtn.addEventListener('click', function() {
-		console.log('Youve opened the priv policy tab! this will be added later');
-	});
-
 	logoutButton.addEventListener('click', async function () {
-
 		try {
 			await logoutUser();
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
+	
 		document.getElementById('register-form-container').style.display = 'none';
 		document.getElementById('second-reg-container').style.display = 'none';
 		document.getElementById('login-form-container').style.display = 'block';
@@ -1240,10 +1256,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	requestUserDataBtn.addEventListener('click', async function() {
 		try {
+			var gdata = window.userData;
+			delete gdata.socket;
+			delete gdata.target;
+			delete gdata.online;
+			delete gdata.match_history;
 			const result = await getUserData();
+			gdata['consent_time'] = result.consent_date;
+			gdata['creation_time'] = result.consent_date;
 			generateFile('match_history', result.data.match_history, 'csv');
 			generateFile('friends', result.data.friends, 'csv');
 			generateFile('messages', result.data.messages, 'csv');
+			generateFile('profile_data', [gdata], 'csv');
 			
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
@@ -1463,4 +1487,110 @@ async function handleprofileAction(action, targetuname, targetID) {
 			Notification('ALLO', 'AYA NDIRO BONG FDAR PLZ', 2, 'ALERT');
 			break;
 	}
+}
+
+function createPolicyDetailsElement() {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'policy-details-wrapper';
+
+    const polDet = document.createElement('div');
+    polDet.id = 'pol-det';
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'btn btn-primary btn-ins';
+    closeButton.id = 'close-privacy';
+
+    const closeIcon = document.createElement('i');
+    closeIcon.className = 'fas fa-arrow-left';
+    closeButton.appendChild(closeIcon);
+    polDet.appendChild(closeButton);
+
+    const addSection = (headingText, paragraphHTML) => {
+        const heading = document.createElement('h2');
+        heading.className = 'p-3';
+        heading.textContent = headingText;
+        polDet.appendChild(heading);
+
+        const paragraph = document.createElement('p');
+        paragraph.className = 'p-3';
+        paragraph.innerHTML = paragraphHTML;
+        polDet.appendChild(paragraph);
+    };
+
+    addSection('Introduction', `
+        We are just three developers having a fun time creating an online PongGame!<br>
+        This privacy policy explains how we collect, use and protect your personal data in accordance with the General Data Protection Regulation (GDPR).<br>
+        Legal obligations: No action required.<br>
+    `);
+
+    addSection('What Data We Collect', `
+        Registered Accounts: username, email, profile picture, profile biography, match history of games played, and hostname.<br>
+        Guest Accounts: temporary session identifiers (e.g., cookies or tokens).<br>
+        Messaging Data: chat messages are stored for 6 months and then deleted afterwards, they can also be deleted on request.<br>
+        Technical Data: temporary session identifiers (e.g., cookies or tokens).<br>
+    `);
+
+    addSection('How We Use Your Data.', `
+        Account creation and management.<br>
+        Gameplay functionality (e.g., matchmaking, storing preferences, match history).<br>
+        Communication (e.g., messaging between players, global chat).<br>
+    `);
+
+    addSection('Legal Basis For Processing', `
+        Contract: Account creation and gameplay require processing personal data.
+    `);
+
+    addSection('How Long We Store Data', `
+        Account Data: Until the account is deleted by the user.<br>
+        Gameplay Data: Retained for 6 months for analytics and better user experience.<br>
+        Messaging Data: Retained for 6 months, unless deleted by the user.<br>
+        Cookies: Retention for as long as a user is the website tab is open.<br>
+    `);
+
+    addSection('Who We Share Data With', `
+        Your data is not shared with any 3rd party software and or company.
+    `);
+
+    addSection('Your Rights Under GDPR', `
+        Access: You can request a copy of the personal data we hold about you.<br>
+        Rectification: You can update or correct inaccurate data in your profile.<br>
+        Erasure: You can delete your account, which will remove your data from our system.<br>
+        Objection: You can object to the processing of your data for certain purposes.<br>
+        Withdraw Consent: You can change your preferences for optional data processing at any time (our website does not contain any optional data processing).<br>
+    `);
+
+    addSection('Security Measures', `
+        Encryption for sensitive information (e.g., passwords, communications).<br>
+        Access controls to limit data exposure.<br>
+    `);
+
+    addSection('Cookies And Tracking', `
+        We are currently using one session cookie which stores your session data, it can be cleared and erased manually through the inspect toolbox.
+    `);
+
+    addSection('Data Breaches', `
+        Notify authorities within 72 hours.<br>
+        Inform affected users promptly.<br>
+    `);
+
+    addSection('Changes To The Privacy', `
+        Notify users when significant changes are made.<br>
+        Last updated on 22 November 2024.<br>
+    `);
+
+    addSection('Contact Information', `
+        Email address: your.pong.website@gmail.com
+    `);
+
+    const returnButton = document.createElement('button');
+    returnButton.type = 'button';
+    returnButton.className = 'btn privacy-btn';
+    returnButton.id = 'privacy-return';
+    returnButton.textContent = 'Return';
+    polDet.appendChild(returnButton);
+
+    wrapper.appendChild(polDet);
+
+    return wrapper;
 }
