@@ -17,6 +17,14 @@ class Command(BaseCommand):
     def create_users(self):
         users = [
             {
+                'username': 'Deleted_User',
+                'password': 'strongpass123',
+                'email': 'deleted@my_pong_website.com',
+                'bar_exp_game1': 56120,
+                'is_verified': True,
+                'is_active': True
+            },
+            {
                 'username': 'Easy AI',
                 'password': 'strongpass123',
                 'email': 'easai@my_pong_website.com',

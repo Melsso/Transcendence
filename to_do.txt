@@ -28,9 +28,9 @@ gdpr:
 - log consent time
 - update the register function, change the usermodel to include privacy consent ?!
 - add functionality to privacy button in profile page
-- add functionality to request data button and privacy update button in settings page
 - there is a bug with message deletion as well as global and private chat system, target is messed up
 - add password prompt for message deletion on friends
+- all buttons except main privacy one and delete friend messages are functional
 
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.

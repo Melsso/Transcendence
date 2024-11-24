@@ -222,6 +222,31 @@ async function resetPassowrd(email, password, verf_code) {
 	}
 }
 
+async function getUserData() {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		Notification('Profile Action', "No access Token!", 2, 'alert');
+		return ;
+	}
+
+	const url = baseUrl + 'api/home/settings/requestUserData/';
+	const response = await fetch (url, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${access_token}`,
+		},
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+
+	const data = await response.json();
+	return data;
+}
+
+
 export async function deleteMessages(target, password) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
@@ -704,7 +729,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const delMsgBtn = document.getElementById('delete-messages-btn');
 	const delGamesBtn = document.getElementById('delete-games-btn');
 	const changePolicyBtn = document.getElementById('change-privacy-settings-btn');
-	
+	const requestUserDataBtn = document.getElementById('request-data-btn');
+	const mainPrivPolBtn = document.getElementById('main-priv-policy');
+
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
 			window.userData.pong_socket.close();
@@ -1060,6 +1087,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
+	mainPrivPolBtn.addEventListener('click', function() {
+		console.log('Youve opened the priv policy tab! this will be added later');
+	});
+
 	logoutButton.addEventListener('click', async function () {
 
 		try {
@@ -1183,6 +1214,42 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
+	function convertToCsv(data) {
+		if (!Array.isArray(data) || data.length === 0) {
+			return 'No data available';
+		}
+		const headers = Object.keys(data[0]);
+		const rows = data.map(row => headers.map(header => JSON.stringify(row[header] || '')).join(','));
+		return [headers.join(','), ...rows].join('\n');
+	}
+
+	function generateFile(fileName, data, format) {
+		let fileContent;
+		let mimeType;
+
+		fileContent = convertToCsv(data);
+		mimeType = 'text/csv';
+		const blob = new Blob([fileContent], { type:mimeType });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = `${fileName}.${format}`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+
+	requestUserDataBtn.addEventListener('click', async function() {
+		try {
+			const result = await getUserData();
+			generateFile('match_history', result.data.match_history, 'csv');
+			generateFile('friends', result.data.friends, 'csv');
+			generateFile('messages', result.data.messages, 'csv');
+			
+		} catch (error) {
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
+		}
+	});
+
 	delMsgBtn.addEventListener('click', async function() {
 		const pswd = document.getElementById('delete-message-password').value;
 		document.getElementById('delete-message-password').value = '';
@@ -1220,6 +1287,14 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		try {
 			const result = await updatePrivacy(consent, pswd);
+			if (window.userData.socket) {
+				window.userData.socket.close();
+			}
+			windows.userData = {}
+			localStorage.removeItem('refreshToken');
+			localStorage.removeItem('accessToken');
+			navigateTo('login', null);
+			// here on success immediately log out the user, clear userdata and localstorage and redir to login
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}

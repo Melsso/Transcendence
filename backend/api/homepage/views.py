@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Q
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -14,8 +15,9 @@ from rest_framework.status import (
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 from chats.models import Friend, Message
-from chats.serializers import FriendSerializer
+from chats.serializers import FriendSerializer, MessageSerializer
 from games.models import PongGame
+from games.serializers import PongGameSerializer
 import re
 
 class HomePageView(generics.RetrieveAPIView):
@@ -138,11 +140,12 @@ class DeleteGamesView(generics.RetrieveAPIView):
             return Response({'status':'error', 'detail':'Password Is Incorrect'}, status=HTTP_400_BAD_REQUEST)
         try:
             games_to_reset = PongGame.objects.filter(user=user)
-            games_to_reset.update(
-                score = 0,
-                attack_accuracy = 0,
-                shield_powerup = 0,
-            )
+            games_to_reset_op = PongGame.objects.filter(opponent=user)
+            deleted_user = UserProfile.objects.filter(username='Deleted_User').first()
+            if not deleted_user:
+                return Response({'status': 'error', 'detail': 'Deleted user does not exist'}, status=HTTP_400_BAD_REQUEST)
+            games_to_reset.update(user=deleted_user)
+            games_to_reset_op.update(opponent=deleted_user)
         except Exception as e:
             return Response({'status':'error', 'detail':str(e)}, status=HTTP_400_BAD_REQUEST)            
         return Response({'status':'success', 'detail':'Erased Game Records successfuly'}, status=HTTP_200_OK)            
@@ -225,6 +228,7 @@ class   UpdateAvatarView(generics.GenericAPIView):
             return Response({'status':'error', 'detail':'Invalid Avatar'}, status=HTTP_400_BAD_REQUEST)
 
 class   UpdateTwoFactorAuthView(generics.GenericAPIView):
+    
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -235,3 +239,31 @@ class   UpdateTwoFactorAuthView(generics.GenericAPIView):
             user.Twofa_auth = False
         user.save()
         return Response({'status':'success', 'detail':'Changed Two_Factor_Auth Status'}, status=HTTP_200_OK)
+
+class RequestUserDataView(generics.GenericAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    def get_queryset(self):
+        user = self.request.user
+        friends = Friend.objects.filter(status='FRIENDS').filter(Q(user=user) | Q(friend=user))
+        friend_requests = Friend.objects.filter(friend=user, status='PENDING')
+        return friends.union(friend_requests)
+
+    def get(self, request):
+        user = request.user
+
+        match_history = PongGame.objects.filter(user=user)
+        messages = Message.objects.filter(sender=user)
+        friend_list = self.get_queryset()
+
+        match_history_data = PongGameSerializer(match_history, many=True).data
+        messages_data = MessageSerializer(messages, many=True).data
+        friend_list_data = FriendSerializer(friend_list, many=True).data
+
+        data = {
+            'match_history': match_history_data,
+            'messages': messages_data,
+            'friend_list': friend_list_data,
+        }
+
+        return Response({'status':'success', 'detail':'User Data Fetched', 'data':data}, status=HTTP_200_OK)

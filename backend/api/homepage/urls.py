@@ -3,7 +3,7 @@ from .views import (
 HomePageView, SearchUserView, UpdateUNameView, 
 UpdateBioView, UpdatePwdView, UpdateAvatarView, 
 UpdateTwoFactorAuthView, UpdateEmailView, DeleteGamesView, 
-DeleteMessagesView, UpdatePrivacyView
+DeleteMessagesView, UpdatePrivacyView, RequestUserDataView
 )
 
 urlpatterns = [
@@ -18,4 +18,5 @@ urlpatterns = [
     path('api/home/settings/deleteMessages/', DeleteMessagesView.as_view(), name='delete_messages'),
     path('api/home/settings/deleteGames/', DeleteGamesView.as_view(), name='delete_games'),
     path('api/home/settings/updatePrivacy/', UpdatePrivacyView.as_view(), name='update_privacy'),
+    path('api/home/settings/requestUserData/', RequestUserDataView.as_view(), name='request_user_data'),
 ]
