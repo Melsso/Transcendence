@@ -116,7 +116,6 @@
 	position: absolute;
 	background-color: #9da5cf;
 	bottom: 0;
-	height: 5%;
 	width: 100%;
 }
 
@@ -140,18 +139,27 @@
 
 .profile-btn:hover,
 .setting-btn:hover,
+.mpriv-btn:hover,
 .logout-btn:hover {
 	border-color: #dee2e6;
 }
 
-.logout-btn{
+.mpriv-btn {
+	width: 100%;
+	color: rgb(29, 9, 34);
+	border: 2px solid black;
+}
+
+.logout-btn {
 	width: 60%;
 	color: rgb(29, 9, 34);
 	border: 2px solid black;
 }
 
+
 .setting-btn:focus,
-.logout-btn:focus {
+.logout-btn:focus,
+.mpriv-btn:focus {
 	color:#FFFFFF;
 	border: 2px solid #00000059;
 	box-shadow: none;

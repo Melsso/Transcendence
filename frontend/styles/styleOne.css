@@ -237,11 +237,18 @@
 
 .privacy-btn {
 	background-color: #00008B;
+	color: #fff;
+	width: 15%;
+}
+
+.privacy-btn:hover {
+	color: blue;
 }
 
 #pol-det {
-	height: 32.5%;
-	top: 15%;
+	height: 37%;
+	top: 12%;
+	width: 100%;
 	position: relative;
 	overflow-y: auto;
 	background-color: #FFFFFF;
@@ -325,6 +332,14 @@ body, html {
 
 .btn-group {
 	margin-top: 20px;
+}
+
+.btn-group-s {
+	margin-top: 20px;
+	display: inline-flex;
+    vertical-align: middle;
+    align-content: flex-start;
+    flex-wrap: wrap;
 }
 
 .btn-login:hover,

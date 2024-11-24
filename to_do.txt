@@ -26,11 +26,9 @@ MINOR:
 
 gdpr:
 - log consent time
-- Fix consent toggle button in settings page
-- users can request their personal data, right to object
-- update the register function, change the usermodel to include privacy consent
-- add button topull up privacy terms again (accessible)
-- fix style for the privacy pop as well as privacy details
+- update the register function, change the usermodel to include privacy consent ?!
+- add functionality to privacy button in profile page
+- add functionality to request data button and privacy update button in settings page
 - there is a bug with message deletion as well as global and private chat system, target is messed up
 - add password prompt for message deletion on friends
 

@@ -23,7 +23,8 @@
     </div>
     <div id="mainTwo">
         <div class="sidebar right-sidebar" id="right-sidebar">
-            <div class="btn-group down-btns" role="group" aria-label="sidebar-btns">
+            <div class="btn-group-s down-btns" role="group" aria-label="sidebar-btns">
+                <button type="button" class="btn mpriv-btn" id="main-priv-policy">Privacy Policy</button>
                 <button type="button" class="btn logout-btn" id="logout">Logout</button>
                 <button type="button" class="btn profile-btn" id="to-profile"></button>
                 <button type="button" class="btn setting-btn" id="to-settings"></button>
@@ -283,6 +284,11 @@
                     <button id="updateavatar-btn" type="button" class="btn btn-primary">Update Avatar</button>
                 </form>
                 
+                <form id="request-data-form" class="settings-form">
+                    <label for="req-data">Request Your Data</label>
+                    <button type="button" class="btn btn-primary" id="request-data-btn" name="req-data">Request Your Data</button>
+                </form>
+
                 <form id="msg-delete-form" class="settings-form">
                     <label for="del-msg-pass">Delete All Messages</label>
                     <input type="password" id="delete-message-password" name="del-msg-pass" placeholder="Enter Your Password" required>
@@ -296,7 +302,7 @@
                 </form>
 
                 <form id="privacy-change-form" class="settings-form">
-                    <div id="priv-toggle" class="Twofa-toggle">
+                    <div id="priv-toggle" class="privacy-toggle">
                         <p class="toggle-text">Privacy Policy Consent</p>
                         <div class="toggle-slider">
                             <i class="icon priv-on">✔</i>
@@ -381,9 +387,9 @@
                     <button type="button" class="btn btn-primary btn-return" id="return-to-menu-ai">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    </div>
-                    <div class="Instructions" id="Instructions-box">
-                        <button type="button" class="btn btn-primary btn-ins" id="return-to-menu-ins">
+                </div>
+                <div class="Instructions" id="Instructions-box">
+                    <button type="button" class="btn btn-primary btn-ins" id="return-to-menu-ins">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                     <h2>Instructions And Rules:</h2>
@@ -468,13 +474,16 @@
                     </div>
                     <div id="policy-details-wrapper">
                     <div id="pol-det">
+                        <button type="button" class="btn btn-primary btn-ins" id="close-privacy">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
                         <h2 class="p-3">Introduction</h2>
                         <p class="p-3">
                             We are just three developers having a fun time creating an online PongGame!<br>
                             This privacy policy explains how we collect, use and protect your personal data in accordance with the General Data Protection Regulation (GDPR).<br>
                             Legal obligations: No action required.<br>
                         </p>
-                        <h2 class="p-3">What Data We Collect</h2>                    
+                        <h2 class="p-3">What Data We Collect</h2>                
                         <p class="p-3">Registered Accounts: username, email, profile picture, profile biography, match history of games played, and hostname.<br>
                             Guest Accounts: temporary session identifiers (e.g., coookies of tokens).<br>
                             Messaging Data: chat messages are stored for 6months and then deleted afterwards, they can also be deleted on request.<br>
@@ -484,7 +493,7 @@
                         <p class="p-3">Account creation and management.<br>
                             Gameplay functionality (e.g.,matchmaking, storing preferences, match history).<br>
                             Communication (e.g., messaging between players, global chat).<br>
-                        </p>                        
+                        </p>
                         <h2 class="p-3">Legal Basis For Processing</h2>
                         <p class="p-3">Contract: Account creation and gameplay require processing personal data.</p>                        
                         <h2 class="p-3">How Long We Store Data</h2>
