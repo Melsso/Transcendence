@@ -21,20 +21,17 @@ MINOR:
 - Expanding Browser Compatibility done
 
 		//global chat aint refreshing
-		// fix refresh token
-
 
 gdpr:
 - log consent time
 - update the register function, change the usermodel to include privacy consent ?!
 - add functionality to privacy button in profile page
-- there is a bug with message deletion as well as global and private chat system, target is messed up
 - add password prompt for message deletion on friends
 - all buttons except main privacy one and delete friend messages are functional
+- there is a bug with message deletion; they somehow still stay rendered even though they've been deleted?
 
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.
-empty everything after you leave the settings page.
 speedlimit on the ball
 friend request: when someone sends you a friend request and you try to send a request it says already sent a request
 
@@ -43,4 +40,4 @@ things to be done for he project to be done:
 - Fixing the PvP game (buff wise and score), to be handled by Rayan.
 - Sending the end game stats and saving them and adding correct Exp to the user, to be handled by Saadoun.
 - Tournamnet logic to be done , handled by Saadoun and Sofiane.
-- Fixing the error messages and checkig bugs, to be Handled by Rayan.
+- checkig bugs, to be Handled by Rayan.

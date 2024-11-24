@@ -321,11 +321,11 @@ async function updatePrivacy(consent, password) {
 			password: password,
 		}),
 	});
+
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		throw errorResponse;
 	}
-
 	const data = await response.json();
 	return data;
 }
@@ -1286,11 +1286,12 @@ document.addEventListener('DOMContentLoaded', function () {
 			consent = false;
 		}
 		try {
+
 			const result = await updatePrivacy(consent, pswd);
 			if (window.userData.socket) {
 				window.userData.socket.close();
 			}
-			windows.userData = {}
+			window.userData = {};
 			localStorage.removeItem('refreshToken');
 			localStorage.removeItem('accessToken');
 			navigateTo('login', null);
