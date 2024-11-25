@@ -22,13 +22,19 @@ MINOR:
 
 		//global chat aint refreshing
 
-gdpr:
-- log consent time
-- update the register function, change the usermodel to include privacy consent ?!
-- add functionality to privacy button in profile page
+TODO:
 - add password prompt for message deletion on friends
-- all buttons except main privacy one and delete friend messages are functional
 - there is a bug with message deletion; they somehow still stay rendered even though they've been deleted?
+- add localstorage tokens to userdata
+- input cleaning(if anyone finds any please describe which field here and i'll do it)
+- pvp inspect
+- q manager needs to be looped
+- clear messages
+- userdata in one file 
+- fix instructions styling
+- backend loads (still in question)
+
+
 
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.
