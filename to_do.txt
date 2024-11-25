@@ -30,7 +30,6 @@ TODO:
 - pvp inspect
 - q manager needs to be looped
 - clear messages
-- userdata in one file 
 - fix instructions styling
 - backend loads (still in question)
 

@@ -1273,21 +1273,23 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	function convertToCsv(data) {
+	function convertToCsv(data, sectionTitle) {
 		if (!Array.isArray(data) || data.length === 0) {
-			return 'No data available';
+			return `${sectionTitle}: No data available`;
 		}
 		const headers = Object.keys(data[0]);
 		const rows = data.map(row => headers.map(header => JSON.stringify(row[header] || '')).join(','));
-		return [headers.join(','), ...rows].join('\n');
+		return `\n\n${sectionTitle}\n` + [headers.join(','), ...rows].join('\n');
 	}
 
 	function generateFile(fileName, data, format) {
-		let fileContent;
-		let mimeType;
+		let fileContent = '';
 
-		fileContent = convertToCsv(data);
-		mimeType = 'text/csv';
+		fileContent += convertToCsv(data.match_history, 'Match History');
+		fileContent += convertToCsv(data.friends, 'Friends');
+		fileContent += convertToCsv(data.messages, 'Messages');
+		fileContent += convertToCsv([data.profile_data], 'Profile Data');
+		const mimeType = 'text/csv';
 		const blob = new Blob([fileContent], { type:mimeType });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
@@ -1307,11 +1309,13 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await getUserData();
 			gdata['consent_time'] = result.consent_date;
 			gdata['creation_time'] = result.consent_date;
-			generateFile('match_history', result.data.match_history, 'csv');
-			generateFile('friends', result.data.friends, 'csv');
-			generateFile('messages', result.data.messages, 'csv');
-			generateFile('profile_data', [gdata], 'csv');
-			
+			const combinedData = {
+				match_history: result.data.match_history,
+				friends: result.data.friends,
+				messages: result.data.messages,
+				profile_data: gdata
+			};
+			generateFile('user_data', combinedData, 'csv');
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
@@ -1630,7 +1634,7 @@ function createPolicyDetailsElement() {
     };
 
     addSection('Introduction', `
-        We are just three developers having a fun time creating an online PongGame!<br>
+        We are just a few developers having a fun time creating an online PongGame for our school project!<br>
         This privacy policy explains how we collect, use and protect your personal data in accordance with the General Data Protection Regulation (GDPR).<br>
         Legal obligations: No action required.<br>
     `);
