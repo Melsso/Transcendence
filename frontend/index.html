@@ -23,8 +23,7 @@
     </div>
     <div id="mainTwo">
         <div class="sidebar right-sidebar" id="right-sidebar">
-            <div class="btn-group-s down-btns" role="group" aria-label="sidebar-btns">
-                <button type="button" class="btn mpriv-btn" id="main-priv-policy">Privacy Policy</button>
+            <div class="btn-group down-btns" role="group" aria-label="sidebar-btns">
                 <button type="button" class="btn logout-btn" id="logout">Logout</button>
                 <button type="button" class="btn profile-btn" id="to-profile"></button>
                 <button type="button" class="btn setting-btn" id="to-settings"></button>
@@ -288,20 +287,53 @@
                     <label for="req-data">Request Your Data</label>
                     <button type="button" class="btn btn-primary" id="request-data-btn" name="req-data">Request Your Data</button>
                 </form>
+                <!-- <div class="modal-delete" id="deleteModal">
+                    <div class="modal-content-delete">
+                        <h3>Are you sure you want to delete your account?</h3>
+                        <p>Please enter your password to confirm.</p>
+                        <input type="password" id="confirmPassworddelete" placeholder="Enter your password" required>
+                        <div class="modal-buttons-delete">
+                            <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+                            <button id="confirmDelete" class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div> -->
 
                 <form id="msg-delete-form" class="settings-form">
                     <label for="del-msg-pass">Delete All Messages</label>
                     <input type="password" id="delete-message-password" name="del-msg-pass" placeholder="Enter Your Password" required>
                     <button type="button" class="btn btn-primary" id="delete-messages-btn">Delete All Messages</button>
                 </form>
+                <!-- <div class="modal-delete" id="deleteModal">
+                    <div class="modal-content-delete">
+                        <h3>Are you sure you want to delete your account?</h3>
+                        <p>Please enter your password to confirm.</p>
+                        <input type="password" id="confirmPassworddelete" placeholder="Enter your password" required>
+                        <div class="modal-buttons-delete">
+                            <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+                            <button id="confirmDelete" class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div> -->
 
                 <form id="games-delete-form" class="settings-form">
                     <label for="del-game-pass">Delete All Games</label>
                     <input type="password" id="delete-games-password" name="del-game-pass" placeholder="Enter Your Password" required>
                     <button type="button" class="btn btn-primary" id="delete-games-btn">Delete All Games</button>
                 </form>
+                <!-- <div class="modal-delete" id="deleteModal">
+                    <div class="modal-content-delete">
+                        <h3>Are you sure you want to delete your account?</h3>
+                        <p>Please enter your password to confirm.</p>
+                        <input type="password" id="confirmPassworddelete" placeholder="Enter your password" required>
+                        <div class="modal-buttons-delete">
+                            <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+                            <button id="confirmDelete" class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div> -->
 
-                <form id="privacy-change-form" class="settings-form">
+                <!-- <form id="privacy-change-form" class="settings-form">
                     <div id="priv-toggle" class="privacy-toggle">
                         <p class="toggle-text">Privacy Policy Consent</p>
                         <div class="toggle-slider">
@@ -312,7 +344,7 @@
                     <label for="change-priv-set">Change Privacy Settings</label>
                     <input type="password" id="change-privacy-password" name="change-priv-set" placeholder="Enter Your Password" required>
                     <button type="button" class="btn btn-primary" id="change-privacy-settings-btn">Change Privacy Settings</button>
-                </form>
+                </form> -->
 
                 <button type="button" class="btn btn-danger" id="delete-account">Delete your account</button>
                 <div class="modal-delete" id="deleteModal">
@@ -553,30 +585,18 @@
                             <div id="avatar-selection-result" class="avatar-selection"></div>
                             <input type="hidden" id="preset-avatar" name="preset-avatar">
                         </div>
-                        <div class="mb-3">
-                            <button type="button" id="reg-view-terms" class="btn btn-primary">View Privacy Policy</button>
-                        </div>
                         <div class="term-input mb-3">
-                            <label for="accept-terms" class="form-label" style="padding-right: 20px;">I Agree To The Terms And Conditions</label>
                             <input type="checkbox" id="terms-checkbox" name="accept-terms" required>
+                            <label for="accept-terms" class="form-label" style="padding-right: 10px;">
+                                <span 
+                                    style="cursor: pointer; color: blue; text-decoration: underline;" 
+                                    id="open-terms-reg">
+                                    I Agree To The Terms And Conditions
+                                </span>
+                            </label>
                         </div>
                         <button type="button" class="btn btn-primary" id="register">Register</button>
                     </form>
-                </div>
-                <div id="terms-display-register">
-
-                </div>
-            </div>
-            <div class="form-container">
-                <div class="fst-italic rounded m-5 p-3 text-center" id="privacy-policy">
-                    <button id="close-privacy-policy-banner" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-                    <div id="policy-action-wrapper">
-                        <h1 class="p-3" id="priv">Privacy Policy</h1>
-                        <p class="p-3">We collect your email and username to create and manage your account and to ensure proper access to the game. We do not use cookies.</p>
-                        <button type="button" class="btn btn-primary" id="privacy-details-banner">Privacy Policy</button>
-                    </div>    
-                </div>
-                <div id="terms-display-banner">
                 </div>
             </div>
         </div>

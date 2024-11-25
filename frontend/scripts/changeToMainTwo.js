@@ -678,9 +678,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const menu = document.getElementById('menuuu');
 	const qContainer = document.getElementById('Queue');
 	const toggle = document.getElementById('2fa-toggle');
-	const privToggle = document.getElementById('priv-toggle');
-	const privacyPop = document.getElementById('privacy-policy');
-	const policyActionWrapper = document.getElementById('policy-action-wrapper');
+	// const privToggle = document.getElementById('priv-toggle');
+	// const privacyPop = document.getElementById('privacy-policy');
+	// const policyActionWrapper = document.getElementById('policy-action-wrapper');
 	// const policyDetailsWrapper = document.getElementById('policy-details-wrapper');
 	
 	qContainer.style.display = 'none';
@@ -693,9 +693,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainSettings.style.display = 'none';
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
-	// policyDetailsWrapper.style.display = 'none';
-	privacyPop.style.display = 'flex';
-	policyActionWrapper.style.display = 'flex';
 
 	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
@@ -718,19 +715,19 @@ document.addEventListener('DOMContentLoaded', function () {
 	const updateEmailButton = document.getElementById('updateUserEmail-btn');
 	const updatePwdButton = document.getElementById('updatePwd-btn');
 	const friendButton = document.getElementById('friend-list-btn');
-	// const sendFriendRequestButton = document.getElementById('add-friend');
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
 	const Tlobby = document.getElementById('pong-tournament');
-	const showPrivacyRegisterBtn = document.getElementById('reg-view-terms');
-	const showPrivacyBannerBtn = document.getElementById('privacy-details-banner');
-	const showPrivacyProfileBtn = document.getElementById('main-priv-policy');
+	// const showPrivacyRegisterBtn = document.getElementById('reg-view-terms');
+	// const showPrivacyBannerBtn = document.getElementById('privacy-details-banner');
+	// const showPrivacyProfileBtn = document.getElementById('main-priv-policy');
 	// const privacyReturnBtn = document.getElementById('privacy-return');
 	const delMsgBtn = document.getElementById('delete-messages-btn');
 	const delGamesBtn = document.getElementById('delete-games-btn');
 	const changePolicyBtn = document.getElementById('change-privacy-settings-btn');
 	const requestUserDataBtn = document.getElementById('request-data-btn');
-	const closeBannerPrivBtn = document.getElementById('close-privacy-policy-banner');
+	const openModalTerms = document.getElementById('open-terms-reg');
+	// const closeBannerPrivBtn = document.getElementById('close-privacy-policy-banner');
 
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
@@ -767,6 +764,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			log1.style.display = 'block';
 			mainOne.style.display = 'flex';
 			mainTwo.style.display = 'none';
+			// privacyPop.style.display = 'block';
+			// policyActionWrapper.style.display = 'block';
 		} else if (view === 'profile') {
 			try {
 				let guest;
@@ -859,43 +858,47 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	closeBannerPrivBtn.addEventListener('click', function() {
-		privacyPop.style.display = 'none';
-	});
+	// closeBannerPrivBtn.addEventListener('click', function() {
+	// 	privacyPop.style.display = 'none';
+	// });
 
-	showPrivacyRegisterBtn.addEventListener('click', function() {
-		console.log('Register Privacy Dislpay button clicked');
-		const wrapper = document.getElementById('terms-display-register');
-		const policyElement = createPolicyDetailsElement();
-		wrapper.appendChild(policyElement);
+	// showPrivacyRegisterBtn.addEventListener('click', function() {
+	// 	console.log('Register Privacy Dislpay button clicked');
+	// 	const wrapper = document.getElementById('terms-display-register');
+	// 	const policyElement = createPolicyDetailsElement();
+	// 	wrapper.appendChild(policyElement);
 		
-		const returnBtn = document.getElementById('privacy-return');
-		returnBtn.addEventListener('click', function() {
-			wrapper.innerHTML = '';
-		});
-	});
+	// 	const returnBtn = document.getElementById('privacy-return');
+	// 	returnBtn.addEventListener('click', function() {
+	// 		wrapper.innerHTML = '';
+	// 	});
+	// });
 
-	showPrivacyBannerBtn.addEventListener('click', function() {
-		console.log('Banner Privacy Display button clicked');
-		const wrapper = document.getElementById('terms-display-banner');
-		const policyElement = createPolicyDetailsElement();
-		wrapper.appendChild(policyElement);
+	// showPrivacyBannerBtn.addEventListener('click', function() {
+	// 	console.log('Banner Privacy Display button clicked');
+	// 	const wrapper = document.getElementById('terms-display-banner');
+	// 	const policyElement = createPolicyDetailsElement();
+	// 	wrapper.appendChild(policyElement);
 	
-		const returnBtn = document.getElementById('privacy-return');	
-		returnBtn.addEventListener('click', function() {
-			wrapper.innerHTML = '';
-		});
-	});
+	// 	const returnBtn = document.getElementById('privacy-return');	
+	// 	returnBtn.addEventListener('click', function() {
+	// 		wrapper.innerHTML = '';
+	// 	});
+	// });
 
-	showPrivacyProfileBtn.addEventListener('click', function() {
-		console.log('Profile Privacy Display button clicked');
-		const policyElement = createPolicyDetailsElement();
+	// showPrivacyProfileBtn.addEventListener('click', function() {
+	// 	console.log('Profile Privacy Display button clicked');
+	// 	const policyElement = createPolicyDetailsElement();
 		
-		const returnBtn = document.getElementById('privacy-return');
-		returnBtn.addEventListener('click', function() {
-			console.log('profile privacy return button clicked');
-		});
-	});
+	// 	const returnBtn = document.getElementById('privacy-return');
+	// 	returnBtn.addEventListener('click', function() {
+	// 		console.log('profile privacy return button clicked');
+	// 	});
+	// });
+
+	openModalTerms.addEventListener('click', function () {
+		createTermsModal();
+	})
 
 	forgotButton.addEventListener('click', function() {
 		navigateTo('forgot', null);
@@ -921,9 +924,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	privToggle.addEventListener('click', function() {
-		privToggle.classList.toggle('on');
-	});
+	// privToggle.addEventListener('click', function() {
+	// 	privToggle.classList.toggle('on');
+	// });
 
 	TonewpassButton.addEventListener('click', async function() {
 		const input_email = document.getElementById('forgotmail').value;
@@ -1007,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			localStorage.setItem('refreshToken', tokens.refresh);
 			scheduleTokenRefresh(localStorage.getItem('accessToken'));
 			if (host_check['2fa'] === false) {
-				privacyPop.style.display = 'none';
+				// privacyPop.style.display = 'none';
 				navigateTo('profile', null);
 			}
 			else {
@@ -1489,31 +1492,63 @@ async function handleprofileAction(action, targetuname, targetID) {
 	}
 }
 
+function createTermsModal() {
+	const existingModal = document.getElementById('terms-modal');
+	if (existingModal) {
+		 existingModal.remove();
+	}
+	const modal = document.createElement('div');
+   modal.id = 'terms-modal';
+   modal.style.position = 'fixed';
+   modal.style.top = '0';
+   modal.style.left = '0';
+   modal.style.width = '100vw';
+   modal.style.height = '100vh';
+   modal.style.backgroundColor = 'transparent';
+   modal.style.display = 'flex';
+   modal.style.justifyContent = 'center';
+   modal.style.alignItems = 'center';
+   modal.style.zIndex = '1000';
+   const modalContent = document.createElement('div');
+   modalContent.style.width = '60%';
+	modalContent.style.height = '90%';
+   modalContent.style.borderRadius = '10px';
+   modalContent.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+   modalContent.style.textAlign = 'center';
+	modalContent.style.position = 'relative';
+	const closeButton = document.createElement('button');
+	closeButton.textContent = '✖'; 
+	closeButton.style.position = 'absolute';
+	closeButton.style.top = '10px';
+	closeButton.style.right = '10px';
+	closeButton.style.color = '#333'; 
+	closeButton.style.border = 'none'; 
+	closeButton.style.fontSize = '20px'; 
+	closeButton.style.cursor = 'pointer';
+   
+   closeButton.addEventListener('click', () => {
+       modal.remove();
+   });
+   modal.appendChild(modalContent);
+   document.body.appendChild(modal);
+	const ContentPolicy = createPolicyDetailsElement();
+	modalContent.appendChild(ContentPolicy);
+   modalContent.appendChild(closeButton);
+}
+
 function createPolicyDetailsElement() {
-    const wrapper = document.createElement('div');
-    wrapper.id = 'policy-details-wrapper';
 
-    const polDet = document.createElement('div');
-    polDet.id = 'pol-det';
-
-    const closeButton = document.createElement('button');
-    closeButton.type = 'button';
-    closeButton.className = 'btn btn-primary btn-ins';
-    closeButton.id = 'close-privacy';
-
-    const closeIcon = document.createElement('i');
-    closeIcon.className = 'fas fa-arrow-left';
-    closeButton.appendChild(closeIcon);
-    polDet.appendChild(closeButton);
+   const polDet = document.createElement('div');
+   polDet.id = 'pol-det';
 
     const addSection = (headingText, paragraphHTML) => {
         const heading = document.createElement('h2');
-        heading.className = 'p-3';
+        heading.className = 'p-1';
         heading.textContent = headingText;
         polDet.appendChild(heading);
 
         const paragraph = document.createElement('p');
-        paragraph.className = 'p-3';
+        paragraph.className = 'p-1';
         paragraph.innerHTML = paragraphHTML;
         polDet.appendChild(paragraph);
     };
@@ -1583,14 +1618,6 @@ function createPolicyDetailsElement() {
         Email address: your.pong.website@gmail.com
     `);
 
-    const returnButton = document.createElement('button');
-    returnButton.type = 'button';
-    returnButton.className = 'btn privacy-btn';
-    returnButton.id = 'privacy-return';
-    returnButton.textContent = 'Return';
-    polDet.appendChild(returnButton);
 
-    wrapper.appendChild(polDet);
-
-    return wrapper;
+    return polDet;
 }
