@@ -4,8 +4,78 @@ import { launchSocket, loadMessages, getMessages  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
 import { Habess } from "./gamePvP.js";
 let userEmail;
+let flag = false;
 let consentPrompt = false;
 const baseUrl = process.env.ACTIVE_HOST;
+
+async function blockedUsers() {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+	const url = baseUrl + 'api/friends/blockedUsers/';
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+	const data = await response.json();
+	return data;
+}
+
+async function blockUser(target) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+	const url = baseUrl + 'api/friends/blockUser/';
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			target: target
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+	const data = await response.json();
+	return data;
+}
+
+async function unblockUser(target) {
+	const access_token = localStorage.getItem('accessToken');
+	if (!access_token) {
+		throw new Error("No access token found.");
+	}
+	const url = baseUrl + 'api/friends/unblockUser/';
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Authorization': `Bearer ${access_token}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			target: target
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		throw errorResponse;
+	}
+	const data = await response.json();
+	return data;
+}
 
 async function refreshAccessToken() {
    const refreshToken = localStorage.getItem('refreshToken');
@@ -13,24 +83,24 @@ async function refreshAccessToken() {
 		return ;
 	}
 	const url = baseUrl + 'api/refresh-token/';
-   const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          refresh: refreshToken
-      })
-   });
+	const response = await fetch(url, {
+    	method: 'POST',
+    	headers: {
+        	'Content-Type': 'application/json',
+    	},
+    	body: JSON.stringify({
+        	refresh: refreshToken
+    	}),
+	});
 
-   if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem('accessToken', data.data.access);
+	if (response.ok) {
+    	const data = await response.json();
+    	localStorage.setItem('accessToken', data.data.access);
 		localStorage.setItem('refreshToken', data.data.refresh);
 		scheduleTokenRefresh(localStorage.getItem('accessToken'));
-   } else {
+	} else {
       Notification('Profile Action', 'Failed to refresh your token due to an unkown error, PLease refresh the page and log back in!', 2, 'alert');
-   }
+	}
 }
 
 function decodeToken(token) {
@@ -659,7 +729,6 @@ async function sendFriendRequest(targetId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-	// here need to display some typa banner which contains a disclaimer as well as what the person decides to opt for
 	const reg1 = document.getElementById('register-form-container');
     const log1 = document.getElementById('login-form-container');
     const reg2 = document.getElementById('second-reg-container');
@@ -678,10 +747,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const menu = document.getElementById('menuuu');
 	const qContainer = document.getElementById('Queue');
 	const toggle = document.getElementById('2fa-toggle');
-	// const privToggle = document.getElementById('priv-toggle');
-	// const privacyPop = document.getElementById('privacy-policy');
-	// const policyActionWrapper = document.getElementById('policy-action-wrapper');
-	// const policyDetailsWrapper = document.getElementById('policy-details-wrapper');
+
 	
 	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
@@ -696,10 +762,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
-	const deleteModal = document.getElementById('deleteModal');
-	const confirmDelete = document.getElementById('confirmDelete');
-	const cancelDelete = document.getElementById('cancelDelete');	
-	const deletebtn = document.getElementById('delete-account');
+
 	const confirmButton = document.getElementById('pass-verf-code');
 	const loginButton = document.getElementById('login');
 	const login2faButton = document.getElementById('2fa-btn');
@@ -719,11 +782,30 @@ document.addEventListener('DOMContentLoaded', function () {
 	const forgotButton = document.getElementById('forgot-btn');
 	const Tlobby = document.getElementById('pong-tournament');
 	const ShowPrivacy = document.getElementById('show-privacy');
+	
+	const deletebtn = document.getElementById('delete-account');
+	const deleteModal = document.getElementById('deleteModal');
+	const confirmDelete = document.getElementById('confirmDelete');
+	const cancelDelete = document.getElementById('cancelDelete');	
+	
 	const delMsgBtn = document.getElementById('delete-messages-btn');
+	const delMsgModal = document.getElementById('deleteMsgModal');
+	const confirmDelMsgBtn = document.getElementById('confirmDeleteMsg');
+	const cancelDelMsgBtn = document.getElementById('cancelDeleteMsg');
+
 	const delGamesBtn = document.getElementById('delete-games-btn');
+	const delGamesModal = document.getElementById('deleteGamesModal');
+	const confirmDelGamesBtn = document.getElementById('confirmDeleteGames');
+	const cancelDelGamesBtn = document.getElementById('cancelDeleteGames');
+
 	const changePolicyBtn = document.getElementById('change-privacy-settings-btn');
+	const changePolicyModal = document.getElementById('changePrivacyModal');
+	const confirmPolicyChange = document.getElementById('confirmPolicyChange');
+	const cancelPolicyChange = document.getElementById('cancelPolicyChange');
+
 	const requestUserDataBtn = document.getElementById('request-data-btn');
 	const openModalTerms = document.getElementById('open-terms-reg');
+
 
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
@@ -760,8 +842,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			log1.style.display = 'block';
 			mainOne.style.display = 'flex';
 			mainTwo.style.display = 'none';
-			// privacyPop.style.display = 'block';
-			// policyActionWrapper.style.display = 'block';
 		} else if (view === 'profile') {
 			try {
 				let guest;
@@ -806,7 +886,8 @@ document.addEventListener('DOMContentLoaded', function () {
 				else {
 					const calleruser = data['user'];
 					if (window.userData["username"] !== calleruser['username']) {
-						createDropDownProfile(calleruser['username'], calleruser['id']);
+						const result = await blockedUsers();
+						createDropDownProfile(calleruser['username'], calleruser['id'], result.blocked_list);
 					}
 					else {
 						profileMenu.innerHTML = '';
@@ -874,6 +955,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	window.navigateTo = navigateTo;
 
 	toggle.addEventListener('click', async function() {
+		console.log("here");
 		toggle.classList.toggle('on');
 		try {
 			await UpdateTwoFactorAuth();
@@ -955,7 +1037,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			loged_in = await getLogs(username);
 		} catch (error) {
-			console.log('tnaaaaaaaaket');
+			Notification('Profile Action', 'Please Stand By For A Few Seconds...', 1, 'alert');
 		}
 		if (localStorage.getItem('accessToken') || loged_in) {
 			Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
@@ -970,7 +1052,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			localStorage.setItem('refreshToken', tokens.refresh);
 			scheduleTokenRefresh(localStorage.getItem('accessToken'));
 			if (host_check['2fa'] === false) {
-				// privacyPop.style.display = 'none';
 				navigateTo('profile', null);
 			}
 			else {
@@ -990,7 +1071,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await addToKnownLocation(v_code, r_value);
 			if (result.status === 'success') {
-				privacyPop.style.display = 'none';
 				navigateTo('profile', null);
 			}
 		} catch (error) {
@@ -1236,63 +1316,80 @@ document.addEventListener('DOMContentLoaded', function () {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 	});
-
+	
+	cancelDelMsgBtn.addEventListener('click', async function() {
+		delMsgModal.style.display = 'none';
+	});
 	delMsgBtn.addEventListener('click', async function() {
-		const pswd = document.getElementById('delete-message-password').value;
-		document.getElementById('delete-message-password').value = '';
+		delMsgModal.style.display = 'flex';
+	});
+	confirmDelMsgBtn.addEventListener('click', async function() {
+		const pswdElement = document.getElementById('confirmPassMessages');
+		const pswd = pswdElement.value;
+		pswdElement.value = '';
 		try {
 			const result = await deleteMessages(null, pswd);
 			if (result.status === 'success') {
 				Notification('Profile Action', 'All Messages Have Been Deleted', 2, 'profile');
+				delMsgModal.style.display = 'none';
 			}
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 	});
-	
+
+	cancelDelGamesBtn.addEventListener('click', async function() {
+		delMsgModal.style.display = 'none';
+	});
 	delGamesBtn.addEventListener('click', async function() {
-		const pswd = document.getElementById('delete-games-password').value;
-		document.getElementById('delete-games-password').value = '';
+		delGamesModal.style.display = 'flex';
+	});
+	confirmDelGamesBtn.addEventListener('click', async function() {
+		const pswdElement = document.getElementById('confirmPassGames');
+		const pswd = pswdElement.value;
+		pswdElement.value = '';
 		try {
 			const result = await deleteGames(pswd);
 			if (result.status === 'success') {
 				Notification('Profile Action', 'All Games Have Been Deleted', 2, 'profile');
+				delMsgModal.style.display = 'none';
 			}
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}
 	});
+
+	changePolicyBtn.addEventListener('click', async function() {
+		changePolicyModal.style.display = 'flex';
+	});
+	cancelPolicyChange.addEventListener('click', async function() {
+		changePolicyModal.style.display = 'none';
+	});
+	confirmPolicyChange.addEventListener('click', async function() {
+		const pswdElement = document.getElementById('confirmPassPolicy');
+		const pswd = pswdElement.value;
+		pswdElement.value = '';
+			try {
+				const result = await updatePrivacy(false, pswd);
+				if (result.status === 'success' && result.detail === 'Privacy Policy Updated') {
+					Notification('Profile Action', 'You Have Agreed To Our Privacy Policy.', 2, 'profile');
+					delMsgModal.style.display = 'none';
+					return ;
+				}
+				if (window.userData.socket) {
+					window.userData.socket.close();
+				}
+				window.userData = {};
+				localStorage.removeItem('refreshToken');
+				localStorage.removeItem('accessToken');
+				delMsgModal.style.display = 'none';
+				navigateTo('login', null);
+				Notification('Profile Action', 'You Have Refused Our Privacy Policy, Please Use A Guest Account.', 1, 'alert');
+			} catch (error) {
+				Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
+			}
+	});
 	
-	// changePolicyBtn.addEventListener('click', async function() {
-	// 	const pswd = document.getElementById('change-privacy-password').value;
-	// 	document.getElementById('change-privacy-password').value = '';
-	// 	let consent;
-	// 	if (privToggle.classList.contains('on')) {
-	// 		consent = true;
-	// 	} else {
-	// 		consent = false;
-	// 	}
-	// 	try {
-
-	// 		const result = await updatePrivacy(consent, pswd);
-	// 		if (result.status === 'success' && result.detail === 'Privacy Policy Updated') {
-	// 			Notification('Profile Action', 'You Have Agreed To Our Privacy Policy.', 2, 'profile');
-	// 			return ;
-	// 		}
-	// 		if (window.userData.socket) {
-	// 			window.userData.socket.close();
-	// 		}
-	// 		window.userData = {};
-	// 		localStorage.removeItem('refreshToken');
-	// 		localStorage.removeItem('accessToken');
-	// 		navigateTo('login', null);
-	// 		Notification('Profile Action', 'You Have Refused Our Privacy Policy, Please Use A Guest Account.', 1, 'alert');
-	// 		// here on success immediately log out the user, clear userdata and localstorage and redir to login
-	// 	} catch (error) {
-	// 		Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
-	// 	}
-	// });
-
 	updatePwdButton.addEventListener('click', async function () {
 		const curr_pwd = document.getElementById('current-password').value;
 		const new_pwd = document.getElementById('new-password').value;
@@ -1387,7 +1484,11 @@ async function updateAvatar(formData) {
 	return data;
 }
 
-async function createDropDownProfile(friendUname, friendId) {
+async function createDropDownProfile(friendUname, friendId, block_list) {
+	const isUsernamePresent = block_list.some(item => item.friend_data.username === friendUname);
+	if (isUsernamePresent) {
+		flag = true;
+	}
 	const container = document.getElementById('dropdown-container-profile');
 	if (document.getElementById('profileDropDownMenu')) {
 		document.getElementById('profileDropDownMenu').remove();
@@ -1418,7 +1519,11 @@ async function createDropDownProfile(friendUname, friendId) {
 		const a = document.createElement('a');
 		a.className = 'dropdown-item';
 		a.href = '#';
-		a.textContent = action;
+		if (action === 'Block User' && flag) {
+			a.textContent = 'Unblock User';
+		} else {
+			a.textContent = action;
+		}
 		a.addEventListener('click', (event) => {
 			event.preventDefault();
 			handleprofileAction(action, friendUname, friendId);
@@ -1445,9 +1550,20 @@ async function handleprofileAction(action, targetuname, targetID) {
 			} catch (error) {
 				Notification('Friend Action', `Error ${error.detail}`, 2, 'alert');
 			}
-			break ;
+			break;
 		case 'Block User':
-			Notification('ALLO', 'AYA NDIRO BONG FDAR PLZ', 2, 'ALERT');
+			try {
+				var result;
+				if (flag) {
+					result = await unblockUser(targetuname);
+				} else {
+					result = await blockUser(targetuname);
+				}
+				console.log(result);
+				Notification('Friend Action', `${result.detail}`, 2, 'profile');
+			} catch (error) {
+				Notification('Friend Action', `Error ${error.detail}`, 2, 'alert');
+			}
 			break;
 	}
 }
