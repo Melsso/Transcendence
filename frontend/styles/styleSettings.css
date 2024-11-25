@@ -142,17 +142,6 @@
 	margin-top: 15px;
 }
 
-.privacy-toggle {
-	position: absolute;
-	width: 5%;
-	right:5%;
-	bottom: -90%;
-	height: 2% !important;
-	background-color: red; 
-	border-radius: 12px;
-	transition: background-color 0.3s;
-}
-
 .Twofa-toggle {
 	position: absolute;
 	width: 5%;
@@ -178,7 +167,7 @@
 	align-items: center;
 	justify-content: center;
 }
-.Twofa-on, .priv-on {
+.Twofa-on {
 	color: green;
 	font-size: 16px;
 	display: none; 
@@ -189,23 +178,23 @@
 	transform: translate(-20%, -100%);
 }
 
-.Twofa-off .priv-off {
+.Twofa-off {
 	color: red;
 	font-size: 16px;
 }
 
-.Twofa-toggle.on .privacy-toggle.on{
+.Twofa-toggle.on {
 	background-color: green;
 }
 
-.Twofa-toggle.on .privacy-toggle.on .toggle-slider {
+.Twofa-toggle.on .toggle-slider {
 	left: 65%; 
 }
 
-.Twofa-toggle.on .Twofa-on .privacy-toggle.on .priv-on{
+.Twofa-toggle.on .Twofa-on {
 	display: inline;
 }
 
-.Twofa-toggle.on .Twofa-off  .privacy-toggle.off .priv-off {
+.Twofa-toggle.on .Twofa-off {
 	display: none;
 }
