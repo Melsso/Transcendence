@@ -140,27 +140,33 @@
 
 .profile-btn:hover,
 .setting-btn:hover,
-.mpriv-btn:hover,
+.privacy-btn:hover,
 .logout-btn:hover {
 	border-color: #dee2e6;
 }
 
-.mpriv-btn {
-	width: 100%;
-	color: rgb(29, 9, 34);
+.privacy-btn {
+	width: 20%;
+	background-image: url(../assets/privacy.png);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 	border: 2px solid black;
 }
 
 .logout-btn {
-	width: 60%;
+	width: 40%;
 	color: rgb(29, 9, 34);
 	border: 2px solid black;
 }
 
 
+
+
 .setting-btn:focus,
+.privacy-btn:focus,
 .logout-btn:focus,
-.mpriv-btn:focus {
+.profile-btn:focus{
 	color:#FFFFFF;
 	border: 2px solid #00000059;
 	box-shadow: none;

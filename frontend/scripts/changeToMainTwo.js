@@ -718,16 +718,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	const TonewpassButton = document.getElementById('to-new-pass');
 	const forgotButton = document.getElementById('forgot-btn');
 	const Tlobby = document.getElementById('pong-tournament');
-	// const showPrivacyRegisterBtn = document.getElementById('reg-view-terms');
-	// const showPrivacyBannerBtn = document.getElementById('privacy-details-banner');
-	// const showPrivacyProfileBtn = document.getElementById('main-priv-policy');
-	// const privacyReturnBtn = document.getElementById('privacy-return');
+	const ShowPrivacy = document.getElementById('show-privacy');
 	const delMsgBtn = document.getElementById('delete-messages-btn');
 	const delGamesBtn = document.getElementById('delete-games-btn');
 	const changePolicyBtn = document.getElementById('change-privacy-settings-btn');
 	const requestUserDataBtn = document.getElementById('request-data-btn');
 	const openModalTerms = document.getElementById('open-terms-reg');
-	// const closeBannerPrivBtn = document.getElementById('close-privacy-policy-banner');
 
 	async function showView(view, data) {
 		if (window.userData.pong_socket) {
@@ -858,43 +854,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	// closeBannerPrivBtn.addEventListener('click', function() {
-	// 	privacyPop.style.display = 'none';
-	// });
-
-	// showPrivacyRegisterBtn.addEventListener('click', function() {
-	// 	console.log('Register Privacy Dislpay button clicked');
-	// 	const wrapper = document.getElementById('terms-display-register');
-	// 	const policyElement = createPolicyDetailsElement();
-	// 	wrapper.appendChild(policyElement);
-		
-	// 	const returnBtn = document.getElementById('privacy-return');
-	// 	returnBtn.addEventListener('click', function() {
-	// 		wrapper.innerHTML = '';
-	// 	});
-	// });
-
-	// showPrivacyBannerBtn.addEventListener('click', function() {
-	// 	console.log('Banner Privacy Display button clicked');
-	// 	const wrapper = document.getElementById('terms-display-banner');
-	// 	const policyElement = createPolicyDetailsElement();
-	// 	wrapper.appendChild(policyElement);
-	
-	// 	const returnBtn = document.getElementById('privacy-return');	
-	// 	returnBtn.addEventListener('click', function() {
-	// 		wrapper.innerHTML = '';
-	// 	});
-	// });
-
-	// showPrivacyProfileBtn.addEventListener('click', function() {
-	// 	console.log('Profile Privacy Display button clicked');
-	// 	const policyElement = createPolicyDetailsElement();
-		
-	// 	const returnBtn = document.getElementById('privacy-return');
-	// 	returnBtn.addEventListener('click', function() {
-	// 		console.log('profile privacy return button clicked');
-	// 	});
-	// });
 
 	openModalTerms.addEventListener('click', function () {
 		createTermsModal();
@@ -924,9 +883,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	// privToggle.addEventListener('click', function() {
-	// 	privToggle.classList.toggle('on');
-	// });
 
 	TonewpassButton.addEventListener('click', async function() {
 		const input_email = document.getElementById('forgotmail').value;
@@ -963,6 +919,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 		});
 	});
+
+	ShowPrivacy.addEventListener('click', function () {
+		createTermsModal();
+	})
 
 	guestButton.addEventListener('click', async function() {
 		try {
@@ -1303,35 +1263,35 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 	
-	changePolicyBtn.addEventListener('click', async function() {
-		const pswd = document.getElementById('change-privacy-password').value;
-		document.getElementById('change-privacy-password').value = '';
-		let consent;
-		if (privToggle.classList.contains('on')) {
-			consent = true;
-		} else {
-			consent = false;
-		}
-		try {
+	// changePolicyBtn.addEventListener('click', async function() {
+	// 	const pswd = document.getElementById('change-privacy-password').value;
+	// 	document.getElementById('change-privacy-password').value = '';
+	// 	let consent;
+	// 	if (privToggle.classList.contains('on')) {
+	// 		consent = true;
+	// 	} else {
+	// 		consent = false;
+	// 	}
+	// 	try {
 
-			const result = await updatePrivacy(consent, pswd);
-			if (result.status === 'success' && result.detail === 'Privacy Policy Updated') {
-				Notification('Profile Action', 'You Have Agreed To Our Privacy Policy.', 2, 'profile');
-				return ;
-			}
-			if (window.userData.socket) {
-				window.userData.socket.close();
-			}
-			window.userData = {};
-			localStorage.removeItem('refreshToken');
-			localStorage.removeItem('accessToken');
-			navigateTo('login', null);
-			Notification('Profile Action', 'You Have Refused Our Privacy Policy, Please Use A Guest Account.', 1, 'alert');
-			// here on success immediately log out the user, clear userdata and localstorage and redir to login
-		} catch (error) {
-			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
-		}
-	});
+	// 		const result = await updatePrivacy(consent, pswd);
+	// 		if (result.status === 'success' && result.detail === 'Privacy Policy Updated') {
+	// 			Notification('Profile Action', 'You Have Agreed To Our Privacy Policy.', 2, 'profile');
+	// 			return ;
+	// 		}
+	// 		if (window.userData.socket) {
+	// 			window.userData.socket.close();
+	// 		}
+	// 		window.userData = {};
+	// 		localStorage.removeItem('refreshToken');
+	// 		localStorage.removeItem('accessToken');
+	// 		navigateTo('login', null);
+	// 		Notification('Profile Action', 'You Have Refused Our Privacy Policy, Please Use A Guest Account.', 1, 'alert');
+	// 		// here on success immediately log out the user, clear userdata and localstorage and redir to login
+	// 	} catch (error) {
+	// 		Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
+	// 	}
+	// });
 
 	updatePwdButton.addEventListener('click', async function () {
 		const curr_pwd = document.getElementById('current-password').value;
@@ -1503,15 +1463,15 @@ function createTermsModal() {
    modal.style.top = '0';
    modal.style.left = '0';
    modal.style.width = '100vw';
+	modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
    modal.style.height = '100vh';
-   modal.style.backgroundColor = 'transparent';
    modal.style.display = 'flex';
    modal.style.justifyContent = 'center';
    modal.style.alignItems = 'center';
    modal.style.zIndex = '1000';
    const modalContent = document.createElement('div');
    modalContent.style.width = '60%';
-	modalContent.style.height = '90%';
+	modalContent.style.height = '95%';
    modalContent.style.borderRadius = '10px';
    modalContent.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
    modalContent.style.textAlign = 'center';
