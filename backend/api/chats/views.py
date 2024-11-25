@@ -9,7 +9,10 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
 )
 from .models import Friend, Message
+from users.models import UserProfile
 from .serializers import FriendSerializer, MessageSerializer
+import logging
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -29,6 +32,71 @@ class FriendListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response({'status':'success', 'detail':'Fetched Current Friends', 'friends': serializer.data}, status=HTTP_200_OK)
 
+class BlockedUsersView(generics.GenericAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = FriendSerializer
+
+    def get(self, request):
+        user = request.user
+
+        blocked_list = Friend.objects.filter(user=user, status='BLOCKED')
+        serializer = self.get_serializer(blocked_list, many=True)
+        logger.warning('BLOCKED LISTTTTTTTTTTTTTTTTTTTTTTTTTT')
+        logger.warning(serializer.data)
+        return Response({'status':'success', 'detail':'Fetched The List Of Blocked Users', 'blocked_list': serializer.data}, status=HTTP_200_OK)
+
+class BlockUserView(generics.GenericAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        target = request.data.get('target')
+
+        target_user = UserProfile.objects.filter(username=target).first()
+        if target_user is None:
+            return Response({'status':'error', 'detail':'No Such User Found!'}, status=HTTP_400_BAD_REQUEST)
+        
+        status = Friend.objects.filter(user=user, friend=target_user, status='BLOCKED').first()
+        if status:
+            return Response({'status':'success', 'detail':'User Already Blocked!'}, status=HTTP_200_OK)
+        
+        existing_relation = Friend.objects.filter(user=user, friend=target_user).first()
+        existing_relation_flipped = Friend.objects.filter(user=target_user, friend=user).first()
+
+        if existing_relation:
+            existing_relation.status = 'BLOCKED'
+            existing_relation.save()
+            return Response({'status':'success', 'detail':'User Blocked!'}, status=HTTP_200_OK)
+        elif existing_relation_flipped:
+            if existing_relation_flipped.status != 'BLOCKED':
+                existing_relation_flipped.delete()
+            Friend.objects.create(user=user, friend=target_user, status='BLOCKED')
+            return Response({'status':'success', 'detail':'User Blocked!'}, status=HTTP_200_OK)
+        else:
+            Friend.objects.create(user=user, friend=target_user, status='BLOCKED')
+            return Response({'status':'success', 'detail':'User Blocked!'}, status=HTTP_200_OK)
+
+class UnblockUserView(generics.GenericAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        target = request.data.get('target')
+
+        target_user = UserProfile.objects.filter(username=target).first()
+        if target_user is None:
+            return Response({'status':'error', 'detail':'No Such User Found!'}, status=HTTP_400_BAD_REQUEST)
+
+        relation = Friend.objects.filter(user=user, friend=target_user, status='BLOCKED').first()
+        if relation is None:
+            return Response({'status':'error', 'detail':'User Already Unblocked!'}, status=HTTP_400_BAD_REQUEST)
+        else:
+            relation.delete()
+            return Response({'status':'success', 'detail':'User Unblocked!'}, status=HTTP_200_OK)
+        
 class FriendRequestManager(generics.ListAPIView):
 
     permission_classes = [permissions.IsAuthenticated]

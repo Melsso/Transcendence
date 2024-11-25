@@ -243,6 +243,7 @@ class   UpdateTwoFactorAuthView(generics.GenericAPIView):
 class RequestUserDataView(generics.GenericAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
+
     def get_queryset(self):
         user = self.request.user
         friends = Friend.objects.filter(status='FRIENDS').filter(Q(user=user) | Q(friend=user))

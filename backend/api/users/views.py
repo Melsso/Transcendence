@@ -232,9 +232,11 @@ class GuestLoginView(generics.GenericAPIView):
     def create_guest_user(self):
         guest_username = f"Guest_{uuid.uuid4().hex[:8]}"
         guest_email = f"{guest_username}@guest.local"
+        avatar = 'avatars/avatar1.svg'
         user = UserProfile.objects.create_user(
             username=guest_username,
             email=guest_email,
+            avatar = avatar,
         )
         user.is_verified = True
         user.set_unusable_password()
