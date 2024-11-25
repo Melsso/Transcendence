@@ -862,7 +862,6 @@ function	leaving(){
   }
   player1.score = 0;
   player2.score = 0;
-  console.log('hna');
   gameOngoing = false;
   gameNO = true;
   starting = false;

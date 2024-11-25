@@ -14,7 +14,9 @@ let sphereinBigpad = false;
 let SpeedCounting = 0;
 let attackcount = 0;
 let bigpadcount = 0;
-let last_hit = 0;
+let last_hit = 1;
+let speeddoubled = 0;
+let playerheight2 = 0;
 let p1;
 let p2;
 let sx;
@@ -54,7 +56,6 @@ export function ChangeFlag(flag) {
 	BuffFlag = flag;
 	if (BuffFlag === 1){
 		Buffpvp.visible = true;
-		console.log('hna');
 		Attackpvp.visible = false;
 		Bigpadpvp.visible = false;
 	}
@@ -124,40 +125,48 @@ export function changeLast(last) {
 	last_hit = last;
 }
 
-function Speedpower(){
-	if (last_hit === 1)
-		playerPaddle1.dy *= 2;
-	else if (last_hit === 2)
-		playerPaddle2.dy *= 2;
-	if (playerPaddle1.dy === 12 && last_hit === 1)
-		playerPaddle1.dy = 12;
-	if (playerPaddle2.dy === 12 && last_hit === 2)
-		playerPaddle2.dy = 12;
+export function Speedpower(){
+	if (playerPaddle1.dy === speeddoubled && last_hit === 1) {
+		playerPaddle1.dy = speeddoubled;
+	}
+	if (playerPaddle2.dy === speeddoubled && last_hit === 2) {
+		playerPaddle2.dy = speeddoubled;
+	}
+	if (last_hit === 1) {
+		playerPaddle1.dy = speeddoubled;
+	}
+	else if (last_hit === 2) {
+		playerPaddle2.dy = speeddoubled;
+	}
+
 }
 
 function Trackballinspeed() {
 	if (Buffpvp.visible &&
-		sphere.x + sphere.radius > Buffpvp.x &&
-		sphere.x - sphere.radius < Buffpvp.x + Buffpvp.width &&
-		sphere.y + sphere.radius > Buffpvp.y &&
-		sphere.y - sphere.radius < Buffpvp.y + Buffpvp.height) 
+		sphere.x - sphere.radius <= Buffpvp.x + Buffpvp.width &&
+		sphere.x + sphere.radius >= Buffpvp.x &&
+		sphere.y - sphere.radius <= Buffpvp.y + Buffpvp.height && 
+		sphere.y + sphere.radius >= Buffpvp.y )
 		{
 			if (!sphereinspeed) {
 				sphereinspeed = true;
-				console.log("bababoy");}
 			}
-			else {
+		}
+		else {
 				if (sphereinspeed) {
 					sphereinspeed = false;
-					console.log("Yemak ta3ti");
 					SpeedCounting++;
-					if (last_hit === 1 || last_hit === 2) {
-						Speedpower();
+					if (last_hit === 1) {
+						if (window.userData.username === playerPaddle1.username)
+							sendBuffState('speed', last_hit);
+					} else if (last_hit === 2) {
+						if (window.userData.username === playerPaddle2.username) {
+							sendBuffState('speed', last_hit);
+						}
 					}
 				}
 			}
 		if (SpeedCounting === 2) {
-			console.log("dkhelna hna");
 			Buffpvp.visible = false;
 	}
 }
@@ -173,7 +182,7 @@ function Attackpower(){
 		playerPaddle2.Att = 1;
 }
 function	Trackballinattack(){
-	if ( (Attackpvp.visible) &&
+	if (Attackpvp.visible &&
 		sphere.x + sphere.radius > Attackpvp.x &&
 		sphere.x - sphere.radius < Attackpvp.x + Attackpvp.width &&
 		sphere.y + sphere.radius > Attackpvp.y &&
@@ -193,33 +202,46 @@ function	Trackballinattack(){
 		Attackpvp.visible = false;
 	}
 }
-function Bigpadpower(){
-	let player1height2 = playerPaddle1.height * 2;
-	let player2height2 = playerPaddle2.height * 2;
-	if (last_hit === 1)
-		playerPaddle1.height = player1height2;
-	else if (last_hit === 2)
-		playerPaddle2.height = player2height2;
-	if (playerPaddle1.height === player1height2 && last_hit === 1)
-		playerPaddle1.height = player1height2;
-	if (playerPaddle2.height === player2height2 && last_hit === 2)
-		playerPaddle2.height = player2height2;
+export function Bigpadpower(){
+	if (playerPaddle1.height === playerheight2 && last_hit === 1) {
+		return ;
+	}
+	if (playerPaddle2.height === playerheight2 && last_hit === 2) {
+		return ;
+	}
+	if (last_hit === 1) {
+		playerPaddle1.y = playerPaddle1.y - (playerPaddle1.height / 2);
+		playerPaddle1.height = playerheight2;
+	}
+	else if (last_hit === 2) {
+		playerPaddle2.y = playerPaddle2.y - (playerPaddle2.height / 2);
+		playerPaddle2.height = playerheight2;
+	}
 }
 function	TrackballinBigpad(){
-	if ( (Bigpadpvp.visible) &&
-		sphere.x + sphere.radius > Bigpadpvp.x &&
-		sphere.x - sphere.radius < Bigpadpvp.x + Bigpadpvp.width &&
-		sphere.y + sphere.radius > Bigpadpvp.y &&
-		sphere.y - sphere.radius < Bigpadpvp.y + Bigpadpvp.height){
-			if (!sphereinBigpad)
+	if (Bigpadpvp.visible &&
+		sphere.x + sphere.radius >= Bigpadpvp.x &&
+		sphere.x - sphere.radius <= Bigpadpvp.x + Bigpadpvp.width &&
+		sphere.y + sphere.radius >= Bigpadpvp.y &&
+		sphere.y - sphere.radius <= Bigpadpvp.y + Bigpadpvp.height)
+		{
+			if (!sphereinBigpad){
 				sphereinBigpad = true;
+				console.log("bababoy2");
+			}
 		}
 		else	{
 			if (sphereinBigpad){
 				sphereinBigpad = false;
 				bigpadcount++;
-				if (last_hit === 1 || last_hit === 2)
-					Attackpower();
+				if (last_hit === 1) {
+					if (window.userData.username === playerPaddle1.username)
+						sendBuffState('shield', last_hit);
+				} else if (last_hit === 2) {
+					if (window.userData.username === playerPaddle2.username) {
+						sendBuffState('shield', last_hit);
+					}
+				}
 			}
 		}
 	if (bigpadcount === 2){
@@ -237,16 +259,20 @@ function setDimensions() {
 	playerPaddle1.y = (heightScale / 2) - (playerPaddle1.height / 2);
 	p1 = playerPaddle1.y;
 	playerPaddle1.dy = heightScale / 100;
+	speeddoubled = playerPaddle1.dy * 1.75;
+	playerheight2 =  ((heightScale / 10) * 2);
 	Buffpvp.width = widthScale / 10;
 	Buffpvp.height = heightScale / 50;
 	Attackpvp.width = widthScale / 20;
 	Attackpvp.height = heightScale / 100;
-	Bigpadpvp.width = widthScale / 20;
-	Bigpadpvp.height = heightScale / 100;
+	Bigpadpvp.width = widthScale / 10;
+	Bigpadpvp.height = heightScale / 50;
 	Buffpvp.y = heightScale;
 	Buffpvp.x = (widthScale / 2);
 	Attackpvp.y = heightScale;
+	Attackpvp.x = (widthScale / 2);
 	Bigpadpvp.y = heightScale;
+	Bigpadpvp.x = (widthScale / 2);
 
 	playerPaddle2.width = widthScale / 100;
 	playerPaddle2.height = heightScale / 10;
@@ -293,10 +319,11 @@ function movement(player1, player2) {
 		if (paddle.y < 0)
 			paddle.y = 0;
 		sendGameState(1, target.username, me);
-	} else if (downPressed && paddle.y < window.userData.screen_dimensions.height - paddle.height) {
+	} else if (downPressed && paddle.y < (window.userData.screen_dimensions.height - paddle.height)) {
 		paddle.y += paddle.dy;
-		if (paddle.y > window.userData.screen_dimensions.height - paddle.height)
+		if (paddle.y >= (window.userData.screen_dimensions.height - paddle.height))
 			paddle.y = window.userData.screen_dimensions.height - paddle.height;
+		console.log('sadoon hab haka',paddle.y / window.userData.screen_dimensions.height);
 		sendGameState(0, target.username, me);
 	}
 }
@@ -305,8 +332,11 @@ export function renderOP(y) {
 	if (window.userData.username === playerPaddle1.username) {
 		playerPaddle2.y = y * window.userData.screen_dimensions.height;
 	} else {
+		console.log(y, 'so hab haka');
 		playerPaddle1.y = y * window.userData.screen_dimensions.height;
 	}
+	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
+	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
 }
 
 export function changeSphereVars(x, y) {
@@ -360,8 +390,8 @@ export function drawAll(player1, player2, settings) {
 		}
 	}
 	else if (BuffFlag === 2) {
-		drawAttackpvp(0.5);
 		if (Attackpvp.visible === true){
+			drawAttackpvp(0.45);
 			if (up2)
 				Attackpvp.y -= Attackpvp.height / 2;
 			else if (!up2)
@@ -372,8 +402,8 @@ export function drawAll(player1, player2, settings) {
 		}
 	}
 	else if (BuffFlag === 3) {
-		drawBigpadpvp(0.5);
 		if (Bigpadpvp.visible === true){
+			drawBigpadpvp(0.45);
 			if (up3)
 				Bigpadpvp.y -= Bigpadpvp.height / 2;
 			else if (!up3)
@@ -424,7 +454,6 @@ export function displayCountdown() {
 			  countdownOverlay.textContent = 'Game Start!';
 			  setTimeout(() => {
 					countdownOverlay.remove();
-					console.log(gamer1, gamer2);
 					drawAll(gamer1, gamer2, lobbySettings);
 			  }, 1000);
 		 }

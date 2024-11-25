@@ -1,8 +1,8 @@
 import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
-import { drawAll, renderOP, changeSphereVars, newRound } from "./gamePvP.js";
-import { Habess, displayCountdown, ChangeFlag, changeLast } from "./gamePvP.js";
+import { drawAll, renderOP, changeSphereVars, newRound, Bigpadpower } from "./gamePvP.js";
+import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -86,11 +86,11 @@ lo.addEventListener('click', async function (){
 });
 
 export function sendBuffState(Buff, player) {
-	console.log(Buff, player);
 	if (window.userData.pong_socket) {
 		 window.userData.pong_socket.send(JSON.stringify({
-			  action: Buff,
+			  action: 'update_buff_state',
 			  player: player,
+              buff: Buff,
 		 }));
 	}
 }
@@ -105,6 +105,7 @@ export function sendGameState(gameState, target, me) {
         }));
     }
 }
+
 
 function sendGameStatus(username, ready) {
     if (window.userData.pong_socket) {
@@ -135,6 +136,9 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
+        if (data.action !== 'ball_movment') {
+            console.log(data);
+        }
         if (data.action === 'update_game_state') {
             if (data.target === window.userData.username) {
                 renderOP(data.state);
@@ -158,7 +162,6 @@ export async function startGameSocket() {
         } 
         else if (data.action === 'restart_round'){
             Habess();
-            console.log("zbeeeeeeeeeeel");
             newRound();
             displayCountdown();
         }
@@ -166,6 +169,17 @@ export async function startGameSocket() {
             ChangeFlag(data.flag);
         } else if (data.action === 'paddle_hit') {
             changeLast(data.paddle);
+        } else if (data.action === 'update_buff_state') {
+            console.log('lhe9na', data);
+            if (data.state === 'speed') {
+                const target = data.target;
+                Speedpower();
+            } else if (data.state === 'attack') {
+                const target = data.target;
+            } else if (data.state === 'shield') {
+                const target = data.target;
+                Bigpadpower();
+            }
         }
     }
 }
@@ -377,7 +391,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
 
     
     lobbyContainer.style.display = 'block';
-    if (gamer1.ready && gamer2.ready) {
+    if (gamer1 && gamer2 && gamer1.ready && gamer2.ready) {
         lobbyContainer.style.display = 'none';
         const gameContainer = document.getElementById('gameContainer');
         const countdownOverlay = document.createElement('div');
