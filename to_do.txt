@@ -32,6 +32,7 @@ TODO:
 - clear messages
 - fix instructions styling
 - backend loads (still in question)
+- fix loading match history in some unkown cases (?)
 
 
 

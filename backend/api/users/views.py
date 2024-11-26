@@ -4,6 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.conf import settings
 import uuid
+from games.models import PongGame
 import aioredis
 import logging
 from django.core.mail import send_mail
@@ -274,6 +275,8 @@ class GuestLogoutView(generics.GenericAPIView):
 
         try:
             if user.email.endswith("@guest.local") or user.username.startswith("Guest_"):
+                lst = PongGame.objects.filter(user=user)
+                lst.delete()
                 user.delete()
                 return Response({"status": "success", "detail": "Guest account deleted upon logout."}, status=200)
 

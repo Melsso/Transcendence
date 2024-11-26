@@ -864,6 +864,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					window.userData['target'] = target;
 					if (guest) {
 						window.userData.guest = guest;
+						window.userData.avatar = 'media/avatars/avatar1.svg';
 					}
 					window.userData['online'] = list;
 					

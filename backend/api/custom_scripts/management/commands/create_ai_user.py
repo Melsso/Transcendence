@@ -36,7 +36,7 @@ class Command(BaseCommand):
                 'username': 'Hard AI',
                 'password': 'strongpass123',
                 'email': 'harai@my_pong_website.com',
-                'bar_exp_game1': 5000,
+                'bar_exp_game1': 50000,
                 'is_verified': True,
                 'is_active': True
             },
@@ -44,7 +44,7 @@ class Command(BaseCommand):
                 'username': 'Medium AI',
                 'password': 'strongpass123',
                 'email': 'medai@my_pong_website.com',
-                'bar_exp_game1': 50000,
+                'bar_exp_game1': 5000,
                 'is_verified': True,
                 'is_active': True
             },
