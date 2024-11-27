@@ -809,6 +809,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	async function showView(view, data) {
+		if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
+			if (window.userData?.socket) {
+				window.userData.socket.close();
+				window.userData.socket = null;
+				window.userData.r_name = null;
+				window.userData.target = null;
+			}
+			if (window.userData?.pong_socket) {
+				window.userData.pong_socket.close();
+				window.userData.pong_socket = null;
+			}
+			window.userData = {};
+			userEmail = null;
+			navigateTo('login', null);
+			return ;
+		}
 		if (view !== 'login' && view !== 'register' && view !== '2fa' && view !== 'forgot' && !window.userData?.accessToken && !localStorage.getItem('accessToken')) {
 			navigateTo('login', null);
 			return;
@@ -1016,6 +1032,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	})
 
 	guestButton.addEventListener('click', async function() {
+		if (window.userData?.accessToken || localStorage.getItem('accessToken')) {
+			navigateTo('profile', null);
+			return;
+		}
 		try {
 			const result = await guestLogin();
 			const tokens = result.tokens;
@@ -1042,6 +1062,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		// 	Notification('User Action', 'You Have Not Consented To Our Privacy Policy, Please Log In As A Guest.', 1, 'alert');
 		// 	return ;
 		// }
+		if (window.userData?.accessToken || localStorage.getItem('accessToken')) {
+			navigateTo('profile', null);
+			return;
+		}
 		let loged_in = false;
 		try {
 			loged_in = await getLogs(username);
@@ -1077,6 +1101,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		const v_code = document.getElementById('2fa-input').value;
 		document.getElementById('2fa-input').value = '';
 		const l1 = document.getElementById('2fa-yes');
+		if (window.userData?.accessToken || localStorage.getItem('accessToken')) {
+			navigateTo('profile', null);
+			return;
+		}
 		const r_value = l1.checked;
 		try {
 			const result = await addToKnownLocation(v_code, r_value);
