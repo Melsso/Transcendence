@@ -180,4 +180,4 @@ function LoginNotification(title, message) {
     }, 5000);
 }
 
-window.LogoutNotification = LogoutNotification;
+window.LoginNotification = LoginNotification;

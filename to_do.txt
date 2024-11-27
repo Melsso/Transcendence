@@ -25,7 +25,6 @@ MINOR:
 TODO:
 - add password prompt for message deletion on friends
 - there is a bug with message deletion; they somehow still stay rendered even though they've been deleted?
-- add localstorage tokens to userdata
 - input cleaning(if anyone finds any please describe which field here and i'll do it)
 - pvp inspect
 - q manager needs to be looped
@@ -35,7 +34,6 @@ TODO:
 - fix loading match history in some unkown cases (?)
 - invite/block interaction
 - fix the email display, should only be displayed in your own profile
-- re-route to login when url is in some other view but we can't techincally be there(basically check userData for this & some other thins)
 
 
 
