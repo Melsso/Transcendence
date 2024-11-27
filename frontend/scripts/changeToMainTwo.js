@@ -809,7 +809,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	async function showView(view, data) {
-
+		if (view !== 'login' && view !== 'register' && view !== '2fa' && view !== 'forgot' && !window.userData?.accessToken && !localStorage.getItem('accessToken')) {
+			navigateTo('login', null);
+			return;
+		}
 		if (myflag === false && !window.userData?.acessToken && localStorage.getItem('accessToken')) {
 			myflag = true;
 			navigateTo('profile', null);
