@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, LoginView, VerifyCodeView, LogoutView, ForgotPasswordView, ResetPasswordView, DeletedUserView, GuestLoginView, GuestLogoutView, RefreshTokenView, GetLogsView
+from .views import RegisterView, LoginView, VerifyCodeView, LogoutView, ForgotPasswordView, ResetPasswordView, DeletedUserView, GuestLoginView, GuestLogoutView, RefreshTokenView, GetLogsView, ForceLoginView
 
 urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('api/guest-logout/', GuestLogoutView.as_view(), name='guest-logout'),
 	path('api/refresh-token/', RefreshTokenView.as_view(), name='refresh-token'),
     path('api/get-logs/', GetLogsView.as_view(), name='get-logs'),
+    path('api/force-login/', ForceLoginView.as_view(), name='force-login'),
 ]

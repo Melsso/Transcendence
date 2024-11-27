@@ -12,6 +12,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
@@ -161,6 +162,9 @@ class LogoutView(generics.GenericAPIView):
                 return Response({'status':'error', 'detail':'No refresh token'}, status=HTTP_400_BAD_REQUEST)
             token = RefreshToken(refresh_token)
             token.blacklist()
+            user = request.user
+            user.is_active = False
+            user.save()
             return Response({'status':'success', 'detail':'Logged Out Successfully'}, status=HTTP_200_OK)
         
         except TokenError as e:
@@ -313,3 +317,28 @@ class GetLogsView(generics.GenericAPIView):
             return Response({'status': 'fail', 'detail': 'User Logged in!', 'flag': True}, status=HTTP_200_OK)
         else:
             return Response({'status': 'success', 'detail': 'User not logged in!', 'flag': False}, status=HTTP_200_OK)
+
+class ForceLoginView(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+
+    def generate_tokens(self, user):
+        refresh = RefreshToken.for_user(user)
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token)
+        }
+
+    def put(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        try:
+            user = UserProfile.objects.get(username=username)
+        except UserProfile.DoesNotExist:
+            return Response({'status': 'fail', 'detail': 'No such user found!'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not user.check_password(password):
+            return Response({'status': 'fail', 'detail': 'Wrong Password!'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+        tokens = self.generate_tokens(user)
+        return Response({'status':'success', 'tokens': tokens}, status=HTTP_200_OK)

@@ -1,3 +1,4 @@
+const open = document.createElement('button');
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('register-form-container').style.display = 'none';
     document.getElementById('login-form-container').style.display = 'none';
@@ -28,6 +29,11 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('register-form-container').style.display = 'block';
         logButton.classList.remove('btn-active');
         regButton.classList.add('btn-active');
+    });
+    open.addEventListener('click', function (e) {
+        e.preventDefault();
+        // console.log('allo');
+        navigateTo('force', null);
     });
 });
 
@@ -114,7 +120,7 @@ function Notification(title, message, file,type) {
 
 window.Notification = Notification;
 
-function LogoutNotification(title, message) {
+function LoginNotification(title, message) {
 
     var mainpage = document.getElementById('mainOne')
 
@@ -145,9 +151,9 @@ function LogoutNotification(title, message) {
     msg_close.setAttribute('aria-label', 'Close');
     msg_close.setAttribute('data-bs-dismiss', 'toast');
 
-    const open = document.createElement('button');
+
     open.type = 'button';
-	open.textContent = 'Logout!';
+	open.textContent = 'Login!';
 	open.classList.add('btn');
 	open.style.backgroundColor = 'rgba(25, 110, 238, 0.5)';
 	open.style.padding = '0.25rem 0.5rem'; 
@@ -169,10 +175,6 @@ function LogoutNotification(title, message) {
 
     const toast = new bootstrap.Toast(msg_container);
     toast.show();
-    // open.addEventListener('click', function (e) {
-    //     e.preventDefault();
-    //     navigateTo('Force-Logout', null);
-    // });
     setTimeout(() => {
         toast.hide();
     }, 5000);

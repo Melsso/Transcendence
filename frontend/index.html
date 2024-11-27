@@ -487,6 +487,25 @@
                 </div>
             </div>
             <div class="form-container">
+                <div class="fst-italic rounded m-5 p-3 text-center my-form" id="force-container" style="display: none;">
+                    <h1 class="p-3">Force login</h1>
+                    <p class="p-3">Enter your username and password to force-login</p>
+                    <form id="force-cred">
+                        <div class="input-container-main mb-3">
+                            <label for="username" class="form-label">userame:</label>
+                            <input type="text" id="forceUsername" name="username" class="form-control input-w justify-content-center"
+                                placeholder="username" required>
+                        </div>
+                        <div class="input-container-main mb-5 p-5">
+                            <label for="password" class="form-label">Password:</label>
+                            <input type="password" id="force-password" name="password" class="form-control input-w"
+                                placeholder="Password" required>
+                        </div>
+                        <button type="button" class="btn btn-primary input-left" id="force-login">Login</button>
+                    </form>
+                </div>
+            </div>
+            <div class="form-container">
                 <div class="fst-italic rounded m-5 p-3 text-center my-form" id="Tfa-container">
                     <h1 class="p-3">Please verify your login credentials</h1>
                     <p class="p-3">Enter the verification code that was sent to your email.</p>

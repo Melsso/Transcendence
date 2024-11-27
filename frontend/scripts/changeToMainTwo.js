@@ -703,6 +703,29 @@ async function logoutUser() {
 	return data;
 }
 
+async function forceLogin(username, password) {
+	const url = baseUrl + 'api/force-login/';
+
+	const response = await fetch(url, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			username: username,
+			password: password,
+		}),
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		// Notification('Profile Action', "Login Failed!", 1, 'alert');
+		throw errorResponse;
+	}
+
+	const data = await response.json();
+	return data;
+}
+
 async function sendFriendRequest(targetId) {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
@@ -748,8 +771,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const menu = document.getElementById('menuuu');
 	const qContainer = document.getElementById('Queue');
 	const toggle = document.getElementById('2fa-toggle');
+	const force = document.getElementById('force-container');
 
-	
+	force.style.display = 'none';
 	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
 	log1.style.display = 'none';
@@ -763,7 +787,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
-
+	const forceButton = document.getElementById('force-login');
 	const confirmButton = document.getElementById('pass-verf-code');
 	const loginButton = document.getElementById('login');
 	const login2faButton = document.getElementById('2fa-btn');
@@ -825,7 +849,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			navigateTo('login', null);
 			return ;
 		}
-		if (view !== 'login' && view !== 'register' && view !== '2fa' && view !== 'forgot' && !window.userData?.accessToken && !localStorage.getItem('accessToken')) {
+		if (view !== 'login' && view !== 'register' && view !== '2fa' && view !== 'forgot' && view !== 'force' && !window.userData?.accessToken && !localStorage.getItem('accessToken')) {
 			navigateTo('login', null);
 			return;
 		}
@@ -845,6 +869,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		altFfour();
 		leaving();
 		Habess();
+		force.style.display = 'none';
 		qContainer.style.display = 'none';
 		Tlobby.style.display = 'none';
 		inv_menu.style.display = 'none';
@@ -952,8 +977,37 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else if (view === '2fa') {
 			mainOne.style.display = 'flex';
 			facontainer.style.display = 'block';
+		} else if (view === 'force') {
+			mainOne.style.display = 'flex';
+			force.style.display = 'block';
 		}
 	}
+
+	forceButton.addEventListener('click', async function (e){
+		e.preventDefault();
+		const username = document.getElementById('forceUsername').value;
+		const password = document.getElementById('force-password').value;
+		document.getElementById('forceUsername').value = '';
+		document.getElementById('force-password').value = '';
+		try {
+			const results = await forceLogin(username, password);
+			const tokens = results.tokens;
+			const host_check = await checkKnownLocation(tokens.access);
+			localStorage.setItem('accessToken', tokens.access);
+			localStorage.setItem('refreshToken', tokens.refresh);
+			window.userData.accessToken = localStorage.getItem('accessToken');
+			scheduleTokenRefresh(localStorage.getItem('accessToken'));
+			if (host_check['2fa'] === false) {
+				navigateTo('profile', null);
+			}
+			else {
+				navigateTo('2fa', null);
+				return ;
+			}
+		} catch (error) {
+			Notification('Profile Action', `Failed to login because: ${error.detail}`, 1,'alert');
+		}
+	});
 
 	window.addEventListener('popstate', function (event) {
 		if (event.state && event.state.view) {
@@ -1070,7 +1124,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		if (loged_in) {
 			Notification('Profile Action', 'You are connected on another device/browser, Please log out first to be able to Log in here!', 1, 'alert');
-			LogoutNotification('Profile Action', 'Click here if you wanna force logout from other devices/browsers!');
+			LoginNotification('Profile Action', 'Click here if you wanna force login to your account!');
 			return;
 		}
 		// need to save wether remember or not for next call
