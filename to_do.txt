@@ -33,6 +33,9 @@ TODO:
 - fix instructions styling
 - backend loads (still in question)
 - fix loading match history in some unkown cases (?)
+- invite/block interaction
+- fix the email display, should only be displayed in your own profile
+- re-route to login when url is in some other view but we can't techincally be there(basically check userData for this & some other thins)
 
 
 

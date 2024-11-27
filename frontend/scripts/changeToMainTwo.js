@@ -5,6 +5,7 @@ import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password
 import { Habess } from "./gamePvP.js";
 let userEmail;
 let flag = false;
+let myflag = false;
 let consentPrompt = false;
 const baseUrl = process.env.ACTIVE_HOST;
 
@@ -808,6 +809,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	async function showView(view, data) {
+
+		if (myflag === false && !window.userData?.acessToken && localStorage.getItem('accessToken')) {
+			myflag = true;
+			navigateTo('profile', null);
+			return ;
+		}
 		if (window.userData.pong_socket) {
 			window.userData.pong_socket.close();
 			window.userData.pong_socket = null;
@@ -837,7 +844,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		mainBody.style.display = 'none';
 		mainSettings.style.display = 'none';
 		mainPONGgame.style.display = 'none';
-
 		if (view === 'login') {
 			log1.style.display = 'block';
 			mainOne.style.display = 'flex';
@@ -846,9 +852,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			try {
 				let guest;
 				if (data === null) {
-					
+
 					const result = await homepageData();
-					
+
 					if (result['user'].Twofa_auth === true && !toggle.classList.contains('on')) {
 						toggle.classList.toggle('on');
 					}
@@ -861,13 +867,13 @@ document.addEventListener('DOMContentLoaded', function () {
 					const target = window.userData.target;
 					const list = window.userData['online'];
 					window.userData = result["user"];
+					window.userData.accessToken  = localStorage.getItem('accessToken');
 					window.userData['target'] = target;
 					if (guest) {
 						window.userData.guest = guest;
 						window.userData.avatar = 'media/avatars/avatar1.svg';
 					}
 					window.userData['online'] = list;
-					
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');
@@ -946,7 +952,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	function navigateTo(view, data) {
-		if (view !== 'profile' && view !=='PONG' && view !== 'login' && window.userData?.guest &&window.userData.guest === true) {
+		if (view !== 'profile' && view !=='PONG' && view !== 'login' && window.userData?.guest && window.userData.guest === true) {
 			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 			return ;
 		}
@@ -956,7 +962,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	window.navigateTo = navigateTo;
 
 	toggle.addEventListener('click', async function() {
-		console.log("here");
 		toggle.classList.toggle('on');
 		try {
 			await UpdateTwoFactorAuth();
@@ -1011,10 +1016,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await guestLogin();
 			const tokens = result.tokens;
-			if (localStorage.getItem('accessToken')) {
-				Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
-				return;
-			}
+			// if (localStorage.getItem('accessToken') && window.userData?.accessToken) {
+			// 	Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
+			// 	return;
+			// }
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);
 			window.userData['guest'] = true;
@@ -1040,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		} catch (error) {
 			Notification('Profile Action', 'Please Stand By For A Few Seconds...', 1, 'alert');
 		}
-		if (localStorage.getItem('accessToken') || loged_in) {
+		if (loged_in) {
 			Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
 			return;
 		}
@@ -1051,6 +1056,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const host_check = await checkKnownLocation(tokens.access);
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);
+			window.userData.accessToken = localStorage.getItem('accessToken');
 			scheduleTokenRefresh(localStorage.getItem('accessToken'));
 			if (host_check['2fa'] === false) {
 				navigateTo('profile', null);
@@ -1564,7 +1570,6 @@ async function handleprofileAction(action, targetuname, targetID) {
 				} else {
 					result = await blockUser(targetuname);
 				}
-				console.log(result);
 				Notification('Friend Action', `${result.detail}`, 2, 'profile');
 			} catch (error) {
 				Notification('Friend Action', `Error ${error.detail}`, 2, 'alert');
