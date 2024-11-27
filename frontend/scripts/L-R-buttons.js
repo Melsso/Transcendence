@@ -113,3 +113,69 @@ function Notification(title, message, file,type) {
 }
 
 window.Notification = Notification;
+
+function LogoutNotification(title, message) {
+
+    var mainpage = document.getElementById('mainOne')
+
+    const main_welcome = document.createElement('div');
+    main_welcome.classList.add("position-fixed", "p-3", "top-0", "start-0");
+    main_welcome.style.zIndex = '100';
+
+    const msg_container = document.createElement('div');
+    msg_container.id = 'WELCOME';
+    msg_container.classList.add('toast');
+    msg_container.setAttribute('role', 'alert');
+    msg_container.setAttribute('aria-live', 'assertive');
+    msg_container.setAttribute('aria-atomic', 'true');
+
+    const header = document.createElement('div');
+    header.style.backgroundColor = 'rgba(230, 230, 38, 0.5)';
+    header.classList.add('toast-header');
+    header.style.textAlign = 'center';
+
+    const header_msg = document.createElement('strong');
+    header_msg.classList.add('me-auto');
+    header_msg.textContent = title;
+    header_msg.style.color = 'black'; 
+
+    const msg_close = document.createElement('button');
+    msg_close.type = 'button';
+    msg_close.classList.add('btn-close');
+    msg_close.setAttribute('aria-label', 'Close');
+    msg_close.setAttribute('data-bs-dismiss', 'toast');
+
+    const open = document.createElement('button');
+    open.type = 'button';
+	open.textContent = 'Logout!';
+	open.classList.add('btn');
+	open.style.backgroundColor = 'rgba(25, 110, 238, 0.5)';
+	open.style.padding = '0.25rem 0.5rem'; 
+	open.style.fontSize = '0.75rem';
+	open.style.marginLeft = '10px';
+
+    header.appendChild(header_msg);
+    header.appendChild(open);
+    header.appendChild(msg_close);
+
+    const msg_content = document.createElement('div');
+    msg_content.classList.add('toast-body');
+    msg_content.textContent = message;  
+
+    msg_container.appendChild(header);
+    msg_container.appendChild(msg_content);
+    main_welcome.appendChild(msg_container);
+    mainpage.appendChild(main_welcome);
+
+    const toast = new bootstrap.Toast(msg_container);
+    toast.show();
+    // open.addEventListener('click', function (e) {
+    //     e.preventDefault();
+    //     navigateTo('Force-Logout', null);
+    // });
+    setTimeout(() => {
+        toast.hide();
+    }, 5000);
+}
+
+window.LogoutNotification = LogoutNotification;

@@ -1032,17 +1032,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	})
 
 	guestButton.addEventListener('click', async function() {
-		if (window.userData?.accessToken || localStorage.getItem('accessToken')) {
+		if (localStorage.getItem('accessToken')) {
 			navigateTo('profile', null);
 			return;
 		}
 		try {
 			const result = await guestLogin();
 			const tokens = result.tokens;
-			// if (localStorage.getItem('accessToken') && window.userData?.accessToken) {
-			// 	Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
-			// 	return;
-			// }
 			localStorage.setItem('accessToken', tokens.access);
 			localStorage.setItem('refreshToken', tokens.refresh);
 			window.userData['guest'] = true;
@@ -1062,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		// 	Notification('User Action', 'You Have Not Consented To Our Privacy Policy, Please Log In As A Guest.', 1, 'alert');
 		// 	return ;
 		// }
-		if (window.userData?.accessToken || localStorage.getItem('accessToken')) {
+		if (localStorage.getItem('accessToken')) {
 			navigateTo('profile', null);
 			return;
 		}
@@ -1073,7 +1069,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			Notification('Profile Action', 'Please Stand By For A Few Seconds...', 1, 'alert');
 		}
 		if (loged_in) {
-			Notification('Profile Action', 'You are connected in another tab, Please log out there to be able to log in on this tab!', 1, 'alert');
+			Notification('Profile Action', 'You are connected on another device/browser, Please log out first to be able to Log in here!', 1, 'alert');
+			LogoutNotification('Profile Action', 'Click here if you wanna force logout from other devices/browsers!');
 			return;
 		}
 		// need to save wether remember or not for next call
@@ -1205,6 +1202,22 @@ document.addEventListener('DOMContentLoaded', function () {
 	searchButton.addEventListener('click', async function () {
 		const uname = document.getElementById('search-user-input').value;
 		document.getElementById('search-user-input').value = '';
+		if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
+			if (window.userData?.socket) {
+				window.userData.socket.close();
+				window.userData.socket = null;
+				window.userData.r_name = null;
+				window.userData.target = null;
+			}
+			if (window.userData?.pong_socket) {
+				window.userData.pong_socket.close();
+				window.userData.pong_socket = null;
+			}
+			window.userData = {};
+			userEmail = null;
+			navigateTo('login', null);
+			return ;
+		}
 		try {
 			const result = await userLookUp(uname);
 			if (result['results'] !== null) {

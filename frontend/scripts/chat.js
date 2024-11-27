@@ -24,6 +24,21 @@ import { getFriends, loadFriends } from "./populateFriends.js";
 let tar;
 
 export function handleSend(username, r_name, action) {
+	if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
+		if (window.userData?.socket) {
+			window.userData.socket.close();
+			window.userData.socket = null;
+			window.userData.r_name = null;
+			window.userData.target = null;
+		}
+		if (window.userData?.pong_socket) {
+			window.userData.pong_socket.close();
+			window.userData.pong_socket = null;
+		}
+		window.userData = {};
+		navigateTo('login', null);
+		return ;
+	}
 	chatInput.focus();
 	const message = chatInput.value;
 	if (action) {
