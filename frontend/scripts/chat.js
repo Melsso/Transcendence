@@ -1,6 +1,7 @@
 const messageContainer = document.getElementById('message-container');
 const chatInput = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
+const mybtn = document.getElementById('update-chat-btn');
 const canvass = document.getElementById('pongCanvas');
 const noChat = document.getElementById('no-chat');
 const globalbtn = document.getElementById('revert_to_global');
@@ -49,6 +50,12 @@ export function handleSend(username, r_name, action) {
 	addMessage(message, true, null);
 	chatInput.value = ''; 
 }
+
+// mybtn.addEventListener('click', function () {
+// 	if (mybtn.getAttribute('aria-expanded') === true) {
+// 		messageContainer.innerHTML = '';
+// 	}
+// });
 
 globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
@@ -413,6 +420,7 @@ export async function getMessages(uname=null) {
 }
 
 export async function loadMessages(data) {
+	messageContainer.innerHTML = '';
 	data.forEach(message => {
 		if (message.content.trim() === '') return;
 		const messageElement = document.createElement('div');

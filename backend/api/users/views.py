@@ -162,9 +162,6 @@ class LogoutView(generics.GenericAPIView):
                 return Response({'status':'error', 'detail':'No refresh token'}, status=HTTP_400_BAD_REQUEST)
             token = RefreshToken(refresh_token)
             token.blacklist()
-            user = request.user
-            user.is_active = False
-            user.save()
             return Response({'status':'success', 'detail':'Logged Out Successfully'}, status=HTTP_200_OK)
         
         except TokenError as e:
