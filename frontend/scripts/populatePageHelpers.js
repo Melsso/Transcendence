@@ -124,7 +124,11 @@ function loadProfileInfo(user) {
     avatarElement.style.backgroundImage = `url(${user.avatar})`;
 
     bio.textContent = user.biography;
-    email.textContent = user.email;
+    if (window.userData.username === user.username) {
+        email.textContent = user.email;
+    } else {
+        email.textContent = '';
+    }
     const expGame1Percentage = Math.max((user.bar_exp_game1 % 1000) / 10, 1);
     
     const levelGame1 = Math.floor(user.bar_exp_game1 / 1000);

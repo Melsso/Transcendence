@@ -1274,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		try {
 			const result = await userLookUp(uname);
-			if (result['results'] !== null) {
+			if (result['user'] !== null) {
 				navigateTo('profile', result);
 			}
 			else {
@@ -1618,7 +1618,6 @@ async function createDropDownProfile(friendUname, friendId, block_list) {
 	dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
 	dropdownButton.setAttribute('aria-expanded', 'false');
 	dropdownButton.innerHTML = '&#8226;&#8226;&#8226;';
-
 	const dropdownMenu = document.createElement('ul');
 	dropdownMenu.className = 'dropdown-menu';
 	dropdownMenu.id = uniqueDropdownMenuId;
@@ -1640,7 +1639,6 @@ async function createDropDownProfile(friendUname, friendId, block_list) {
 		li.appendChild(a);
 		dropdownMenu.appendChild(li);
 	});
-
 	dropdownDiv.appendChild(dropdownButton);
 	dropdownDiv.appendChild(dropdownMenu);
 	container.appendChild(dropdownDiv);

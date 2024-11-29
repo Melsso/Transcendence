@@ -73,9 +73,13 @@ overflow: hidden;
 
 .profile-info {
 	top: 7%;
+	display: flex;
 	position: absolute;
 	left: 40%;
 	width: 50%;
+	flex-direction: column; 
+	justify-content: center; 
+	align-items: center;
 	height: 25%;
 	background-color: #0000006f;
 }
@@ -83,24 +87,37 @@ overflow: hidden;
 .profile-username {
 	position: absolute;
 	top: 7%;
-	left:40%;
 	color: #9da5cf;
 	text-decoration: solid;
 	font:italic;
+}
+
+.my-email-style {
+	position: absolute;
+	top: 20%;
+	color: #9da5cf;
+	text-decoration: solid;
+	font:italic;
+}
+
+.profile-dropdown-s {
+	position: absolute;
+	right:0;
+	top:0;
+	visibility: visible;
+	opacity: 1;
 }
 
 .my-bio {
 	position: absolute;
 	top: 35%;
 	color: #7982b2;
-	left: 10%;
 }
 
 .my-bar {
 	background-color: #7982b2;
 	position: absolute;
 	top: 70%;
-	left: 10%;
 	height: 20%;
 	width: 80%;
 	color: black;
@@ -110,7 +127,6 @@ overflow: hidden;
 	background-color: #7982b2;
 	position: absolute;
 	top: 80%;
-	left: 10%;
 	height: 10%;
 	width: 80%;
 	color: black;
