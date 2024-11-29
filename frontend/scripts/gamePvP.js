@@ -14,9 +14,10 @@ let sphereinBigpad = false;
 let SpeedCounting = 0;
 let attackcount = 0;
 let bigpadcount = 0;
-let last_hit = 1;
+let last_hit = 0;
 let speeddoubled = 0;
 let playerheight2 = 0;
+let nocurrentGame = false;
 let p1;
 let p2;
 let sx;
@@ -103,8 +104,34 @@ export function Habess() {
   animation = [];
 }
 
+export function countdownforRound(callback){
+	if (nocurrentGame)
+		return;
+	let cooldown = 3;
+	const intID = setInterval(() => {
+		if (nocurrentGame) {
+			clearInterval(intID);
+			cooldown = 3;
+			return;
+		}
+		ctxx.clearRect(0, 0, canvass.widht, canvass.height);
+		drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
+		drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+		drawSphere(sphere.x, sphere.y, sphere.radius);
+		displayCountdown();
+		cooldown--;
+
+		if(cooldown < 0){
+			clearInterval(intID);
+			callback();
+		}
+
+	}, 1000);
+}
+
 export function newRound() {
 	const heightScale = window.userData.screen_dimensions.height;
+	const widthScale = window.userData.screen_dimensions.width;
 	ctxx.clearRect(0, 0, canvass.widht, canvass.height);
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle2.height = heightScale / 10;
@@ -119,6 +146,11 @@ export function newRound() {
 	block1.visible = false;
 	block2.visible = false;
 	BuffFlag = 0;
+	sphere.radius = widthScale / 100;
+	sphere.x = (widthScale / 2);
+	sx = sphere.x;
+	sphere.y = (heightScale / 2);
+	sy = sphere.y;
 }
 
 export function changeLast(last) {
@@ -250,6 +282,8 @@ function	TrackballinBigpad(){
 }
 
 function setDimensions() {
+	canvass.width = canvass.getBoundingClientRect().width;
+	canvass.height = canvass.getBoundingClientRect().height;
 	const widthScale = window.userData.screen_dimensions.width;
 	const heightScale = window.userData.screen_dimensions.height;
 	
@@ -438,13 +472,13 @@ export function displayCountdown() {
 	`;
 	gameContainer.appendChild(countdownOverlay);
 	
-	let countdown = 3;
+	let countdown =3;
 	countdownOverlay.textContent = countdown;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	playerPaddle1.y = p1;
 	playerPaddle2.y = p2;
-	sphere.x = 0;
-	sphere.y = 0;
+	sphere.x = sx;
+	sphere.y = sy;
 	const countdownInterval = setInterval(() => {
 		 countdown -= 1;
 		 if (countdown > 0) {

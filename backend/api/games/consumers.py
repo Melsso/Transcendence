@@ -21,8 +21,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 		'dy': 0.005,
 		'radius': 0.01 
 	}
-	paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0}
-	paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0}
+	paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+	paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 
 	async def get_all_rooms(self):
 		redis = await aioredis.from_url("redis://redis:6379")
@@ -364,9 +364,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 			'dy': 0.005,
 			'radius': 0.01 
 		}
-		self.paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0}
-		self.paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0}
-		angleX = 1 
+		self.paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+		self.paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+		angleX = 1
 		angleY = 0
 		ball_hits = 0
 		buff1= 0
@@ -417,29 +417,53 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 3
 					}
 				)
-			self.ball['dx'] = angleX * base_speed
-			self.ball['dy'] = angleY * base_speed
-			self.ball['x'] += 0
-			self.ball['y'] += 0
-			if self.ball['x'] <= 0.015 or self.ball['x'] >= 0.99:
+			self.ball['x'] += self.ball['dx']
+			self.ball['y'] += self.ball['dy']
+			if self.ball['x'] <= 0.01 or self.ball['x'] >= 0.99:
+				if self.ball['x'] <= 0.01:
+					self.paddle2['score'] += 1
+				else:
+					self.paddle1['score'] += 1
+				
+				if self.paddle1['score'] == 4 or self.paddle2['score'] == 4:
+					await self.channel_layer.group_send(
+					self.room_group_name,
+						{
+							"type": 'r_round',
+							"action": 'restart_round',
+							"state": 'end',
+						}
+					)
+					logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII2222222222')
+					logger.warning(time.time())
+					break
+				
 				self.ball['x'] = 0.5
 				self.ball['y'] = 0.5
-				start_time = time.time()
-				self.ball['dx'] = angleX * base_speed
-				self.ball['dy'] = angleY * base_speed
-				angleX = -angleX
+				self.ball['dx'] = 0.005
+				self.ball['dy'] = 0.005
 				self.paddle1['y'] = 0.45
 				self.paddle2['y'] = 0.45
 				howmanyspeeds = 0
 				base_speed = 0.005
+				angleX = 1
+				angleY = 0
+				# self.ball['dx'] = angleX * base_speed
+				# self.ball['dy'] = angleY * base_speed
 				await self.channel_layer.group_send(
 				self.room_group_name,
 					{
 						"type": 'r_round',
 						"action": 'restart_round',
+						"state": 'restart',
 					}
 				)
-				await asyncio.sleep(3.5)
+				await asyncio.sleep(4)
+				start_time = time.time()
+				buff1 = 0
+				buff2 = 0
+				buff3 = 0
+				continue
 			
 			if self.ball['y'] <= 0.06 or self.ball['y'] >= 0.99:
 				angleY = -angleY
@@ -479,6 +503,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 				}
 			)
 			await asyncio.sleep(0.016)
+		logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII33333333')
+		logger.warning(time.time())
 
 	async def empty_action(self, event):
 		action = event['action']
@@ -494,17 +520,41 @@ class GameConsumer(AsyncWebsocketConsumer):
 			'action': action,
         }))
 	async def r_round(self, event):
+		logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIRRRRRRRRRR')
+		logger.warning(time.time())
 		action = event['action']
+		state = event['state']
 		await self.send(text_data=json.dumps({
          "type": "restart_round",
 			'action': action,
+			"state": state,
         }))
+	async def maybe(self):
+		await self.channel_layer.group_send(
+		self.room_group_name,
+			{
+				"type": 'r_round',
+				"action": 'restart_round',
+				"state": 'end',
+			}
+		)
+
+	# async def gg(self, event):
+	# 	logger.warning('HAAAWWWWWW ZEEEEEBBBBBBIIIIIIIIIIIIIIII')
+	# 	action = event['action']
+	# 	p1 = event['p1']
+	# 	p2 = event['p2']
+	# 	await self.send(text_data=json.dumps({
+	# 			'action': action,
+	# 			'p1': p1,
+	# 			'p2': p2,
+	# 	}))
 
 	async def ball_position(self, event):
 		action = event['action']
 		await self.send(text_data=json.dumps({
             "type": "ballState",
-			'action': action,
+				'action': action,
             "x": event["x"],
             "y": event["y"]
         }))

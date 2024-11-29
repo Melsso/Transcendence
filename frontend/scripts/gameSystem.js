@@ -1,7 +1,7 @@
 import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
-import { drawAll, renderOP, changeSphereVars, newRound, Bigpadpower } from "./gamePvP.js";
+import { drawAll, renderOP, changeSphereVars, newRound, Bigpadpower, countdownforRound } from "./gamePvP.js";
 import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
@@ -159,18 +159,11 @@ export async function startGameSocket() {
             Notification('Game Action', 'We have found no other player in your skill range! Why don\'t you hone up your skills vs our ai?!', 2, 'alert');
         } else if (data.action == 'start_queue_game') {
             startQueueGame(data.players);
-        } 
-        else if (data.action === 'restart_round'){
-            Habess();
-            newRound();
-            displayCountdown();
-        }
-        else if (data.action === 'Buff'){
+        } else if (data.action === 'Buff'){
             ChangeFlag(data.flag);
         } else if (data.action === 'paddle_hit') {
             changeLast(data.paddle);
         } else if (data.action === 'update_buff_state') {
-            console.log('lhe9na', data);
             if (data.state === 'speed') {
                 const target = data.target;
                 Speedpower();
@@ -180,7 +173,21 @@ export async function startGameSocket() {
                 const target = data.target;
                 Bigpadpower();
             }
-        }
+        } else if (data.action === 'restart_round') {
+            if (data.state === 'end') {
+                console.log('Habess tmneyik!!!', data);
+                Habess();
+
+            } else {
+                Habess();
+                newRound();
+                displayCountdown();
+            }
+            // countdownforRound();
+            console.log('Restarting round: ', data);
+        } else if (data.action === 'go_screen') {
+            console.log('Ending the game: ', data);
+        } 
     }
 }
 
