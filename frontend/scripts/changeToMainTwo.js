@@ -772,7 +772,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const qContainer = document.getElementById('Queue');
 	const toggle = document.getElementById('2fa-toggle');
 	const force = document.getElementById('force-container');
+	const insButton = document.getElementById('return-to-menu-ins');
 
+	insButton.style.display = 'none';
 	force.style.display = 'none';
 	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
@@ -882,6 +884,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		newpass.style.display = 'none';
 		reg1.style.display = 'none';
 		log1.style.display = 'none';
+		insButton.style.display = 'none';
 		reg2.style.display = 'none';
 		mainOne.style.display = 'none';
 		mainTwo.style.display = 'none';

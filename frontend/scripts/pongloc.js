@@ -1116,7 +1116,6 @@ function gameLLoop(settings) {
 		setGameDimension();
 		starting = true;
 	}
-	console.log(gameOngoing);
 	if (settings === null) {
 		settings.mode = 'Default Mode';
 		settings.map = 'Map 1';

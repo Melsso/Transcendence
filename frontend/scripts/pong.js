@@ -814,6 +814,7 @@ ins_return.addEventListener('click', function () {
     ai_menu.style.display = 'none';
     inv_menu.style.display = 'none';
     menu.style.display = 'flex';
+    ins_return.style.display = 'none';
     Instructions.style.display = 'none';
 });
 
@@ -822,17 +823,20 @@ document.getElementById('return-to-menu').addEventListener('click', () => {
     inv_menu.style.display = 'none';
     menu.style.display = 'flex';
     Instructions.style.display = 'none';
+    ins_return.style.display = 'none';
 });
 
 document.getElementById('return-to-menu-ai').addEventListener('click', () => {
     inv_menu.style.display = 'none';
     ai_menu.style.display = 'none';
     menu.style.display = 'flex';
+    ins_return.style.display = 'none';
     Instructions.style.display = 'none';
 });
 
 inv_btn.addEventListener('click', function () {
     menu.style.display = 'none';
+    ins_return.style.display = 'none';
     ai_menu.style.display = 'none';
     inv_menu.style.display = 'flex';
     Instructions.style.display = 'none';
@@ -841,6 +845,7 @@ Instructionsbtn.addEventListener('click', function () {
     menu.style.display = 'none';
     ai_menu.style.display = 'none';
     inv_menu.style.display = 'none';
+    ins_return.style.display = 'inline-block';
     Instructions.style.display = 'flex';
 });
 
@@ -848,6 +853,7 @@ aibutton.addEventListener('click', function (event) {
     event.preventDefault();
     inv_menu.style.display = 'none';
     menu.style.display = 'none';
+    ins_return.style.display = 'none';
     ai_menu.style.display = 'flex';
     Instructions.style.display = 'none';
 });
