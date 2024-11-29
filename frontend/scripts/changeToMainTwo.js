@@ -773,7 +773,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const toggle = document.getElementById('2fa-toggle');
 	const force = document.getElementById('force-container');
 	const insButton = document.getElementById('return-to-menu-ins');
+	const moreSettings = document.getElementById('Additional-settings-form');
 
+	moreSettings.style.display = 'none';
 	insButton.style.display = 'none';
 	force.style.display = 'none';
 	qContainer.style.display = 'none';
@@ -787,6 +789,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
 
+	const additionalBtn = document.getElementById('additional-settings-btn');
 	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
 	const forceButton = document.getElementById('force-login');
@@ -1083,6 +1086,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 		});
 	});
+
+	additionalBtn.addEventListener('click', function () {
+		if (moreSettings.style.display === 'none' || moreSettings.style.display === '') {
+			moreSettings.style.display = 'flex';
+	  	} else {
+			moreSettings.style.display = 'none';
+	  	}
+	})
 
 	ShowPrivacy.addEventListener('click', function () {
 		createTermsModal();
