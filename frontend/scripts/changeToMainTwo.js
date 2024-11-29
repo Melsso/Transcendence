@@ -874,6 +874,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		altFfour();
 		leaving();
 		Habess();
+		deleteModal.style.display = 'none';
+		delMsgModal.style.display = 'none';
+		delGamesModal.style.display = 'none';
+		changePolicyModal.style.display = 'none';
 		force.style.display = 'none';
 		qContainer.style.display = 'none';
 		Tlobby.style.display = 'none';
@@ -1440,10 +1444,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 	
-	cancelDelMsgBtn.addEventListener('click', async function() {
+	cancelDelMsgBtn.addEventListener('click', function() {
 		delMsgModal.style.display = 'none';
 	});
-	delMsgBtn.addEventListener('click', async function() {
+	delMsgBtn.addEventListener('click', function() {
 		delMsgModal.style.display = 'flex';
 	});
 	confirmDelMsgBtn.addEventListener('click', async function() {
@@ -1461,10 +1465,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	cancelDelGamesBtn.addEventListener('click', async function() {
+	cancelDelGamesBtn.addEventListener('click',  function() {
 		delMsgModal.style.display = 'none';
 	});
-	delGamesBtn.addEventListener('click', async function() {
+	delGamesBtn.addEventListener('click',  function() {
 		delGamesModal.style.display = 'flex';
 	});
 	confirmDelGamesBtn.addEventListener('click', async function() {
@@ -1482,10 +1486,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	changePolicyBtn.addEventListener('click', async function() {
+	changePolicyBtn.addEventListener('click',  function() {
 		changePolicyModal.style.display = 'flex';
 	});
-	cancelPolicyChange.addEventListener('click', async function() {
+	cancelPolicyChange.addEventListener('click',  function() {
 		changePolicyModal.style.display = 'none';
 	});
 	confirmPolicyChange.addEventListener('click', async function() {
@@ -1553,7 +1557,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				window.userData = {}
 				userEmail = null;
 				deleteModal.style.display = 'none';
-				Notification('Profile action', "Account deleted successfully!", 0, 'success');
+				Notification('Profile action', "Account deleted successfully!", 1, 'profile');
 			} catch(error){
 				Notification('Profile Action', `Failed To Delete The Account: ${error.detail}`, 2, 'alert');
 			}
