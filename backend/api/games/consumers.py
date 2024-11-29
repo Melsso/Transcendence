@@ -279,15 +279,17 @@ class GameConsumer(AsyncWebsocketConsumer):
 			elif action == 'game_start':
 				await self.gameStart()
 			elif action == 'update_buff_state':
+				# add buff attack hit for both and update paddles
 				if player == 1:
 					if buff == 'speed':
 						self.paddle1['dy'] = 0.0175
-					# elif buff == 'attack':
-					# 	self.paddle1['attack'] = 1
 					elif buff == 'shield':
 						if self.paddle1['height'] == 0.1:
 							self.paddle1['y'] = self.paddle1['y'] - 0.05
 							self.paddle1['height'] = 0.2
+					elif buff == 'attack_hit':
+						self.paddle1['y'] = self.paddle1['y'] + 0.025
+						self.paddle1['height'] = 0.05
 					await self.channel_layer.group_send(
 						self.room_group_name,
 						{
@@ -300,12 +302,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 				else:
 					if buff == 'speed':
 						self.paddle2['dy'] = 0.0175
-					# elif buff == 'attack':
-					# 	self.paddle2['attack'] = 1
 					elif buff == 'shield':
 						if self.paddle2['height'] == 0.1:
 							self.paddle2['y'] = self.paddle2['y'] - 0.05
 							self.paddle2['height'] = 0.2
+					elif buff == 'attack_hit':
+						self.paddle2['y'] = self.paddle2['y'] + 0.025
+						self.paddle2['height'] = 0.05
 					await self.channel_layer.group_send(
 						self.room_group_name,
 						{
@@ -387,17 +390,17 @@ class GameConsumer(AsyncWebsocketConsumer):
 				if howmanyspeeds < 5:
 					howmanyspeeds += 1
 					# new_start = current_time
-			if current_time - start_time >= 35 and buff1 == 0:
-				buff1 = 1
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'demandPowerUP',
-						"action": 'Buff',
-						"flag": 1
-					}
-				)
-			if current_time - start_time >= 80 and buff2 == 0:
+			# if current_time - start_time >= 35 and buff1 == 0:
+			# 	buff1 = 1
+			# 	await self.channel_layer.group_send(
+			# 	self.room_group_name,
+			# 		{
+			# 			"type": 'demandPowerUP',
+			# 			"action": 'Buff',
+			# 			"flag": 1
+			# 		}
+			# 	)
+			if current_time - start_time >= 3 and buff2 == 0:
 				buff2 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -407,18 +410,18 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 2
 					}
 				)
-			if current_time - start_time >= 4 and buff3 == 0:
-				buff3 = 1
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'demandPowerUP',
-						"action": 'Buff',
-						"flag": 3
-					}
-				)
-			self.ball['x'] += self.ball['dx']
-			self.ball['y'] += self.ball['dy']
+			# if current_time - start_time >= 4 and buff3 == 0:
+			# 	buff3 = 1
+			# 	await self.channel_layer.group_send(
+			# 	self.room_group_name,
+			# 		{
+			# 			"type": 'demandPowerUP',
+			# 			"action": 'Buff',
+			# 			"flag": 3
+			# 		}
+			# 	)
+			# self.ball['x'] += self.ball['dx']
+			# self.ball['y'] += self.ball['dy']
 			if self.ball['x'] <= 0.01 or self.ball['x'] >= 0.99:
 				if self.ball['x'] <= 0.01:
 					self.paddle2['score'] += 1
@@ -501,8 +504,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 				}
 			)
 			await asyncio.sleep(0.016)
-		logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII33333333')
-		logger.warning(time.time())
 
 	async def empty_action(self, event):
 		action = event['action']

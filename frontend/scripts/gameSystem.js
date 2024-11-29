@@ -1,8 +1,8 @@
 import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
-import { drawAll, renderOP, changeSphereVars, newRound, Bigpadpower, countdownforRound } from "./gamePvP.js";
-import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp } from "./gamePvP.js";
+import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound } from "./gamePvP.js";
+import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -87,11 +87,11 @@ lo.addEventListener('click', async function (){
 
 export function sendBuffState(Buff, player) {
 	if (window.userData.pong_socket) {
-		 window.userData.pong_socket.send(JSON.stringify({
-			  action: 'update_buff_state',
-			  player: player,
-              buff: Buff,
-		 }));
+		window.userData.pong_socket.send(JSON.stringify({
+			action: 'update_buff_state',
+			player: player,
+            buff: Buff,
+		}));
 	}
 }
 
@@ -136,9 +136,6 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        if (data.action !== 'ball_movment') {
-            console.log(data);
-        }
         if (data.action === 'update_game_state') {
             if (data.target === window.userData.username) {
                 renderOP(data.state);
@@ -169,7 +166,13 @@ export async function startGameSocket() {
                 const target = data.target;
                 Speedpower();
             } else if (data.state === 'attack') {
+                Attackpower();
+            } else if (data.state === 'attack_launch') {
                 const target = data.target;
+                triggerShootPvP(target);
+            } else if (data.state === 'attack_hit') {
+                const target = data.target;
+                updatePaddlePvP(target);
             } else if (data.state === 'shield') {
                 const target = data.target;
                 Bigpadpower();
@@ -178,14 +181,12 @@ export async function startGameSocket() {
             if (data.state === 'end') {
                 Habess();
                 gameOScreenpvp();
-                console.log("KHLAAAAAAAAAAAAAS");
             } else {
                 Habess();
                 newRound();
                 displayCountdown();
             }
             // countdownforRound();
-            console.log('Restarting round: ', data);
         } else if (data.action === 'go_screen') {
             console.log('Ending the game: ', data);
         } 
