@@ -773,7 +773,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const toggle = document.getElementById('2fa-toggle');
 	const force = document.getElementById('force-container');
 	const insButton = document.getElementById('return-to-menu-ins');
+	const moreSettings = document.getElementById('Additional-settings-form');
 
+	moreSettings.style.display = 'none';
 	insButton.style.display = 'none';
 	force.style.display = 'none';
 	qContainer.style.display = 'none';
@@ -787,6 +789,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
 
+	const additionalBtn = document.getElementById('additional-settings-btn');
 	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
 	const forceButton = document.getElementById('force-login');
@@ -871,6 +874,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		altFfour();
 		leaving();
 		Habess();
+		deleteModal.style.display = 'none';
+		delMsgModal.style.display = 'none';
+		delGamesModal.style.display = 'none';
+		changePolicyModal.style.display = 'none';
 		force.style.display = 'none';
 		qContainer.style.display = 'none';
 		Tlobby.style.display = 'none';
@@ -1083,6 +1090,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 		});
 	});
+
+	additionalBtn.addEventListener('click', function () {
+		if (moreSettings.style.display === 'none' || moreSettings.style.display === '') {
+			moreSettings.style.display = 'flex';
+	  	} else {
+			moreSettings.style.display = 'none';
+	  	}
+	})
 
 	ShowPrivacy.addEventListener('click', function () {
 		createTermsModal();
@@ -1429,10 +1444,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 	
-	cancelDelMsgBtn.addEventListener('click', async function() {
+	cancelDelMsgBtn.addEventListener('click', function() {
 		delMsgModal.style.display = 'none';
 	});
-	delMsgBtn.addEventListener('click', async function() {
+	delMsgBtn.addEventListener('click', function() {
 		delMsgModal.style.display = 'flex';
 	});
 	confirmDelMsgBtn.addEventListener('click', async function() {
@@ -1450,10 +1465,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	cancelDelGamesBtn.addEventListener('click', async function() {
+	cancelDelGamesBtn.addEventListener('click',  function() {
 		delMsgModal.style.display = 'none';
 	});
-	delGamesBtn.addEventListener('click', async function() {
+	delGamesBtn.addEventListener('click',  function() {
 		delGamesModal.style.display = 'flex';
 	});
 	confirmDelGamesBtn.addEventListener('click', async function() {
@@ -1471,10 +1486,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	changePolicyBtn.addEventListener('click', async function() {
+	changePolicyBtn.addEventListener('click',  function() {
 		changePolicyModal.style.display = 'flex';
 	});
-	cancelPolicyChange.addEventListener('click', async function() {
+	cancelPolicyChange.addEventListener('click',  function() {
 		changePolicyModal.style.display = 'none';
 	});
 	confirmPolicyChange.addEventListener('click', async function() {
@@ -1542,7 +1557,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				window.userData = {}
 				userEmail = null;
 				deleteModal.style.display = 'none';
-				Notification('Profile action', "Account deleted successfully!", 0, 'success');
+				Notification('Profile action', "Account deleted successfully!", 1, 'profile');
 			} catch(error){
 				Notification('Profile Action', `Failed To Delete The Account: ${error.detail}`, 2, 'alert');
 			}

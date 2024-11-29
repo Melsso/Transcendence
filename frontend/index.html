@@ -283,13 +283,16 @@
                     <input type="file" id="new-avatar" name="avatar" accept="image/*">
                     <button id="updateavatar-btn" type="button" class="btn btn-primary">Update Avatar</button>
                 </form>
-                
-                <form id="request-data-form" class="settings-form">
-                    <label for="req-data">Request Your Data</label>
-                    <button type="button" class="btn btn-primary" id="request-data-btn" name="req-data">Request Your Data</button>
+                <form id="more-settings-form" class="settings-form">
+                    <button type="button" class="btn btn-primary" id="additional-settings-btn" name="add-set">Additional Settings</button>
                 </form>
-
-                <button type="button" class="btn btn-primary" id="delete-messages-btn">Delete All Messages</button>
+                <form id="Additional-settings-form" class="settings-form" style="display: none;">
+                    <button type="button" class="btn btn-primary" id="request-data-btn" name="req-data">Request Your Data</button>
+                    <button type="button" class="btn btn-primary" id="delete-messages-btn">Delete All Messages</button>
+                    <button type="button" class="btn btn-primary" id="delete-games-btn">Delete All Games</button>
+                    <button type="button" class="btn btn-primary" id="change-privacy-settings-btn">Change Privacy Settings</button>
+                    <button type="button" class="btn btn-danger" id="delete-account">Delete your account</button>
+                </form>
                 <div class="modal-delete" id="deleteMsgModal">
                     <div class="modal-content-delete">
                         <h3>Are you sure you want to delete your messages?</h3>
@@ -301,8 +304,6 @@
                         </div>
                     </div>
                 </div>
-
-                <button type="button" class="btn btn-primary" id="delete-games-btn">Delete All Games</button>
                 <div class="modal-delete" id="deleteGamesModal">
                     <div class="modal-content-delete">
                         <h3>Are you sure you want to delete your match history?</h3>
@@ -314,8 +315,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <button type="button" class="btn btn-primary" id="change-privacy-settings-btn">Change Privacy Settings</button>
                 <div class="modal-delete" id="changePrivacyModal">
                     <div class="modal-content-delete">
                         <h3>Are you sure you want to revoke your privacy policy consent?</h3>
@@ -327,19 +326,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- <form id="privacy-change-form" class="settings-form">
-                    <div id="priv-toggle" class="privacy-toggle">
-                        <p class="toggle-text">Privacy Policy Consent</p>
-                        <div class="toggle-slider">
-                            <i class="icon priv-on">✔</i>
-                            <i class="icon priv-off">✖</i>
-                        </div>
-                    </div>
-                    <label for="change-priv-set">Change Privacy Settings</label>
-                    <input type="password" id="change-privacy-password" name="change-priv-set" placeholder="Enter Your Password" required>
-                </form> -->
-
-                <button type="button" class="btn btn-danger" id="delete-account">Delete your account</button>
                 <div class="modal-delete" id="deleteModal">
                     <div class="modal-content-delete">
                         <h3>Are you sure you want to delete your account?</h3>
