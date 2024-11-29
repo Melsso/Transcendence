@@ -24,10 +24,8 @@ MINOR:
 
 TODO:
 - add password prompt for message deletion on friends
-- there is a bug with message deletion; they somehow still stay rendered even though they've been deleted?
 - input cleaning(if anyone finds any please describe which field here and i'll do it)
 - q manager needs to be looped
-- fix instructions styling
 - backend loads (still in question)
 - fix loading match history in some unkown cases (?)
 - invite/block interaction
