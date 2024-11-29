@@ -571,7 +571,7 @@ function showGameOScreen() {
 	ctxx.fillText('GAME OVER', Canvaas.width * 0.5, Canvaas.height * 0.3);
 	ctxx.font = '24px "PixelFont", sans-serif';
 	ctxx.fillStyle = '#ff0000';
-	ctxx.fillText('Press R to replay, Q to go back to main menuu', Canvaas.width / 2, Canvaas.height / 2 + 500);
+	ctxx.fillText('Press R to replay, Q to go back to main menu', Canvaas.width / 2, Canvaas.height / 2 + 500);
 }
 
 //gamelogic

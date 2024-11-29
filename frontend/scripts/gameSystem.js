@@ -2,7 +2,7 @@ import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars, newRound, Bigpadpower, countdownforRound } from "./gamePvP.js";
-import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower } from "./gamePvP.js";
+import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -144,6 +144,7 @@ export async function startGameSocket() {
                 renderOP(data.state);
             }
         } else if (data.action === 'current_players') {
+            // flag will be aded, check the flag first before performing this 
             menu.style.display = 'none';
             ai_menu.style.display = 'none';
             inv_menu.style.display = 'none';
@@ -175,9 +176,9 @@ export async function startGameSocket() {
             }
         } else if (data.action === 'restart_round') {
             if (data.state === 'end') {
-                console.log('Habess tmneyik!!!', data);
                 Habess();
-
+                gameOScreenpvp();
+                console.log("KHLAAAAAAAAAAAAAS");
             } else {
                 Habess();
                 newRound();
@@ -214,10 +215,12 @@ async function startQueueGame(players) {
 
     let countdown = 3;
     countdownOverlay.textContent = countdown;
-    const gamer1 = players[0];
-    const gamer2 = players[1];
-    gamer1['set'] = false;
-    gamer2['set'] = false;
+    let g1 = players[0];
+    let g2 = players[1];
+    g1['set'] = false;
+    g2['set'] = false;
+    g1['score'] = 0;
+    g2['score'] = 0;
     // randomize lobby settings here
     const countdownInterval = setInterval(() => {
         countdown -= 1;
@@ -228,7 +231,7 @@ async function startQueueGame(players) {
             countdownOverlay.textContent = 'Game Start!';
             setTimeout(() => {
                 countdownOverlay.remove();
-                drawAll(gamer1, gamer2, lobbySettings);
+                drawAll(g1, g2, lobbySettings);
             }, 1000);
         }
     }, 1000);
@@ -262,6 +265,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     const gamer1Container = document.querySelector('.player1-container');
     const btnid = 'ready-button-' + gamer1.username;
     gamer1['set'] = false;
+    gamer1['score'] = 0;
     gamer1Container.innerHTML = `
         <div class="avatar">
             <img src="${gamer1.avatar}" alt="${gamer1.username} Avatar" class="avatar-image">
@@ -306,6 +310,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     const gamer2Container = document.querySelector('.player2-container');
     if (gamer2) {
         gamer2['set'] = false;
+        gamer2['score'] = 0;
         const btnid2 = 'ready-button-' + gamer2.username;
         gamer2Container.innerHTML = `
         <div class="avatar">

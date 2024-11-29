@@ -27,14 +27,93 @@ const REFERENCE_HEIGHT = 1080;
 let upPressed = false;
 let animation =  [];
 let downPressed = false;
-let playerPaddle1 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0 };
-let playerPaddle2 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0 };
+let playerPaddle1 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0, score: 0 };
+let playerPaddle2 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0, score: 0 };
 let Buffpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let Attackpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let Bigpadpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let sphere = { x: 0, y: 0, radius: 0, dx: 0, dy: 0, speed: 0 };
 let block1 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
 let block2 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
+
+
+
+function drawScore(pvp1, pvp2) {
+	ctxx.fillStyle = 'black';
+	ctxx.fillRect(0, 0, canvass.width, 50);
+	const image1 = new Image();
+	const image2 = new Image();
+	image1.src = gamer1.avatar;
+	image2.src = gamer2.avatar;
+	ctxx.drawImage(image1, 10, 5, 40, 40);
+	ctxx.font = '20px Arial';
+	ctxx.fillStyle = 'white';
+	ctxx.fillText(pvp1.username, 10*canvass.width/100, 30);
+	ctxx.fillText(pvp1.score, 18*canvass.width/100, 30);
+	// ctxx.drawImage(image2, canvass.width - 50, 5, 40, 40);
+	ctxx.font = '20px Arial';
+	ctxx.fillStyle = 'white'; 
+	ctxx.fillText(pvp2.username, 90*canvass.width/100, 30);
+	ctxx.fillText(pvp2.score, 82*canvass.width/100, 30);
+}
+export function gameOScreenpvp() {
+	var winner;
+	if (sphere.x >= canvass.width - playerPaddle2.width){
+		gamer2.score++;
+		winner = gamer2.username;
+	}
+	else{
+		gamer1.score++;
+		winner = gamer1.username;
+	}
+	var w = [];
+	if (window.userData.username === winner) {
+		w.font = '24px "PixelFont", sans-serif';
+		w.fillStyle = 'green';
+		w.text = 'You won 250 EXP';
+	} else {
+		w.font = '24px "PixelFont", sans-serif';
+		w.fillStyle = 'red';
+		w.text = 'You lost 250 EXP';
+	}
+	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	ctxx.fillStyle = '#000';
+	ctxx.fillRect(0, 0, canvass.width, canvass.height);
+	const	font_size = canvass.width * 0.15;
+	ctxx.font = `${font_size}px "PixelFont", sans-serif`;
+	ctxx.fillStyle = '#ffffff';
+	ctxx.textAlign = 'center';
+	ctxx.fillText('GAME OVER', canvass.width * 0.5, canvass.height * 0.25);
+	if (gamer1.score >= 4){
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`${gamer1.username}: ${gamer1.score}`, canvass.width / 3, canvass.height / 2);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#ffffff';
+		ctxx.fillText(`${gamer2.username}: ${gamer2.score}`, canvass.width / 1.5, canvass.height / 2);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`WINNER: ${gamer1.username}`, canvass.width / 2, canvass.height / 3);
+	}
+	else if (gamer2.score >= 4){
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#ffffff';
+		ctxx.fillText(`${gamer1.username}: ${gamer1.score}`, canvass.width / 3, canvass.height / 2);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`${gamer2.username}: ${gamer2.score}`, canvass.width / 1.5, canvass.height / 2);
+		ctxx.font = '50px "PixelFont", sans-serif';
+		ctxx.fillStyle = '#FFD700';
+		ctxx.fillText(`WINNER: ${gamer2.username}`, canvass.width / 2, canvass.height / 3);
+	}
+	ctxx.font = w.font;
+	ctxx.fillStyle = w.fillStyle;
+	ctxx.fillText(w.text, canvass.width / 2, canvass.height * 0.70);
+	ctxx.font = '24px "PixelFont", sans-serif';
+	ctxx.fillStyle = '#ff0000';
+	ctxx.fillText('Please press Q to go back to main menu', canvass.width / 2, canvass.height * 0.85);
+}
+
 function drawPlayerPaddle1(x, y, width, height) {
 	ctxx.fillStyle = 'white';
 	ctxx.fillRect(x, y, width, height);
@@ -332,19 +411,19 @@ document.addEventListener('keyup', (e) => {
 	if (e.key === 'ArrowDown') downPressed = false;
 });
 
-function movement(player1, player2) {
+function movement(pvp1, pvp2) {
 	let player;
 	let paddle;
 	let me;
 	let target;
-	if (window.userData.username === player1.username) {
-		target = player2;
-		player = player1;
+	if (window.userData.username === pvp1.username) {
+		target = pvp2;
+		player = pvp1;
 		me = '1';
 		paddle = playerPaddle1;
 	} else {
-		target = player1;
-		player = player2;
+		target = pvp1;
+		player = pvp2;
 		me = '2';
 		paddle = playerPaddle2;
 	}
@@ -357,7 +436,6 @@ function movement(player1, player2) {
 		paddle.y += paddle.dy;
 		if (paddle.y >= (window.userData.screen_dimensions.height - paddle.height))
 			paddle.y = window.userData.screen_dimensions.height - paddle.height;
-		console.log('sadoon hab haka',paddle.y / window.userData.screen_dimensions.height);
 		sendGameState(0, target.username, me);
 	}
 }
@@ -366,7 +444,6 @@ export function renderOP(y) {
 	if (window.userData.username === playerPaddle1.username) {
 		playerPaddle2.y = y * window.userData.screen_dimensions.height;
 	} else {
-		console.log(y, 'so hab haka');
 		playerPaddle1.y = y * window.userData.screen_dimensions.height;
 	}
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
@@ -378,36 +455,33 @@ export function changeSphereVars(x, y) {
 	sphere.y = y * window.userData.screen_dimensions.height;
 }
 
-export function drawAll(player1, player2, settings) {
+export function drawAll(pvp1, pvp2, settings) {
 	if (settings === null){
 		settings.mode = 'Default mode';
 		settings.map = 'Map 1';
 	}
-	if (window.userData.username === player1.username) {
-		if (player1.set === false ) {
-			if (player1.set === false ) {
-				gamer1 = player1;
-				gamer2 = player2;
+	if (window.userData.username === pvp1.username) {
+		if (pvp1.set === false ) {
 				setDimensions();
-				playerPaddle1.username = player1.username;
-				playerPaddle2.username = player2.username;
-				player1.set = true;
-			}
+				playerPaddle1.username = pvp1.username;
+				playerPaddle2.username = pvp2.username;
+				pvp1.set = true;
 		}
 	}
 	else {
-		if (player2.set === false ) {
-			gamer1 = player1;
-			gamer2 = player2;
+		if (pvp2.set === false ) {
 			setDimensions();
-			playerPaddle1.username = player1.username;
-			playerPaddle2.username = player2.username;
-			player2.set = true;
+			playerPaddle1.username = pvp1.username;
+			playerPaddle2.username = pvp2.username;
+			pvp2.set = true;
 		}
 	}
+	gamer1 = pvp1;
+	gamer2 = pvp2;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	drawScore(pvp1, pvp2);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
-	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+ 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
 	TrackballinBigpad();
 	Trackballinattack();
 	Trackballinspeed();
@@ -448,8 +522,8 @@ export function drawAll(player1, player2, settings) {
 		}
 	}
 	drawSphere(sphere.x, sphere.y, sphere.radius);
-	movement(player1, player2);
-	let frame = requestAnimationFrame(() => drawAll(player1, player2, settings));
+	movement(pvp1, pvp2);
+	let frame = requestAnimationFrame(() => drawAll(pvp1, pvp2, settings));
 	animation.push(frame);
 }
 
@@ -477,8 +551,14 @@ export function displayCountdown() {
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	playerPaddle1.y = p1;
 	playerPaddle2.y = p2;
+	if (sphere.x >=  canvass.width - playerPaddle2.width) {
+		gamer2.score += 1;
+	} else {
+		gamer1.score += 1;
+	}
 	sphere.x = sx;
 	sphere.y = sy;
+	drawScore(gamer1, gamer2);
 	const countdownInterval = setInterval(() => {
 		 countdown -= 1;
 		 if (countdown > 0) {

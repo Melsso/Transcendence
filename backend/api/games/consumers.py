@@ -434,8 +434,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 							"state": 'end',
 						}
 					)
-					logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII2222222222')
-					logger.warning(time.time())
 					break
 				
 				self.ball['x'] = 0.5
