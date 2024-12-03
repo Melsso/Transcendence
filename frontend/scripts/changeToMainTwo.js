@@ -1624,6 +1624,8 @@ async function createDropDownProfile(friendUname, friendId, block_list) {
 	const dropdownDiv = document.createElement('div');
 	dropdownDiv.className = 'dropdown dropend';
 	dropdownDiv.style.display = 'block';
+	dropdownDiv.style.visibility = 'visible';
+	dropdownDiv.style.opacity = '1';
 
 	const uniqueDropdownId = `Button${friendUname}`;
 	const uniqueDropdownMenuId = `Menu${friendUname}`;
