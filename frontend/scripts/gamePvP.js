@@ -7,14 +7,17 @@ let gamer1;
 let gamer2;
 let up1 = true;
 let up2 = true;
+let p1shooting = false;
+let p2shooting = false;
 let up3 = true;
+let playingPvP = false;
 let sphereinspeed = false;
 let sphereinattack = false;
 let sphereinBigpad = false;
 let SpeedCounting = 0;
 let attackcount = 0;
 let bigpadcount = 0;
-let last_hit = 0;
+let last_hit = 1;
 let speeddoubled = 0;
 let playerheight2 = 0;
 let nocurrentGame = false;
@@ -35,7 +38,6 @@ let Bigpadpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let sphere = { x: 0, y: 0, radius: 0, dx: 0, dy: 0, speed: 0 };
 let block1 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
 let block2 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
-
 
 
 function drawScore(pvp1, pvp2) {
@@ -117,11 +119,40 @@ export function gameOScreenpvp() {
 function drawPlayerPaddle1(x, y, width, height) {
 	ctxx.fillStyle = 'white';
 	ctxx.fillRect(x, y, width, height);
+	if (block1.visible && playerPaddle1.Att === 1 && p1shooting === false) {
+		ctxx.fillStyle = 'blue';	
+		block1.x = playerPaddle1.x - block1.width + playerPaddle1.width;
+		block1.y = playerPaddle1.height / 2 + playerPaddle1.y - block1.height / 2; 
+		ctxx.fillRect(block1.x, block1.y, block1.width, block1.height);
+	}
 }
+
+document.addEventListener('keydown', function launch(event) {
+	if (playingPvP === true) {
+		if (event.code === 'Space'){
+			if (playerPaddle2.username === window.userData.username && block2.visible && playerPaddle2.Att === 1) {
+				playerPaddle2.Att = 0;
+				sendBuffState('attack_launch', 2);
+				document.removeEventListener('keydown', launch);
+			} else if (playerPaddle1.username === window.userData.username && block1.visible && playerPaddle1.Att === 1) {
+				playerPaddle1.Att = 0;
+				sendBuffState('attack_launch', 1);
+				document.removeEventListener('keydown', launch);
+			}
+			return;
+		}
+	}
+});
 
 function drawPlayerPaddle2(x, y, width, height) {
 	ctxx.fillStyle = 'white';
 	ctxx.fillRect(x, y, width, height);
+	if (block2.visible && playerPaddle2.Att === 1 && p2shooting === false) {
+		ctxx.fillStyle = 'blue';
+		block2.x = playerPaddle2.x - block2.width + playerPaddle2.width;
+		block2.y = playerPaddle2.height / 2 + playerPaddle2.y - block2.height / 2;
+		ctxx.fillRect(block2.x, block2.y, block2.width, block2.height);
+	}
 }
 
 function drawSphere(x, y, radius) {
@@ -236,6 +267,14 @@ export function changeLast(last) {
 	last_hit = last;
 }
 
+export function triggerShootPvP(target) {
+	if (target === 1) {
+		p1shooting = true;
+	} else {
+		p2shooting = true;
+	}
+}
+
 export function Speedpower(){
 	if (playerPaddle1.dy === speeddoubled && last_hit === 1) {
 		playerPaddle1.dy = speeddoubled;
@@ -249,7 +288,6 @@ export function Speedpower(){
 	else if (last_hit === 2) {
 		playerPaddle2.dy = speeddoubled;
 	}
-
 }
 
 function Trackballinspeed() {
@@ -282,37 +320,56 @@ function Trackballinspeed() {
 	}
 }
 
-function Attackpower(){
-	if (last_hit === 1)
+export function Attackpower() {
+	if (last_hit === 1) {
 		playerPaddle1.Att = 1;
-	else if (last_hit === 2)
+		block1.visible = true;
+	}
+	else if (last_hit === 2) {
 		playerPaddle2.Att = 1;
+		block2.visible = true;
+	}
 	if (playerPaddle1.Att === 1 && last_hit === 1)
 		playerPaddle1.Att = 1;
 	if (playerPaddle2.Att === 1 && last_hit === 2)
 		playerPaddle2.Att = 1;
 }
-function	Trackballinattack(){
+
+function	Trackballinattack() {	
 	if (Attackpvp.visible &&
-		sphere.x + sphere.radius > Attackpvp.x &&
-		sphere.x - sphere.radius < Attackpvp.x + Attackpvp.width &&
-		sphere.y + sphere.radius > Attackpvp.y &&
-		sphere.y - sphere.radius < Attackpvp.y + Attackpvp.height){
-			if (!sphereinattack)
+		sphere.x + sphere.radius >= Attackpvp.x &&
+		sphere.x - sphere.radius <= Attackpvp.x + Attackpvp.width &&
+		sphere.y + sphere.radius >= Attackpvp.y &&
+		sphere.y - sphere.radius <= Attackpvp.y + Attackpvp.height) 
+		{
+			if (!sphereinattack) {
 				sphereinattack = true;
+			}
 		}
-		else	{
+	else	{
 			if (sphereinattack){
 				sphereinattack = false;
 				attackcount++;
-				if (last_hit === 1 || last_hit === 2)
-					Attackpower();
+				if (last_hit === 1 || last_hit === 2) {
+					sendBuffState('attack', last_hit);
+				}
 			}
 		}
 	if (attackcount === 2){
 		Attackpvp.visible = false;
 	}
 }
+
+export function updatePaddlePvP(target) {
+	if (target === 1) {
+		playerPaddle1.y = playerPaddle1.y + (playerPaddle1.height / 4);
+		playerPaddle1.height = playerPaddle1.height / 2;
+	} else {
+		playerPaddle2.y = playerPaddle2.y + (playerPaddle2.height / 4);
+		playerPaddle2.height = playerPaddle2.height / 2;
+	}
+}
+
 export function Bigpadpower(){
 	if (playerPaddle1.height === playerheight2 && last_hit === 1) {
 		return ;
@@ -338,7 +395,6 @@ function	TrackballinBigpad(){
 		{
 			if (!sphereinBigpad){
 				sphereinBigpad = true;
-				console.log("bababoy2");
 			}
 		}
 		else	{
@@ -370,6 +426,7 @@ function setDimensions() {
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle1.x = 0;
 	playerPaddle1.y = (heightScale / 2) - (playerPaddle1.height / 2);
+	playerPaddle1.Att = 0;
 	p1 = playerPaddle1.y;
 	playerPaddle1.dy = heightScale / 100;
 	speeddoubled = playerPaddle1.dy * 1.75;
@@ -391,8 +448,16 @@ function setDimensions() {
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle2.x = widthScale - playerPaddle2.width;
 	playerPaddle2.y = (heightScale / 2) - (playerPaddle2.height / 2);
+	playerPaddle2.Att = 0;
 	p2 = playerPaddle2.y;
 	playerPaddle2.dy = heightScale / 100;
+
+	block1.height = widthScale / 120;
+	block1.width = widthScale / 120;
+	block2.height = widthScale / 120;
+	block2.width = widthScale / 120;
+	block1.speed = widthScale / 100;
+	block2.speed = widthScale / 100;
 
 	sphere.radius = widthScale / 100;
 	sphere.x = (widthScale / 2);
@@ -440,6 +505,37 @@ function movement(pvp1, pvp2) {
 	}
 }
 
+function drawShootPvP() {
+	if (p1shooting && block1.visible) {
+		block1.x += block1.speed;
+		ctxx.fillStyle = 'blue';
+		ctxx.fillRect(block1.x, block1.y, block1.width, block1.height);
+		if (block1.x >= canvass.width - playerPaddle2.width) {
+			block1.visible = false;
+			p1shooting = false;
+			if (block1.y >= playerPaddle2.y && block1.y <= playerPaddle2.y + playerPaddle2.height) {
+				if (window.userData.username === playerPaddle2.username) {
+					sendBuffState('attack_hit', 2);
+				}
+			}
+		}
+	}
+	if (p2shooting && block2.visible) {
+		ctxx.fillStyle = 'blue';
+		ctxx.fillRect(block2.x, block2.y, block2.width, block2.height);
+		block2.x -= block2.speed;
+		if (block2.x <= 0 + playerPaddle1.width) {
+			block2.visible = false;
+			p2shooting = false;
+			if (block2.y >= playerPaddle1.y && block2.y <= playerPaddle1.y + playerPaddle1.height) {
+				if (window.userData.username === playerPaddle1.username) {
+					sendBuffState('attack_hit', 1);
+				}
+			}
+		}
+	}
+}
+
 export function renderOP(y) {
 	if (window.userData.username === playerPaddle1.username) {
 		playerPaddle2.y = y * window.userData.screen_dimensions.height;
@@ -465,7 +561,9 @@ export function drawAll(pvp1, pvp2, settings) {
 				setDimensions();
 				playerPaddle1.username = pvp1.username;
 				playerPaddle2.username = pvp2.username;
+				playingPvP = true;
 				pvp1.set = true;
+
 		}
 	}
 	else {
@@ -473,6 +571,7 @@ export function drawAll(pvp1, pvp2, settings) {
 			setDimensions();
 			playerPaddle1.username = pvp1.username;
 			playerPaddle2.username = pvp2.username;
+			playingPvP = true;
 			pvp2.set = true;
 		}
 	}
@@ -523,6 +622,7 @@ export function drawAll(pvp1, pvp2, settings) {
 	}
 	drawSphere(sphere.x, sphere.y, sphere.radius);
 	movement(pvp1, pvp2);
+	drawShootPvP();
 	let frame = requestAnimationFrame(() => drawAll(pvp1, pvp2, settings));
 	animation.push(frame);
 }
