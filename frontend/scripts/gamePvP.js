@@ -557,7 +557,148 @@ export function changeSphereVars(x, y) {
 	sphere.y = y * window.userData.screen_dimensions.height;
 }
 
+const treecol = [
+	'#0f2e0f',
+	'#1b3d1b',
+	'#2e4d2f',
+	'#4c6f4c',
+	'#7a9b7a'
+];
+
+let trees = [
+	{ x: canvass.width * 0.9, height: canvass.height * 0.8, width: canvass.width * 0.04, colorIndex: 0 },
+	{ x: canvass.width * 0.75, height: canvass.height * 0.76, width: canvass.width * 0.02, colorIndex: 1 },
+	{ x: canvass.width * 0.64, height: canvass.height, width: canvass.width * 0.03, colorIndex: 2},
+	{ x: canvass.width * 0.52, height: canvass.height * 0.84, width: canvass.width * 0.04, colorIndex: 1},
+	{ x: canvass.width * 0.4, height: canvass.height, width: canvass.width * 0.05, colorIndex: 2},
+	{ x: canvass.width * 0.25, height: canvass.height * 0.78, width: canvass.width * 0.034, colorIndex: 2},
+	{ x: canvass.width * 0.1, height: canvass.height * 0.8, width: canvass.width * 0.04, colorIndex: 0},
+];
+
+let gheightArray = [
+    canvass.height * 0.6, canvass.height * 0.6,
+    canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.65, canvass.height * 0.6, canvass.height * 0.6,
+    canvass.height * 0.64, canvass.height * 0.6, canvass.height * 0.65,
+    canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.64, canvass.height * 0.67,
+    canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.6,
+    canvass.height * 0.6, canvass.height * 0.61, canvass.height * 0.62,
+    canvass.height * 0.65, canvass.height * 0.64, canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.6,
+    canvass.height * 0.64, canvass.height * 0.6, canvass.height * 0.6,
+    canvass.height * 0.6, canvass.height * 0.6,
+];
+function drawmap2() {
+
+	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	ctxx.fillStyle = '#1b2e1b';
+	ctxx.beginPath();
+	ctxx.moveTo(0, gheightArray[0]);
+
+	for (let i = 1; i < canvass.width; i++) {
+		ctxx.lineTo(i, gheightArray[i] || gheightArray[gheightArray.length - 1]);
+	}
+
+	ctxx.lineTo(canvass.width, canvass.height);
+	ctxx.lineTo(0, canvass.height);
+	ctxx.closePath();
+	ctxx.fill();
+
+	let gradient =ctxx.createLinearGradient(0, gheightArray[0], 0, 0);
+	gradient.addColorStop(0, '#2e4d2f');
+	gradient.addColorStop(1, '#7a9b7a');
+
+	ctxx.fillStyle = gradient;
+	ctxx.fillRect(0, 0, canvass.width, gheightArray[0]);
+	//grassdraw();
+	trees.forEach(tree => {
+		ctxx.fillStyle = treecol[tree.colorIndex];
+
+		const baseHeight = gheightArray[Math.floor(x / 50)] || canvass.height;
+		ctxx.beginPath();
+		ctxx.moveTo(tree.x - tree.width / 2, baseHeight);
+		ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
+		ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+		ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
+		ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+		ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+		ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+		ctxx.closePath();
+		ctxx.fill();
+
+		ctxx.lineWidth = 2;
+		ctxx.strokeStyle = treecol[tree.colorIndex];
+		ctxx.beginPath();
+		ctxx.moveTo(tree.x, baseHeight - tree.height);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.3);
+		ctxx.lineTo(tree.x + tree.x * 0.02, baseHeight - tree.height * 0.4);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.1);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+		ctxx.lineTo(tree.x - tree.x * 0.03, baseHeight - tree.height * 0.1);
+		ctxx.lineTo(tree.x + tree.x * 0.01, baseHeight - tree.height * 0.8);
+		ctxx.stroke();
+	});
+
+	ctxx.fillStyle = 'rgba(120, 200, 120, 0.1)';
+	ctxx.fillRect(0, 0, canvass.width, canvass.height);
+}
+function grassposgenerator() {
+	const grassSpacing = 5; // Closer spacing between grass blades
+	const maxGrassPerX = 3; // Max grass blades at the same X position
+	const maxHeightVariation = 15; // Max height variation for each grass blade
+
+	// Clear the previous positions
+	grassPositions = [];
+
+	// Iterate through the width of the canvass to create grass blades
+	for (let x = 0; x < canvass.width; x += grassSpacing) {
+		 const baseHeight = gheightArray[Math.floor(x / 50)] || canvass.height; // Base height for the grass
+
+		 // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
+		 const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
+
+		 for (let i = 0; i < numGrassBlades; i++) {
+			  // Generate a random height within a range, ensuring it's below the baseHeight
+			  const randomY = Math.floor(baseHeight - (Math.random() * maxHeightVariation + 5)); // Adjusting range for random heights
+			  grassPositions.push({ x, y: randomY }); // Store the position and height
+		 }
+	}
+}
+
+function drawmap3() {
+	const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
+	const numTriangles = 36; // Number of triangles/wedges
+	const centerX =canvass.width / 2;
+	const centerY =canvass.height / 2;
+	const radius = Math.hypot(canvass.width,canvass.height); // Ensures triangles extend beyond canvass
+	const angleIncrement = (2 * Math.PI) / numTriangles;
+
+	for (let i = 0; i < numTriangles; i++) {
+		 const angle = i * angleIncrement;
+		 
+		 // Set color for each triangle
+		ctxx.fillStyle = colors[i % colors.length];
+		 
+		 // Start drawing the triangle
+		ctxx.beginPath();
+		ctxx.moveTo(centerX, centerY); // Center point
+
+		 // Calculate points at the edge of the canvass
+		 const x1 = centerX + radius * Math.cos(angle);
+		 const y1 = centerY + radius * Math.sin(angle);
+		 const x2 = centerX + radius * Math.cos(angle + angleIncrement);
+		 const y2 = centerY + radius * Math.sin(angle + angleIncrement);
+
+		 // Draw the triangle wedge
+		ctxx.lineTo(x1, y1);
+		ctxx.lineTo(x2, y2);
+		ctxx.closePath();
+		ctxx.fill();
+	}
+}
+// grassposgenerator();
+
 export function drawAll(pvp1, pvp2, settings) {
+	console.log(settings.map);
 	if (settings === null){
 		settings.mode = 'Default mode';
 		settings.map = 'Map 1';
@@ -584,6 +725,10 @@ export function drawAll(pvp1, pvp2, settings) {
 	gamer1 = pvp1;
 	gamer2 = pvp2;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	if (settings.map === 'Map 2')
+		drawmap2();
+	if (settings.map === 'Map 3')
+		drawmap3();
 	drawScore(pvp1, pvp2);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
  	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
