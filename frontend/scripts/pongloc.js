@@ -519,7 +519,7 @@ function drawingTimer() {
 	ctxx.fillStyle = 'white';
 	ctxx.textAlign = 'center';
 	let seconds = Math.floor(elapsedtimer / 1000);
-	ctxx.fillText(`${seconds}`, Canvaas.width /2, 30);
+	ctxx.fillText(`${seconds}`, Canvaas.width /2, Canvaas.height * 0.025);
 }
 function gameOScreen(){
 	if (player1.score >= 7){
@@ -527,13 +527,13 @@ function gameOScreen(){
 		showGameOScreen();
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#FFD700';
-		ctxx.fillText(`wasd: ${player1.score}`, Canvaas.width / 3, Canvaas.height / 2 + 10);
+		ctxx.fillText(`wasd: ${player1.score}`, Canvaas.width / 3, Canvaas.height / 2);
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#ffffff';
-		ctxx.fillText(`Arrows: ${player2.score}`, Canvaas.width / 1.5, Canvaas.height / 2 + 10);
+		ctxx.fillText(`Arrows: ${player2.score}`, Canvaas.width / 1.5, Canvaas.height / 2);
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#FFD700';
-		ctxx.fillText(`WINNER: player1`, Canvaas.width / 2, Canvaas.height / 2 - 100);
+		ctxx.fillText(`WINNER: player1`, Canvaas.width / 2, Canvaas.height / 3);
 		player1.score = 0;
 		gameover = true;
 		iscurrentlyingame = false;
@@ -543,13 +543,13 @@ function gameOScreen(){
 		GameOverscreen = true;
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#ffffff';
-		ctxx.fillText(`wasd: ${player1.score}`, Canvaas.width / 3, Canvaas.height / 2 + 10);
+		ctxx.fillText(`wasd: ${player1.score}`, Canvaas.width / 3, Canvaas.height / 2);
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#FFD700';
-		ctxx.fillText(`Arrows: ${player2.score}`, Canvaas.width / 1.5, Canvaas.height / 2 + 10);
+		ctxx.fillText(`Arrows: ${player2.score}`, Canvaas.width / 1.5, Canvaas.height / 2);
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#FFD700';
-		ctxx.fillText(`WINNER: player2`, Canvaas.width / 2, Canvaas.height / 2 - 100);
+		ctxx.fillText(`WINNER: player2`, Canvaas.width / 2, Canvaas.height / 3);
 		gameover = true;
 		iscurrentlyingame = false;
 	}
@@ -568,10 +568,10 @@ function showGameOScreen() {
 	ctxx.font = `${font_size}px "PixelFont", sans-serif`;
 	ctxx.fillStyle = '#ffffff';
 	ctxx.textAlign = 'center';
-	ctxx.fillText('GAME OVER', Canvaas.width * 0.5, Canvaas.height * 0.3);
+	ctxx.fillText('GAME OVER', Canvaas.width * 0.5, Canvaas.height * 0.25);
 	ctxx.font = '24px "PixelFont", sans-serif';
 	ctxx.fillStyle = '#ff0000';
-	ctxx.fillText('Press R to replay, Q to go back to main menu', Canvaas.width / 2, Canvaas.height / 2 + 500);
+	ctxx.fillText('Press R to replay, Q to go back to main menu', Canvaas.width / 2, Canvaas.height * 0.85);
 }
 
 //gamelogic
