@@ -350,8 +350,14 @@ function	Trackballinattack() {
 			if (sphereinattack){
 				sphereinattack = false;
 				attackcount++;
-				if (last_hit === 1 || last_hit === 2) {
-					sendBuffState('attack', last_hit);
+				if (last_hit === 1) {
+					if (window.userData.username === playerPaddle1.username) {
+						sendBuffState('attack', last_hit);
+					}
+				} else if (last_hit === 2) {
+					if (window.userData.username === playerPaddle2.username) {
+						sendBuffState('attack', last_hit);
+					}
 				}
 			}
 		}
