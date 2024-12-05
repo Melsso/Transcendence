@@ -30,7 +30,6 @@ TODO:
 - fix loading match history in some unkown cases (?)
 - invite/block interaction
 - consumers; check interaction between attack hit and paddle shield and fix static values
-- dont send attack_pick up twice
 
 
 fixing:
