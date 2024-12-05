@@ -2,13 +2,12 @@
 
 ## Overview
 
-The Transcendence 42 project is a dynamic gaming platform featuring two exciting games: **Pong** and **Ricochet Robots**. The platform includes a robust chat system, a matchmaking system, and a tournament system, allowing players to engage in competitive and cooperative play.
+The Transcendence 42 project is a dynamic gaming platform featuring an exciting game: **Pong**. The platform includes a robust chat system, a matchmaking system, and a tournament system, allowing players to engage in competitive and cooperative play.
 
 ## Features
 
 - **Games Available**:
   - **Pong**: A classic arcade game where players control paddles to hit a ball back and forth.
-  - **Ricochet Robots**: A strategic board game that requires players to maneuver robots on a grid to reach designated targets.
 - **Chat System**: Engage in real-time discussions with other players through our integrated chat functionality.
 - **Matchmaking System**: Connect with players of similar skill levels for competitive matches.
 - **Tournament System**: Participate in organized tournaments to test your skills against the best players.
