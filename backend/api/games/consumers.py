@@ -14,6 +14,7 @@ import time
 logger = logging.getLogger(__name__)
 class GameConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'game_room_'
+	# game_rooms = {}
 	ball = {
 		'x': 0.5, 
 		'y': 0.5,  
@@ -284,12 +285,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 					if buff == 'speed':
 						self.paddle1['dy'] = 0.0175
 					elif buff == 'shield':
-						if self.paddle1['height'] == 0.1:
-							self.paddle1['y'] = self.paddle1['y'] - 0.05
-							self.paddle1['height'] = 0.2
+						if self.paddle1['height'] <= 0.1:
+							self.paddle1['y'] = self.paddle1['y'] - (self.paddle1['height'] / 2)
+							self.paddle1['height'] = self.paddle1[height] * 2
 					elif buff == 'attack_hit':
-						self.paddle1['y'] = self.paddle1['y'] + 0.025
-						self.paddle1['height'] = 0.05
+						self.paddle1['y'] = self.paddle1['y'] + (self.paddle1['height'] / 4)
+						self.paddle1['height'] = self.paddle1['height'] / 2
 					await self.channel_layer.group_send(
 						self.room_group_name,
 						{
@@ -303,12 +304,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 					if buff == 'speed':
 						self.paddle2['dy'] = 0.0175
 					elif buff == 'shield':
-						if self.paddle2['height'] == 0.1:
-							self.paddle2['y'] = self.paddle2['y'] - 0.05
-							self.paddle2['height'] = 0.2
+						if self.paddle2['height'] <= 0.1:
+							self.paddle2['y'] = self.paddle2['y'] - (self.paddle2['height'] / 2)
+							self.paddle2['height'] = self.paddle2['height'] * 2
 					elif buff == 'attack_hit':
-						self.paddle2['y'] = self.paddle2['y'] + 0.025
-						self.paddle2['height'] = 0.05
+						self.paddle2['y'] = self.paddle2['y'] + (self.paddle2['height'] / 4)
+						self.paddle2['height'] = self.paddle2['height'] / 2
 					await self.channel_layer.group_send(
 						self.room_group_name,
 						{
@@ -349,6 +350,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 							'players': serializer.data
 						}
 					)
+					# paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+					# paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+					# ball = { 'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0.005, 'radius': 0.0}
+					# task = asyncio.create_task(self.move_ball(XXXX))
+					# self.game_rooms[self.redis_key] = {"paddle1": paddle1, "paddle2": paddle2, "ball": ball, "task": task}
 					self.game_loop = asyncio.create_task(self.move_ball())
 		elif len(players) == 2:
 			p1 = players[player_keys[0]]
@@ -410,16 +416,16 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 2
 					}
 				)
-			# if current_time - start_time >= 4 and buff3 == 0:
-			# 	buff3 = 1
-			# 	await self.channel_layer.group_send(
-			# 	self.room_group_name,
-			# 		{
-			# 			"type": 'demandPowerUP',
-			# 			"action": 'Buff',
-			# 			"flag": 3
-			# 		}
-			# 	)
+			if current_time - start_time >= 8 and buff3 == 0:
+				buff3 = 1
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'demandPowerUP',
+						"action": 'Buff',
+						"flag": 3
+					}
+				)
 			# self.ball['x'] += self.ball['dx']
 			# self.ball['y'] += self.ball['dy']
 			if self.ball['x'] <= 0.01 or self.ball['x'] >= 0.99:

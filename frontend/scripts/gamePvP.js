@@ -385,11 +385,11 @@ export function Bigpadpower(){
 	}
 	if (last_hit === 1) {
 		playerPaddle1.y = playerPaddle1.y - (playerPaddle1.height / 2);
-		playerPaddle1.height = playerheight2;
+		playerPaddle1.height = playerPaddle1.height * 2;
 	}
 	else if (last_hit === 2) {
 		playerPaddle2.y = playerPaddle2.y - (playerPaddle2.height / 2);
-		playerPaddle2.height = playerheight2;
+		playerPaddle2.height = playerPaddle2.height * 2;
 	}
 }
 function	TrackballinBigpad(){
