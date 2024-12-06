@@ -565,93 +565,93 @@ const treecol = [
 	'#7a9b7a'
 ];
 
-let trees = [
-	{ x: canvass.width * 0.9, height: canvass.height * 0.8, width: canvass.width * 0.04, colorIndex: 0 },
-	{ x: canvass.width * 0.75, height: canvass.height * 0.76, width: canvass.width * 0.02, colorIndex: 1 },
-	{ x: canvass.width * 0.64, height: canvass.height, width: canvass.width * 0.03, colorIndex: 2},
-	{ x: canvass.width * 0.52, height: canvass.height * 0.84, width: canvass.width * 0.04, colorIndex: 1},
-	{ x: canvass.width * 0.4, height: canvass.height, width: canvass.width * 0.05, colorIndex: 2},
-	{ x: canvass.width * 0.25, height: canvass.height * 0.78, width: canvass.width * 0.034, colorIndex: 2},
-	{ x: canvass.width * 0.1, height: canvass.height * 0.8, width: canvass.width * 0.04, colorIndex: 0},
-];
-
-let gheightArray = [
-    canvass.height * 0.6, canvass.height * 0.6,
-    canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.65, canvass.height * 0.6, canvass.height * 0.6,
-    canvass.height * 0.64, canvass.height * 0.6, canvass.height * 0.65,
-    canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.64, canvass.height * 0.67,
-    canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.6,
-    canvass.height * 0.6, canvass.height * 0.61, canvass.height * 0.62,
-    canvass.height * 0.65, canvass.height * 0.64, canvass.height * 0.6, canvass.height * 0.6, canvass.height * 0.6,
-    canvass.height * 0.64, canvass.height * 0.6, canvass.height * 0.6,
-    canvass.height * 0.6, canvass.height * 0.6,
-];
 function drawmap2() {
+	// Define gheightArray as static values based on a proportion of canvass.height
+	const gheightArray = Array.from({ length: canvass.width }, (_, i) => 
+		 canvass.height * 0.9 // Adjust the 0.7 multiplier as needed for desired ground height
+	);
+	const trees = Array.from({ length: 7 }, (_, i) => {
+		const x = [canvass.width * 0.9, canvass.width * 0.75, canvass.width * 0.64, canvass.width * 0.52, canvass.width * 0.4, canvass.width * 0.25, canvass.width * 0.1];
+		const height = [canvass.height * 0.8, canvass.height * 0.76, canvass.height * 0.9, canvass.height * 0.84, canvass.height * 0.76, canvass.height * 0.9, canvass.height * 0.7];
+		const width = [canvass.width * 0.04, canvass.width * 0.02, canvass.width * 0.03, canvass.width * 0.05, canvass.width * 0.034, canvass.width * 0.06, canvass.width * 0.04];
+		const colorIndex = [0, 1, 2, 1, 2, 2, 0];
+		return {
+			x: x[i],
+			height: height[i],
+			width: width[i],
+			colorIndex: colorIndex[i],
+			};
+		});
 
-	ctxx.clearRect(0, 0, canvass.width, canvass.height);
-	ctxx.fillStyle = '#1b2e1b';
-	ctxx.beginPath();
-	ctxx.moveTo(0, gheightArray[0]);
-
-	for (let i = 1; i < canvass.width; i++) {
-		ctxx.lineTo(i, gheightArray[i] || gheightArray[gheightArray.length - 1]);
-	}
-
-	ctxx.lineTo(canvass.width, canvass.height);
-	ctxx.lineTo(0, canvass.height);
-	ctxx.closePath();
-	ctxx.fill();
-
-	let gradient =ctxx.createLinearGradient(0, gheightArray[0], 0, 0);
-	gradient.addColorStop(0, '#2e4d2f');
-	gradient.addColorStop(1, '#7a9b7a');
-
-	ctxx.fillStyle = gradient;
-	ctxx.fillRect(0, 0, canvass.width, gheightArray[0]);
-	//grassdraw();
-	trees.forEach(tree => {
-		ctxx.fillStyle = treecol[tree.colorIndex];
-
-		const baseHeight = gheightArray[Math.floor(x / 50)] || canvass.height;
+		ctxx.clearRect(0, 0, canvass.width, canvass.height);
+		ctxx.fillStyle = '#1b2e1b';
 		ctxx.beginPath();
-		ctxx.moveTo(tree.x - tree.width / 2, baseHeight);
-		ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
-		ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
-		ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
-		ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
-		ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
-		ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+		ctxx.moveTo(0, gheightArray[0]);
+	
+		// Draw ground
+		for (let i = 1; i < canvass.width; i++) {
+			ctxx.lineTo(i, gheightArray[i]);
+		}
+		ctxx.lineTo(canvass.width, canvass.height);
+		ctxx.lineTo(0, canvass.height);
 		ctxx.closePath();
 		ctxx.fill();
-
-		ctxx.lineWidth = 2;
-		ctxx.strokeStyle = treecol[tree.colorIndex];
-		ctxx.beginPath();
-		ctxx.moveTo(tree.x, baseHeight - tree.height);
-		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.3);
-		ctxx.lineTo(tree.x + tree.x * 0.02, baseHeight - tree.height * 0.4);
-		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.1);
-		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
-		ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
-		ctxx.lineTo(tree.x - tree.x * 0.03, baseHeight - tree.height * 0.1);
-		ctxx.lineTo(tree.x + tree.x * 0.01, baseHeight - tree.height * 0.8);
-		ctxx.stroke();
-	});
-
-	ctxx.fillStyle = 'rgba(120, 200, 120, 0.1)';
-	ctxx.fillRect(0, 0, canvass.width, canvass.height);
-}
+	
+		// Add gradient
+		let gradient = ctxx.createLinearGradient(0, gheightArray[0], 0, 0);
+		gradient.addColorStop(0, '#2e4d2f');
+		gradient.addColorStop(1, '#7a9b7a');
+		ctxx.fillStyle = gradient;
+		ctxx.fillRect(0, 0, canvass.width, gheightArray[0]);
+	
+		// Draw trees
+		trees.forEach(tree => {
+			ctxx.fillStyle = treecol[tree.colorIndex];
+	
+			// Use static gheightArray value (convert tree.x to index)
+			const baseHeight = gheightArray[Math.floor(tree.x)];
+	
+			ctxx.beginPath();
+			ctxx.moveTo(tree.x - tree.width / 2, baseHeight);
+			ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
+			ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+			ctxx.lineTo(tree.x + tree.width / 2, baseHeight);
+			ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+			ctxx.lineTo(tree.x + tree.width / 4, tree.height * 6);
+			ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
+			ctxx.closePath();
+			ctxx.fill();
+	
+			// Add branches
+			ctxx.lineWidth = 2;
+			ctxx.strokeStyle = treecol[tree.colorIndex];
+			ctxx.beginPath();
+			ctxx.moveTo(tree.x, baseHeight - tree.height);
+			ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.3);
+			ctxx.lineTo(tree.x + tree.x * 0.02, baseHeight - tree.height * 0.4);
+			ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.1);
+			ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+			ctxx.lineTo(tree.x - tree.x * 0.01, baseHeight - tree.height * 0.2);
+			ctxx.lineTo(tree.x - tree.x * 0.03, baseHeight - tree.height * 0.1);
+			ctxx.lineTo(tree.x + tree.x * 0.01, baseHeight - tree.height * 0.8);
+			ctxx.stroke();
+		});
+	
+		// Add overlay
+		ctxx.fillStyle = 'rgba(120, 200, 120, 0.1)';
+		ctxx.fillRect(0, 0, canvass.width, canvass.height);
+	}
 function grassposgenerator() {
 	const grassSpacing = 5; // Closer spacing between grass blades
 	const maxGrassPerX = 3; // Max grass blades at the same X position
 	const maxHeightVariation = 15; // Max height variation for each grass blade
 
 	// Clear the previous positions
-	grassPositions = [];
+	let grassPositions = [];
 
 	// Iterate through the width of the canvass to create grass blades
 	for (let x = 0; x < canvass.width; x += grassSpacing) {
-		 const baseHeight = gheightArray[Math.floor(x / 50)] || canvass.height; // Base height for the grass
+		 const baseHeight = canvass.height * 0.9 ; // Base height for the grass
 
 		 // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
 		 const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
@@ -695,7 +695,7 @@ function drawmap3() {
 		ctxx.fill();
 	}
 }
-// grassposgenerator();
+grassposgenerator();
 
 export function drawAll(pvp1, pvp2, settings) {
 	console.log(settings.map);
@@ -732,45 +732,47 @@ export function drawAll(pvp1, pvp2, settings) {
 	drawScore(pvp1, pvp2);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
  	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
-	TrackballinBigpad();
-	Trackballinattack();
-	Trackballinspeed();
-	if (BuffFlag === 1) {
-		if (Buffpvp.visible === true){
-			drawBuffpvp(0.45);
-			if (up1)
-				Buffpvp.y -= Buffpvp.height / 2;
-			else if (!up1)
-				Buffpvp.y += Buffpvp.height / 2;
-			if (Buffpvp.y <= 0){
-				up1 = false;
+	 if (settings.mode == 'Buff Mode'){
+		TrackballinBigpad();
+		Trackballinattack();
+		Trackballinspeed();
+		if (BuffFlag === 1) {
+			if (Buffpvp.visible === true){
+				drawBuffpvp(0.45);
+				if (up1)
+					Buffpvp.y -= Buffpvp.height / 2;
+				else if (!up1)
+					Buffpvp.y += Buffpvp.height / 2;
+				if (Buffpvp.y <= 0){
+					up1 = false;
+				}
 			}
 		}
-	}
-	else if (BuffFlag === 2) {
-		if (Attackpvp.visible === true){
-			drawAttackpvp(0.45);
-			if (up2)
-				Attackpvp.y -= Attackpvp.height / 2;
-			else if (!up2)
-				Attackpvp.y += Attackpvp.height / 2;
-			if (Attackpvp.y <= 0){
-				up2 = false;
+		else if (BuffFlag === 2) {
+			if (Attackpvp.visible === true){
+				drawAttackpvp(0.45);
+				if (up2)
+					Attackpvp.y -= Attackpvp.height / 2;
+				else if (!up2)
+					Attackpvp.y += Attackpvp.height / 2;
+				if (Attackpvp.y <= 0){
+					up2 = false;
+				}
 			}
 		}
-	}
-	else if (BuffFlag === 3) {
-		if (Bigpadpvp.visible === true){
-			drawBigpadpvp(0.45);
-			if (up3)
-				Bigpadpvp.y -= Bigpadpvp.height / 2;
-			else if (!up3)
-				Bigpadpvp.y += Bigpadpvp.height / 2;
-			if (Bigpadpvp.y <= 0) {
-				up3 = false;
+		else if (BuffFlag === 3) {
+			if (Bigpadpvp.visible === true){
+				drawBigpadpvp(0.45);
+				if (up3)
+					Bigpadpvp.y -= Bigpadpvp.height / 2;
+				else if (!up3)
+					Bigpadpvp.y += Bigpadpvp.height / 2;
+				if (Bigpadpvp.y <= 0) {
+					up3 = false;
+				}
 			}
 		}
-	}
+	}	
 	drawSphere(sphere.x, sphere.y, sphere.radius);
 	movement(pvp1, pvp2);
 	drawShootPvP();
