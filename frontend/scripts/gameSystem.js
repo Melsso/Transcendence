@@ -9,6 +9,7 @@ const lo = document.getElementById('1v1');
 const menu = document.getElementById('menuuu');
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
+let current_players = [];
 const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
 window.lobbySettings;
@@ -134,14 +135,60 @@ export async function startGameSocket() {
     window.userData.pong_socket.onclose = function(e) {
         console.log("GAMESOCKET--OFF");
     }
-    window.userData.pong_socket.onmessage = function(event) {
+    window.userData.pong_socket.onmessage = async function(event) {
         const data = JSON.parse(event.data);
         if (data.action === 'update_game_state') {
             if (data.target === window.userData.username) {
                 renderOP(data.state);
             }
         } else if (data.action === 'current_players') {
-            // flag will be aded, check the flag first before performing this 
+            if (current_players.length === 0) {
+                current_players.push(window.userData.username);
+            }
+            if (current_players.length === 1) {
+                if (data.players.length == 2) {
+                    if (window.userData.username === data.players[0]) {
+                        current_players.push(data.players[1]);
+                    } else {
+                        current_players.push(data.players[0]);
+                    }
+                }
+            }
+            if (current_players.length === 2) {
+                if (data.players.length == 1) {
+                    const accessToken = localStorage.getItem('accessToken');
+                    if (!accessToken) {
+                        Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+                        return ;
+                    }
+                    try {
+                        const data = await getRoomName();
+                        const u = new URL(baseUrl);
+                        const screenHeight = canvass.clientHeight;
+                        const screenWidth = canvass.clientWidth;
+                        const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+                        if (window.userData.pong_socket) {
+                            window.userData.pong_socket.close();
+                            window.userData.pong_socket = null;
+                            window.userData.r_name = null;
+                        }
+                        window.userData.r_name = data.room_name;
+                        window.userData['pong_socket'] = gameSocket;
+                        startGameSocket();
+                    } catch (error) {
+                        Notification('Game Action', `Error: ${error.detail}`, 2, 'alert');
+                        window.userData.r_name = null;
+                        if (window.userData.pong_socket) {
+                            window.userData.pong_socket.close();
+                            window.userData.r_name = null;
+                            window.userData.pong_socket = null;
+                        }
+                        return ;
+                    }
+                    current_players = [];
+                    current_players.push(window.userData.username);
+                }
+            }
             menu.style.display = 'none';
             ai_menu.style.display = 'none';
             inv_menu.style.display = 'none';

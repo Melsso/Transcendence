@@ -842,11 +842,11 @@ document.addEventListener('DOMContentLoaded', function () {
 			if (window.userData?.socket) {
 				window.userData.socket.close();
 				window.userData.socket = null;
-				window.userData.r_name = null;
 				window.userData.target = null;
 			}
 			if (window.userData?.pong_socket) {
 				window.userData.pong_socket.close();
+				window.userData.r_name = null;
 				window.userData.pong_socket = null;
 			}
 			window.userData = {};
