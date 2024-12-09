@@ -565,17 +565,7 @@ window.groundHeightArray = [
     canvas.height * 0.94, canvas.height * 0.9, canvas.height * 0.9,
     canvas.height * 0.9, canvas.height * 0.9,
 ];
-window.grassGroundArray = [
-    canvas.height * 0.98, canvas.height * 0.98, 
-    canvas.height * 0.91, canvas.height * 0.95, canvas.height * 0.989, canvas.height * 0.98, canvas.height * 0.98,
-    canvas.height, canvas.height * 0.94, canvas.height * 0.989,
-    canvas.height * 0.98, canvas.height * 0.98, canvas.height * 0.984, canvas.height * 0.97,
-    canvas.height * 0.98, canvas.height * 0.98, canvas.height * 0.98,
-    canvas.height * 0.98, canvas.height * 0.981, canvas.height * 0.982,
-    canvas.height * 0.989, canvas.height * 0.984, canvas.height * 0.98, canvas.height * 0.98, canvas.height * 0.98,
-    canvas.height * 0.984, canvas.height * 0.98, canvas.height * 0.98,
-    canvas.height * 0.98, canvas.height * 0.98,
-];
+
 function drawMap() {
     const cont = document.getElementById('gameContainer');
 
@@ -608,7 +598,6 @@ function drawMap() {
 
     window.ctx.fillStyle = gradient;
     window.ctx.fillRect(0, 0, canvas.width, groundHeightArray[0]);
-    drawGrass();
     trees.forEach(tree => {
         window.ctx.fillStyle = treeColors[tree.colorIndex];
 
@@ -642,50 +631,6 @@ function drawMap() {
     window.ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 window.drawMap = drawMap;
-window.grassPositions = []; // Array to hold grass positions
-
-function generateGrassPositions() {
-    const grassSpacing = 5; // Closer spacing between grass blades
-    const maxGrassPerX = 3; // Max grass blades at the same X position
-    const maxHeightVariation = 15; // Max height variation for each grass blade
-
-    // Clear the previous positions
-    grassPositions = [];
-
-    // Iterate through the width of the canvas to create grass blades
-    for (let x = 0; x < canvas.width; x += grassSpacing) {
-        const baseHeight = groundHeightArray[Math.floor(x / 50)] || canvas.height; // Base height for the grass
-
-        // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
-        const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
-
-        for (let i = 0; i < numGrassBlades; i++) {
-            // Generate a random height within a range, ensuring it's below the baseHeight
-            const randomY = Math.floor(baseHeight - (Math.random() * maxHeightVariation + 5)); // Adjusting range for random heights
-            grassPositions.push({ x, y: randomY }); // Store the position and height
-        }
-    }
-}
-window.generateGrassPositions = generateGrassPositions;
-function drawGrass() {
-    const grassColor = '#3c6e47'; // Color for the grass
-    window.ctx.strokeStyle = grassColor;
-    window.ctx.lineWidth = 2; // Thickness of the grass blades
-
-    // Draw the static grass based on pre-generated positions
-    grassPositions.forEach(grass => {
-        const { x, y } = grass; // Destructure to get x and y
-
-        // Draw a blade of grass at the pre-defined height
-        window.ctx.beginPath();
-        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]); // starter at ground level
-        window.ctx.lineTo(x - 2, y); // Leaning to the left
-        window.ctx.moveTo(x, groundHeightArray[Math.floor(x / 50)]);
-        window.ctx.lineTo(x + 2, y); // Leaning to the right
-        window.ctx.stroke();
-    });
-}
-window.drawGrass = drawGrass;
 function drawRetroTrianglePattern() {
     const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
     const numTriangles = 36; // Number of triangles/wedges
@@ -719,7 +664,6 @@ function drawRetroTrianglePattern() {
 }
 window.drawRetroTrianglePattern = drawRetroTrianglePattern;
 
-generateGrassPositions();
 function gameLoop(difficulty, setting) {
 	if (starter === false) {
         window.player1.name = window.userData.username;

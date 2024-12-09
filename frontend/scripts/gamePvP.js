@@ -224,7 +224,7 @@ export function countdownforRound(callback){
 			cooldown = 3;
 			return;
 		}
-		ctxx.clearRect(0, 0, canvass.widht, canvass.height);
+		ctxx.clearRect(0, 0, canvass.width, canvass.height);
 		drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
 		drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
 		drawSphere(sphere.x, sphere.y, sphere.radius);
@@ -242,7 +242,7 @@ export function countdownforRound(callback){
 export function newRound() {
 	const heightScale = window.userData.screen_dimensions.height;
 	const widthScale = window.userData.screen_dimensions.width;
-	ctxx.clearRect(0, 0, canvass.widht, canvass.height);
+	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle1.dy = heightScale / 100;
@@ -555,6 +555,11 @@ export function renderOP(y) {
 export function changeSphereVars(x, y) {
 	sphere.x = x * window.userData.screen_dimensions.width;
 	sphere.y = y * window.userData.screen_dimensions.height;
+}
+
+function	drawmap1(){
+	ctxx.fillStyle = 'black';
+	ctxx.clearRect(0, 0, canvass.width, canvass.height)
 }
 
 const treecol = [

@@ -971,7 +971,6 @@ function map2() {
 
 	ctxx.fillStyle = gradient;
 	ctxx.fillRect(0, 0, Canvaas.width, gheightArray[0]);
-	drawGrass();
 	trees.forEach(tree => {
 		ctxx.fillStyle = treecol[tree.colorIndex];
 
@@ -1003,47 +1002,6 @@ function map2() {
 
 	ctxx.fillStyle = 'rgba(120, 200, 120, 0.1)';
 	ctxx.fillRect(0, 0, Canvaas.width, Canvaas.height);
-}
-function grassposgenerator() {
-	const grassSpacing = 5; // Closer spacing between grass blades
-	const maxGrassPerX = 3; // Max grass blades at the same X position
-	const maxHeightVariation = 15; // Max height variation for each grass blade
-
-	// Clear the previous positions
-	grassPositions = [];
-
-	// Iterate through the width of the Canvaas to create grass blades
-	for (let x = 0; x < Canvaas.width; x += grassSpacing) {
-		 const baseHeight = gheightArray[Math.floor(x / 50)] || Canvaas.height; // Base height for the grass
-
-		 // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
-		 const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
-
-		 for (let i = 0; i < numGrassBlades; i++) {
-			  // Generate a random height within a range, ensuring it's below the baseHeight
-			  const randomY = Math.floor(baseHeight - (Math.random() * maxHeightVariation + 5)); // Adjusting range for random heights
-			  grassPositions.push({ x, y: randomY }); // Store the position and height
-		 }
-	}
-}
-
-function grassdraw() {
-	const grassColor = '#3c6e47'; // Color for the grass
-	ctxx.strokeStyle = grassColor;
-	ctxx.lineWidth = 2; // Thickness of the grass blades
-
-	// Draw the static grass based on pre-generated positions
-	grassPositions.forEach(grass => {
-		 const { x, y } = grass; // Destructure to get x and y
-
-		 // Draw a blade of grass at the pre-defined height
-		ctxx.beginPath();
-		ctxx.moveTo(x, gheightArray[Math.floor(x / 50)]); // Starting at ground level
-		ctxx.lineTo(x - 2, y); // Leaning to the left
-		ctxx.moveTo(x, gheightArray[Math.floor(x / 50)]);
-		ctxx.lineTo(x + 2, y); // Leaning to the right
-		ctxx.stroke();
-	});
 }
 
 function map3() {
@@ -1108,7 +1066,6 @@ function generateARandomNumber() {
 }
 
 let reallyRandom = generateARandomNumber();
-grassposgenerator();
 function gameLLoop(settings) {
 	if (starting === false) {
 		Canvaas.width = Canvaas.clientWidth;

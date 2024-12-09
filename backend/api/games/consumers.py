@@ -380,7 +380,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		buff2 = 0
 		buff3 = 0
 		howmanyspeeds = 0
-		speed = 0.00125
+		speed = 0.0005
 		last_hit = None
 		await asyncio.sleep(3.5)
 
@@ -398,7 +398,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			game['ball']['dy'] = angleY * base_speed
 			game['ball']['x'] += game['ball']['dx']
 			game['ball']['y'] += game['ball']['dy']
-			if current_time - start_time >= 35 and buff1 == 0:
+			if current_time - new_start >= 35 and buff1 == 0:
 				buff1 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -408,7 +408,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 1
 					}
 				)
-			if current_time - start_time >= 3 and buff2 == 0:
+			if current_time - new_start >= 3 and buff2 == 0:
 				buff2 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -418,7 +418,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 2
 					}
 				)
-			if current_time - start_time >= 8 and buff3 == 0:
+			if current_time - new_start >= 8 and buff3 == 0:
 				buff3 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -479,6 +479,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 				game['ball']['dy'] = 0.005
 				game['paddle1']['y'] = 0.45
 				game['paddle2']['y'] = 0.45
+				new_start = time.time()
 				howmanyspeeds = 0
 				base_speed = 0.005
 				angleX = 1
@@ -663,7 +664,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 class TournamentConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'tournament_room_'
 	async def connect(self):
-		self.room_name = self.scope['url_route']['kwargs']['room_name']
+		self.room_name = self.scope['url_route']['kwargs']['tournament_room_name']
 		self.room_group_name = f'{self.room_name}'
 		user = self.scope['user']
 		if user.is_anonymous:
