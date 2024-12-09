@@ -1,6 +1,7 @@
 const baseUrl = process.env.ACTIVE_HOST;
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
+const can = document.getElementById('pongCanvas');
 const Instructions = document.getElementById('Instructions-box');
 const Tlobby = document.getElementById('pong-tournament');
 const menu = document.getElementById('menuuu');
@@ -85,7 +86,6 @@ tourniLobby.addEventListener('click', async function (event) {
 		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 		return ;
   }
-	event.preventDefault();
 	menu.style.display = 'none';
 	ai_menu.style.display = 'none';
 	inv_menu.style.display = 'none';
@@ -105,7 +105,9 @@ tourniLobby.addEventListener('click', async function (event) {
 		const result = await getTournamentName();
 		window.userData.r_name = result.tournament_room_name;
 		const u = new URL(baseUrl);
-		window.userData.pong_socket = new WebSocket(`ws://${u.host}/ws/tournament/${result['tournament_room_name']}/?token=${accessToken}`);
+		const screenHeight = can.clientHeight;
+		const screenWidth = can.clientWidth;
+		window.userData.pong_socket = new WebSocket(`ws://${u.host}/ws/tournament/${result['tournament_room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
 		startTournamentSocket();
 	} catch(error) {
 		Notification('Game Action', `Error: ${error.detail}`, 2, 'alert');
