@@ -73,6 +73,38 @@ class Command(BaseCommand):
                 'is_active': True
             },
             {
+                'username': 'laewie',
+                'password': 'strongpass123',
+                'bar_exp_game1': 3234,
+                'email': '1233216@gmail.com',
+                'is_verified': True,
+                'is_active': True
+            },
+                        {
+                'username': 'lhouma',
+                'password': 'strongpass123',
+                'bar_exp_game1': 3234,
+                'email': 'adsadasd6@gmail.com',
+                'is_verified': True,
+                'is_active': True
+            },
+                        {
+                'username': 'la3ziz',
+                'password': 'strongpass123',
+                'bar_exp_game1': 3234,
+                'email': 'sadads@gmail.com',
+                'is_verified': True,
+                'is_active': True
+            },
+                        {
+                'username': 'kho',
+                'password': 'strongpass123',
+                'bar_exp_game1': 3234,
+                'email': 'sadasdsad@gmail.com',
+                'is_verified': True,
+                'is_active': True
+            },
+                        {
                 'username': 'Rayan',
                 'password': 'strongpass123',
                 'bar_exp_game1': 3234,

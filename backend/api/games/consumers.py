@@ -711,8 +711,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		try:
 			data = json.loads(text_data)
-			action = data['action']
-			state = data['state']
+			action = data.get('action')
+			state = data.get('state')
+			matchups = data.get('matchups')
 			if action == 'game_action':
 				await self.channel_layer.group_send(
 					self.room_group_name,
@@ -728,7 +729,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
 				await self.send_current_players(players_in_room)
-			
+			elif action == 'match_making':
+				await self.channel_layer.group_send(
+					self.room_group_name,
+					{
+						'type': 'player_action',
+						'action': 'match_randomized',
+						'players': matchups,
+					}
+				)
 		except KeyError:
 			await self.send(text_data=json.dumps({'error': 'Invalid data received'}))
 		except Exception as e:

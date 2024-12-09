@@ -1,3 +1,5 @@
+import { handleSend } from "./chat.js";
+
 const baseUrl = process.env.ACTIVE_HOST;
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
@@ -7,15 +9,6 @@ const Tlobby = document.getElementById('pong-tournament');
 const menu = document.getElementById('menuuu');
 const  carousel = document.getElementById('bracket-container');
 const tourniLobby = document.getElementById('tournament');
-// const gamer2Template = {
-// 	username: "Player 1",
-// 	avatar: "assets/avatar2.svg",
-// 	wins: '3',
-// 	losses: '0',
-// 	level: '7.34'
-// };
-
-// const gamers = Array(8).fill().map(() => ({ ...gamer2Template }));
 
 async function getTournamentName() {
 	const access_token = localStorage.getItem('accessToken');
@@ -51,6 +44,7 @@ export async function startTournamentSocket() {
 	}
 	window.userData.pong_socket.onmessage = function(e) {
 		const data = JSON.parse(e.data);
+		console.log('a', data);
 		if (data.action == 'update_game_state') {
 			gameState = data.gameState;
 		} else if (data.action === 'current_players') {
@@ -59,8 +53,9 @@ export async function startTournamentSocket() {
 			inv_menu.style.display = 'none';
 			Instructions.style.display = 'none';
 			Tlobby.style.display = 'block';
-			console.log('Current players in the room: ', data.players);
 			displayTourniLobby(lobbySettings, data.players);
+		} else if (data.action === 'match_randomized') {
+			generateTournamentCarousel(data.players);
 		}
 	}
 }
@@ -136,7 +131,6 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 
 		let playerContainer = document.createElement('div');
 		playerContainer.classList.add('pong-tournament-players');
-		console.log(player);
 		if (player) {
 			playerContainer.id = player.username;
 			let avatarContainer = document.createElement('div');
@@ -174,7 +168,7 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 					player.ready = true;
 				}
 				sendGameStatus(player.username, player.ready);
-				checkReadyStatus(TourniPlayers);
+				// checkReadyStatus(TourniPlayers);
 			}
 			});
 
@@ -202,7 +196,8 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 			plusBtn.className = 'plus-btnT';
 			plusBtn.id = 'modal' + i;
 			plusBtn.textContent = '+';
-			plusBtn.addEventListener('click', function () {
+			plusBtn.addEventListener('click', function (e) {
+				e.preventDefault();
 				let modal = 'pong-modal-' + i;
 				let doc = document.getElementById(modal);
 				let overlay = 'modal-overlay' + i;
@@ -230,7 +225,8 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 			closeButton.id = 'modal-close-' + i;
 			closeButton.className = 'modal-btn';
 			closeButton.textContent = 'Close';
-			closeButton.addEventListener('click', function () {
+			closeButton.addEventListener('click', function (e) {
+				e.preventDefault();
 				let modal = 'pong-modal-' + i;
 				let doc = document.getElementById(modal);
 				let overlay = 'modal-overlay' + i;
@@ -240,6 +236,9 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 			});
 			
 			let submitButton = document.createElement('button');
+			if (player?.username) {
+				submitButton.id = 'search-' + player.username;
+			}
 			submitButton.className = 'modal-btn';
 			submitButton.textContent = 'Submit';
 			
@@ -257,32 +256,70 @@ function displayTourniLobby(lobbysettings, TourniPlayers) {
 
 			playerContainer.appendChild(modalOverlay);
 			playerContainer.appendChild(pongPC);
+
+			submitButton.addEventListener('click', function ()  {
+            if (window.userData.socket) {
+					if (window.userData.pong_socket) {
+						handleSend(searchInput.value , window.userData.r_name, 'Notification');
+						Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
+					}
+					else {
+						Notification('Game Action', 'You Are Not In A Lobby! Join A Lobby First!', 2, 'alert');
+					}
+				}
+				else {
+					Notification('Game Action', "Failed To Send Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+				}				
+			});
 		}
 
 		Tcontainer.appendChild(playerContainer);
 	}
+	if (TourniPlayers.length === 8){
+		let a = 0;
+		for (let i =0;i < 8;i++) {
+			if (TourniPlayers[i]?.ready && TourniPlayers[i].ready === true) {
+				a++;
+			}
+		}
+		if (a === 8) {
+			checkReadyStatus(TourniPlayers);
+		}
+	}
+}
+
+function sendMatchups(matchups) {
+	if (window.userData.pong_socket) {
+		window.userData.pong_socket.send(JSON.stringify({
+			action: 'match_making',
+			matchups: matchups,		
+		}));
+  }
 }
 
 function checkReadyStatus(TourniPlayers) {
-	if (readyPlayers === 8) {
-		Tcontainer.style.display = 'none';
-		lobbyNameElement.style.display = 'none';
-		carousel.style.display = 'flex';
-		generateTournamentCarousel(TourniPlayers);
+	console.log(TourniPlayers);
+	if (window.userData.username === TourniPlayers[0].username) {
+		let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
+		let matchups = [];
+		
+		for (let i = 0; i < 8; i += 2) {
+			matchups.push([
+				shuffledPlayers[i] || { username: '?', avatar: 'placeholder.png' }, 
+				shuffledPlayers[i + 1] || { username: '?', avatar: 'placeholder.png' }
+			]);
+		}
+		sendMatchups(matchups);
 	}
+	Tcontainer.style.display = 'none';
+	lobbyNameElement.style.display = 'none';
+	carousel.style.display = 'flex';
+	// generateTournamentCarousel(TourniPlayers, matchups);
 };
 
-function generateTournamentCarousel(TourniPlayers) {
-	let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
-	let matchups = [];
-	
-	for (let i = 0; i < 8; i += 2) {
-		matchups.push([
-			shuffledPlayers[i] || { username: '?', avatar: 'placeholder.png' }, 
-			shuffledPlayers[i + 1] || { username: '?', avatar: 'placeholder.png' }
-		]);
-	}
+function generateTournamentCarousel(matchups) {
 
+	console.log('last', matchups);
 	const carouselInner = document.querySelector('#matchupCarousel .carousel-inner');
 	carouselInner.innerHTML = '';
 
