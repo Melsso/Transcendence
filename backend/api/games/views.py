@@ -78,6 +78,9 @@ class GameResultView(generics.CreateAPIView):
         stats = request.data.get('stats')
         loser = request.data.get('loser')
         winner_uname = request.data.get('winner')
+        forfeit = request.data.get('forfeit')
+        if forfeit is None:
+            forfeit = False
         user = request.user
         if user.username == winner_uname:
             user.bar_exp_game1 += exp
@@ -89,6 +92,10 @@ class GameResultView(generics.CreateAPIView):
         if user.bar_exp_game1 <= 0:
             user.bar_exp_game1 = 0
         user.save()
+        if forfeit:
+            stats['attack_accuracy'] = 0
+            stats['shield_powerup'] = 0
+            stats['speed_powerup'] = 0
         if 'AI' in op.username:
             game_id = self.generate_game_id(user.id, op.id)
             PongGame.objects.create(
@@ -99,19 +106,22 @@ class GameResultView(generics.CreateAPIView):
                 attack_accuracy=stats['attack_accuracy'],
                 map_name=stats['map'],
                 shield_powerup=stats['shield_powerup'],
-                is_win= not win
+                speed_powerup=stats['speed_powerup'],
+                is_win= not win,
+                is_forfeit=False
         )
 
-
         PongGame.objects.create(
-                game_id=game_id,
-                user=user,
-                opponent=op,
-                score=stats['score1'],
-                attack_accuracy=stats['attack_accuracy'],
-                map_name=stats['map'],
-                shield_powerup=stats['shield_powerup'],
-                is_win= win
+            game_id=game_id,
+            user=user,
+            opponent=op,
+            score=stats['score1'],
+            attack_accuracy=stats['attack_accuracy'],
+            map_name=stats['map'],
+            shield_powerup=stats['shield_powerup'],
+            speed_powerup=stats['speed_powerup'],
+            is_win= win,
+            is_forfeit=forfeit
         )
 
         return Response({'status':'success', 'detail':'Game Logs Saved'}, status=HTTP_200_OK)

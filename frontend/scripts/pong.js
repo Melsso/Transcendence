@@ -93,7 +93,7 @@ window.scoreboard = {
 
 window.ResetTime = null;
 
-function    drawMaps(){
+function drawMaps(){
     if (setting.map === 'Map 1'){
         const cont = document.getElementById('gameContainer');
         ctx.fillStyle = 'black';
@@ -134,6 +134,23 @@ window.speedIncreaseInterval = 5000;
 window.initialSpeed = 4;
 window.speedIncrement = 0.22;
 
+async function kickPlayer() {
+    if (gameActive === true) {
+        var winner = {};
+        if (player1.name === window.userData.username) {
+            winner['name'] = player2.name;
+            winner['score'] = 0;
+        } else {
+            winner['name'] = player1.name;
+            winner['score'] = 0;    
+        }
+        await endGameStats(winner, {'name':window.userData.username, 'score': 0}, true);
+        Notification('Game Action', 'You have left an active game, therefore the game will be counted as a forfeit from your side!', 2, 'alert');
+        gameActive = false;
+        navigateTo('profile', null);
+        return ;
+    }
+}
 
 function resizeCanvas() {
     canvas.width = canvas.clientWidth;
@@ -194,7 +211,10 @@ function countdownBeforeRound(callback) {
 }
 window.countdownBeforeRound = countdownBeforeRound;
 
-function altFfour(){
+async function altFfour(){
+    if (gameActive) {
+       await kickPlayer();
+    }
     stopGameLoop();
     GOscreen = false;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -301,7 +321,7 @@ window.restartGame = restartGame;
 
 window.isingame = false;
 window.resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', kickPlayer);
 
 function movePlayerPaddle() {
     if (upPressed && playerPaddle.y > 50) {
@@ -454,8 +474,6 @@ document.addEventListener('keyup', (e) => {
     if (e.key === 'ArrowUp') upPressed = false;
     if (e.key === 'ArrowDown') downPressed = false;
 });
-
-
 
 function drawPaddle(x, y, width, height) {
     ctx.fillStyle = 'white';
@@ -861,7 +879,7 @@ function    calculateAverageRoundTime(){
 
 
 // let player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
-export async function endGameStats(winner, loser) {
+export async function endGameStats(winner, loser, forfeit=null) {
     let exp;
     let game_data = {};
     if (window.userData.username === winner.name) {
@@ -869,6 +887,7 @@ export async function endGameStats(winner, loser) {
         game_data.map = setting.map;
         game_data.attack_accuracy = 100;
         game_data.shield_powerup = 50;
+        game_data.speed_powerup = 10;
         game_data.score2 = loser.score;
         if (loser.name.includes('Medium')) {
             exp = 100;
@@ -885,6 +904,7 @@ export async function endGameStats(winner, loser) {
         game_data.map = setting.map;
         game_data.attack_accuracy = 100;
         game_data.shield_powerup = 50;
+        game_data.speed_powerup = 10;
         if (winner.name.includes('Medium')) {
             exp = 50;
         } else if (winner.name.includes('Easy')) {
@@ -896,7 +916,7 @@ export async function endGameStats(winner, loser) {
         }
     }
     try {
-        const result = await sendGameResult(exp, winner.name, loser.name, game_data);
+        const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit);
     } catch (error) {
         Notification('Game Action', `Error: ${error}`, 2, 'alert');
     }
@@ -926,7 +946,7 @@ export async function endGameStats(winner, loser) {
 
 }
 
-export async function sendGameResult(exp, winner, loser, game_data) {
+export async function sendGameResult(exp, winner, loser, game_data, forfeit) {
     const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error("No access token found.");
@@ -944,6 +964,7 @@ export async function sendGameResult(exp, winner, loser, game_data) {
             winner: winner,
             loser: loser,
             stats: game_data,
+            forfeit: forfeit,
         }),
 	});
 	if (!response.ok) {

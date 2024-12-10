@@ -7,5 +7,5 @@ class PongGameSerializer(serializers.ModelSerializer):
     opponent = UserProfileSerializer(read_only=True) 
     class Meta:
         model = PongGame
-        fields = ['id', 'user', 'opponent', 'is_win', 'score', 'date_played', 'game_id', 'map_name']
+        fields = ['id', 'user', 'opponent', 'is_win', 'is_forfeit', 'score', 'date_played', 'game_id', 'map_name']
 

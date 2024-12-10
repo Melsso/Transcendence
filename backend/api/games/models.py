@@ -14,6 +14,7 @@ class Game(models.Model):
         related_name="%(class)s_opponent"
     )
     is_win = models.BooleanField(default=False)
+    is_forfeit = models.BooleanField(default=False)
     date_played = models.DateTimeField(auto_now_add=True)
 
     def generate_game_id(self):
@@ -34,9 +35,10 @@ class Game(models.Model):
 
 class PongGame(Game):
     score = models.IntegerField(default=0)
-    attack_accuracy = models.IntegerField(default=0)
     map_name = models.TextField()
+    attack_accuracy = models.FloatField(default=0.0)
     shield_powerup = models.IntegerField(default=0)
+    speed_powerup = models.IntegerField(default=0)
     #add speed powerup
 
     class Meta:
