@@ -163,6 +163,8 @@ export function computeStats(games) {
     games.forEach(game => {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
+        if (ally.is_forfeit || enemy.is_forfeit)
+            return;
         const isPve = enemy.user.username.includes('AI');
         gameCount++;
         if (ally.is_win) {
@@ -283,14 +285,20 @@ export function loadMatchHistory(games) {
     games.forEach(game => {
         const matchCard = document.createElement('div');
         matchCard.classList.add('match-card');
-
+        var match_score;
         const gameKey = Object.keys(game)[0];
         const {ally, enemy} = game[gameKey];
 
         if (!ally.is_win) {
             matchCard.classList.add('lost');
         }
-
+        if (ally.is_forfeit) {
+            match_score = "LOST BY FORFEIT";
+        } else if (enemy.is_forfeit) {
+            match_score = "WON BY FORFEIT";
+        } else {
+            match_score = `${ally.score}-${enemy.score}`;
+        }
         matchCard.innerHTML = `
         <div class="player player-left">
             <img src="${ally.user.avatar}" alt="Avatar of ${ally.user.username}">
@@ -299,7 +307,7 @@ export function loadMatchHistory(games) {
                 <div class="game-name">${ally.game_id}</div>
             </div>
         </div>
-        <div class="score">${ally.score}-${enemy.score}</div>
+        <div class="score">${match_score}</div>
         <div class="player player-right">
             <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
             <div class="player-info-2">
