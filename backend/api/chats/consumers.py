@@ -89,7 +89,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = text_data_json["username"]
         target = text_data_json["target"]
 
-        if action == 'Notification':
+        if action == 'Game_left':
+            await self.channel_layer.group_send(
+                self.roomGroupName, {
+                    "type": "sendGameLeft",
+                    "action": action,
+                    "username": username,
+                    "target": target,
+                }
+            )
+            return
+
+        elif action == 'Notification':
             lobbySettings = text_data_json["lobbySettings"]
             room_name = text_data_json["room_name"]
             await self.channel_layer.group_send(
@@ -150,3 +161,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     def get_user(self, username):
         return UserProfile.objects.get(username=username)
+
+    async def sendGameLeft(self, event):
+        username = event['username']
+        target = event['target']
+        action = event['action']
+        await self.send(text_data=json.dumps({"action":action, "username":username, "target":target}))

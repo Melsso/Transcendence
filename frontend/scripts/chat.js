@@ -24,7 +24,7 @@ import { startTournamentSocket } from "./gameSystemT.js";
 import { getFriends, loadFriends } from "./populateFriends.js";
 let tar;
 
-export function handleSend(username, r_name, action) {
+export function handleSend(username, r_name=null, action) {
 	if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
 		if (window.userData?.socket) {
 			window.userData.socket.close();
@@ -42,6 +42,10 @@ export function handleSend(username, r_name, action) {
 	}
 	chatInput.focus();
 	const message = chatInput.value;
+	if (r_name === null) {
+		window.userData.socket.send(JSON.stringify({action:action, username : window.userData.username, target: username}));
+		return ;
+	}
 	if (action) {
 		window.userData.socket.send(JSON.stringify({ action: action, username : window.userData.username, target: username, room_name: r_name, lobbySettings: window.lobbySettings}));
 		return ;
@@ -194,6 +198,11 @@ export async function	launchSocket() {
 			}
 			if (window.userData.username === data.username) {
 				return ;
+			}
+			if (data.action === 'Game_left' && window.userData.username === data.target) {
+				Notification('Game action', `Your oppponent: ${data.username} has left the game! therefore you win the match by default!`, 2, 'profile')
+				// update match history for this guy as he won
+				return;
 			}
 			if (data.action == 'Notification' && data.target == window.userData.username) {
 				if (gameaccept) {

@@ -1,8 +1,10 @@
 const canvass = document.getElementById('pongCanvas');
 const ctxx = canvass.getContext('2d');
 import { sendGameState, sendBuffState } from "./gameSystem.js";
+import { handleSend } from "./chat.js";
 
 const REFERENCE_WIDTH = 1920;
+let resizeGame = false;
 let gamer1;
 let gamer2;
 let up1 = true;
@@ -69,6 +71,7 @@ export function gameOScreenpvp() {
 		winner = gamer1.username;
 	}
 	var w = [];
+	resizeGame = false;
 	if (window.userData.username === winner) {
 		w.font = '24px "PixelFont", sans-serif';
 		w.fillStyle = 'green';
@@ -703,13 +706,13 @@ function drawmap3() {
 grassposgenerator();
 
 export function drawAll(pvp1, pvp2, settings) {
-	console.log(settings.map);
 	if (settings === null){
 		settings.mode = 'Default mode';
 		settings.map = 'Map 1';
 	}
 	if (window.userData.username === pvp1.username) {
 		if (pvp1.set === false ) {
+				resizeGame = true;
 				setDimensions();
 				playerPaddle1.username = pvp1.username;
 				playerPaddle2.username = pvp2.username;
@@ -720,6 +723,7 @@ export function drawAll(pvp1, pvp2, settings) {
 	}
 	else {
 		if (pvp2.set === false ) {
+			resizeGame = true;
 			setDimensions();
 			playerPaddle1.username = pvp1.username;
 			playerPaddle2.username = pvp2.username;
@@ -834,5 +838,19 @@ export function displayCountdown() {
 // window.displayCountdown = displayCountdown;
 
 window.addEventListener('resize', function () {
-	console.log('ak nektha');
+	if (resizeGame === true) {
+		const room_name = window.userData.r_name;
+		navigateTo('profile', null);
+		Notification('Game Action', 'You have left an active game, therefore the game will be counted as a forfeit from your side!', 2, 'alert');
+		let targetName;
+		if (window.userData.username === playerPaddle1.username) {
+			targetName = playerPaddle2.username;
+		} else {
+			targetName = playerPaddle1.username;
+		}
+		handleSend(targetName, null, 'Game_left');
+		//send the game as an ff an show it in match history
+		resizeGame = false;
+		return;
+	}
 });
