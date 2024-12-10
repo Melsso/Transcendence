@@ -48,7 +48,7 @@ function createChart(ctx, label, data, chartType) {
 }
 
 
-export async function getMatchHistory(uname) {
+export async function getMatchHistory(uname=null) {
     const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error("No access token found.");
@@ -94,6 +94,7 @@ export async function loadProfile(requestData) {
         else {
             result = await getMatchHistory(requestData.user.username);
         }
+        console.log("HNAAAYAAAAAA", result);
         loadMatchHistory(result['match_history']);
     } catch (error) {
         Notification('Profile Action', `Error: ${error}`, 2, 'alert');
@@ -163,6 +164,8 @@ export function computeStats(games) {
     games.forEach(game => {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
+        console.log("ALLY:", ally);
+        console.log("ENEMY:", enemy);
         if (ally.is_forfeit || enemy.is_forfeit)
             return;
         const isPve = enemy.user.username.includes('AI');
@@ -258,7 +261,7 @@ function loadStats(games) {
 export function loadMatchHistory(games) {
     const historyTab = document.getElementById('History');
     const matchHistoryContainer = document.querySelector('.match-history-container');
-    historyTab.addEventListener('click', function (event) {
+    historyTab.addEventListener('click', async function (event) {
         event.preventDefault();
         if (historyTab.getAttribute('aria-selected') === 'true' && historyTab.getAttribute('on') === 'true') {
             return ;
@@ -267,9 +270,13 @@ export function loadMatchHistory(games) {
             statspage.setAttribute('on', 'false');
             matchHistoryContainer.innerHTML = '';
             try {
+                if (document.getElementById('username').value === window.userData.username) {
+                    games = await getMatchHistory();
+                }
                 loadMatchHistory(games);
                 return ;
             } catch (error) {
+                console.log(error);
                 Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
             }
         }

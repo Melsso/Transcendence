@@ -15,7 +15,7 @@ const ai_medium = document.getElementById('PongMedium');
 const ai_hard = document.getElementById('PongHard');
 const ins_return = document.getElementById('return-to-menu-ins');
 const baseUrl = process.env.ACTIVE_HOST;
-window.setting = null;
+window.setting;
 let paddleWidth;
 let paddleHeight;
 let ballRadius;
@@ -136,6 +136,7 @@ window.speedIncrement = 0.22;
 
 async function kickPlayer() {
     if (gameActive === true) {
+        gameActive = false;
         var winner = {};
         if (player1.name === window.userData.username) {
             winner['name'] = player2.name;
@@ -144,9 +145,8 @@ async function kickPlayer() {
             winner['name'] = player1.name;
             winner['score'] = 0;    
         }
-        await endGameStats(winner, {'name':window.userData.username, 'score': 0}, true);
+        await endGameStats(winner, {'name':window.userData.username, 'score': 0}, true, window.userData.r_name);
         Notification('Game Action', 'You have left an active game, therefore the game will be counted as a forfeit from your side!', 2, 'alert');
-        gameActive = false;
         navigateTo('profile', null);
         return ;
     }
@@ -879,9 +879,10 @@ function    calculateAverageRoundTime(){
 
 
 // let player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
-export async function endGameStats(winner, loser, forfeit=null) {
+export async function endGameStats(winner, loser, forfeit=null, room_name=null) {
     let exp;
     let game_data = {};
+    console.log("room namess", room_name);
     if (window.userData.username === winner.name) {
         game_data.score1 = winner.score;
         game_data.map = setting.map;
@@ -915,8 +916,10 @@ export async function endGameStats(winner, loser, forfeit=null) {
             exp = 250;
         }
     }
+    console.log("Before try block");
     try {
-        const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit);
+        const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit, room_name);
+        console.log("res: ", result);
     } catch (error) {
         Notification('Game Action', `Error: ${error}`, 2, 'alert');
     }
@@ -946,7 +949,7 @@ export async function endGameStats(winner, loser, forfeit=null) {
 
 }
 
-export async function sendGameResult(exp, winner, loser, game_data, forfeit) {
+export async function sendGameResult(exp, winner, loser, game_data, forfeit=null, room_name=null) {
     const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error("No access token found.");
@@ -965,6 +968,7 @@ export async function sendGameResult(exp, winner, loser, game_data, forfeit) {
             loser: loser,
             stats: game_data,
             forfeit: forfeit,
+            game_id: room_name,
         }),
 	});
 	if (!response.ok) {

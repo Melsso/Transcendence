@@ -2,6 +2,7 @@ const canvass = document.getElementById('pongCanvas');
 const ctxx = canvass.getContext('2d');
 import { sendGameState, sendBuffState } from "./gameSystem.js";
 import { handleSend } from "./chat.js";
+import { endGameStats } from "./pong.js";
 
 const REFERENCE_WIDTH = 1920;
 let resizeGame = false;
@@ -720,11 +721,10 @@ export function drawAll(pvp1, pvp2, settings) {
 		settings.mode = 'Default mode';
 		settings.map = 'Map 1';
 	}
-	// if (!reseTpvp)
-	// reseTpvp = Date.now();
 	if (window.userData.username === pvp1.username){
 		if (pvp1.set === false ) {
 				resizeGame = true;
+				window.setting = settings;
 				setDimensions();
 				playerPaddle1.username = pvp1.username;
 				playerPaddle2.username = pvp2.username;
@@ -737,6 +737,7 @@ export function drawAll(pvp1, pvp2, settings) {
 		if (pvp2.set === false ) {
 			resizeGame = true;
 			setDimensions();
+			window.setting = settings;
 			playerPaddle1.username = pvp1.username;
 			playerPaddle2.username = pvp2.username;
 			playingPvP = true;
@@ -851,8 +852,9 @@ export function displayCountdown() {
 }
 // window.displayCountdown = displayCountdown;
 
-window.addEventListener('resize', function () {
+window.addEventListener('resize', async function () {
 	if (resizeGame === true) {
+		resizeGame = false;
 		const room_name = window.userData.r_name;
 		navigateTo('profile', null);
 		Notification('Game Action', 'You have left an active game, therefore the game will be counted as a forfeit from your side!', 2, 'alert');
@@ -863,8 +865,8 @@ window.addEventListener('resize', function () {
 			targetName = playerPaddle1.username;
 		}
 		handleSend(targetName, null, 'Game_left');
+		await endGameStats({'name':targetName, 'score':0}, {'name':window.userData.username, 'score':0}, true, room_name);
 		//send the game as an ff an show it in match history
-		resizeGame = false;
 		return;
 	}
 });

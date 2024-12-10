@@ -7,6 +7,8 @@ from urllib.parse import parse_qs
 import aioredis
 import json
 import math
+import random
+import string
 import logging
 import asyncio
 import time
@@ -277,7 +279,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 				if start == True:
 					if user.username == players_keys[0]:
 						task = asyncio.create_task(self.move_ball(self.room_group_name))
-						logger.warning('s')
 						self.game_rooms[self.room_group_name]["task"] = task
 			elif action == 'queue_status':
 				if state == False:
@@ -294,7 +295,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 					elif buff == 'shield':
 						if game['paddle1']['height'] <= 0.1:
 							game['paddle1']['y'] = game['paddle1']['y'] - (game['paddle1']['height'] / 2)
-							game['paddle1']['height'] = game['paddle1'][height] * 2
+							game['paddle1']['height'] = game['paddle1']['height'] * 2
 					elif buff == 'attack_hit':
 						game['paddle1']['y'] = game['paddle1']['y'] + (game['paddle1']['height'] / 4)
 						game['paddle1']['height'] = game['paddle1']['height'] / 2

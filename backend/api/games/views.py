@@ -73,12 +73,13 @@ class GameResultView(generics.CreateAPIView):
     def post(self, request):
         op = None
         win = False
-        game_id = None
+        game_id = request.data.get('game_id')
         exp = request.data.get('exp')
         stats = request.data.get('stats')
         loser = request.data.get('loser')
         winner_uname = request.data.get('winner')
         forfeit = request.data.get('forfeit')
+
         if forfeit is None:
             forfeit = False
         user = request.user
@@ -96,6 +97,7 @@ class GameResultView(generics.CreateAPIView):
             stats['attack_accuracy'] = 0
             stats['shield_powerup'] = 0
             stats['speed_powerup'] = 0
+        # update this condition to something more robust
         if 'AI' in op.username:
             game_id = self.generate_game_id(user.id, op.id)
             PongGame.objects.create(
