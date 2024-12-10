@@ -663,6 +663,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 class TournamentConsumer(AsyncWebsocketConsumer):
 	redis_room_prefix = 'tournament_room_'
+	tournament_rooms = {}
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['tournament_room_name']
 		self.room_group_name = f'{self.room_name}'
@@ -681,6 +682,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			screen_height = int(screen_height)
 
 		players_in_room = await self.get_players_in_room()
+		if len(players_in_room) == 0:
+			self.tournament_rooms[self.room_group_name] = {"owner": user.username}
 		if len(players_in_room) >= 8:
 			await self.close()
 			return 
@@ -693,15 +696,26 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 		players_in_room = await self.get_players_in_room()
-		await self.send_current_players(players_in_room)
+		game = self.tournament_rooms[self.room_group_name]
+		await self.send_current_players(players_in_room, game['owner'])
 
 	async def disconnect(self, close_code):
 		user = self.scope['user']
 		await self.remove_player_from_room(user.username)
 		players_in_room = await self.get_players_in_room()
+		key = self.room_group_name
+		game = self.tournament_rooms[key]
+		if user.username == game['owner']:
+			if len(players_in_room) == 0:
+				del self.tournament_rooms[key]
+			else:
+				first_item = list(players_in_room.items())[0]
+				first_key = first_item[0]
+				first_value = first_item[1]
+				game['owner'] = first_value['username']
 
 		if players_in_room:
-			await self.send_current_players(players_in_room)
+			await self.send_current_players(players_in_room, game['owner'])
 
 		await self.channel_layer.group_discard(
 			self.room_group_name,
@@ -720,15 +734,17 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					{
 						'type': 'game_action',
 						'action': action,
-						'state': state
+						'state': state,
 					}
 				)
 			elif action == 'player_action':
 				username = state['username']
 				ready_status = state['ready']
+				key = self.room_group_name
+				game = self.tournament_rooms[key]
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
-				await self.send_current_players(players_in_room)
+				await self.send_current_players(players_in_room, game['owner'])
 			elif action == 'match_making':
 				await self.channel_layer.group_send(
 					self.room_group_name,
@@ -747,10 +763,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def player_action(self, event):
 		action = event['action']
 		players = event['players']
+		owner = event['owner']
 		if players:
 			await self.send(text_data=json.dumps({
 				'action': action,
-				'players': players
+				'players': players,
+				'owner': owner,
 			}))
 
 	async def game_action(self, event):
@@ -811,8 +829,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		serializer = UserProfileSerializer(user_profiles, many=True)
 		return serializer.data
 
-	async def send_current_players(self, players):
+	async def send_current_players(self, players, owner):
 		user_profiles = await self.get_user_profiles(players)
+		logger.warning(owner)
 		ready_status = {username: data['ready'] for username, data in players.items()}
 		screen_dimensions = {username: data.get('screen_dimensions', {}) for username, data in players.items()}
 
@@ -825,6 +844,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             {
 				'type': 'player_action',
 				'action': 'current_players',
-				'players': user_profiles
+				'players': user_profiles,
+				'owner':	owner,
 			}
 		)
