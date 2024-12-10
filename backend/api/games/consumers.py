@@ -221,10 +221,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 			if action == 'update_game_state':
 				if player == '1':
 					if state == 1:
-						if game['paddle1']['y'] > 0:
+						if game['paddle1']['y'] > 0.05:
 							game['paddle1']['y'] -= game['paddle1']['dy']
-							if game['paddle1']['y'] < 0:
-								game['paddle1']['y'] = 0
+							if game['paddle1']['y'] < 0.05:
+								game['paddle1']['y'] = 0.05
 					else:
 						if game['paddle1']['y'] < 1 - game['paddle1']['height']: 
 							game['paddle1']['y'] += game['paddle1']['dy']
@@ -241,10 +241,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 					)
 				else:
 					if state == 1:
-						if game['paddle2']['y'] > 0: 
+						if game['paddle2']['y'] > 0.05: 
 							game['paddle2']['y'] -= game['paddle2']['dy']
-							if game['paddle2']['y'] < 0:
-								game['paddle2']['y'] = 0
+							if game['paddle2']['y'] < 0.05:
+								game['paddle2']['y'] = 0.05
 					else:
 						if game['paddle2']['y'] < 1 - game['paddle2']['height']: 
 							game['paddle2']['y'] += game['paddle2']['dy']
@@ -430,7 +430,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 				)
 			if game['ball']['y'] <= 0.06 or game['ball']['y'] >= 0.99:
 				angleY = -angleY
-			elif game['ball']['x'] <= 0.03 and game['paddle1']['y'] <= game['ball']['y'] <= game['paddle1']['y'] + 0.11:
+			elif game['ball']['x'] <= 0.02 and game['paddle1']['y'] <= game['ball']['y'] <= game['paddle1']['y'] + 0.11:
 				angleX = abs(angleX)
 				impact_point = (game['ball']['y'] - game['paddle1']['y']) / game['paddle1']['height']
 				angleY = (impact_point - 0.5) * 2
@@ -443,7 +443,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"paddle": last_hit,
 					}
 				)
-			elif game['ball']['x'] >= 0.97 and game['paddle2']['y'] <= game['ball']['y'] <= game['paddle2']['y'] + 0.11:
+			elif game['ball']['x'] >= 0.98 and game['paddle2']['y'] <= game['ball']['y'] <= game['paddle2']['y'] + 0.11:
 				angleX = -abs(angleX)
 				impact_point = (game['ball']['y'] - game['paddle2']['y']) / game['paddle2']['height']
 				angleY = (impact_point - 0.5) * 2
@@ -831,7 +831,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def send_current_players(self, players, owner):
 		user_profiles = await self.get_user_profiles(players)
-		logger.warning(owner)
 		ready_status = {username: data['ready'] for username, data in players.items()}
 		screen_dimensions = {username: data.get('screen_dimensions', {}) for username, data in players.items()}
 

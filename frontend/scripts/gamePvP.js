@@ -28,6 +28,8 @@ let p2;
 let sx;
 let BuffFlag = 0;
 let sy;
+let	timerpvp;
+let	reseTpvp;
 const REFERENCE_HEIGHT = 1080;
 let upPressed = false;
 let animation =  [];
@@ -43,8 +45,9 @@ let block2 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
 
 
 function drawScore(pvp1, pvp2) {
+
 	ctxx.fillStyle = 'black';
-	ctxx.fillRect(0, 0, canvass.width, 50);
+	ctxx.fillRect(0, 0, canvass.width, canvass.height * 0.05);
 	const image1 = new Image();
 	const image2 = new Image();
 	image1.src = gamer1.avatar;
@@ -59,6 +62,11 @@ function drawScore(pvp1, pvp2) {
 	ctxx.fillStyle = 'white'; 
 	ctxx.fillText(pvp2.username, 90*canvass.width/100, 30);
 	ctxx.fillText(pvp2.score, 82*canvass.width/100, 30);
+	let timerseconds = reseTpvp;
+	ctxx.font = '20px Arial';
+	ctxx.fillStyle = 'white';
+	ctxx.textAlign = 'center';
+	ctxx.fillText(`${timerseconds}`, canvass.width / 2, canvass.height * 0.025);
 }
 export function gameOScreenpvp() {
 	var winner;
@@ -264,6 +272,7 @@ export function newRound() {
 	sx = sphere.x;
 	sphere.y = (heightScale / 2);
 	sy = sphere.y;
+	// reseTpvp = Date.now();
 }
 
 export function changeLast(last) {
@@ -430,7 +439,7 @@ function setDimensions() {
 	canvass.height = canvass.getBoundingClientRect().height;
 	const widthScale = window.userData.screen_dimensions.width;
 	const heightScale = window.userData.screen_dimensions.height;
-	
+	timerpvp = Date.now();
 	playerPaddle1.width = widthScale / 100;
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle1.x = 0;
@@ -503,8 +512,8 @@ function movement(pvp1, pvp2) {
 	}
 	if (upPressed && paddle.y > 0) {
 		paddle.y -= paddle.dy;
-		if (paddle.y < 0)
-			paddle.y = 0;
+		if (paddle.y < canvass.height * 0.05)
+			paddle.y = canvass.height * 0.05;
 		sendGameState(1, target.username, me);
 	} else if (downPressed && paddle.y < (window.userData.screen_dimensions.height - paddle.height)) {
 		paddle.y += paddle.dy;
@@ -706,11 +715,14 @@ function drawmap3() {
 grassposgenerator();
 
 export function drawAll(pvp1, pvp2, settings) {
+	reseTpvp = Date.now();
 	if (settings === null){
 		settings.mode = 'Default mode';
 		settings.map = 'Map 1';
 	}
-	if (window.userData.username === pvp1.username) {
+	// if (!reseTpvp)
+	// reseTpvp = Date.now();
+	if (window.userData.username === pvp1.username){
 		if (pvp1.set === false ) {
 				resizeGame = true;
 				setDimensions();
@@ -731,6 +743,7 @@ export function drawAll(pvp1, pvp2, settings) {
 			pvp2.set = true;
 		}
 	}
+	reseTpvp = Math.floor((Date.now() - timerpvp) / 1000);
 	gamer1 = pvp1;
 	gamer2 = pvp2;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
@@ -830,6 +843,7 @@ export function displayCountdown() {
 			  countdownOverlay.textContent = 'Game Start!';
 			  setTimeout(() => {
 					countdownOverlay.remove();
+					timerpvp = Date.now();
 					drawAll(gamer1, gamer2, lobbySettings);
 			  }, 1000);
 		 }
