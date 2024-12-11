@@ -1130,10 +1130,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		// 	Notification('User Action', 'You Have Not Consented To Our Privacy Policy, Please Log In As A Guest.', 1, 'alert');
 		// 	return ;
 		// }
-		if (localStorage.getItem('accessToken')) {
-			navigateTo('profile', null);
-			return;
-		}
 		let loged_in = false;
 		try {
 			loged_in = await getLogs(username);
@@ -1143,6 +1139,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (loged_in) {
 			Notification('Profile Action', 'You are connected on another device/browser, Please log out first to be able to Log in here!', 1, 'alert');
 			LoginNotification('Profile Action', 'Click here if you wanna force login to your account!');
+			return;
+		}
+		if (localStorage.getItem('accessToken')) {
+			navigateTo('profile', null);
 			return;
 		}
 		// need to save wether remember or not for next call
@@ -1666,7 +1666,7 @@ async function createDropDownProfile(friendUname, friendId, block_list) {
 		}
 		a.addEventListener('click', (event) => {
 			event.preventDefault();
-			handleprofileAction(action, friendUname, friendId);
+			handleprofileAction(action, friendUname, friendId, a);
 		});
 		li.appendChild(a);
 		dropdownMenu.appendChild(li);
@@ -1676,7 +1676,7 @@ async function createDropDownProfile(friendUname, friendId, block_list) {
 	container.appendChild(dropdownDiv);
 }
 
-async function handleprofileAction(action, targetuname, targetID) {
+async function handleprofileAction(action, targetuname, targetID, a) {
 	if (window.userData.guest === true) {
 		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 		return ;
@@ -1695,10 +1695,13 @@ async function handleprofileAction(action, targetuname, targetID) {
 				var result;
 				if (flag) {
 					result = await unblockUser(targetuname);
+					flag = false;
 				} else {
 					result = await blockUser(targetuname);
 				}
 				Notification('Friend Action', `${result.detail}`, 2, 'profile');
+				const res = await userLookUp(targetuname);
+				navigateTo('profile', res);
 			} catch (error) {
 				Notification('Friend Action', `Error ${error.detail}`, 2, 'alert');
 			}

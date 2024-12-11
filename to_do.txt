@@ -27,8 +27,10 @@ TODO:
 - input cleaning(if anyone finds any please describe which field here and i'll do it)
 - q manager needs to be looped
 - backend loads (still in question)
-- fix loading match history in some unkown cases (?)
 - invite/block interaction
+- a invites b, b invites a, currently says error alrdy sent req, should say smth else
+- a blocks b, b sends request, error says alrdy sent, should say something else like cant send ure blocked or smth
+- im inr ur profile, if i block the drop down should be updated real time to say unblock instead of block
 
 
 fixing:

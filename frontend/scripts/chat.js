@@ -26,25 +26,25 @@ import { getFriends, loadFriends } from "./populateFriends.js";
 let tar;
 let toastgame;
 
-export function handleSend(username, r_name=null, action) {
-	if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
-		if (window.userData?.socket) {
-			window.userData.socket.close();
-			window.userData.socket = null;
-			window.userData.r_name = null;
-			window.userData.target = null;
-		}
-		if (window.userData?.pong_socket) {
-			window.userData.pong_socket.close();
-			window.userData.pong_socket = null;
-		}
-		window.userData = {};
-		navigateTo('login', null);
-		return ;
-	}
+export function handleSend(username, r_name=null, action, gameend=null) {
+	// if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
+	// 	if (window.userData?.socket) {
+	// 		window.userData.socket.close();
+	// 		window.userData.socket = null;
+	// 		window.userData.target = null;
+	// 	}
+	// 	if (window.userData?.pong_socket) {
+	// 		window.userData.pong_socket.close();
+	// 		window.userData.pong_socket = null;
+	// 		window.userData.r_name = null;
+	// 	}
+	// 	window.userData = {};
+	// 	navigateTo('login', null);
+	// 	return ;
+	// }
 	chatInput.focus();
 	const message = chatInput.value;
-	if (r_name === null) {
+	if (r_name === null && gameend) {
 		window.userData.socket.send(JSON.stringify({action:action, username : window.userData.username, target: username}));
 		return ;
 	}
@@ -54,7 +54,7 @@ export function handleSend(username, r_name=null, action) {
 	}
 	window.userData.socket.send(JSON.stringify({ action: 'Message', message: message, username : username, target: window.userData.target, av: window.userData.avatar}));
 	addMessage(message, true, null);
-	chatInput.value = ''; 
+	chatInput.value = '';
 }
 
 // mybtn.addEventListener('click', function () {
@@ -67,6 +67,12 @@ globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
 	var collapseElement = document.getElementById('collapseTwo');
 	var name = document.getElementById('chatName');
+	try {
+		const result = await getMessages();
+		loadMessages(result["list"]);
+	} catch (error) {
+		Notification('Message Action', `Error: ${error.detail}`, 2, 'alert');
+	}
 	if (window.userData.target !== 'Global') {
 		messageContainer.innerHTML = '';
 		var bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
@@ -78,12 +84,6 @@ globalbtn.addEventListener('click', async function(event) {
 		}
 		else {
 			bsCollapse.show();
-		}
-		try {
-			const result = await getMessages();
-			loadMessages(result["list"]);
-		} catch (error) {
-			Notification('Message Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 		window.userData.target = 'Global';
 		name.textContent = 'Global';
@@ -134,7 +134,7 @@ async function handleProfileView(username) {
 	try {
 		const result = await userLookUp(username);
 		if (result['user'] !== null) {
-			window.navigateTo('profile', result);
+			navigateTo('profile', result);
 		} else {
 			Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
 		}
@@ -226,7 +226,7 @@ export async function	launchSocket() {
 							Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
 							return ;
 						}
-						window.navigateTo('PONG', null);
+						navigateTo('PONG', null);
 						const gameSocket = new WebSocket(`ws://${u.host}/ws/tournament/${data.room_name}/?token=${accessToken}`);
 						window.userData['pong_socket'] = gameSocket;
 						window.userData.r_name = data.room_name;
@@ -291,6 +291,7 @@ export async function	launchSocket() {
 					SpecialNotification('You received a message!',  data.message , data.username);
 				}
 				else {
+					
 					addMessage(data.message, false, data);
 				}
 			}

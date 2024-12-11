@@ -69,18 +69,28 @@ function drawScore(pvp1, pvp2) {
 	ctxx.textAlign = 'center';
 	ctxx.fillText(`${timerseconds}`, canvass.width / 2, canvass.height * 0.025);
 }
-export function gameOScreenpvp() {
+export async function gameOScreenpvp() {
 	var winner;
+	var loser;
+	var w_score;
+	var l_score;
 	if (sphere.x >= canvass.width - playerPaddle2.width){
 		gamer2.score++;
 		winner = gamer2.username;
+		w_score = gamer2.score;
+		loser = gamer1.username;
+		l_score = gamer1.score;
 	}
 	else{
 		gamer1.score++;
 		winner = gamer1.username;
+		loser = gamer2.username;
+		l_score = gamer2.score;
+		w_score = gamer1.score;
 	}
 	var w = [];
 	resizeGame = false;
+	await endGameStats({'name':winner, 'score':w_score}, {'name':loser, 'score':l_score}, false, window.userData.r_name);
 	if (window.userData.username === winner) {
 		w.font = '24px "PixelFont", sans-serif';
 		w.fillStyle = 'green';
@@ -864,7 +874,7 @@ window.addEventListener('resize', async function () {
 		} else {
 			targetName = playerPaddle1.username;
 		}
-		handleSend(targetName, null, 'Game_left');
+		handleSend(targetName, null, 'Game_left', true);
 		await endGameStats({'name':targetName, 'score':0}, {'name':window.userData.username, 'score':0}, true, room_name);
 		//send the game as an ff an show it in match history
 		return;
