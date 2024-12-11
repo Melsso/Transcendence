@@ -24,6 +24,7 @@ import { startGameSocket  } from "./gameSystem.js";
 import { startTournamentSocket } from "./gameSystemT.js";
 import { getFriends, loadFriends } from "./populateFriends.js";
 let tar;
+let toastgame;
 
 export function handleSend(username, r_name=null, action) {
 	if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
@@ -217,6 +218,7 @@ export async function	launchSocket() {
 						Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 						return ;
 				  }
+				  	toastgame.hide();
 					if (data.room_name.includes('tournament')) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');
@@ -526,10 +528,10 @@ function GameNotification(title, message, target) {
 	main_welcome.appendChild(msg_container);
 	mainpage.appendChild(main_welcome);
 
-	const toast = new bootstrap.Toast(msg_container);
-	toast.show();
+	toastgame = new bootstrap.Toast(msg_container);
+	toastgame.show();
 	tar = target;
 	setTimeout(() => {
-		toast.hide();
+		toastgame.hide();
 	}, 10000);
 }

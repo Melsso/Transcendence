@@ -436,8 +436,12 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         document.getElementById(id5).addEventListener('click', function () {
             if (window.userData.socket) {
 				if (window.userData.pong_socket) {
-					handleSend(document.getElementById(id6).value , window.userData.r_name, 'Notification');
-					Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
+                    if (!document.getElementById(id6).value.trim()) {
+                        Notification('Game Action', 'No such user!', 2, 'alert');
+                    } else {
+                        handleSend(document.getElementById(id6).value , window.userData.r_name, 'Notification');
+                        Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
+                    }
 				}
 				else {
 					Notification('Game Action', 'You Are Not In A Lobby! Join A Lobby First!', 2, 'alert');
