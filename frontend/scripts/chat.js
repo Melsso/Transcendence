@@ -44,6 +44,7 @@ export function handleSend(username, r_name=null, action, gameend=null) {
 	// }
 	chatInput.focus();
 	const message = chatInput.value;
+	chatInput.value = '';
 	if (r_name === null && gameend) {
 		window.userData.socket.send(JSON.stringify({action:action, username : window.userData.username, target: username}));
 		return ;
@@ -54,7 +55,6 @@ export function handleSend(username, r_name=null, action, gameend=null) {
 	}
 	window.userData.socket.send(JSON.stringify({ action: 'Message', message: message, username : username, target: window.userData.target, av: window.userData.avatar}));
 	addMessage(message, true, null);
-	chatInput.value = '';
 }
 
 // mybtn.addEventListener('click', function () {
@@ -291,7 +291,7 @@ export async function	launchSocket() {
 					SpecialNotification('You received a message!',  data.message , data.username);
 				}
 				else {
-					
+
 					addMessage(data.message, false, data);
 				}
 			}
