@@ -94,7 +94,6 @@ export async function loadProfile(requestData) {
         else {
             result = await getMatchHistory(requestData.user.username);
         }
-        console.log("HNAAAYAAAAAA", result);
         loadMatchHistory(result['match_history']);
     } catch (error) {
         Notification('Profile Action', `Error: ${error}`, 2, 'alert');
@@ -164,8 +163,6 @@ export function computeStats(games) {
     games.forEach(game => {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
-        console.log("ALLY:", ally);
-        console.log("ENEMY:", enemy);
         if (ally.is_forfeit || enemy.is_forfeit)
             return;
         const isPve = enemy.user.username.includes('AI');
@@ -276,7 +273,6 @@ export function loadMatchHistory(games) {
                 loadMatchHistory(games);
                 return ;
             } catch (error) {
-                console.log(error);
                 Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
             }
         }
@@ -325,4 +321,29 @@ export function loadMatchHistory(games) {
     `;
         matchHistoryContainer.appendChild(matchCard);
     });
+}
+
+function    detailedStatTab() {
+    const statbtn = document.getElementById('MatchStats');
+    const historycontainer = document.getElementById('match-history-container');
+    const container = document.getElementById('MatchStatscontainer');
+    statbtn.addEventListener('click', function () {
+        historycontainer.innerHTML ='';
+        container.innerHTML = '';
+    });
+    const statspage = document.getElementById('match-stats-tab');
+    statspage.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (statspage.getAttribute('aria-selected') === 'true' && statspage.getAttribute('on') === 'true') {
+            return ;
+        }
+        const historyTab = document.getElementById('History');
+        statspage.setAttribute('on', 'true');
+        historyTab.setAttribute('on', 'false');
+    }, { once: true });
+}
+
+function listeners(games) {
+    console.log('DETAILS');
+    console.log(games);
 }
