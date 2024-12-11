@@ -22,6 +22,19 @@
 	font-size: 0.9rem;
 }
 
+.toggle-password-btn {
+	position: absolute;
+	transform: translate(450%,150%);
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: gray;
+}
+
+.toggle-password-btn:hover {
+	color: black;
+}
 
 #guest-login{
 	margin-right:auto;

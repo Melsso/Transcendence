@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	mainSettings.style.display = 'none';
 	mainPONGgame.style.display = 'none';
 	facontainer.style.display = 'none';
-
+	const passwordtogglebtn = document.getElementById('toggle-password');
 	const additionalBtn = document.getElementById('additional-settings-btn');
 	const profileMenu = document.getElementById('dropdown-container-profile');
 	const guestButton = document.getElementById('guest-login');
@@ -1317,6 +1317,18 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
+	passwordtogglebtn.addEventListener('click', function () {
+		const passwordInput = document.getElementById("password-login");
+		const toggleButton = document.getElementById("toggle-password");
+		if (passwordInput.type === "password") {
+			 passwordInput.type = "text";
+			 toggleButton.textContent = "🙈";
+		} else {
+			 passwordInput.type = "password";
+			 toggleButton.textContent = "👁️";
+		}
+
+	});
 	// sendFriendRequestButton.addEventListener('click', async function () {
 	// 	if (window.userData.guest === true) {
 	// 		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
