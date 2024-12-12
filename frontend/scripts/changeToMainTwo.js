@@ -1691,7 +1691,7 @@ async function handleprofileAction(action, targetuname, targetID, a) {
 				if (error?.flag) {
 					type = 'profile';
 				}
-				Notification('Friend Action', `Error ${error.detail}`, 2, type);
+				Notification('Friend Action', `${error.detail}`, 2, type);
 			}
 			break;
 		case 'Block User':
