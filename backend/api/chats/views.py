@@ -42,8 +42,6 @@ class BlockedUsersView(generics.GenericAPIView):
 
         blocked_list = Friend.objects.filter(user=user, status='BLOCKED')
         serializer = self.get_serializer(blocked_list, many=True)
-        logger.warning('BLOCKED LISTTTTTTTTTTTTTTTTTTTTTTTTTT')
-        logger.warning(serializer.data)
         return Response({'status':'success', 'detail':'Fetched The List Of Blocked Users', 'blocked_list': serializer.data}, status=HTTP_200_OK)
 
 class BlockUserView(generics.GenericAPIView):
@@ -110,9 +108,12 @@ class FriendRequestManager(generics.ListAPIView):
         target_user = get_object_or_404(User, id=target_id)
         if target_user is None:
             return Response({'status':'error', 'detail':'No Such User'}, status=HTTP_400_BAD_REQUEST)
-        existing_request = Friend.objects.filter(Q(user=user, friend=target_user) | Q(user=target_user, friend=user)).first()
+        existing_request = Friend.objects.filter(user=user, friend=target_user).first()
         if existing_request:
             return Response({'status':'error', 'detail':'Already Sent A Request'}, status=HTTP_400_BAD_REQUEST)
+        existing_incoming_request = Friend.objects.filter(user=target_user, friend=user).first()
+        if existing_incoming_request:
+            return Response({'status':'error', 'detail':'Maybe Check Your Friend Requests List?', 'flag':'nonError'}, status=HTTP_400_BAD_REQUEST)
         friend_request = Friend.objects.create(user=user, friend=target_user)
         return Response({'status':'success', 'detail': 'Friend Request Sent!'}, status=HTTP_201_CREATED)
     

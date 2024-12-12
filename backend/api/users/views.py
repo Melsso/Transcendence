@@ -331,10 +331,10 @@ class ForceLoginView(generics.GenericAPIView):
         try:
             user = UserProfile.objects.get(username=username)
         except UserProfile.DoesNotExist:
-            return Response({'status': 'fail', 'detail': 'No such user found!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'fail', 'detail': 'No such user found!'}, status=HTTP_400_BAD_REQUEST)
         
         if not user.check_password(password):
-            return Response({'status': 'fail', 'detail': 'Wrong Password!'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'status': 'fail', 'detail': 'Wrong Password!'}, status=HTTP_401_UNAUTHORIZED)
         
 
         tokens = self.generate_tokens(user)
