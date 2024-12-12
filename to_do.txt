@@ -23,11 +23,11 @@ MINOR:
 		//global chat aint refreshing
 
 TODO:
-- add password prompt for message deletion on friends
-- input cleaning(if anyone finds any please describe which field here and i'll do it)
 - q manager needs to be looped
 - backend loads (still in question)
-
+- when you delete messages, they get deleted as they should in the backend and db, however since we're loading them for the user manually they stay there until refresh
+- log stats 
+- score bug, no matter who scores counts on one side only
 
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.

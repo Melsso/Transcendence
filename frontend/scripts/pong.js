@@ -894,7 +894,6 @@ function    calculateAverageRoundTime(){
 export async function endGameStats(winner, loser, forfeit=null, room_name=null) {
     let exp;
     let game_data = {};
-    console.log("room namess", room_name);
     if (window.userData.username === winner.name) {
         game_data.score1 = winner.score;
         game_data.map = setting.map;
@@ -928,10 +927,8 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null) 
             exp = 250;
         }
     }
-    console.log("Before try block");
     try {
         const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit, room_name);
-        console.log("res: ", result);
     } catch (error) {
         Notification('Game Action', `Error: ${error}`, 2, 'alert');
     }
