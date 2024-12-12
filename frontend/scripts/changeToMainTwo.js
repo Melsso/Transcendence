@@ -1687,7 +1687,11 @@ async function handleprofileAction(action, targetuname, targetID, a) {
 				const result = await sendFriendRequest(targetID);
 				Notification('Friend Action', 'You have sent a friend request!', 2 ,'request');
 			} catch (error) {
-				Notification('Friend Action', `Error ${error.detail}`, 2, 'alert');
+				var type = 'alert';
+				if (error?.flag) {
+					type = 'profile';
+				}
+				Notification('Friend Action', `Error ${error.detail}`, 2, type);
 			}
 			break;
 		case 'Block User':

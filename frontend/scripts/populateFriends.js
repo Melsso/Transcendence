@@ -135,7 +135,7 @@ export async function loadFriends(data, userid) {
 						loadFriends(r1, userid);
 						Notification('Friend Action', `You refused a friend request from ${friend_data.username}!`, 2,'request');
 					} catch (error) {
-						Notification('Friend Action', `Error: ${error.detail}`,2,'alert');
+						Notification('Friend Action', `Error: ${error.detail}`, 2, 'alert');
 					}
 				});
 
@@ -148,7 +148,7 @@ export async function loadFriends(data, userid) {
 						loadFriends(r1, userid);
 						Notification('Friend Action', `You Accepted a friend request from ${friend_data.username}!`, 2,'request');
 						} catch (error) {
-							Notification('Friend Action', `Error: ${error.detail}`,2,'alert');
+							Notification('Friend Action', `Error: ${error.detail}`, 2, 'alert');
 						}
 					});
 			}
@@ -219,7 +219,7 @@ async function handleAction(action, targetId, userid, targetUname) {
 				try {
 					const result = await userLookUp(targetUname);
 					if (result['user'] !== null) {
-						window.navigateTo('profile', result);
+						navigateTo('profile', result);
 					} else {
 						Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
 					}
