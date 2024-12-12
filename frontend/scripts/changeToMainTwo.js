@@ -1471,10 +1471,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		pswdElement.value = '';
 		try {
 			const result = await deleteMessages(null, pswd);
-			if (result.status === 'success') {
-				Notification('Profile Action', 'All Messages Have Been Deleted', 2, 'profile');
-				delMsgModal.style.display = 'none';
-			}
+			Notification('Profile Action', `Update: ${result.detail}`, 2, 'profile');
+			delMsgModal.style.display = 'none';
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
