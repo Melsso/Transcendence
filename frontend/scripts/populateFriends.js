@@ -3,6 +3,10 @@ import { userLookUp, deleteMessages } from "./changeToMainTwo.js";
 
 const baseUrl = process.env.ACTIVE_HOST;
 
+const delPrivMsgModal = document.getElementById('deletePrvMsgModal');
+const confirmDelPrivMsgBtn = document.getElementById('confirmPrvMsgBtn');
+const cancelDelPrivMsgBtn = document.getElementById('cancelPrvMsgBtn');
+
 export async function getFriends() {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
@@ -157,6 +161,7 @@ export async function loadFriends(data, userid) {
 				const onlineDot = document.createElement('div');
 				onlineDot.className = 'online-dot';
 				FriendDiv.appendChild(onlineDot);
+			
 			}
 			FriendDiv.appendChild(nameDropdownDiv);
 			friendsListContainer.appendChild(FriendDiv);
@@ -242,12 +247,29 @@ async function handleAction(action, targetId, userid, targetUname) {
 			}
 			break;
 		case 'Delete Messages':
-			try {
-				// here display a box, get the password and pass it instead of null
-				const result = await deleteMessages(targetUname, null);
-			} catch (error) {
-				Notification('Message Action', `Failed To Delete Messages: ${error.details}`, 2, 'alert');
-			}
+			delPrivMsgModal.style.display = 'flex';
+			const cancelDelHandler = function() {
+				delPrivMsgModal.style.display = 'none';
+				cancelDelPrivMsgBtn.removeEventListener('click', cancelDelHandler);
+			};
+			cancelDelPrivMsgBtn.addEventListener('click', cancelDelHandler);
+
+			const confirmDeleteHandler = async function() {
+				const delPassElement = document.getElementById('confirmPassPrvMsgField');
+				const delPass = delPassElement.value;
+				delPassElement.value = '';
+				try {
+					const result = await deleteMessages(targetUname, delPass);
+					Notification('Message Action', `${result.detail}`, 2, 'profile');
+				} catch (error) {
+					Notification('Message Action', `Failed To Delete Messages: ${error.detail}`, 2, 'alert');
+				} finally {
+					delPrivMsgModal.style.display = 'none';
+					confirmDelPrivMsgBtn.removeEventListener('click', confirmDeleteHandler);
+				}
+			};
+			confirmDelPrivMsgBtn.addEventListener('click', confirmDeleteHandler);
+			
 			break ;
 	}
 }

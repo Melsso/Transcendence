@@ -97,6 +97,17 @@
                     <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="Friends-header" data-bs-parent="#friend-accordion">
                         <div class="accordion-body" id="friends-list">
                         </div>
+                        <div class="modal-delete" id="deletePrvMsgModal">
+                            <div class="modal-content-delete">
+                                <h3>Are you sure you want to delete your private messages with this user?</h3>
+                                <p>Please enter your password to confirm.</p>
+                                <input type="password" id="confirmPassPrvMsgField" placeholder="Enter your password" required>
+                                <div class="modal-buttons-delete">
+                                    <button id="cancelPrvMsgBtn" class="btn btn-secondary">Cancel</button>
+                                    <button id="confirmPrvMsgBtn" class="btn btn-danger">Delete</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

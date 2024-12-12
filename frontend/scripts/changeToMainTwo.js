@@ -827,7 +827,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	const delGamesModal = document.getElementById('deleteGamesModal');
 	const confirmDelGamesBtn = document.getElementById('confirmDeleteGames');
 	const cancelDelGamesBtn = document.getElementById('cancelDeleteGames');
-
+	
+	const delPrivMsgModal = document.getElementById('deletePrvMsgModal');
+	
 	const changePolicyBtn = document.getElementById('change-privacy-settings-btn');
 	const changePolicyModal = document.getElementById('changePrivacyModal');
 	const confirmPolicyChange = document.getElementById('confirmPolicyChange');
@@ -875,6 +877,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		leaving();
 		Habess();
 		deleteModal.style.display = 'none';
+		delPrivMsgModal.style.display = 'none';
 		delMsgModal.style.display = 'none';
 		delGamesModal.style.display = 'none';
 		changePolicyModal.style.display = 'none';
