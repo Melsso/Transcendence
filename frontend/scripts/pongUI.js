@@ -227,13 +227,12 @@ document.addEventListener('keydown', (event) => {
 
 function didItHit(){
 	if (wasHit === true){
-		player2.wasHit++;
 		return;
 	}
 	if (block.visible === true &&
 		(block.x >= aiPaddle.x - aiPaddle.width - 20) &&
 		(block.y >= aiPaddle.y) &&
-		(block.y <= aiPaddle.y + aiPaddle.height)) 
+		(block.y <= aiPaddle.y + aiPaddle.height))
 		{
 			block.visible = false;
 			aiPaddle.height /= 2;
@@ -254,7 +253,6 @@ function	AttackPrediction(){
 window.AttackPrediction = AttackPrediction;
 function didAiHit() {
 	if (aiDidHit === true){
-		player1.gothit++;
 		return;
 	}
 	if (aiblock.visible === true &&
@@ -263,8 +261,8 @@ function didAiHit() {
 		(aiblock.y <= playerPaddle.y + playerPaddle.height)) {
 		aiblock.visible = false;
 		playerPaddle.height = playerPaddle.height / 2;
-		player1.gothit++;
 		aiDidHit = true;
+		player1.gothit++;
 	}
 }
 window.didAiHit = didAiHit;
@@ -614,7 +612,8 @@ function	expcounter(){
 
 function gameOverScreen(){
 	expcounter();
-	if (player1.score >= 1){
+	if (player1.score >= 5){
+		fullTime = elapsedTime;
 		GOscreen = true;
 		endGameStats(player1, player2);
 		showGameOverScreen();
@@ -635,8 +634,9 @@ function gameOverScreen(){
 		gameover = true;
 		isingame = false;
 	}
-	else if (player2.score >= 1){
+	else if (player2.score >= 5){
 		endGameStats(player2, player1);
+		fullTime = elapsedTime;
 		showGameOverScreen();
 		GOscreen = true;
 		ctx.font = '50px "PixelFont", sans-serif';

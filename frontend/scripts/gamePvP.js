@@ -6,6 +6,8 @@ import { endGameStats } from "./pong.js";
 
 const REFERENCE_WIDTH = 1920;
 let resizeGame = false;
+let goldenExperience = 0;
+let goldenExperience2 = 0;
 let gamer1;
 let gamer2;
 let up1 = true;
@@ -140,6 +142,8 @@ export async function gameOScreenpvp() {
 
 function drawPlayerPaddle1(x, y, width, height) {
 	ctxx.fillStyle = 'white';
+	if (goldenExperience)
+		ctxx.fillStyle = 'gold';
 	ctxx.fillRect(x, y, width, height);
 	if (block1.visible && playerPaddle1.Att === 1 && p1shooting === false) {
 		ctxx.fillStyle = 'blue';	
@@ -168,6 +172,8 @@ document.addEventListener('keydown', function launch(event) {
 
 function drawPlayerPaddle2(x, y, width, height) {
 	ctxx.fillStyle = 'white';
+	if(goldenExperience2)
+		ctxx.fillStyle = 'gold';
 	ctxx.fillRect(x, y, width, height);
 	if (block2.visible && playerPaddle2.Att === 1 && p2shooting === false) {
 		ctxx.fillStyle = 'blue';
@@ -273,6 +279,8 @@ export function newRound() {
 	Attackpvp.visible = false;
 	Bigpadpvp.visible = false;
 	last_hit = null;
+	goldenExperience = 0;
+	goldenExperience2 = 0;
 	playerPaddle1.Att = 0;
 	playerPaddle2.Att = 0;
 	block1.visible = false;
@@ -329,11 +337,14 @@ function Trackballinspeed() {
 					sphereinspeed = false;
 					SpeedCounting++;
 					if (last_hit === 1) {
-						if (window.userData.username === playerPaddle1.username)
+						if (window.userData.username === playerPaddle1.username){
 							sendBuffState('speed', last_hit);
+							goldenExperience = 1;
+						}
 					} else if (last_hit === 2) {
 						if (window.userData.username === playerPaddle2.username) {
 							sendBuffState('speed', last_hit);
+							goldenExperience2 = 1;
 						}
 					}
 				}

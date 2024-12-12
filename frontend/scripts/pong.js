@@ -20,6 +20,7 @@ let paddleWidth;
 let paddleHeight;
 let ballRadius;
 let NOgame = false;
+let tmp = true;
 window.starter = false;
 window.gameover = false;
 document.getElementById('PONG-button').addEventListener('click', function () {
@@ -269,7 +270,7 @@ window.fullTime = null;
 window.LongestRound = null;
 window.ShortestRound = 2000;
 function restartGame(difficulty) {
-    fullTime += elapsedTime;
+    // fullTime += elapsedTime;
     if (elapsedTime > LongestRound)
         LongestRound = elapsedTime;
     if (elapsedTime < ShortestRound)
@@ -383,8 +384,9 @@ function moveBall() {
         switchOffAI();
     }
 
-    if ((ball.x - ball.radius < ball.radius / 2 || ball.x + ball.radius >= canvas.width + ball.radius / 6) && fullTime >= 0)
+    if ((ball.x - ball.radius < ball.radius / 2 || ball.x + ball.radius >= canvas.width + ball.radius / 6) && fullTime >= 0){
         newRound();
+    }
 }
 window.moveBall = moveBall;
 
@@ -407,15 +409,19 @@ function restartRound() {
 window.restartRound = restartRound;
 
 function newRound(){
-    EL = elapsedTime;
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
     if (ball.x - ball.radius <= 0) {
         player2.score++;
-        if (player2.score === 1){
+        if (player2.score === 5){
             gameover = true;
             return;
         }
         stopGameLoop();
+        if(tmp){
+            fullTime += elapsedTime;
+            tmp = false;
+        }
+        console.log("ful time =", fullTime);
         playerPaddle.hasanattack = 0;
         aiPaddle.hasanattack = 0;
         block.visible = false;
@@ -433,17 +439,23 @@ function newRound(){
             switchOnAI();
             restartRound();
             restartGame();
+            tmp = true;
             setbackoriginalvalues();
         });
         return; 
     }
     if (ball.x + ball.radius >= canvas.width) {
         player1.score++;
-        if (player1.score === 1){
+        if (player1.score === 5){
             gameover = true;
             return;
         }
         stopGameLoop();
+        if (tmp){
+            fullTime += elapsedTime;
+            tmp = false;
+        }
+        console.log("full Time =", fullTime);
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
@@ -455,6 +467,7 @@ function newRound(){
             switchOnAI();
             restartRound();
             restartGame();
+            tmp = true;
             setbackoriginalvalues();
         });
         return; 
@@ -589,13 +602,6 @@ function drawMap() {
 
     window.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
-    // window.ctx.lineTo(canvas.width, canvas.height);
-    // window.ctx.lineTo(0, canvas.height);
-    // window.ctx.closePath();
-    // window.ctx.fill();
-
-
     window.ctx.fillStyle = '#1b2e1b';
     window.ctx.beginPath();
     window.ctx.moveTo(0, groundHeightArray[0]);
@@ -683,6 +689,7 @@ function drawRetroTrianglePattern() {
 window.drawRetroTrianglePattern = drawRetroTrianglePattern;
 
 function gameLoop(difficulty, setting) {
+    LastpaddletoHit = player1.name;
 	if (starter === false) {
         window.player1.name = window.userData.username;
 		canvas.width = canvas.clientWidth;
@@ -708,30 +715,33 @@ function gameLoop(difficulty, setting) {
     ai_menu.style.display = 'none';
     elapsedTime = Math.floor((Date.now() - ResetTime) / 1000);
     if (setting.mode === 'Buff Mode'){ 
-        if (elapsedTime === storedRandomNumber) {
+        if (elapsedTime === 3) {
             Attack.visible = true;
             Attack.y = canvas.height - Attack.height;
-            randomizeAttackX();
+            Attack.x = canvas.width / 2;
+            // randomizeAttackX();
         }
         if (Attack.visible) {
             moveAttackbuff();
         }
         if (AttackCount === 2)
             Attack.visible = false;
-        if (elapsedTime === storedRandomNumber + 10) {
+        if (elapsedTime === 13) {
             buff.visible = true;
             buff.y = canvas.height - buff.height;
-            randomizeBuffX();
+            buff.x = canvas.width / 2;
+            // randomizeBuffX();
         }
         if (buff.visible) {
             movebuff();
         }
         if (crossCount === 2)
             buff.visible = false;
-        if (elapsedTime === storedRandomNumber + 20) {
+        if (elapsedTime === 23) {
             PaddleBigger.visible = true;
             PaddleBigger.y = canvas.height - PaddleBigger.height;
-            randomizePadBigX();
+            PaddleBigger.x = canvas.width / 2;
+            // randomizePadBigX();
         }
         if (PaddleBigger.visible) {
             movePadBigbuff();
@@ -762,6 +772,7 @@ function gameLoop(difficulty, setting) {
     drawScoreBoard();
     drawTimer();
     gameOverScreen();
+    calculateAverageRoundTime();
     let frameID = requestAnimationFrame(() => gameLoop(difficulty, setting));
     animationFrameIDs.push(frameID);
     if (gameover) {
@@ -873,7 +884,8 @@ ai_hard.addEventListener('click', function(event) {
 
 function    calculateAverageRoundTime(){
     let endScore = player1.score + player2.score;
-    let art = fullTime / endScore;
+    let art = (fullTime / 1000) / endScore;
+    // console.log(fullTime);
     return art;
 }
 
@@ -933,17 +945,17 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null) 
     // // Fill in player stats
     // data.playerStats1.score = player1.score; //done
     // data.playerStats1.buffs_taken = player1.Btaken; //done
-    // data.playerStats1.attack_acc = player1AttackAcc;
+    // data.playerStats1.attack_acc = playerpaddle1.ABR / playerpaddle2.gothit;
 
     // data.playerStats2.score = player2.score; // done
     // data.playerStats2.buffs_taken = player2.Btaken; // done
-    // data.playerStats2.attack_acc = player2AttackAcc;
+    // data.playerStats2.attack_acc = playerpaddle2.ABR / playerpaddle1.gothit; // done
 
     // // Fill in game stats
-    // data.gameStats.average_round_time = calculateAverageRoundTime(); // done
+    data.gameStats.average_round_time = calculateAverageRoundTime(); // done
     // data.gameStats.fastest_round = ShortestRound; // done
     // data.gameStats.longest_round = LongestRound; // done
-    // data.gameStats.map_played = 1; // Replace with actual map played
+    // data.gameStats.map_played = setting.map ; // Replace with actual map played
     // data.gameStats.full_time = fullTime; // done
     // data.gameStats.winner = player1.score > player2.score ? 1 : 2; // should work, to be tested //
 
