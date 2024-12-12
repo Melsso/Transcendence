@@ -108,12 +108,26 @@ class FriendRequestManager(generics.ListAPIView):
         target_user = get_object_or_404(User, id=target_id)
         if target_user is None:
             return Response({'status':'error', 'detail':'No Such User'}, status=HTTP_400_BAD_REQUEST)
+        
         existing_request = Friend.objects.filter(user=user, friend=target_user).first()
         if existing_request:
-            return Response({'status':'error', 'detail':'Already Sent A Request'}, status=HTTP_400_BAD_REQUEST)
+            if existing_request.status == 'PENDING':
+                return Response({'status':'error', 'detail':'Already Sent A Request'}, status=HTTP_400_BAD_REQUEST)
+            elif existing_request.status == 'BLOCKED':
+                return Response({'status':'error', 'detail':'You Blocked This User, Please Unblock Them First.'}, status=HTTP_400_BAD_REQUEST)
+            elif existing_request.status == 'FRIENDS':
+                return Response({'status':'error', 'detail':'You Are Already Friends!'}, status=HTTP_400_BAD_REQUEST)
+        
         existing_incoming_request = Friend.objects.filter(user=target_user, friend=user).first()
         if existing_incoming_request:
-            return Response({'status':'error', 'detail':'Maybe Check Your Friend Requests List?', 'flag':'nonError'}, status=HTTP_400_BAD_REQUEST)
+            
+            if existing_incoming_request.status == 'PENDING':
+                return Response({'status':'error', 'detail':'Maybe Check Your Friend Requests List?', 'flag':'nonError'}, status=HTTP_400_BAD_REQUEST)
+            elif existing_incoming_request.status == 'BLOCKED':
+                return Response({'status':'error', 'detail':'You Can Not Add This User.'}, status=HTTP_400_BAD_REQUEST)
+            elif existing_incoming_request.status == 'FRIENDS':
+                return Response({'status':'error', 'detail':'You Are Already Friends!'}, status=HTTP_400_BAD_REQUEST)
+                
         friend_request = Friend.objects.create(user=user, friend=target_user)
         return Response({'status':'success', 'detail': 'Friend Request Sent!'}, status=HTTP_201_CREATED)
     
