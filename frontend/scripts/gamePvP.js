@@ -4,7 +4,6 @@ import { sendGameState, sendBuffState } from "./gameSystem.js";
 import { handleSend } from "./chat.js";
 import { endGameStats } from "./pong.js";
 
-const REFERENCE_WIDTH = 1920;
 let resizeGame = false;
 let goldenExperience = 0;
 let goldenExperience2 = 0;
@@ -33,7 +32,6 @@ let BuffFlag = 0;
 let sy;
 let	timerpvp;
 let	reseTpvp;
-const REFERENCE_HEIGHT = 1080;
 let upPressed = false;
 let animation =  [];
 let downPressed = false;
@@ -45,7 +43,8 @@ let Bigpadpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let sphere = { x: 0, y: 0, radius: 0, dx: 0, dy: 0, speed: 0 };
 let block1 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
 let block2 = {x: 0, y: 0, width: 0, height: 0, speed: 0, visible: false};
-
+let fullTime = null;
+var full_stats = {'p1_attack':0, 'p2_attack':0, 'p1_speed':0, 'p2_speed':0, 'p1_shield':0, 'p2_shield':0, 'p1_hit':0, 'p2_hit': 0};
 
 function drawScore(pvp1, pvp2) {
 
@@ -74,25 +73,52 @@ function drawScore(pvp1, pvp2) {
 export async function gameOScreenpvp() {
 	var winner;
 	var loser;
-	var w_score;
-	var l_score;
+	var game_data = {'score1':0, 'score2':0, 'attack_accuracy': 0.0, 'game_duration':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
 	if (sphere.x >= canvass.width - (playerPaddle2.width * 2)){
 		gamer1.score++;
 		winner = gamer1.username;
-		w_score = gamer1.score;
 		loser = gamer2.username;
-		l_score = gamer2.score;
 	}
 	else{
 		gamer2.score++;
 		winner = gamer2.username;
 		loser = gamer1.username;
-		l_score = gamer1.score;
-		w_score = gamer2.score;
 	}
+	// settings doesnt exist, figure out how to get it
+	// variables ABR BBR SBR GOTHIT all dont exist here, logic should be exactly like this so it doesnt break backend,
+	// find way to fetch this data and append it to playerPaddle or whatever and use this logic bellow to this
+	if (settings.mode == 'Default Mode') {
+		game_data['attack_accuracy'] = null;
+		game_data['attack_powerup'] = null;
+		game_data['shield_powerup'] = null;
+		game_data['speed_powerup'] = null;
+	}
+	if (gamer1.username === window.userData.username) {
+		game_data['score1'] = gamer1.score;
+		game_data['score2'] = gamer2.score;
+		game_data['game_duration'] = fullTime;
+		if (settings.mode == 'Buff Mode') {
+			game_data['attack_accuracy'] = playerPaddle2.gothit / playerPaddle1.ABR;
+			game_data['attack_powerup'] = playerPaddle1.ABR;
+			game_data['shield_powerup'] = playerPaddle1.BBR;
+			game_data['speed_powerup'] = playerPaddle1.SBR;
+		}
+	} else {
+		game_data['score1'] = gamer2.score;
+		game_data['score2'] = gamer1.score;
+		game_data['game_duration'] = fullTime;
+		if (settings.mode == 'Buff Mode') {
+			game_data['attack_accuracy'] = playerPaddle1.gothit / playerPaddle2.ABR;
+			game_data['attack_powerup'] = playerPaddle2.ABR;
+			game_data['shield_powerup'] = playerPaddle2.BBR;
+			game_data['speed_powerup'] = playerPaddle2.SBR;	
+		}
+	}
+	
 	var w = [];
 	resizeGame = false;
-	await endGameStats({'name':winner, 'score':w_score}, {'name':loser, 'score':l_score}, false, window.userData.r_name);
+
+	await endGameStats({'name':winner}, {'name':loser}, false, window.userData.r_name, game_data);
 	if (window.userData.username === winner) {
 		w.font = '24px "PixelFont", sans-serif';
 		w.fillStyle = 'green';
@@ -105,7 +131,7 @@ export async function gameOScreenpvp() {
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	ctxx.fillStyle = '#000';
 	ctxx.fillRect(0, 0, canvass.width, canvass.height);
-	const	font_size = canvass.width * 0.15;
+	const font_size = canvass.width * 0.15;
 	ctxx.font = `${font_size}px "PixelFont", sans-serif`;
 	ctxx.fillStyle = '#ffffff';
 	ctxx.textAlign = 'center';
@@ -113,7 +139,7 @@ export async function gameOScreenpvp() {
 	if (gamer1.score >= 7){
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#FFD700';
-		ctxx.fillText(`${gamer1.usernamze}: ${gamer1.score}`, canvass.width / 3, canvass.height / 2);
+		ctxx.fillText(`${gamer1.username}: ${gamer1.score}`, canvass.width / 3, canvass.height / 2);
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#ffffff';
 		ctxx.fillText(`${gamer2.username}: ${gamer2.score}`, canvass.width / 1.5, canvass.height / 2);
@@ -289,6 +315,7 @@ export function newRound() {
 	sphere.radius = widthScale / 100;
 	sx = (widthScale / 2);
 	sy = (heightScale / 2);
+	fullTime += reseTpvp;
 	// reseTpvp = Date.now();
 }
 
@@ -749,7 +776,6 @@ export function drawAll(pvp1, pvp2, settings) {
 				playerPaddle2.username = pvp2.username;
 				playingPvP = true;
 				pvp1.set = true;
-
 		}
 	}
 	else {
@@ -774,7 +800,7 @@ export function drawAll(pvp1, pvp2, settings) {
 	drawScore(pvp1, pvp2);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
  	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
-	 if (settings.mode == 'Buff Mode'){
+	if (settings.mode == 'Buff Mode') {
 		TrackballinBigpad();
 		Trackballinattack();
 		Trackballinspeed();

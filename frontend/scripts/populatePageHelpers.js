@@ -27,13 +27,13 @@ function createChart(ctx, label, data, chartType) {
 					x: {
 						 title: {
 							  display: true,
-							  text: 'Number of Games'
+							  text: 'Number Of Games'
 						 }
 					},
 					y: {
 						 title: {
 							  display: true,
-							  text: 'Number of Wins'
+							  text: 'Number Of Wins'
 						 },
 						 beginAtZero: true
 					}
@@ -144,6 +144,12 @@ export function computeStats(games) {
         pveLosses: 0,
         pvpWins: 0,
         pvpLosses: 0,
+        TotalBuffGames: 0,
+        TotalAttack: 0,
+        TotalSpeed: 0,
+        TotalShield: 0,
+        AttackAccuracy: 0.0,
+        TotalDuration: 0.0,
         mapStatistics: {
             'Map 1': { wins: 0, losses: 0 },
             'Map 2': { wins: 0, losses: 0 },
@@ -158,14 +164,16 @@ export function computeStats(games) {
             wins: []
         }
     };
-    let gameCount = 0;
-
+    var gameCount = 0;
     games.forEach(game => {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
+        console.log('ALLY: ', ally);
+        console.log('EENEMY: ', enemy);
+        
         if (ally.is_forfeit || enemy.is_forfeit)
             return;
-        const isPve = enemy.user.username.includes('AI');
+        const isPve = enemy.user.username.includes('Easy AI') || enemy.user.username.includes('Hard AI') || enemy.user.username.includes('Medium AI');
         gameCount++;
         if (ally.is_win) {
             if (isPve) {
@@ -184,6 +192,13 @@ export function computeStats(games) {
                 stats.pvpWinLossData.wins.push(stats.pvpWinLossData.wins.length > 0 ? stats.pvpWinLossData.wins[stats.pvpWinLossData.wins.length - 1] : 0);
             }
         }
+        if (ally.attack_powerup != null)
+            stats.TotalBuffGames++;
+        stats.TotalAttack += (ally.attack_powerup || 0);
+        stats.AttackAccuracy += (ally.attack_accuracy || 0);
+        stats.TotalSpeed += (ally.speed_powerup || 0);
+        stats.TotalShield += (ally.shield_powerup || 0);
+        stats.TotalDuration += ally.game_duration;
         if (isPve) {
             stats.pveWinLossData.games.push(gameCount);
         } else {
@@ -204,8 +219,7 @@ function loadStats(games) {
     const totalWins = stats.pveWins + stats.pvpWins;
     const totalLosses= stats.pveLosses + stats.pvpLosses;
     const totalWinRate = totalWins + totalLosses > 0 ? (totalWins / (totalWins + totalLosses)) * 100 : 0;
-    const attack1Accuracy = 70;
-    const attack2Accuracy = 65;
+    const attackAccuracy = stats.AttackAccuracy / stats.TotalBuffGames;
     const map1WinRate = stats.mapStatistics['Map 1'].wins + stats.mapStatistics['Map 1'].losses > 0
         ? (stats.mapStatistics['Map 1'].wins / (stats.mapStatistics['Map 1'].wins + stats.mapStatistics['Map 1'].losses)) * 100 : 0;
     const map2WinRate = stats.mapStatistics['Map 2'].wins + stats.mapStatistics['Map 2'].losses > 0
@@ -227,13 +241,21 @@ function loadStats(games) {
 	avgSuccessHistoryElem.style.width = totalWinRate + '%';
 	avgSuccessHistoryElem.textContent = totalWinRate + '%';
 
-    const attack1AccuracyElem = document.getElementById('attack1-accuracy');
-	attack1AccuracyElem.style.width = attack1Accuracy + '%';
-	attack1AccuracyElem.textContent = attack1Accuracy + '%';
+    const attackAccuracyElem = document.getElementById('attack-accuracy');
+	attackAccuracyElem.style.width = attackAccuracy + '%';
+	attackAccuracyElem.textContent = attackAccuracy + '%';
 
-    const attack2AccuracyElem = document.getElementById('attack2-accuracy');
-	attack2AccuracyElem.style.width = attack2Accuracy + '%';
-	attack2AccuracyElem.textContent = attack2Accuracy + '%';
+    const totalAttackElem = document.getElementById('total-attack');
+    totalAttackElem.textContent = 'Number Of Picked Up Attack Buffs: ' + stats.TotalAttack;
+
+    const totalShieldElem = document.getElementById('total-shield');
+    totalShieldElem.textContent = 'Number Of Picked Up Shield Buffs: ' + stats.TotalShield;
+
+    const totalSpeedElem = document.getElementById('total-speed');
+    totalSpeedElem.textContent = 'Number Of Picked Up Speed Buffs: ' + stats.TotalSpeed;
+    
+    const totalMatchDurationElem = document.getElementById('matches_duration');
+	totalMatchDurationElem.textContent = 'Total Minutes Played: ' + stats.TotalDuration;
 
     const map1WinrateElem = document.getElementById('map1-winrate');
 	map1WinrateElem.style.width = map1WinRate + '%';
@@ -248,8 +270,17 @@ function loadStats(games) {
 	map3WinrateElem.textContent = map3WinRate + '%';
 
     const mostUsedPowerupElem = document.getElementById('most-used-powerup');
-	mostUsedPowerupElem.style.width = 80 + '%';
-	mostUsedPowerupElem.textContent = "Bullet";
+    var favoritePowerup = {'name':'', 'value':0};
+    const max = Math.max(stats.TotalAttack, stats.TotalShield, stats.TotalSpeed);
+    favoritePowerup.value = max;
+    if (stats.TotalAttack === max)
+        favoritePowerup.name = 'Bullet';
+    else if (stats.TotalShield === max)
+        favoritePowerup.name = 'Shield';
+    else
+        favoritePowerup.name = 'Speed';
+	mostUsedPowerupElem.style.width = favoritePowerup.value + '%';
+	mostUsedPowerupElem.textContent = favoritePowerup.name;
 
 	createChart(document.getElementById('winLossChartPVE').getContext('2d'), 'PvE Win-Loss', stats.pveWinLossData, 'pve');
 	createChart(document.getElementById('winLossChartPVP').getContext('2d'), 'PvP Win-Loss', stats.pvpWinLossData, 'pvp');

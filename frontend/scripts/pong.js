@@ -421,7 +421,6 @@ function newRound(){
             fullTime += elapsedTime;
             tmp = false;
         }
-        console.log("ful time =", fullTime);
         playerPaddle.hasanattack = 0;
         aiPaddle.hasanattack = 0;
         block.visible = false;
@@ -455,7 +454,6 @@ function newRound(){
             fullTime += elapsedTime;
             tmp = false;
         }
-        console.log("full Time =", fullTime);
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
         ball.dx *= -1;
@@ -901,10 +899,11 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null, 
     else
         exp = 250;
     
-    game_data.map = setting.map;
     if ((forfeit != null && forfeit === true) || game_data === null)
-        game_data = {'score1':0, 'score2':0, 'game_duration':0.0, 'attack_accuracy':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
+        game_data = {'score1':0, 'score2':0, 'game_duration':0.0, 'attack_accuracy':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0, 'map': setting.map};
     try {
+        game_data.map = setting.map;
+        console.log("GD: ", game_data);
         const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit, room_name);
     } catch (error) {
         Notification('Game Action', `Error: ${error}`, 2, 'alert');

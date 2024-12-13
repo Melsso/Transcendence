@@ -615,7 +615,7 @@ function gameOverScreen(){
 	if (player1.score >= 5){
 		fullTime = elapsedTime;
 		GOscreen = true;
-		game_data['game_duration'] = ;
+		game_data['game_duration'] = fullTime / 1000 / 60;
 		game_data['score1'] = player1.score;
 		game_data['score2'] = player2.score;
 		game_data['attack_accuracy'] = player2.gothit / player1.ABR;
@@ -644,7 +644,7 @@ function gameOverScreen(){
 	else if (player2.score >= 5){
 		game_data['score1'] = player2.score;
 		game_data['score2'] = player1.score;
-		game_data['game_duration'] = ;
+		game_data['game_duration'] = fullTime / 1000 / 60;
 		game_data['attack_accuracy'] = player1.gothit / player2.ABR;
 		game_data['attack_powerup'] = player2.ABR;
         game_data['shield_powerup'] = player2.BBR;
