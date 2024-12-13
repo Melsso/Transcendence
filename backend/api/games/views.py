@@ -79,7 +79,8 @@ class GameResultView(generics.CreateAPIView):
         loser = request.data.get('loser')
         winner_uname = request.data.get('winner')
         forfeit = request.data.get('forfeit')
-
+        logger.warning("ZEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+        logger.warning(stats)
         if forfeit is None:
             forfeit = False
         user = request.user
@@ -99,7 +100,7 @@ class GameResultView(generics.CreateAPIView):
             stats['attack_powerup'] = 0
             stats['shield_powerup'] = 0
             stats['speed_powerup'] = 0
-        stats['game_duration'] = stats['game_duration'] / 1000 / 60
+        stats['game_duration'] = stats['game_duration']
         if op.username in ('Easy AI', 'Medium AI', 'Hard AI'):
             game_id = self.generate_game_id(user.id, op.id)
             PongGame.objects.create(

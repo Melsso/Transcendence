@@ -26,8 +26,9 @@ TODO:
 - q manager needs to be looped
 - backend loads (still in question)
 - when you delete messages, they get deleted as they should in the backend and db, however since we're loading them for the user manually they stay there until refresh
-- log stats 
-- score bug, no matter who scores counts on one side only
+- decide what to do with ai name
+- log stats
+- Left notes in gamePvP.js, the game result wont work/be saved until we address those problems
 
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.

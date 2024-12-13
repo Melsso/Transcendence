@@ -36,11 +36,11 @@ class Game(models.Model):
 class PongGame(Game):
     score = models.IntegerField(default=0)
     map_name = models.TextField()
-    attack_accuracy = models.FloatField(default=0.0)
+    attack_accuracy = models.FloatField(default=0.0, null=True)
     game_duration = models.FloatField(default=0.0)
-    attack_powerup = models.IntegerField(default=0)
-    shield_powerup = models.IntegerField(default=0)
-    speed_powerup = models.IntegerField(default=0)
+    attack_powerup = models.IntegerField(default=0, null=True)
+    shield_powerup = models.IntegerField(default=0, null=True)
+    speed_powerup = models.IntegerField(default=0, null=True)
     #add speed powerup
 
     class Meta:
