@@ -99,6 +99,7 @@ class GameResultView(generics.CreateAPIView):
             stats['attack_powerup'] = 0
             stats['shield_powerup'] = 0
             stats['speed_powerup'] = 0
+        stats['game_duration'] = stats['game_duration'] / 1000 / 60
         if op.username in ('Easy AI', 'Medium AI', 'Hard AI'):
             game_id = self.generate_game_id(user.id, op.id)
             PongGame.objects.create(

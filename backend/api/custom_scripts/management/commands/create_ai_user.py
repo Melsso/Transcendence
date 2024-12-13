@@ -144,32 +144,52 @@ class Command(BaseCommand):
                 {
                     'player': 'Sofiane',
                     'opponent': 'Hard AI',
-                    'score': 15,
+                    'score': 7,
                     'map_name': 'Map 1',
-                    'is_win': True
+                    'is_win': True,
+                    'attack_powerup': 2,
+                    'shield_powerup': 1,
+                    'speed_powerup': 4,
+                    'game_duration': 3,
+                    'attack_accuracy': 50,
                 },
                 {
                     'player': 'Hard AI',
                     'opponent': 'Sofiane',
-                    'score': 13,
+                    'score': 2,
                     'map_name': 'Map 1',
-                    'is_win': False
+                    'is_win': False,
+                    'attack_powerup': 4,
+                    'shield_powerup': 3,
+                    'speed_powerup': 2,
+                    'game_duration': 3,
+                    'attack_accuracy': 25,
                 },
             ],
             [
                 {
                     'player': 'Rayan',
                     'opponent': 'Sadoon',
-                    'score': 16,
+                    'score': 7,
                     'map_name': 'Map 2',
-                    'is_win': True
+                    'is_win': True,
+                    'attack_powerup': 1,
+                    'shield_powerup': 2,
+                    'speed_powerup': 6,
+                    'game_duration': 5,
+                    'attack_accuracy': 100,
                 },
                 {
                     'player': 'Sadoon',
                     'opponent': 'Rayan',
-                    'score': 15,
+                    'score': 6,
                     'map_name': 'Map 2',
-                    'is_win': False
+                    'is_win': False,
+                    'attack_powerup': 3,
+                    'shield_powerup': 5,
+                    'speed_powerup': 6,
+                    'game_duration': 5,
+                    'attack_accuracy': 66,
                 }
             ]
         ]
@@ -188,10 +208,13 @@ class Command(BaseCommand):
                 user=player,
                 opponent=opponent,
                 score=player_info['score'],
-                attack_accuracy=random.randint(50, 100),
                 map_name=player_info['map_name'],
-                shield_powerup=random.randint(0, 3),
-                is_win=player_info['is_win']
+                is_win=player_info['is_win'],
+                attack_powerup=player_info['attack_powerup'],
+                shield_powerup=player_info['shield_powerup'],
+                speed_powerup=player_info['speed_powerup'],
+                game_duration=player_info['game_duration'],
+                attack_accuracy=player_info['attack_accuracy'],
             )
             self.stdout.write(self.style.SUCCESS(f'Created game record for player "{player.username}"'))
 
