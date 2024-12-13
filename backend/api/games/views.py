@@ -94,19 +94,22 @@ class GameResultView(generics.CreateAPIView):
             user.bar_exp_game1 = 0
         user.save()
         if forfeit:
-            stats['attack_accuracy'] = 0
+            stats['attack_accuracy'] = 0.0
+            stats['game_duration'] = 0.0
+            stats['attack_powerup'] = 0
             stats['shield_powerup'] = 0
             stats['speed_powerup'] = 0
-        # update this condition to something more robust
-        if 'AI' in op.username:
+        if op.username in ('Easy AI', 'Medium AI', 'Hard AI'):
             game_id = self.generate_game_id(user.id, op.id)
             PongGame.objects.create(
                 game_id=game_id,
                 user=op,
                 opponent=user,
                 score=stats['score2'],
-                attack_accuracy=stats['attack_accuracy'],
                 map_name=stats['map'],
+                attack_accuracy=stats['attack_accuracy'],
+                game_duration=stats['game_duration'],
+                attack_powerup=stats['attack_powerup'],
                 shield_powerup=stats['shield_powerup'],
                 speed_powerup=stats['speed_powerup'],
                 is_win= not win,
@@ -118,8 +121,10 @@ class GameResultView(generics.CreateAPIView):
             user=user,
             opponent=op,
             score=stats['score1'],
-            attack_accuracy=stats['attack_accuracy'],
             map_name=stats['map'],
+            attack_accuracy=stats['attack_accuracy'],
+            game_duration=stats['game_duration'],
+            attack_powerup=stats['attack_powerup'],
             shield_powerup=stats['shield_powerup'],
             speed_powerup=stats['speed_powerup'],
             is_win= win,
