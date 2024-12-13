@@ -1,5 +1,5 @@
-window.player1 = {name: '', icon: '../frontend/assets/logo.jpg',  score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
-window.player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0, aim: 0, Btaken: 0, ABR: 0, gothit: 0};
+window.player1 = {name: '', icon: '../frontend/assets/logo.jpg',  score: 0, aim: 0, Btaken: 0, BBR: 0 , SBR: 0, ABR: 0, gothit: 0};
+window.player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0, aim: 0, Btaken: 0, BBR: 0 , SBR: 0, ABR: 0, gothit: 0};
 import { endGameStats } from "./pong.js";
 // const play_again = document.getElementById('playAgain');
 const	change_difficulty = document.getElementById('diffy');
@@ -378,10 +378,14 @@ function drawScoreBoard() {
 window.drawScoreBoard = drawScoreBoard;
 
 function giveSpeedBuff(){
-	if (LastpaddletoHit === player1.name)
+	if (LastpaddletoHit === player1.name){
 		playerPaddle.dy = 12;
-	else if (LastpaddletoHit === player2.name)
+		player1.SBR += 1;
+	}
+	else if (LastpaddletoHit === player2.name){
 		aiPaddle.dy = 12;
+		player2.SBR += 1;
+	}
 	if (playerPaddle.dy === 12 && LastpaddletoHit === player1.name)
 		playerPaddle.dy = 12;
 	if (playerPaddle.dy === 12 && LastpaddletoHit === player2.name)
@@ -411,10 +415,12 @@ function givePadBigBuff(){
 	if (LastpaddletoHit === player1.name && doubled != true){
 		playerPaddle.height = heightx2;
 		doubled = true;
+		player1.BBR += 1;
 	}
 	else if (LastpaddletoHit === player2.name && aidoubled != true){
 		aiPaddle.height = aiheightx2;
 		aidoubled = true;
+		player2.BBR += 1;
 	}
 }
 window.givePadBigBuff = givePadBigBuff;
@@ -593,29 +599,30 @@ function moveAIPaddleEasy() {
 window.moveAIPaddleEasy = moveAIPaddleEasy;
 window.moveAIPaddlemid = moveAIPaddlemid;
 window.moveAIPaddleHard = moveAIPaddleHard;
-let howmuchgained = null;
-let howmuchlost = null;
+let exp = null;
 function	expcounter(){
-	if (player2.name === 'Hard AI'){
-		howmuchgained = 250;
-		howmuchlost = 100;
-	}
-	else if (player2.name === 'Medium AI'){
-		howmuchgained = 100;
-		howmuchlost = 50;
-	}
-	else if (player2.name === 'Easy AI'){
-		howmuchgained = 50;
-		howmuchlost = 25;
-	}
+	if (player2.name === 'Hard AI')
+		exp = 250;
+	else if (player2.name === 'Medium AI')
+		exp = 100;
+	else if (player2.name === 'Easy AI')
+		exp = 50;
 }
 
 function gameOverScreen(){
+	var game_data = {'score1':0, 'score2':0, 'attack_accuracy': 0.0, 'game_duration':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
 	expcounter();
 	if (player1.score >= 5){
 		fullTime = elapsedTime;
 		GOscreen = true;
-		endGameStats(player1, player2);
+		game_data['game_duration'] = ;
+		game_data['score1'] = player1.score;
+		game_data['score2'] = player2.score;
+		game_data['attack_accuracy'] = player2.gothit / player1.ABR;
+		game_data['attack_powerup'] = player1.ABR;
+        game_data['shield_powerup'] = player1.BBR;
+        game_data['speed_powerup'] = player1.SBR;
+		endGameStats(player1, player2, null, null, game_data);
 		showGameOverScreen();
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
@@ -629,13 +636,20 @@ function gameOverScreen(){
 		player1.score = 0;
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = '#FFD700';
-		ctx.fillText(`You won: ${howmuchgained} exp`, canvas.width / 2, canvas.height / 2 + 100);
+		ctx.fillText(`You won: ${exp} exp`, canvas.width / 2, canvas.height / 2 + 100);
 		player1.score = 0;
 		gameover = true;
 		isingame = false;
 	}
 	else if (player2.score >= 5){
-		endGameStats(player2, player1);
+		game_data['score1'] = player2.score;
+		game_data['score2'] = player1.score;
+		game_data['game_duration'] = ;
+		game_data['attack_accuracy'] = player1.gothit / player2.ABR;
+		game_data['attack_powerup'] = player2.ABR;
+        game_data['shield_powerup'] = player2.BBR;
+        game_data['speed_powerup'] = player2.SBR;
+		endGameStats(player2, player1, null, null, game_data);
 		fullTime = elapsedTime;
 		showGameOverScreen();
 		GOscreen = true;
@@ -650,7 +664,7 @@ function gameOverScreen(){
 		ctx.fillText(`WINNER: ${player2.name}`, canvas.width / 2, canvas.height / 2 - 100);
 		ctx.font = '50px "PixelFont", sans-serif';
 		ctx.fillStyle = 'red';
-		ctx.fillText(`You lost: ${howmuchlost} exp`, canvas.width / 2, canvas.height / 2 + 100);
+		ctx.fillText(`You lost: ${exp} exp`, canvas.width / 2, canvas.height / 2 + 100);
 		gameover = true;
 		isingame = false;
 	}

@@ -146,7 +146,7 @@ async function kickPlayer() {
             winner['name'] = player1.name;
             winner['score'] = 0;    
         }
-        await endGameStats(winner, {'name':window.userData.username, 'score': 0}, true, window.userData.r_name);
+        await endGameStats(winner, {'name':window.userData.username, 'score': 0}, true, window.userData.r_name, null);
         Notification('Game Action', 'You have left an active game, therefore the game will be counted as a forfeit from your side!', 2, 'alert');
         navigateTo('profile', null);
         return ;
@@ -891,42 +891,19 @@ function    calculateAverageRoundTime(){
 
 
 // let player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
-export async function endGameStats(winner, loser, forfeit=null, room_name=null) {
-    let exp;
-    let game_data = {};
-    if (window.userData.username === winner.name) {
-        game_data.score1 = winner.score;
-        game_data.map = setting.map;
-        game_data.attack_accuracy = 100;
-        game_data.shield_powerup = 50;
-        game_data.speed_powerup = 10;
-        game_data.score2 = loser.score;
-        if (loser.name.includes('Medium')) {
-            exp = 100;
-        } else if (loser.name.includes('Easy')) {
-            exp = 50;
-        } else if (loser.name.includes('Hard')) {
-            exp = 250;
-        } else {
-            exp = 250;
-        }
-    } else {
-        game_data.score1 = loser.score;
-        game_data.score2 = winner.score;
-        game_data.map = setting.map;
-        game_data.attack_accuracy = 100;
-        game_data.shield_powerup = 50;
-        game_data.speed_powerup = 10;
-        if (winner.name.includes('Medium')) {
-            exp = 50;
-        } else if (winner.name.includes('Easy')) {
-            exp = 25;
-        } else if (winner.name.includes('Hard')) {
-            exp = 100;
-        } else {
-            exp = 250;
-        }
-    }
+export async function endGameStats(winner, loser, forfeit=null, room_name=null, game_data=null) {
+    var exp;
+
+    if (winner.name.includes('Easy AI') || loser.name.includes('Easy AI'))
+        exp = 50;
+    else if (winner.name.includes('Medium AI') || loser.name.includes('Medium AI'))
+        exp = 100;
+    else
+        exp = 250;
+    
+    game_data.map = setting.map;
+    if ((forfeit != null && forfeit === true) || game_data === null)
+        game_data = {'score1':0, 'score2':0, 'game_duration':0.0, 'attack_accuracy':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
     try {
         const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit, room_name);
     } catch (error) {

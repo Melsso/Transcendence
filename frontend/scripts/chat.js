@@ -67,6 +67,7 @@ globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
 	var collapseElement = document.getElementById('collapseTwo');
 	var name = document.getElementById('chatName');
+	messageContainer.innerHTML = '';
 	try {
 		const result = await getMessages();
 		loadMessages(result["list"]);
@@ -74,7 +75,6 @@ globalbtn.addEventListener('click', async function(event) {
 		Notification('Message Action', `Error: ${error.detail}`, 2, 'alert');
 	}
 	if (window.userData.target !== 'Global') {
-		messageContainer.innerHTML = '';
 		var bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
 		if (collapseElement.classList.contains('show')) {
 			bsCollapse.hide();
@@ -204,7 +204,7 @@ export async function	launchSocket() {
 			if (data.action === 'Game_left' && window.userData.username === data.target) {
 				Notification('Game action', `Your oppponent: ${data.username} has left the game! therefore you win the match by default!`, 2, 'profile')
 				console.log('sobhane allah', window.userData.username, data.username);
-				await endGameStats({'name':window.userData.username, 'score':0}, {'name':data.username, 'score':0}, false, window.userData.r_name);
+				await endGameStats({'name':window.userData.username, 'score':0}, {'name':data.username, 'score':0}, false, window.userData.r_name, null);
 				return;
 			}
 			if (data.action == 'Notification' && data.target == window.userData.username) {
