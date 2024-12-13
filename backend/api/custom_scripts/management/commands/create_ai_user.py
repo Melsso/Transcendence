@@ -223,9 +223,12 @@ class Command(BaseCommand):
                 user=opponent,
                 opponent=player,
                 score=opponent_info['score'],
-                attack_accuracy=random.randint(50, 100),
                 map_name=opponent_info['map_name'],
-                shield_powerup=random.randint(0, 3),
-                is_win=opponent_info['is_win']
+                is_win=opponent_info['is_win'],
+                attack_powerup=opponent_info['attack_powerup'],
+                shield_powerup=opponent_info['shield_powerup'],
+                speed_powerup=opponent_info['speed_powerup'],
+                game_duration=opponent_info['game_duration'],
+                attack_accuracy=opponent_info['attack_accuracy'],
             )
             self.stdout.write(self.style.SUCCESS(f'Created game record for opponent "{opponent.username}"'))
