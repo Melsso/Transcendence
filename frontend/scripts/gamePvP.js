@@ -76,19 +76,19 @@ export async function gameOScreenpvp() {
 	var loser;
 	var w_score;
 	var l_score;
-	if (sphere.x >= canvass.width - playerPaddle2.width){
-		gamer2.score++;
-		winner = gamer2.username;
-		w_score = gamer2.score;
-		loser = gamer1.username;
-		l_score = gamer1.score;
-	}
-	else{
+	if (sphere.x >= canvass.width - (playerPaddle2.width * 2)){
 		gamer1.score++;
 		winner = gamer1.username;
+		w_score = gamer1.score;
 		loser = gamer2.username;
 		l_score = gamer2.score;
-		w_score = gamer1.score;
+	}
+	else{
+		gamer2.score++;
+		winner = gamer2.username;
+		loser = gamer1.username;
+		l_score = gamer1.score;
+		w_score = gamer2.score;
 	}
 	var w = [];
 	resizeGame = false;
@@ -110,10 +110,10 @@ export async function gameOScreenpvp() {
 	ctxx.fillStyle = '#ffffff';
 	ctxx.textAlign = 'center';
 	ctxx.fillText('GAME OVER', canvass.width * 0.5, canvass.height * 0.25);
-	if (gamer1.score >= 4){
+	if (gamer1.score >= 7){
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#FFD700';
-		ctxx.fillText(`${gamer1.username}: ${gamer1.score}`, canvass.width / 3, canvass.height / 2);
+		ctxx.fillText(`${gamer1.usernamze}: ${gamer1.score}`, canvass.width / 3, canvass.height / 2);
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#ffffff';
 		ctxx.fillText(`${gamer2.username}: ${gamer2.score}`, canvass.width / 1.5, canvass.height / 2);
@@ -121,7 +121,7 @@ export async function gameOScreenpvp() {
 		ctxx.fillStyle = '#FFD700';
 		ctxx.fillText(`WINNER: ${gamer1.username}`, canvass.width / 2, canvass.height / 3);
 	}
-	else if (gamer2.score >= 4){
+	else if (gamer2.score >= 7){
 		ctxx.font = '50px "PixelFont", sans-serif';
 		ctxx.fillStyle = '#ffffff';
 		ctxx.fillText(`${gamer1.username}: ${gamer1.score}`, canvass.width / 3, canvass.height / 2);
@@ -287,10 +287,8 @@ export function newRound() {
 	block2.visible = false;
 	BuffFlag = 0;
 	sphere.radius = widthScale / 100;
-	sphere.x = (widthScale / 2);
-	sx = sphere.x;
-	sphere.y = (heightScale / 2);
-	sy = sphere.y;
+	sx = (widthScale / 2);
+	sy = (heightScale / 2);
 	// reseTpvp = Date.now();
 }
 
@@ -848,10 +846,10 @@ export function displayCountdown() {
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	playerPaddle1.y = p1;
 	playerPaddle2.y = p2;
-	if (sphere.x >=  canvass.width - playerPaddle2.width) {
-		gamer2.score += 1;
-	} else {
+	if (sphere.x >=  canvass.width - (playerPaddle2.width * 2)) {
 		gamer1.score += 1;
+	} else{
+		gamer2.score += 1;
 	}
 	sphere.x = sx;
 	sphere.y = sy;

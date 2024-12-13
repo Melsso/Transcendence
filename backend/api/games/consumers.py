@@ -463,7 +463,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 				else:
 					game['paddle1']['score'] += 1
 				
-				if game['paddle1']['score'] == 4 or game['paddle2']['score'] == 4:
+				if game['paddle1']['score'] == 7 or game['paddle2']['score'] == 7:
 					await self.channel_layer.group_send(
 					self.room_group_name,
 						{
