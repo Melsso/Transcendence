@@ -169,8 +169,6 @@ export function computeStats(games) {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
 
-        if (ally.is_forfeit || enemy.is_forfeit)
-            return;
         const isPve = enemy.user.username.includes('Easy AI') || enemy.user.username.includes('Hard AI') || enemy.user.username.includes('Medium AI');
         gameCount++;
         if (ally.is_win) {
@@ -192,11 +190,13 @@ export function computeStats(games) {
         }
         if (ally.attack_powerup != null)
             stats.TotalBuffGames++;
-        stats.TotalAttack += (ally.attack_powerup || 0);
-        stats.AttackAccuracy += (ally.attack_accuracy || 0);
-        stats.TotalSpeed += (ally.speed_powerup || 0);
-        stats.TotalShield += (ally.shield_powerup || 0);
-        stats.TotalDuration += ally.game_duration;
+        if (!ally.is_forfeit && !enemy.is_forfeit) {
+            stats.TotalAttack += (ally.attack_powerup || 0);
+            stats.AttackAccuracy += (ally.attack_accuracy || 0);
+            stats.TotalSpeed += (ally.speed_powerup || 0);
+            stats.TotalShield += (ally.shield_powerup || 0);
+            stats.TotalDuration += ally.game_duration;
+        }
         if (isPve) {
             stats.pveWinLossData.games.push(gameCount);
         } else {
