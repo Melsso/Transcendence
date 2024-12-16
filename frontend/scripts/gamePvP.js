@@ -303,7 +303,20 @@ export function newRound() {
 	Buffpvp.visible = false;
 	Attackpvp.visible = false;
 	Bigpadpvp.visible = false;
-	last_hit = 1;
+	Buffpvp.y = heightScale;
+	console.log(Buffpvp.y);
+	Buffpvp.x = (widthScale / 2);
+	Attackpvp.y = heightScale;
+	Attackpvp.x = (widthScale / 2);
+	Bigpadpvp.y = heightScale;
+	Bigpadpvp.x = (widthScale / 2);
+	last_hit = null;
+	up1 = true;
+	up2 = true;
+	up3 = true;
+	SpeedCounting = 0;
+	attackcount = 0;
+	bigpadcount = 0;
 	goldenExperience = 0;
 	goldenExperience2 = 0;
 	playerPaddle1.Att = 0;
@@ -820,7 +833,7 @@ export function drawAll(pvp1, pvp2, settings) {
 					Buffpvp.y -= Buffpvp.height / 2;
 				else if (!up1)
 					Buffpvp.y += Buffpvp.height / 2;
-				if (Buffpvp.y <= 0){
+				if (Buffpvp.y <= canvass.height * 0.05){
 					up1 = false;
 				}
 			}
@@ -828,11 +841,12 @@ export function drawAll(pvp1, pvp2, settings) {
 		else if (BuffFlag === 2) {
 			if (Attackpvp.visible === true){
 				drawAttackpvp(0.45);
+				console.log(Attackpvp.y)
 				if (up2)
 					Attackpvp.y -= Attackpvp.height / 2;
 				else if (!up2)
 					Attackpvp.y += Attackpvp.height / 2;
-				if (Attackpvp.y <= 0){
+				if (Attackpvp.y <= canvass.height * 0.05){
 					up2 = false;
 				}
 			}
@@ -844,7 +858,7 @@ export function drawAll(pvp1, pvp2, settings) {
 					Bigpadpvp.y -= Bigpadpvp.height / 2;
 				else if (!up3)
 					Bigpadpvp.y += Bigpadpvp.height / 2;
-				if (Bigpadpvp.y <= 0) {
+				if (Bigpadpvp.y <= canvass.height * 0.05) {
 					up3 = false;
 				}
 			}
@@ -858,6 +872,8 @@ export function drawAll(pvp1, pvp2, settings) {
 }
 
 export function displayCountdown() {
+	let setts;
+	setts = window.setting
 	const gameContainer = document.getElementById('gameContainer');
 	const countdownOverlay = document.createElement('div');
 	countdownOverlay.classList.add('countdown-overlay');
@@ -886,6 +902,10 @@ export function displayCountdown() {
 	} else{
 		gamer2.score += 1;
 	}
+	if (setts.map === 'Map 2')
+		drawmap2();
+	if (setts.map === 'Map 3')
+		drawmap3();
 	sphere.x = sx;
 	sphere.y = sy;
 	drawScore(gamer1, gamer2);
