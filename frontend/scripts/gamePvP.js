@@ -4,7 +4,7 @@ import { sendGameState, sendBuffState } from "./gameSystem.js";
 import { handleSend } from "./chat.js";
 import { endGameStats } from "./pong.js";
 
-let resizeGame = false;
+window.resizeGame = false;
 let goldenExperience = 0;
 let goldenExperience2 = 0;
 let gamer1;
@@ -35,8 +35,8 @@ let	reseTpvp;
 let upPressed = false;
 let animation =  [];
 let downPressed = false;
-let playerPaddle1 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0, score: 0 };
-let playerPaddle2 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0, score: 0 };
+let playerPaddle1 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0, score: 0, ABR:0, SBR:0, BBR:0, gothit:0 };
+let playerPaddle2 = { x: 0, y: 0, width: 0, height: 0, dy: 0, username: "", Att: 0, score: 0, ABR:0, SBR:0, BBR:0, gothit:0 };
 let Buffpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let Attackpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
 let Bigpadpvp = {x: 0, y: 0, width: 0, height: 0, visible: false};
@@ -85,9 +85,8 @@ export async function gameOScreenpvp() {
 		loser = gamer1.username;
 	}
 	// settings doesnt exist, figure out how to get it
-	// variables ABR BBR SBR GOTHIT all dont exist here, logic should be exactly like this so it doesnt break backend,
-	// find way to fetch this data and append it to playerPaddle or whatever and use this logic bellow to this
-	if (settings.mode == 'Default Mode') {
+
+	if (window.setting.mode == 'Default Mode') {
 		game_data['attack_accuracy'] = null;
 		game_data['attack_powerup'] = null;
 		game_data['shield_powerup'] = null;
@@ -97,7 +96,7 @@ export async function gameOScreenpvp() {
 		game_data['score1'] = gamer1.score;
 		game_data['score2'] = gamer2.score;
 		game_data['game_duration'] = fullTime;
-		if (settings.mode == 'Buff Mode') {
+		if (window.setting.mode == 'Buff Mode') {
 			game_data['attack_accuracy'] = playerPaddle2.gothit / playerPaddle1.ABR;
 			game_data['attack_powerup'] = playerPaddle1.ABR;
 			game_data['shield_powerup'] = playerPaddle1.BBR;
@@ -107,7 +106,7 @@ export async function gameOScreenpvp() {
 		game_data['score1'] = gamer2.score;
 		game_data['score2'] = gamer1.score;
 		game_data['game_duration'] = fullTime;
-		if (settings.mode == 'Buff Mode') {
+		if (window.setting.mode == 'Buff Mode') {
 			game_data['attack_accuracy'] = playerPaddle1.gothit / playerPaddle2.ABR;
 			game_data['attack_powerup'] = playerPaddle2.ABR;
 			game_data['shield_powerup'] = playerPaddle2.BBR;
@@ -304,7 +303,7 @@ export function newRound() {
 	Buffpvp.visible = false;
 	Attackpvp.visible = false;
 	Bigpadpvp.visible = false;
-	last_hit = null;
+	last_hit = 1;
 	goldenExperience = 0;
 	goldenExperience2 = 0;
 	playerPaddle1.Att = 0;
@@ -340,9 +339,13 @@ export function Speedpower(){
 	}
 	if (last_hit === 1) {
 		playerPaddle1.dy = speeddoubled;
+		goldenExperience = 1;
+		playerPaddle1.SBR++;
 	}
 	else if (last_hit === 2) {
 		playerPaddle2.dy = speeddoubled;
+		goldenExperience2 = 1;
+		playerPaddle2.SBR++;
 	}
 }
 
@@ -382,10 +385,12 @@ function Trackballinspeed() {
 export function Attackpower() {
 	if (last_hit === 1) {
 		playerPaddle1.Att = 1;
+		playerPaddle1.ABR++;
 		block1.visible = true;
 	}
 	else if (last_hit === 2) {
 		playerPaddle2.Att = 1;
+		playerPaddle2.ABR++;
 		block2.visible = true;
 	}
 	if (playerPaddle1.Att === 1 && last_hit === 1)
@@ -429,9 +434,11 @@ export function updatePaddlePvP(target) {
 	if (target === 1) {
 		playerPaddle1.y = playerPaddle1.y + (playerPaddle1.height / 4);
 		playerPaddle1.height = playerPaddle1.height / 2;
+		playerPaddle1.gothit++;
 	} else {
 		playerPaddle2.y = playerPaddle2.y + (playerPaddle2.height / 4);
 		playerPaddle2.height = playerPaddle2.height / 2;
+		playerPaddle2.gothit++;
 	}
 }
 
@@ -445,10 +452,12 @@ export function Bigpadpower(){
 	if (last_hit === 1) {
 		playerPaddle1.y = playerPaddle1.y - (playerPaddle1.height / 2);
 		playerPaddle1.height = playerPaddle1.height * 2;
+		playerPaddle1.BBR++;
 	}
 	else if (last_hit === 2) {
 		playerPaddle2.y = playerPaddle2.y - (playerPaddle2.height / 2);
 		playerPaddle2.height = playerPaddle2.height * 2;
+		playerPaddle2.BBR++;
 	}
 }
 function	TrackballinBigpad(){
@@ -496,12 +505,12 @@ function setDimensions() {
 	playerPaddle1.dy = heightScale / 100;
 	speeddoubled = playerPaddle1.dy * 1.75;
 	playerheight2 =  ((heightScale / 10) * 2);
-	Buffpvp.width = widthScale / 10;
-	Buffpvp.height = heightScale / 50;
+	Buffpvp.width = widthScale / 20;
+	Buffpvp.height = heightScale / 120;
 	Attackpvp.width = widthScale / 20;
-	Attackpvp.height = heightScale / 100;
-	Bigpadpvp.width = widthScale / 10;
-	Bigpadpvp.height = heightScale / 50;
+	Attackpvp.height = heightScale / 120;
+	Bigpadpvp.width = widthScale / 20;
+	Bigpadpvp.height = heightScale / 120;
 	Buffpvp.y = heightScale;
 	Buffpvp.x = (widthScale / 2);
 	Attackpvp.y = heightScale;
@@ -910,8 +919,29 @@ window.addEventListener('resize', async function () {
 			targetName = playerPaddle1.username;
 		}
 		handleSend(targetName, null, 'Game_left', true);
-		await endGameStats({'name':targetName, 'score':0}, {'name':window.userData.username, 'score':0}, true, room_name);
+		await endGameStats({'name':targetName}, {'name':window.userData.username}, true, room_name, null);
 		//send the game as an ff an show it in match history
 		return;
 	}
 });
+
+export async function handleQuitting() {
+	if (resizeGame === true) {
+		resizeGame = false;
+		var room_name = window.userData.r_name;
+		if (room_name === null) {
+			room_name = window.userData.tmp_room;
+			window.userData.tmp_room = null;
+		}
+		Notification('Game Action', 'You have left an active game, therefore the game will be counted as a forfeit from your side!', 2, 'alert');
+		let targetName;
+		if (window.userData.username === playerPaddle1.username) {
+			targetName = playerPaddle2.username;
+		} else {
+			targetName = playerPaddle1.username;
+		}
+		handleSend(targetName, null, 'Game_left', true);
+		await endGameStats({'name':targetName}, {'name':window.userData.username}, true, room_name, null);
+		return;
+	}
+}

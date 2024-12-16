@@ -840,6 +840,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	async function showView(view, data) {
+		console.log(view, data);
 		if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
 			if (window.userData?.socket) {
 				window.userData.socket.close();
@@ -847,8 +848,8 @@ document.addEventListener('DOMContentLoaded', function () {
 				window.userData.target = null;
 			}
 			if (window.userData?.pong_socket) {
-				window.userData.pong_socket.close();
-				window.userData.r_name = null;
+				window.userData.tmp_room = window.userData.r_name;
+				await window.userData.pong_socket.close();
 				window.userData.pong_socket = null;
 			}
 			window.userData = {};
@@ -862,10 +863,17 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		if (myflag === false && !window.userData?.acessToken && localStorage.getItem('accessToken')) {
 			myflag = true;
+			if (window.userData.pong_socket) {
+				window.userData.tmp_room = window.userData.r_name;
+				window.userData.pong_socket.close();
+				window.userData.pong_socket = null;
+				window.userData.r_name = null;
+			}
 			navigateTo('profile', null);
 			return ;
 		}
 		if (window.userData.pong_socket) {
+			window.userData.tmp_room = window.userData.r_name;
 			window.userData.pong_socket.close();
 			window.userData.pong_socket = null;
 			window.userData.r_name = null;
@@ -1024,6 +1032,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	window.addEventListener('popstate', function (event) {
 		if (event.state && event.state.view) {
+			console.log('llo');
 			showView(event.state.view);
 		}
 	});
@@ -1479,7 +1488,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	cancelDelGamesBtn.addEventListener('click',  function() {
-		delMsgModal.style.display = 'none';
+		delGamesModal.style.display = 'none';
 	});
 	delGamesBtn.addEventListener('click',  function() {
 		delGamesModal.style.display = 'flex';

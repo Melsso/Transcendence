@@ -1,8 +1,9 @@
 import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
-import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound } from "./gamePvP.js";
+import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound, handleQuitting } from "./gamePvP.js";
 import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
+import { endGameStats } from "./pong.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const lo = document.getElementById('1v1');
@@ -13,13 +14,6 @@ let current_players = [];
 const Instructions = document.getElementById('Instructions-box');
 const lobby = document.getElementById('pong-inv-container');
 window.lobbySettings;
-let gameInterval = null;
-let gameState = {
-    ball: { x:0, y:0 },
-    player1: { y:0 },
-    player2: { y:0 },
-    aspectRatio: 0,
-};
 
 export async function getRoomName() {
     const access_token = localStorage.getItem('accessToken');
@@ -132,7 +126,11 @@ export async function startGameSocket() {
             height: canvass.getBoundingClientRect().height
         };
     }
-    window.userData.pong_socket.onclose = function(e) {
+    window.userData.pong_socket.onclose = async function(e) {
+        if (resizeGame === true) {
+           await handleQuitting();
+        }
+        window.userData.r_name = null;
         console.log("GAMESOCKET--OFF");
     }
     window.userData.pong_socket.onmessage = async function(event) {
@@ -168,6 +166,7 @@ export async function startGameSocket() {
                         const screenWidth = canvass.clientWidth;
                         const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
                         if (window.userData.pong_socket) {
+                            resizeGame = false;
                             window.userData.pong_socket.close();
                             window.userData.pong_socket = null;
                             window.userData.r_name = null;
@@ -210,7 +209,6 @@ export async function startGameSocket() {
             changeLast(data.paddle);
         } else if (data.action === 'update_buff_state') {
             if (data.state === 'speed') {
-                const target = data.target;
                 Speedpower();
             } else if (data.state === 'attack') {
                 Attackpower();

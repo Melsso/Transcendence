@@ -79,8 +79,6 @@ class GameResultView(generics.CreateAPIView):
         loser = request.data.get('loser')
         winner_uname = request.data.get('winner')
         forfeit = request.data.get('forfeit')
-        logger.warning("ZEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
-        logger.warning(stats)
         if forfeit is None:
             forfeit = False
         user = request.user

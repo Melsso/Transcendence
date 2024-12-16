@@ -376,7 +376,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		game['paddle2'] = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 		angleX = 1
 		angleY = 0
-		ball_hits = 0
 		buff1= 0
 		buff2 = 0
 		buff3 = 0
@@ -384,22 +383,18 @@ class GameConsumer(AsyncWebsocketConsumer):
 		speed = 0.0005
 		last_hit = None
 		await asyncio.sleep(3.5)
-
-		start_time = time.time()
-		new_start = start_time
-		continuous_time = start_time
+		new_start = time.time()
 		while True:
 			base_speed = 0.005 + (speed * howmanyspeeds)
 			current_time = time.time()
 			if current_time - new_start >= 8:
 				if howmanyspeeds < 5:
 					howmanyspeeds += 1
-					# new_start = current_time
 			game['ball']['dx'] = angleX * base_speed
 			game['ball']['dy'] = angleY * base_speed
 			game['ball']['x'] += game['ball']['dx']
 			game['ball']['y'] += game['ball']['dy']
-			if current_time - new_start >= 35 and buff1 == 0:
+			if current_time - new_start >= 13 and buff1 == 0:
 				buff1 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -419,7 +414,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 2
 					}
 				)
-			if current_time - new_start >= 8 and buff3 == 0:
+			if current_time - new_start >= 23 and buff3 == 0:
 				buff3 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -480,11 +475,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 				game['ball']['dy'] = 0.005
 				game['paddle1']['y'] = 0.45
 				game['paddle2']['y'] = 0.45
-				new_start = time.time()
 				howmanyspeeds = 0
 				base_speed = 0.005
 				angleX = 1
 				angleY = 0
+				buff1 = 0
+				buff2 = 0
+				buff3 = 0
 				await self.channel_layer.group_send(
 				self.room_group_name,
 					{
@@ -494,10 +491,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 					}
 				)
 				await asyncio.sleep(4)
-				start_time = time.time()
-				buff1 = 0
-				buff2 = 0
-				buff3 = 0
+				new_start = time.time()
 				continue
 			await self.channel_layer.group_send(
 			self.room_group_name,
@@ -524,11 +518,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 			'action': action,
         }))
 	async def r_round(self, event):
-		logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIRRRRRRRRRR')
-		logger.warning(time.time())
 		action = event['action']
 		state = event['state']
-		logger.warning(state)
 		await self.send(text_data=json.dumps({
          "type": "restart_round",
 			'action': action,
