@@ -925,6 +925,15 @@ window.addEventListener('resize', async function () {
 	}
 });
 
+window.addEventListener('beforeunload', function (event) {
+    if (resizeGame === true) {
+		// console.log("Page is about to be reloaded or closed");
+		handleQuitting();
+		// event.preventDefault();
+		event.returnValue = '';
+	}
+});
+
 export async function handleQuitting() {
 	if (resizeGame === true) {
 		resizeGame = false;

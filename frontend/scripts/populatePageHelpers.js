@@ -168,9 +168,7 @@ export function computeStats(games) {
     games.forEach(game => {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
-        console.log('ALLY: ', ally);
-        console.log('EENEMY: ', enemy);
-        
+
         if (ally.is_forfeit || enemy.is_forfeit)
             return;
         const isPve = enemy.user.username.includes('Easy AI') || enemy.user.username.includes('Hard AI') || enemy.user.username.includes('Medium AI');

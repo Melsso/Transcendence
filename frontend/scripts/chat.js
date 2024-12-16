@@ -219,7 +219,7 @@ export async function	launchSocket() {
 						return ;
 				  }
 				  	toastgame.hide();
-					if (data.room_name.includes('tournament')) {
+					if (data.room_name.includes("tournament")) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');
 						if (!accessToken) {

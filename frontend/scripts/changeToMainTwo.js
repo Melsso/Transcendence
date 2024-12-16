@@ -840,7 +840,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	async function showView(view, data) {
-		console.log(view, data);
 		if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
 			if (window.userData?.socket) {
 				window.userData.socket.close();
@@ -1032,7 +1031,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	window.addEventListener('popstate', function (event) {
 		if (event.state && event.state.view) {
-			console.log('llo');
 			showView(event.state.view);
 		}
 	});

@@ -130,7 +130,6 @@ export async function startGameSocket() {
         if (resizeGame === true) {
            await handleQuitting();
         }
-        window.userData.r_name = null;
         console.log("GAMESOCKET--OFF");
     }
     window.userData.pong_socket.onmessage = async function(event) {
@@ -161,6 +160,7 @@ export async function startGameSocket() {
                     }
                     try {
                         const data = await getRoomName();
+                        console.log(data);
                         const u = new URL(baseUrl);
                         const screenHeight = canvass.clientHeight;
                         const screenWidth = canvass.clientWidth;
@@ -176,7 +176,6 @@ export async function startGameSocket() {
                         startGameSocket();
                     } catch (error) {
                         Notification('Game Action', `Error: ${error.detail}`, 2, 'alert');
-                        window.userData.r_name = null;
                         if (window.userData.pong_socket) {
                             window.userData.pong_socket.close();
                             window.userData.r_name = null;
@@ -437,6 +436,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
                     if (!document.getElementById(id6).value.trim()) {
                         Notification('Game Action', 'No such user!', 2, 'alert');
                     } else {
+                        console.log(window.userData.r_name);
                         handleSend(document.getElementById(id6).value , window.userData.r_name, 'Notification');
                         Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
                     }
