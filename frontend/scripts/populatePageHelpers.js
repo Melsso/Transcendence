@@ -285,15 +285,19 @@ function loadStats(games) {
 }
 
 export function loadMatchHistory(games) {
+    const container = document.getElementById('match-stats-container');
     const historyTab = document.getElementById('History');
-    const matchHistoryContainer = document.querySelector('.match-history-container');
+    const statsstab = document.getElementById('MatchStats');
+    const matchHistoryContainer = document.getElementById('match-history-new');
     historyTab.addEventListener('click', async function (event) {
         event.preventDefault();
         if (historyTab.getAttribute('aria-selected') === 'true' && historyTab.getAttribute('on') === 'true') {
+            loadMatchHistory(games);
             return ;
         } else {
             historyTab.setAttribute('on', 'true');
             statspage.setAttribute('on', 'false');
+            statsstab.setAttribute('on', 'false');
             matchHistoryContainer.innerHTML = '';
             try {
                 if (document.getElementById('username').value === window.userData.username) {
@@ -308,10 +312,14 @@ export function loadMatchHistory(games) {
 	}, { once: true });
     loadStats(games);
     matchHistoryContainer.innerHTML = '';
+    container.innerHTML = '';
     if (games.length === 0) {
         const para = document.createElement('p');
+        const par =  document.createElement('p');
+        par.textContent = 'No Match Played!';
         para.textContent = 'No Match Played!';
         matchHistoryContainer.appendChild(para);
+        container.appendChild(par);
         return ;
     }
     games.forEach(game => {
@@ -350,29 +358,49 @@ export function loadMatchHistory(games) {
     `;
         matchHistoryContainer.appendChild(matchCard);
     });
-}
+    games.forEach(game => {
+        const matchCard = document.createElement('div');
+        matchCard.classList.add('match-card');
+        var match_score;
+        const gameKey = Object.keys(game)[0];
+        const {ally, enemy} = game[gameKey];
 
-function    detailedStatTab() {
-    const statbtn = document.getElementById('MatchStats');
-    const historycontainer = document.getElementById('match-history-container');
-    const container = document.getElementById('MatchStatscontainer');
-    statbtn.addEventListener('click', function () {
-        historycontainer.innerHTML ='';
-        container.innerHTML = '';
-    });
-    const statspage = document.getElementById('match-stats-tab');
-    statspage.addEventListener('click', function (event) {
-        event.preventDefault();
-        if (statspage.getAttribute('aria-selected') === 'true' && statspage.getAttribute('on') === 'true') {
-            return ;
+        if (!ally.is_win) {
+            matchCard.classList.add('lost');
         }
-        const historyTab = document.getElementById('History');
-        statspage.setAttribute('on', 'true');
-        historyTab.setAttribute('on', 'false');
-    }, { once: true });
-}
-
-function listeners(games) {
-    console.log('DETAILS');
-    console.log(games);
+        if (ally.is_forfeit) {
+            match_score = "LOST BY FORFEIT";
+        } else if (enemy.is_forfeit) {
+            match_score = "WON BY FORFEIT";
+        } else {
+            match_score = `${ally.score}-${enemy.score}`;
+        }
+        matchCard.innerHTML = `
+        <div class="player player-left">
+            <img src="${ally.user.avatar}" alt="Avatar of ${ally.user.username}">
+            <div class="player-info-2">
+                <div>${ally.user.username}</div>
+                <div class="game-name">${ally.game_id}</div>
+                <p>Number Of Picked Up Speed Buffs: ${ally.speed_powerup}</p>
+                <p>Number Of Picked Up Shield Buffs: ${ally.shield_powerup}</p>
+                <p>Number Of Picked Up Attack Buffs: ${ally.attack_powerup}</p>
+                <p>Attack Accuracy: ${ally.attack_accuracy}</p>
+            </div>
+        </div>
+        <div class="score">${match_score}</div>
+        <p>Game Duration: ${ally.game_duration}</p>
+        <div class="player player-right">
+            <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
+            <div class="player-info-2">
+                <div>${enemy.user.username}</div>
+                <div class="game-name">${enemy.game_id}</div>
+                <p>Number Of Picked Up Speed Buffs: ${enemy.speed_powerup}</p>
+                <p>Number Of Picked Up Shield Buffs: ${enemy.shield_powerup}</p>
+                <p>Number Of Picked Up Attack Buffs: ${enemy.attack_powerup}</p>
+                <p>Attack Accuracy: ${enemy.attack_accuracy}</p>
+            </div>
+        </div>
+    `;
+        container.appendChild(matchCard);
+    });
 }
