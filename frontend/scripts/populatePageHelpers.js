@@ -364,41 +364,53 @@ export function loadMatchHistory(games) {
         var match_score;
         const gameKey = Object.keys(game)[0];
         const {ally, enemy} = game[gameKey];
-
+        if (ally.game_mode === 'Default Mode') {
+            ally.speed_powerup = null;
+            ally.shield_powerup = null;
+            ally.attack_accuracy = null;
+            ally.attack_powerup  = null;
+            enemy.speed_powerup = null;
+            enemy.shield_powerup = null;
+            enemy.attack_accuracy = null;
+            enemy.attack_powerup  = null;
+        }
         if (!ally.is_win) {
             matchCard.classList.add('lost');
         }
         if (ally.is_forfeit) {
             match_score = "LOST BY FORFEIT";
+            ally.game_duration = 'ABORTED';
         } else if (enemy.is_forfeit) {
             match_score = "WON BY FORFEIT";
+            ally.game_duration = 'ABORTED';
         } else {
             match_score = `${ally.score}-${enemy.score}`;
+            ally.game_duration += 'mins';
         }
         matchCard.innerHTML = `
         <div class="player player-left">
             <img src="${ally.user.avatar}" alt="Avatar of ${ally.user.username}">
             <div class="player-info-2">
-                <div>${ally.user.username}</div>
-                <div class="game-name">${ally.game_id}</div>
+                <div style="font: bold;">${ally.user.username}</div>
                 <p>Number Of Picked Up Speed Buffs: ${ally.speed_powerup}</p>
                 <p>Number Of Picked Up Shield Buffs: ${ally.shield_powerup}</p>
                 <p>Number Of Picked Up Attack Buffs: ${ally.attack_powerup}</p>
                 <p>Attack Accuracy: ${ally.attack_accuracy}%</p>
+                <div class="game-name">${ally.game_id}</div>
             </div>
         </div>
         <div class="My_score">${match_score}</div>
-        <p class="game-duration">Game Duration: ${ally.game_duration}mins</p>
+        <p class="game-duration">Game Duration: ${ally.game_duration}</p>
         <p class="game-details">Game Details:${ally.game_mode} ${ally.map_name}</p>
         <div class="player player-right">
             <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
             <div class="player-info-2">
-                <div>${enemy.user.username}</div>
-                <div class="game-name">${enemy.game_id}</div>
+                <div style="font: bold;">${enemy.user.username}</div>
                 <p>Number Of Picked Up Speed Buffs: ${enemy.speed_powerup}</p>
                 <p>Number Of Picked Up Shield Buffs: ${enemy.shield_powerup}</p>
                 <p>Number Of Picked Up Attack Buffs: ${enemy.attack_powerup}</p>
                 <p>Attack Accuracy: ${enemy.attack_accuracy}%</p>
+                <div class="game-name">${enemy.game_id}</div>
             </div>
         </div>
     `;
