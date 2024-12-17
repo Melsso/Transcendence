@@ -384,11 +384,12 @@ export function loadMatchHistory(games) {
                 <p>Number Of Picked Up Speed Buffs: ${ally.speed_powerup}</p>
                 <p>Number Of Picked Up Shield Buffs: ${ally.shield_powerup}</p>
                 <p>Number Of Picked Up Attack Buffs: ${ally.attack_powerup}</p>
-                <p>Attack Accuracy: ${ally.attack_accuracy}</p>
+                <p>Attack Accuracy: ${ally.attack_accuracy}%</p>
             </div>
         </div>
-        <div class="score">${match_score}</div>
-        <p>Game Duration: ${ally.game_duration}</p>
+        <div class="My_score">${match_score}</div>
+        <p class="game-duration">Game Duration: ${ally.game_duration}mins</p>
+        <p class="game-details">Game Details:${ally.game_mode} ${ally.map_name}</p>
         <div class="player player-right">
             <img src="${enemy.user.avatar}" alt="Avatar of ${enemy.user.username}">
             <div class="player-info-2">
@@ -397,7 +398,7 @@ export function loadMatchHistory(games) {
                 <p>Number Of Picked Up Speed Buffs: ${enemy.speed_powerup}</p>
                 <p>Number Of Picked Up Shield Buffs: ${enemy.shield_powerup}</p>
                 <p>Number Of Picked Up Attack Buffs: ${enemy.attack_powerup}</p>
-                <p>Attack Accuracy: ${enemy.attack_accuracy}</p>
+                <p>Attack Accuracy: ${enemy.attack_accuracy}%</p>
             </div>
         </div>
     `;

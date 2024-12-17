@@ -903,6 +903,7 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null, 
         game_data = {'score1':0, 'score2':0, 'game_duration':0.0, 'attack_accuracy':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0, 'map': setting.map};
     try {
         game_data.map = setting.map;
+        game_data.game_mode = setting.mode;
         const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit, room_name);
     } catch (error) {
         Notification('Game Action', `Error: ${error}`, 2, 'alert');

@@ -7,6 +7,7 @@ import string
 class Game(models.Model):
     game_id = models.CharField(max_length=100, blank=True, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    game_mode = models.TextField(max_length=50, null=True)
     opponent = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

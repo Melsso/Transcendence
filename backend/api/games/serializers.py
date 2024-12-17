@@ -9,5 +9,5 @@ class PongGameSerializer(serializers.ModelSerializer):
         model = PongGame
         fields = ['id', 'user', 'opponent', 'is_win', 'is_forfeit', 'score',
             'date_played', 'game_id', 'map_name', 'attack_powerup', 'shield_powerup',
-            'speed_powerup', 'attack_accuracy', 'game_duration']
+            'speed_powerup', 'attack_accuracy', 'game_duration', 'game_mode']
 

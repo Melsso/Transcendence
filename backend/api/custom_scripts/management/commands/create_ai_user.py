@@ -152,6 +152,7 @@ class Command(BaseCommand):
                     'speed_powerup': 4,
                     'game_duration': 3,
                     'attack_accuracy': 50,
+                    'game_mode':'Buff Mode',
                 },
                 {
                     'player': 'Hard AI',
@@ -164,6 +165,7 @@ class Command(BaseCommand):
                     'speed_powerup': 2,
                     'game_duration': 3,
                     'attack_accuracy': 25,
+                    'game_mode':'Buff Mode',
                 },
             ],
             [
@@ -178,6 +180,7 @@ class Command(BaseCommand):
                     'speed_powerup': 6,
                     'game_duration': 5,
                     'attack_accuracy': 100,
+                    'game_mode':'Buff Mode',
                 },
                 {
                     'player': 'Sadoon',
@@ -190,6 +193,7 @@ class Command(BaseCommand):
                     'speed_powerup': 6,
                     'game_duration': 5,
                     'attack_accuracy': 66,
+                    'game_mode':'Buff Mode',
                 }
             ]
         ]
@@ -215,6 +219,7 @@ class Command(BaseCommand):
                 speed_powerup=player_info['speed_powerup'],
                 game_duration=player_info['game_duration'],
                 attack_accuracy=player_info['attack_accuracy'],
+                game_mode=player_info['game_mode']
             )
             self.stdout.write(self.style.SUCCESS(f'Created game record for player "{player.username}"'))
 
@@ -230,5 +235,6 @@ class Command(BaseCommand):
                 speed_powerup=opponent_info['speed_powerup'],
                 game_duration=opponent_info['game_duration'],
                 attack_accuracy=opponent_info['attack_accuracy'],
+                game_mode=opponent_info['game_mode']
             )
             self.stdout.write(self.style.SUCCESS(f'Created game record for opponent "{opponent.username}"'))

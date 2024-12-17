@@ -112,6 +112,7 @@ class GameResultView(generics.CreateAPIView):
                 attack_powerup=stats['attack_powerup'],
                 shield_powerup=stats['shield_powerup'],
                 speed_powerup=stats['speed_powerup'],
+                game_mode=stats['game_mode'],
                 is_win= not win,
                 is_forfeit=False
         )
@@ -127,6 +128,7 @@ class GameResultView(generics.CreateAPIView):
             attack_powerup=stats['attack_powerup'],
             shield_powerup=stats['shield_powerup'],
             speed_powerup=stats['speed_powerup'],
+            game_mode=stats['game_mode'],
             is_win= win,
             is_forfeit=forfeit
         )

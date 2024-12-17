@@ -282,6 +282,59 @@ overflow: hidden;
 	color: #666;
 }
 
+
+/* Style for game duration */
+.game-duration {
+	font-size: 14px;
+	color:black;
+	position: absolute;
+	transform: translateY(200%);
+	right: 43%;
+	text-align: center;
+	margin-top: 10px;
+}
+
+.game-details {
+	font-size: 14px;
+	color:black;
+	position: absolute;
+	transform: translateY(-200%);
+	right: 40%;
+	text-align: center;
+	margin-top: 10px;
+}
+
+/* Style for additional player stats */
+.match-card .player-info-2 p {
+	margin: 5px 0;
+	font-size: 13px;
+	color: #555;
+	line-height: 1.4;
+}
+
+/* Highlight accuracy with color */
+.match-card .player-info-2 p span.accuracy {
+	font-weight: bold;
+	color: #4caf50; /* Green for good accuracy */
+}
+
+/* Hover effect for match card */
+.match-card:hover {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+	transform: translateY(-2px);
+	transition: all 0.2s ease;
+}
+
+.My_score{
+	font-size: 22px;
+	font-weight: bold;
+	color: #000;
+	background-color: rgba(255, 255, 255, 0.7);
+	padding: 5px 15px;
+	border-radius: 8px;
+	margin: 10px 0;
+}
+
 .stats-container {
 	display: flex;
 	justify-content: space-between;
