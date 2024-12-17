@@ -117,10 +117,40 @@ overflow: hidden;
 .my-bar {
 	background-color: #7982b2;
 	position: absolute;
-	top: 70%;
+	top: 80%;
 	height: 20%;
 	width: 80%;
 	color: black;
+}
+
+.tournaments-won {
+	height: 20%;
+	position: absolute;
+	font-size: 10%;
+	width: 80%;
+	top: 60%;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.tournaments-won .stars {
+	margin-left: 10px;
+	display: flex;
+	gap: 10%; 
+}
+
+.tournaments-won .star {
+	font-size: 20px;
+	color: transparent; 
+	text-shadow: 
+		1px 1px 0px rgba(0, 0, 0, 0.5),  
+		-1px -1px 0px rgba(255, 255, 255, 0.2);
+}
+
+.tournaments-won .star.filled {
+	color: gold;
 }
 
 .my-bar-two {
