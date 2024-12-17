@@ -136,13 +136,16 @@ overflow: hidden;
 }
 
 .tournaments-won .stars {
-	margin-left: 10px;
+	width: 100%;
 	display: flex;
-	gap: 10%; 
+	justify-content: space-between;
+	gap: 2%;
 }
 
 .tournaments-won .star {
-	font-size: 20px;
+	flex: 1;
+	font-size: calc(5vw / 5);
+	text-align: center;
 	color: transparent; 
 	text-shadow: 
 		1px 1px 0px rgba(0, 0, 0, 0.5),  
@@ -319,7 +322,7 @@ overflow: hidden;
 	color:black;
 	position: absolute;
 	transform: translateY(200%);
-	right: 43%;
+	right: 45%;
 	text-align: center;
 	margin-top: 10px;
 }
@@ -329,7 +332,7 @@ overflow: hidden;
 	color:black;
 	position: absolute;
 	transform: translateY(-200%);
-	right: 40%;
+	right: 42%;
 	text-align: center;
 	margin-top: 10px;
 }

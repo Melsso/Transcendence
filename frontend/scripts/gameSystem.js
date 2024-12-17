@@ -137,8 +137,10 @@ export async function startGameSocket() {
         const data = JSON.parse(event.data);
         console.log(data);
         if (data.action === 'queue_start_game') {
-            if (window.userData.username === data.players[0]) {
-                if (data.players.length == 2) {
+            if (data.players.length == 2) {
+                hebssmodal = true;
+                //remove accept-refue modal
+                if (window.userData.username === data.players[0]) {
                     sendQueueStatus(true, true);
                 }
             }

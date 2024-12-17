@@ -7,6 +7,7 @@ const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
 const baseUrl = process.env.ACTIVE_HOST;
+window.hebssmodal =false;
 const lobby = document.getElementById('pong-inv-container');
 import { getRoomName, startGameSocket } from "./gameSystem.js";
 
@@ -181,9 +182,12 @@ export function acceptRefuse() {
 		}
 	};
 	setTimeout(function () {
-		modal.style.display = 'none';
-		modal.remove();
-		sendQueueStatus(false);
+		if(!hebssmodal) {
+			sendQueueStatus(false);
+			navigateTo('profile', null);
+			modal.remove();
+			modal.style.display = 'none';
+		}
 	}, 10000);
 	// display countdiown on modal
 }

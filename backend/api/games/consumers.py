@@ -68,6 +68,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 	async def notifyPlayers(self):
+		paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+		paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+		ball = { 'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0.005, 'radius': 0.0}
+		self.game_rooms[self.room_group_name] = {"paddle1": paddle1, "paddle2": paddle2, "ball": ball}
 		rooms = await self.get_all_rooms()
 		players = rooms[self.redis_key]
 		serializer = UserProfileSerializer(players, many=True)
@@ -111,6 +115,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			)
 			await self.notifyPlayers()
 		else:
+			await self.matchPlayersWithClosestExp(user)
 			await self.channel_layer.group_send(
 				self.room_group_name,
             	{
@@ -284,11 +289,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 						task = asyncio.create_task(self.move_ball(self.room_group_name))
 						self.game_rooms[self.room_group_name]["task"] = task
 			elif action == 'queue_status':
+				logger.warning(state)
+				logger.warning(player)
 				await self.update_player_ready(player, state)
-				players_in_room = await self.get_players_in_room()
-				logger.warning(players_in_room)
-				# if len(players_in_room) != 2:
-				# 	return
+				if len(players_in_room) != 2:
+					return
 				start = True
 				user = self.scope['user']
 				for player in players_in_room:
@@ -299,7 +304,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 					await self.send_currents(players_in_room)
 
 			elif action == 'game_start':
-				await self.gameStart()
+				task = asyncio.create_task(self.move_ball(self.room_group_name))
+				self.game_rooms[self.room_group_name]["task"] = task
+				#send to players that game is staritng, so absically show countdown on front end and prepare game
 			elif action == 'update_buff_state':
 				# add buff attack hit for both and update paddles
 				if player == 1:
@@ -364,13 +371,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 				if user.username == player_keys[0]:
 					user_profiles = await database_sync_to_async(lambda: list(UserProfile.objects.filter(username__in=player_keys)))()
 					serializer = UserProfileSerializer(user_profiles, many=True)
-					logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII')
-					logger.warning(serializer)
 					await self.channel_layer.group_send(
 						self.room_group_name, {
 							'type': 'player_action',
 							'action': 'start_queue_game',
-							'players': 'serializer.data'
+							'players': serializer.data
 						}
 					)
 					task = asyncio.create_task(self.move_ball(self.room_group_name))
@@ -550,16 +555,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 			}
 		)
 
-	# async def gg(self, event):
-	# 	logger.warning('HAAAWWWWWW ZEEEEEBBBBBBIIIIIIIIIIIIIIII')
-	# 	action = event['action']
-	# 	p1 = event['p1']
-	# 	p2 = event['p2']
-	# 	await self.send(text_data=json.dumps({
-	# 			'action': action,
-	# 			'p1': p1,
-	# 			'p2': p2,
-	# 	}))
 
 	async def ball_position(self, event):
 		action = event['action']
@@ -612,6 +607,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await redis.hset(self.redis_key, player_name, json.dumps(player_data))
 		await redis.close()
 
+	async def queue_action(self, event):
+		action = event['action']
+		players = event['players']
+
+		await self.send(text_data=json.dumps({
+			'action': action,
+			'players': players
+		}))
+	
 	async def get_players_in_room(self):
 		redis = await aioredis.from_url("redis://redis:6379")
 		players_dict = await redis.hgetall(self.redis_key)
@@ -623,8 +627,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		return players
 
 	async def remove_player_from_room(self, player_name):
-		logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII')
-		logger.warning(player_name)
 		redis = await aioredis.from_url("redis://redis:6379")
 		await redis.hdel(self.redis_key, player_name)
 		players = await redis.hgetall(self.redis_key)
@@ -805,14 +807,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'state': state
 		}))
 	
-	async def queue_action(self, event):
-		action = event['action']
-		players = event['players']
-
-		await self.send(text_data=json.dumps({
-			'action': action,
-			'players': players
-		}))
 
 	async def add_player_to_room(self, player_name, screen_width, screen_height):
 		redis = await aioredis.from_url("redis://redis:6379")
