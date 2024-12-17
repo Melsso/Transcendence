@@ -25,6 +25,8 @@ let last_hit = 1;
 let speeddoubled = 0;
 let playerheight2 = 0;
 let nocurrentGame = false;
+window.freeWill = false;
+let Gscreen = false;
 let p1;
 let p2;
 let sx;
@@ -73,6 +75,8 @@ function drawScore(pvp1, pvp2) {
 export async function gameOScreenpvp() {
 	var winner;
 	var loser;
+	Gscreen = true;
+	freeWill = true;
 	var game_data = {'score1':0, 'score2':0, 'attack_accuracy': 0.0, 'game_duration':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
 	if (sphere.x >= canvass.width - (playerPaddle2.width * 2)){
 		gamer1.score++;
@@ -164,6 +168,22 @@ export async function gameOScreenpvp() {
 	ctxx.fillStyle = '#ff0000';
 	ctxx.fillText('Please press Q to go back to main menu', canvass.width / 2, canvass.height * 0.85);
 }
+function	removeGscreen(){
+	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	Gscreen = false;
+	freeWill = false;
+}
+
+document.addEventListener('keydown', (event) => {
+	if (freeWill === true){
+		if (event.code === 'KeyQ' && Gscreen === true){
+			Habess();
+			removeGscreen();
+			setDimensions();
+			navigateTo('PONG', null);
+		}
+	}
+});
 
 function drawPlayerPaddle1(x, y, width, height) {
 	ctxx.fillStyle = 'white';

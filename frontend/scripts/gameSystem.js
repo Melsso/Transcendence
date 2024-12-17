@@ -6,6 +6,7 @@ import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScre
 import { endGameStats } from "./pong.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
+const CCtx = canvass.getContext('2d');
 const lo = document.getElementById('1v1');
 const menu = document.getElementById('menuuu');
 const inv_menu = document.getElementById('inv-menu');
@@ -153,6 +154,9 @@ export async function startGameSocket() {
             }
             if (current_players.length === 2) {
                 if (data.players.length == 1) {
+                    if (freeWill === true) {
+                        reutrn ;
+                    }
                     const accessToken = localStorage.getItem('accessToken');
                     if (!accessToken) {
                         Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
@@ -454,6 +458,7 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     
     lobbyContainer.style.display = 'block';
     if (gamer1 && gamer2 && gamer1.ready && gamer2.ready) {
+        CCtx.clearRect(0, 0, canvass.width, canvass.height);
         lobbyContainer.style.display = 'none';
         const gameContainer = document.getElementById('gameContainer');
         const countdownOverlay = document.createElement('div');
