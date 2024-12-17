@@ -135,7 +135,15 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = async function(event) {
         const data = JSON.parse(event.data);
-        if (data.action === 'update_game_state') {
+        console.log(data);
+        if (data.action === 'queue_start_game') {
+            if (window.userData.username === data.players[0]) {
+                if (data.players.length == 2) {
+                    sendQueueStatus(true, true);
+                }
+            }
+        }
+        else if (data.action === 'update_game_state') {
             if (data.target === window.userData.username) {
                 renderOP(data.state);
             }
@@ -270,6 +278,7 @@ async function startQueueGame(players) {
     g2['set'] = false;
     g1['score'] = 0;
     g2['score'] = 0;
+    console.log('ALLO');
     // randomize lobby settings here
     const countdownInterval = setInterval(() => {
         countdown -= 1;

@@ -10,19 +10,6 @@ const baseUrl = process.env.ACTIVE_HOST;
 const lobby = document.getElementById('pong-inv-container');
 import { getRoomName, startGameSocket } from "./gameSystem.js";
 
-const qSettings = {
-	mode: 'Default mode',
-	map: 'Map 1'
-};
-
-const gamer = {
-	username: "PlayerOne",
-	avatar: "path/to/avatar.png",
-	bar_exp_game1: 3.5,
-	wins: 30,
-	losses: 20,
-};
-
 function getWinPercentage(wins, losses) {
 	const totalGames = wins + losses;
 	return totalGames ? ((wins / totalGames) * 100).toFixed(0) : 0;
@@ -33,6 +20,12 @@ qBtn.addEventListener('click', function() {
 		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 		return ;
   }
+  const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
+  const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
+  setting = {
+		mode: gameMode,
+		map: selectedMap
+  };
 	menu.style.display = 'none';
 	ai_menu.style.display = 'none';
 	inv_menu.style.display = 'none';
@@ -43,9 +36,9 @@ qBtn.addEventListener('click', function() {
 	    existingContainer.remove();
 	}
 	qName.innerHTML = `
-        <div class="map">Map:   ${qSettings.map}</div>
+        <div class="map">Map:   ${setting.map}</div>
         <h1>1vs1 </h1>
-        <div class="mode">Mode:   ${qSettings.mode}</div>
+        <div class="mode">Mode:   ${setting.mode}</div>
 	`;
 
 	const gContainer = document.createElement('div');
@@ -56,8 +49,8 @@ qBtn.addEventListener('click', function() {
 	avatarDiv.classList.add('avatar');
 	
 	const avatarImg = document.createElement('img');
-	avatarImg.src = gamer.avatar;
-	avatarImg.alt = `${gamer.username} Avatar`;
+	avatarImg.src = window.userData.avatar;
+	avatarImg.alt = `${window.userData.username} Avatar`;
 	avatarImg.classList.add('avatar-image');
 	avatarDiv.appendChild(avatarImg);
 
@@ -65,11 +58,11 @@ qBtn.addEventListener('click', function() {
 	playerInfo.classList.add('player-info');
 
 	const usernameHeading = document.createElement('h3');
-	usernameHeading.textContent = gamer.username;
+	usernameHeading.textContent = window.userData.username;
 	playerInfo.appendChild(usernameHeading);
 
 	const levelParagraph = document.createElement('p');
-	levelParagraph.textContent = `Level ${Math.floor(gamer.bar_exp_game1)}:`;
+	levelParagraph.textContent = `Level ${Math.floor(window.userData.bar_exp_game1)}:`;
 	playerInfo.appendChild(levelParagraph);
 
 	const expBarContainer = document.createElement('div');
@@ -77,19 +70,19 @@ qBtn.addEventListener('click', function() {
 
 	const expBar = document.createElement('div');
 	expBar.classList.add('exp-bar');
-	expBar.style.width = `${((gamer.bar_exp_game1 - Math.floor(gamer.bar_exp_game1)) * 100).toFixed(0)}%`;
+	expBar.style.width = `${((window.userData.bar_exp_game1 - Math.floor(window.userData.bar_exp_game1)) * 100).toFixed(0)}%`;
 	expBarContainer.appendChild(expBar);
 	playerInfo.appendChild(expBarContainer);
 
 	const winLossParagraph = document.createElement('p');
-	winLossParagraph.textContent = `W/L: ${gamer.wins}-${gamer.losses}`;
+	winLossParagraph.textContent = `W/L: ${window.userData.wins}-${window.userData.losses}`;
 	playerInfo.appendChild(winLossParagraph);
 	const winrateBarContainer = document.createElement('div');
 	winrateBarContainer.classList.add('winrate-bar-container');
 
 	const winrateBar = document.createElement('div');
 	winrateBar.classList.add('winrate-bar');
-	winrateBar.style.width = `${getWinPercentage(gamer.wins, gamer.losses)}%`;
+	winrateBar.style.width = `${getWinPercentage(window.userData.wins, window.userData.losses)}%`;
 	winrateBarContainer.appendChild(winrateBar);
 	playerInfo.appendChild(winrateBarContainer);
 	gContainer.appendChild(avatarDiv);
@@ -166,7 +159,6 @@ export function acceptRefuse() {
 		refuseButton.disabled = true;
 		acceptButton.classList.add('grayed-out');
 		refuseButton.classList.add('grayed-out');
-		//gray out buttons instead
 		sendQueueStatus(true);
 	};
  
@@ -191,7 +183,7 @@ export function acceptRefuse() {
 	setTimeout(function () {
 		modal.style.display = 'none';
 		modal.remove();
-		sendQueueStatus(true, true)
+		sendQueueStatus(false);
 	}, 10000);
 	// display countdiown on modal
 }
@@ -227,9 +219,10 @@ async function creatQueueRoom() {
 	}
 }
 
-async function sendQueueStatus(accept, flag=null) {
+export async function sendQueueStatus(accept, flag=null) {
 	if (window.userData.pong_socket) {
 		if (flag) {
+
 			window.userData.pong_socket.send(JSON.stringify({
 				action: 'game_start',
 			}));

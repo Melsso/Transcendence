@@ -184,6 +184,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await self.send_current_players(players_in_room)
 
 	async def disconnect(self, close_code):
+		user = self.scope['user']
+		if "queue_" in self.redis_key:
+			await self.remove_player_from_room(user.username)
+			# if len(players_in_room) == 0:
+			# 	del self.game_rooms[self.room_group_name]
+			return
 		if 'task' in self.game_rooms[self.room_group_name]:
 			task = self.game_rooms[self.room_group_name]['task']
 			if not task.done():
@@ -195,10 +201,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			finally:
 				if 'task' in self.game_rooms[self.room_group_name]:
 					del self.game_rooms[self.room_group_name]['task']
-		user = self.scope['user']
 		await self.remove_player_from_room(user.username)
-		if "queue_" in self.redis_key:
-			return
 		players_in_room = await self.get_players_in_room()
 
 		if players_in_room:
@@ -281,10 +284,20 @@ class GameConsumer(AsyncWebsocketConsumer):
 						task = asyncio.create_task(self.move_ball(self.room_group_name))
 						self.game_rooms[self.room_group_name]["task"] = task
 			elif action == 'queue_status':
-				if state == False:
-					await self.remove_player_from_room(player)
-				else:
-					await self.update_player_ready(player, state)
+				await self.update_player_ready(player, state)
+				players_in_room = await self.get_players_in_room()
+				logger.warning(players_in_room)
+				# if len(players_in_room) != 2:
+				# 	return
+				start = True
+				user = self.scope['user']
+				for player in players_in_room:
+					if players_in_room[player]['ready'] == False:
+						start = False
+						break
+				if start == True:
+					await self.send_currents(players_in_room)
+
 			elif action == 'game_start':
 				await self.gameStart()
 			elif action == 'update_buff_state':
@@ -351,11 +364,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 				if user.username == player_keys[0]:
 					user_profiles = await database_sync_to_async(lambda: list(UserProfile.objects.filter(username__in=player_keys)))()
 					serializer = UserProfileSerializer(user_profiles, many=True)
+					logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII')
+					logger.warning(serializer)
 					await self.channel_layer.group_send(
 						self.room_group_name, {
 							'type': 'player_action',
 							'action': 'start_queue_game',
-							'players': serializer.data
+							'players': 'serializer.data'
 						}
 					)
 					task = asyncio.create_task(self.move_ball(self.room_group_name))
@@ -608,6 +623,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 		return players
 
 	async def remove_player_from_room(self, player_name):
+		logger.warning('ZEBIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII')
+		logger.warning(player_name)
 		redis = await aioredis.from_url("redis://redis:6379")
 		await redis.hdel(self.redis_key, player_name)
 		players = await redis.hgetall(self.redis_key)
@@ -649,6 +666,22 @@ class GameConsumer(AsyncWebsocketConsumer):
             {
 				'type': 'player_action',
 				'action': 'current_players',
+				'players': user_profiles
+			}
+		)
+	
+	async def send_currents(self, players):
+		user_profiles = await self.get_user_profiles(players)
+		ready_status = {username: data['ready'] for username, data in players.items()}
+
+		for profile in user_profiles:
+			profile['ready'] = ready_status.get(profile['username'], False)
+
+		await self.channel_layer.group_send(
+			self.room_group_name,
+            {
+				'type': 'queue_action',
+				'action': 'queue_start_game',
 				'players': user_profiles
 			}
 		)
@@ -772,6 +805,14 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'state': state
 		}))
 	
+	async def queue_action(self, event):
+		action = event['action']
+		players = event['players']
+
+		await self.send(text_data=json.dumps({
+			'action': action,
+			'players': players
+		}))
 
 	async def add_player_to_room(self, player_name, screen_width, screen_height):
 		redis = await aioredis.from_url("redis://redis:6379")
