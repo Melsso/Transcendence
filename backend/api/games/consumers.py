@@ -190,11 +190,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		user = self.scope['user']
-		if "queue_" in self.redis_key:
-			await self.remove_player_from_room(user.username)
-			# if len(players_in_room) == 0:
-			# 	del self.game_rooms[self.room_group_name]
-			return
 		if 'task' in self.game_rooms[self.room_group_name]:
 			task = self.game_rooms[self.room_group_name]['task']
 			if not task.done():
@@ -289,9 +284,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 						task = asyncio.create_task(self.move_ball(self.room_group_name))
 						self.game_rooms[self.room_group_name]["task"] = task
 			elif action == 'queue_status':
-				logger.warning(state)
-				logger.warning(player)
 				await self.update_player_ready(player, state)
+				players_in_room = await self.get_players_in_room()
 				if len(players_in_room) != 2:
 					return
 				start = True
@@ -301,12 +295,14 @@ class GameConsumer(AsyncWebsocketConsumer):
 						start = False
 						break
 				if start == True:
+					
 					await self.send_currents(players_in_room)
 
 			elif action == 'game_start':
+				logger.warning(self.room_group_name)
+				logger.warning('zebiiiiiiii22222222222222222222222222222222222222222222222222222222')
 				task = asyncio.create_task(self.move_ball(self.room_group_name))
 				self.game_rooms[self.room_group_name]["task"] = task
-				#send to players that game is staritng, so absically show countdown on front end and prepare game
 			elif action == 'update_buff_state':
 				# add buff attack hit for both and update paddles
 				if player == 1:
@@ -390,6 +386,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
 	async def move_ball(self, key):
+		logger.warning('Zebiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+		logger.warning(key)
 		game = self.game_rooms[key]
 		game['ball'] = {'x': 0.5, 'y': 0.5,  'dx': 0.005,'dy': 0.005,'radius': 0.01 }
 		game['paddle1'] = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}

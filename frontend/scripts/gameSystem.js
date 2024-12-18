@@ -4,6 +4,7 @@ import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound, handleQuitting } from "./gamePvP.js";
 import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
 import { endGameStats } from "./pong.js";
+import { sendQueueStatus } from "./matchMaking.js"
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const CCtx = canvass.getContext('2d');
@@ -81,6 +82,47 @@ lo.addEventListener('click', async function (){
     }
 });
 
+function startQueueGames(gamer1, gamer2, lobbySettings){
+    CCtx.clearRect(0, 0, canvass.width, canvass.height);
+    lobbyContainer = document.getElementById('Queue-container-me');
+    lobbyContainer.style.display = 'none';
+    lobbyContainer.innerHTML = '';
+    const gameContainer = document.getElementById('gameContainer');
+    const countdownOverlay = document.createElement('div');
+    countdownOverlay.classList.add('countdown-overlay');
+    countdownOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5em;
+        z-index: 1000;
+    `;
+    gameContainer.appendChild(countdownOverlay);
+
+    let countdown = 3;
+    countdownOverlay.textContent = countdown;
+
+    const countdownInterval = setInterval(() => {
+        countdown -= 1;
+        if (countdown > 0) {
+            countdownOverlay.textContent = countdown;
+        } else {
+            clearInterval(countdownInterval);
+            countdownOverlay.textContent = 'Game Start!';
+            setTimeout(() => {
+                countdownOverlay.remove();
+                drawAll(gamer1, gamer2, lobbySettings);
+            }, 1000);
+        }
+    }, 1000);
+}
+
 export function sendBuffState(Buff, player) {
 	if (window.userData.pong_socket) {
 		window.userData.pong_socket.send(JSON.stringify({
@@ -135,14 +177,19 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = async function(event) {
         const data = JSON.parse(event.data);
-        console.log(data);
         if (data.action === 'queue_start_game') {
             if (data.players.length == 2) {
+                window.userData.r_name = data.room_name;
+                current_players.push(data.players[1]);
+                current_players.push(data.players[0]);
                 hebssmodal = true;
-                //remove accept-refue modal
-                if (window.userData.username === data.players[0]) {
+                mod.remove();
+                mod.style.display = 'none';
+                if (window.userData.username === data.players[0].username) {
+                    console.log('yemat sofiane qabha')
                     sendQueueStatus(true, true);
                 }
+                startQueueGame(data.players);
             }
         }
         else if (data.action === 'update_game_state') {
@@ -244,10 +291,7 @@ export async function startGameSocket() {
                 newRound();
                 displayCountdown();
             }
-            // countdownforRound();
-        } else if (data.action === 'go_screen') {
-            console.log('Ending the game: ', data);
-        } 
+        }
     }
 }
 
@@ -280,7 +324,10 @@ async function startQueueGame(players) {
     g2['set'] = false;
     g1['score'] = 0;
     g2['score'] = 0;
-    console.log('ALLO');
+    let lobbysetting = {
+        mode: 'Buff Mode',
+        map: 'Map 1',
+    }
     // randomize lobby settings here
     const countdownInterval = setInterval(() => {
         countdown -= 1;
@@ -291,7 +338,7 @@ async function startQueueGame(players) {
             countdownOverlay.textContent = 'Game Start!';
             setTimeout(() => {
                 countdownOverlay.remove();
-                drawAll(g1, g2, lobbySettings);
+                drawAll(g1, g2, lobbysetting);
             }, 1000);
         }
     }, 1000);

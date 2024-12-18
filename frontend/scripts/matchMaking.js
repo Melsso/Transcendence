@@ -8,6 +8,7 @@ const ai_menu = document.getElementById('ai-menu');
 const Instructions = document.getElementById('Instructions-box');
 const baseUrl = process.env.ACTIVE_HOST;
 window.hebssmodal =false;
+window.mod = null;
 const lobby = document.getElementById('pong-inv-container');
 import { getRoomName, startGameSocket } from "./gameSystem.js";
 
@@ -118,6 +119,7 @@ qBtn.addEventListener('click', function() {
 export function acceptRefuse() {
 	const gContainer = document.getElementById('Queue-container-me');
 	const modal = document.createElement('div');
+	mod = modal;
 	modal.id = 'queue-match-modal';
 	modal.className = 'queue-modal';
  
