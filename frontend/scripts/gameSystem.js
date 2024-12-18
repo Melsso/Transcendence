@@ -3,7 +3,6 @@ import { handleSend } from "./chat.js";
 import { acceptRefuse } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound, handleQuitting } from "./gamePvP.js";
 import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
-import { endGameStats } from "./pong.js";
 import { sendQueueStatus } from "./matchMaking.js"
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
@@ -186,10 +185,9 @@ export async function startGameSocket() {
                 mod.remove();
                 mod.style.display = 'none';
                 if (window.userData.username === data.players[0].username) {
-                    console.log('yemat sofiane qabha')
                     sendQueueStatus(true, true);
                 }
-                startQueueGame(data.players);
+                startQueueGame(data.players, data.settings);
             }
         }
         else if (data.action === 'update_game_state') {
@@ -221,7 +219,6 @@ export async function startGameSocket() {
                     }
                     try {
                         const data = await getRoomName();
-                        console.log(data);
                         const u = new URL(baseUrl);
                         const screenHeight = canvass.clientHeight;
                         const screenWidth = canvass.clientWidth;
@@ -295,7 +292,7 @@ export async function startGameSocket() {
     }
 }
 
-async function startQueueGame(players) {
+async function startQueueGame(players, sett=null) {
     const queue = document.getElementById('Queue');
     queue.style.display = 'none';
     const gameContainer = document.getElementById('gameContainer');
@@ -324,9 +321,8 @@ async function startQueueGame(players) {
     g2['set'] = false;
     g1['score'] = 0;
     g2['score'] = 0;
-    let lobbysetting = {
-        mode: 'Buff Mode',
-        map: 'Map 1',
+    if (sett) {
+        window.lobbySettings = sett;
     }
     // randomize lobby settings here
     const countdownInterval = setInterval(() => {
@@ -338,7 +334,7 @@ async function startQueueGame(players) {
             countdownOverlay.textContent = 'Game Start!';
             setTimeout(() => {
                 countdownOverlay.remove();
-                drawAll(g1, g2, lobbysetting);
+                drawAll(g1, g2, lobbySettings);
             }, 1000);
         }
     }, 1000);
@@ -498,7 +494,6 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
                     if (!document.getElementById(id6).value.trim()) {
                         Notification('Game Action', 'No such user!', 2, 'alert');
                     } else {
-                        console.log(window.userData.r_name);
                         handleSend(document.getElementById(id6).value , window.userData.r_name, 'Notification');
                         Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
                     }

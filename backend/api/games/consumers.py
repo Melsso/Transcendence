@@ -6,9 +6,8 @@ from users.serializers import UserProfileSerializer
 from urllib.parse import parse_qs
 import aioredis
 import json
-import math
 import random
-import string
+import uuid
 import logging
 import asyncio
 import time
@@ -295,16 +294,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 						start = False
 						break
 				if start == True:
-					
+
 					await self.send_currents(players_in_room)
 
 			elif action == 'game_start':
-				logger.warning(self.room_group_name)
-				logger.warning('zebiiiiiiii22222222222222222222222222222222222222222222222222222222')
 				task = asyncio.create_task(self.move_ball(self.room_group_name))
 				self.game_rooms[self.room_group_name]["task"] = task
 			elif action == 'update_buff_state':
-				# add buff attack hit for both and update paddles
 				if player == 1:
 					if buff == 'speed':
 						game['paddle1']['dy'] = 0.0175
@@ -386,8 +382,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
 	async def move_ball(self, key):
-		logger.warning('Zebiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
-		logger.warning(key)
 		game = self.game_rooms[key]
 		game['ball'] = {'x': 0.5, 'y': 0.5,  'dx': 0.005,'dy': 0.005,'radius': 0.01 }
 		game['paddle1'] = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
@@ -608,10 +602,14 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def queue_action(self, event):
 		action = event['action']
 		players = event['players']
+		settings = event['settings']
+		room_name = event['room_name']
 
 		await self.send(text_data=json.dumps({
 			'action': action,
-			'players': players
+			'players': players,
+			'settings': settings,
+			'room_name': room_name
 		}))
 	
 	async def get_players_in_room(self):
@@ -677,12 +675,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 		for profile in user_profiles:
 			profile['ready'] = ready_status.get(profile['username'], False)
 
+		room_name = f"{user_profiles[0]['username']}_{str(uuid.uuid4())}"
+		settings = {
+			"mode": random.choice(['Default Mode', 'Buff Mode']),
+			"map": random.choice(['Map 1', 'Map 2', 'Map 3'])
+		}
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {
 				'type': 'queue_action',
 				'action': 'queue_start_game',
-				'players': user_profiles
+				'players': user_profiles,
+				'settings': settings,
+				'room_name': room_name,
 			}
 		)
 

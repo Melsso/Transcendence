@@ -883,15 +883,11 @@ ai_hard.addEventListener('click', function(event) {
 function    calculateAverageRoundTime(){
     let endScore = player1.score + player2.score;
     let art = (fullTime / 1000) / endScore;
-    // console.log(fullTime);
     return art;
 }
 
-
-// let player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
 export async function endGameStats(winner, loser, forfeit=null, room_name=null, game_data=null) {
     var exp;
-
     if (winner.name.includes('Easy AI') || loser.name.includes('Easy AI'))
         exp = 50;
     else if (winner.name.includes('Medium AI') || loser.name.includes('Medium AI'))
@@ -908,30 +904,7 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null, 
     } catch (error) {
         Notification('Game Action', `Error: ${error}`, 2, 'alert');
     }
-    // const player1Score = getPlayer1Score(); 
-    // const player2Score = getPlayer2Score(); 
-    // const player1BuffsTaken = getPlayer1Buffs();
-    // const player2BuffsTaken = getPlayer2Buffs();
-    // // window.player1AttackAcc = calculateAccuracy(player1.ABR, player2.gothit); // Replace with actual accuracy calculation
-    // window.player2AttackAcc = calculateAccuracy(player2.ABR, player1.gothit); // Replace with actual accuracy calculation
-
-    // // Fill in player stats
-    // data.playerStats1.score = player1.score; //done
-    // data.playerStats1.buffs_taken = player1.Btaken; //done
-    // data.playerStats1.attack_acc = playerpaddle1.ABR / playerpaddle2.gothit;
-
-    // data.playerStats2.score = player2.score; // done
-    // data.playerStats2.buffs_taken = player2.Btaken; // done
-    // data.playerStats2.attack_acc = playerpaddle2.ABR / playerpaddle1.gothit; // done
-
-    // // Fill in game stats
-    data.gameStats.average_round_time = calculateAverageRoundTime(); // done
-    // data.gameStats.fastest_round = ShortestRound; // done
-    // data.gameStats.longest_round = LongestRound; // done
-    // data.gameStats.map_played = setting.map ; // Replace with actual map played
-    // data.gameStats.full_time = fullTime; // done
-    // data.gameStats.winner = player1.score > player2.score ? 1 : 2; // should work, to be tested //
-
+    //data.gameStats.average_round_time = calculateAverageRoundTime(); MAYBE WILL BE USED!!
 }
 
 export async function sendGameResult(exp, winner, loser, game_data, forfeit=null, room_name=null) {
@@ -939,7 +912,6 @@ export async function sendGameResult(exp, winner, loser, game_data, forfeit=null
 	if (!access_token) {
 		throw new Error("No access token found.");
 	}
-    console.log('1',forfeit);
 	const url = baseUrl + 'api/games/game_result/';
 	const response = await fetch(url, {
 		method: 'POST',

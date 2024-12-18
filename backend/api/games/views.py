@@ -11,8 +11,8 @@ from .models import PongGame
 from .serializers import PongGameSerializer
 from users.models import UserProfile
 import uuid
-import logging
 import random
+import logging
 import string
 import time
 
