@@ -8,6 +8,7 @@ import aioredis
 import json
 import random
 import uuid
+import string
 import logging
 import asyncio
 import time
@@ -671,11 +672,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 	async def send_currents(self, players):
 		user_profiles = await self.get_user_profiles(players)
 		ready_status = {username: data['ready'] for username, data in players.items()}
-
 		for profile in user_profiles:
 			profile['ready'] = ready_status.get(profile['username'], False)
-
-		room_name = f"{user_profiles[0]['username']}_{str(uuid.uuid4())}"
+		uid1 = user_profiles[0]['id']
+		uid2 = user_profiles[1]['id']
+		timestamp_part = str(int(time.time()))[-6:]
+		random_part = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+		room_name = f"{uid1}_{uid2}_{timestamp_part}_{random_part}"
 		settings = {
 			"mode": random.choice(['Default Mode', 'Buff Mode']),
 			"map": random.choice(['Map 1', 'Map 2', 'Map 3'])
