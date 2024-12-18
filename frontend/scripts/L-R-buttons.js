@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     open.addEventListener('click', function (e) {
         e.preventDefault();
-        // console.log('allo');
         navigateTo('force', null);
     });
 });

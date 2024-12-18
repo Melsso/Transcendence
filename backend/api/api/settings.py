@@ -32,11 +32,7 @@ parsed_url = urlparse(active_host)
 host_ip = parsed_url.hostname
 
 ALLOWED_HOSTS = [
-    # '0.0.0.0',
     host_ip,
-    # 'localhost',
-    # '127.0.0.1',
-    # 'backend',
 ]
 
 LOGGING = {

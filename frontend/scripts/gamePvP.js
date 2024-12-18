@@ -324,7 +324,6 @@ export function newRound() {
 	Attackpvp.visible = false;
 	Bigpadpvp.visible = false;
 	Buffpvp.y = heightScale;
-	console.log(Buffpvp.y);
 	Buffpvp.x = (widthScale / 2);
 	Attackpvp.y = heightScale;
 	Attackpvp.x = (widthScale / 2);
@@ -861,7 +860,6 @@ export function drawAll(pvp1, pvp2, settings) {
 		else if (BuffFlag === 2) {
 			if (Attackpvp.visible === true){
 				drawAttackpvp(0.45);
-				console.log(Attackpvp.y)
 				if (up2)
 					Attackpvp.y -= Attackpvp.height / 2;
 				else if (!up2)
@@ -967,9 +965,7 @@ window.addEventListener('resize', async function () {
 
 window.addEventListener('beforeunload', function (event) {
     if (resizeGame === true) {
-		// console.log("Page is about to be reloaded or closed");
 		handleQuitting();
-		// event.preventDefault();
 		event.returnValue = '';
 	}
 });

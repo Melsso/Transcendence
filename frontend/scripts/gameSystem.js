@@ -178,16 +178,19 @@ export async function startGameSocket() {
         const data = JSON.parse(event.data);
         if (data.action === 'queue_start_game') {
             if (data.players.length == 2) {
-                window.userData.r_name = data.room_name;
-                current_players.push(data.players[1]);
-                current_players.push(data.players[0]);
                 hebssmodal = true;
                 mod.remove();
                 mod.style.display = 'none';
+                window.userData.r_name = data.room_name;
+                current_players.push(data.players[1]);
+                current_players.push(data.players[0]);
                 if (window.userData.username === data.players[0].username) {
                     sendQueueStatus(true, true);
                 }
                 startQueueGame(data.players, data.settings);
+            } else {
+                resizeGame = false;
+                navigateTo('PONG', null);
             }
         }
         else if (data.action === 'update_game_state') {
