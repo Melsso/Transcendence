@@ -1,4 +1,5 @@
 import { handleSend } from "./chat.js";
+import { getRoomName } from "./gameSystem.js";
 
 const baseUrl = process.env.ACTIVE_HOST;
 const inv_menu = document.getElementById('inv-menu');
@@ -10,70 +11,6 @@ const menu = document.getElementById('menuuu');
 const  carousel = document.getElementById('bracket-container');
 const tourniLobby = document.getElementById('tournament');
 
-async function getTournamentName() {
-	const access_token = localStorage.getItem('accessToken');
-    if (!access_token) {
-        Notification();
-        return ;
-    }
-
-    const url = baseUrl + 'api/games/create-tournament-room/';
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-            'Content-Type': 'application/json',
-        },
-    });
-
-    if (!response.ok) {
-        const errorResponse = await response.json();
-        throw errorResponse;
-    }
-    const data = await response.json();
-    return data;
-}
-
-export async function startTournamentSocket() {
-	window.userData.pong_socket.onopen = function(e) {
-		console.log("TOURNAMENTSOCKET-ON");
-	}
-	window.userData.pong_socket.onclose = function(e) {
-		console.log("TOURNAMENTSOCKET-OFF");
-		Tlobby.style.display = 'none';
-	}
-	window.userData.pong_socket.onmessage = function(e) {
-		const data = JSON.parse(e.data);
-		if (data.action == 'update_game_state') {
-			gameState = data.gameState;
-		} else if (data.action === 'current_players') {
-			menu.style.display = 'none';
-			ai_menu.style.display = 'none';
-			inv_menu.style.display = 'none';
-			Instructions.style.display = 'none';
-			Tlobby.style.display = 'block';
-			displayTourniLobby(lobbySettings, data.players, data.owner);
-		} else if (data.action === 'match_randomized') {
-			generateTournamentCarousel(data.players);
-		}
-	}
-}
-
-function sendGameStatus(username, ready) {
-	if (window.userData.pong_socket) {
-		const stateData = {
-			'username': username,
-			'ready': ready,
-		}
-		window.userData.pong_socket.send(JSON.stringify({
-			action: 'player_action',
-			state: stateData,
-		}));
-	} else {
-		return ;
-		// here have to handle the error or rather changing view this shouldnt be reached in anycase anyway
-	}
-}
 
 tourniLobby.addEventListener('click', async function (event) {
 	if (window.userData['guest'] === true) {
@@ -103,6 +40,7 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 		"owner":owner,
 		"Slobby": lobbysettings,
 		"in": false,
+		"out": false,
 	};
 	window.userData.tournoi.in = true;
 	Tcontainer.innerHTML = '';
@@ -269,15 +207,6 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 	}
 }
 
-function sendMatchups(matchups) {
-	if (window.userData.pong_socket) {
-		window.userData.pong_socket.send(JSON.stringify({
-			action: 'match_making',
-			matchups: matchups,		
-		}));
-  }
-}
-
 function checkReadyStatus(TourniPlayers, Slobby) {
 	if (window.userData.username === TourniPlayers[0].username) {
 		let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
@@ -289,18 +218,18 @@ function checkReadyStatus(TourniPlayers, Slobby) {
 				shuffledPlayers[i + 1] || { username: shuffledPlayers[i + 1].username, avatar: shuffledPlayers[i + 1].avatar }
 			]);
 		}
-		console.log('ALLO', matchups);
 		handleSend(null, Slobby, 'TMatchups', null, matchups, window.userData.username);
 	}
-	// generateTournamentCarousel(TourniPlayers, matchups);
 };
 
-export function generateTournamentCarousel(matchups, owner) {
+export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 	Tcontainer.style.display = 'none';
 	lobbyNameElement.style.display = 'none';
 	carousel.style.display = 'flex';
 	const carouselInner = document.querySelector('#matchupCarousel .carousel-inner');
 	carouselInner.innerHTML = '';
+	window.userData.tournoi.in = false;
+	window.userData.tournoi.out = true;
 	matchups.forEach((matchup, index) => {
 		const carouselItem = document.createElement('div');
 		carouselItem.classList.add('carousel-item');
@@ -315,23 +244,47 @@ export function generateTournamentCarousel(matchups, owner) {
 			<img src="${matchup[0].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 1 Avatar">
 			<p class="username">${matchup[0].username}</p>
 		`;
-
 		const player2Div = document.createElement('div');
 		player2Div.classList.add('player');
 		player2Div.innerHTML = `
-			  <img src="${matchup[1].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 2 Avatar">
-			  <p class="username">${matchup[1].username}</p>
+		<img src="${matchup[1].avatar}" class="avatar img-fluid rounded-circle mb-2" alt="Player 2 Avatar">
+		<p class="username">${matchup[1].username}</p>
 		`;
-
+		
 		matchupContainer.appendChild(player1Div);
-		 
+		
 		const versusDiv = document.createElement('div');
 		versusDiv.classList.add('versus');
 		versusDiv.innerHTML = '<h3>VS</h3>';
-
+		
 		matchupContainer.appendChild(versusDiv); 
 		matchupContainer.appendChild(player2Div);
 		carouselItem.appendChild(matchupContainer);
 		carouselInner.appendChild(carouselItem);
+		
 	});
+	setTimeout(async () => {
+		for (const matchup of matchups) {
+			if (matchup[0].username === window.userData.username) {
+				carousel.style.display = 'none';
+				try {
+					const res = await getRoomName();
+					const room_name = 'tournoi_' + res.room_name;
+					sendTRoomName(room_name, matchup, lobbyS);
+				} catch (error) {
+					Notification('Game Action', `Something went wrong; please relog! error: ${error.detail}`, 2, 'alert');
+				}
+				break;
+			}
+		}
+	}, 10000);
+}
+
+function sendTRoomName(room_name, matchup, lobbyS) {
+	const users = {
+		'player1':matchup[0].username,
+		'player2':matchup[1].username,
+	}
+
+	window.userData.socket.send(JSON.stringify({action:'TournoiRoom', room_name:room_name, Slobby:lobbyS, players:users}));
 }

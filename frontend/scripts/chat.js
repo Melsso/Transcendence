@@ -181,6 +181,10 @@ async function addMessage(message, isSender = false, data) {
 	messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export async function	launchSocket() {
 		window.userData.socket.onopen = function(e) {
 			console.log("CHATSOCKET--ON");
@@ -193,8 +197,48 @@ export async function	launchSocket() {
 		
 		window.userData.socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
+			if (data.action === 'TournoiRoom' && Object.values(data.players).includes(window.userData.username)) {
+				if (data.players['player2'] === window.userData.username) {
+					await sleep(1000);
+				}
+				console.log(window.userData.username);
+				try {
+					if (window.userData.pong_socket) {
+						 window.userData.pong_socket.close();
+						 window.userData.pong_socket = null;
+					 window.userData.r_name = null;
+					}
+					const accessToken = localStorage.getItem('accessToken');
+					if (!accessToken) {
+						 Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+						 return ;
+					}
+					window.userData.r_name = data.room_name;
+					console.log(data.players, window.userData.r_name);
+					const u = new URL(baseUrl);
+					const screenHeight = canvass.clientHeight;
+					const screenWidth = canvass.clientWidth;
+					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+					window.userData['pong_socket'] = gameSocket;
+					console.log('HAYLA');
+					startGameSocket();
+					console.log('HAYLA2');
+					startQueueGame(data.players, data.Slobby, true);
+					console.log('HAYLA3');
+			  } catch (error) {
+					Notification('Game Action', `Error: ${error.detail}HNA`, 2, 'alert');
+					window.userData.r_name = null;
+					if (window.userData.pong_socket) {
+						 window.userData.pong_socket.close();
+						 window.userData.r_name = null;
+					}
+					window.userData.pong_socket = null;
+					return ;
+			  }
+				return ;
+			}
 			if (data.action === 'TMatchups' && data.players.some(matchup => matchup.some(player => player.username === window.userData.username))) {
-				generateTournamentCarousel(data.players, data.owner);
+				generateTournamentCarousel(data.players, data.owner, data.Slobby);
 				return ;
 			}
 			if (data.action === 'TNotification') {

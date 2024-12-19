@@ -81,47 +81,6 @@ lo.addEventListener('click', async function (){
     }
 });
 
-function startQueueGames(gamer1, gamer2, lobbySettings){
-    CCtx.clearRect(0, 0, canvass.width, canvass.height);
-    lobbyContainer = document.getElementById('Queue-container-me');
-    lobbyContainer.style.display = 'none';
-    lobbyContainer.innerHTML = '';
-    const gameContainer = document.getElementById('gameContainer');
-    const countdownOverlay = document.createElement('div');
-    countdownOverlay.classList.add('countdown-overlay');
-    countdownOverlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 5em;
-        z-index: 1000;
-    `;
-    gameContainer.appendChild(countdownOverlay);
-
-    let countdown = 3;
-    countdownOverlay.textContent = countdown;
-
-    const countdownInterval = setInterval(() => {
-        countdown -= 1;
-        if (countdown > 0) {
-            countdownOverlay.textContent = countdown;
-        } else {
-            clearInterval(countdownInterval);
-            countdownOverlay.textContent = 'Game Start!';
-            setTimeout(() => {
-                countdownOverlay.remove();
-                drawAll(gamer1, gamer2, lobbySettings);
-            }, 1000);
-        }
-    }, 1000);
-}
-
 export function sendBuffState(Buff, player) {
 	if (window.userData.pong_socket) {
 		window.userData.pong_socket.send(JSON.stringify({
@@ -161,6 +120,7 @@ function sendGameStatus(username, ready) {
 }
 
 export async function startGameSocket() {
+    console.log('DKHELNAAAAAAAAA');
     window.userData.pong_socket.onopen = function(e) {
         console.log("GAMESOCKET--ON");
         window.userData.screen_dimensions = {
@@ -295,7 +255,7 @@ export async function startGameSocket() {
     }
 }
 
-async function startQueueGame(players, sett=null) {
+async function startQueueGame(players, sett=null, myff=null) {
     const queue = document.getElementById('Queue');
     queue.style.display = 'none';
     const gameContainer = document.getElementById('gameContainer');
@@ -318,15 +278,26 @@ async function startQueueGame(players, sett=null) {
 
     let countdown = 3;
     countdownOverlay.textContent = countdown;
-    let g1 = players[0];
-    let g2 = players[1];
-    g1['set'] = false;
-    g2['set'] = false;
-    g1['score'] = 0;
-    g2['score'] = 0;
+    console.log(players);
+    if (myff === true) {
+        let g1 = players['player1'];
+        let g2 = players['playr2'];
+        g1['set'] = false;
+        g2['set'] = false;
+        g1['score'] = 0;
+        g2['score'] = 0;
+    } else {
+        let g1 = players[0];
+        let g2 = players[1];
+        g1['set'] = false;
+        g2['set'] = false;
+        g1['score'] = 0;
+        g2['score'] = 0;
+    }
     if (sett) {
         window.lobbySettings = sett;
     }
+    console.log('SALAM');
     // randomize lobby settings here
     const countdownInterval = setInterval(() => {
         countdown -= 1;

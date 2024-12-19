@@ -145,6 +145,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
             return
 
+        elif action == 'TournoiRoom':
+            Slobby = text_data_json.get("Slobby")
+            players = text_data_json.get("players")
+            room_name = text_data_json.get("room_name")
+            await self.channel_layer.group_send(
+                self.roomGroupName, {
+                    "type": "TRoom",
+                    "action": action,
+                    "players": players,
+                    "Slobby": Slobby,
+                    "room_name": room_name,
+                }
+            )
+            return
+
 
         message = text_data_json["message"]
         avatar = text_data_json["av"]
@@ -181,6 +196,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         target = event["target"]
         avatar = event["av"]
         await self.send(text_data=json.dumps({"message":message, "username":username, "target":target, "av": avatar}))
+
+    async def TRoom(self, event) :
+        action = event["action"]
+        players = event["players"]
+        Slobby = event["Slobby"]
+        room_name = event["room_name"]
+        await self.send(text_data=json.dumps({"action":action, "players":players, "Slobby":Slobby, "room_name": room_name}))
 
     async def TNotification(self, event):
         action = event["action"]
