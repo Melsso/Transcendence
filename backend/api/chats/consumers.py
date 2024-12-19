@@ -85,9 +85,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        action = text_data_json["action"]
-        username = text_data_json["username"]
-        target = text_data_json["target"]
+        action = text_data_json.get("action")
+        username = text_data_json.get("username")
+        target = text_data_json.get("target")
 
         if action == 'Game_left':
             await self.channel_layer.group_send(
@@ -114,9 +114,40 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
             return
+        elif action == 'TNotification':
+            Slobby = text_data_json.get("Slobby")
+            players = text_data_json.get("players")
+            owner = text_data_json.get("owner")
+            await self.channel_layer.group_send(
+                self.roomGroupName, {
+                    "type": "TNotification",
+                    "action": action,
+                    "owner": owner,
+                    "target": target,
+                    "players": players,
+                    "Slobby": Slobby,
+                }
+            )
+            return
+
+        elif action == 'TMatchups':
+            Slobby = text_data_json.get("Slobby")
+            players = text_data_json.get("players")
+            owner = text_data_json.get("owner")
+            await self.channel_layer.group_send(
+                self.roomGroupName, {
+                    "type": "TMatchups",
+                    "action": action,
+                    "owner": owner,
+                    "players": players,
+                    "Slobby": Slobby,
+                }
+            )
+            return
+
+
         message = text_data_json["message"]
         avatar = text_data_json["av"]
-
         user = await database_sync_to_async(self.get_user)(username)
 
         if target == 'Global':
@@ -150,7 +181,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         target = event["target"]
         avatar = event["av"]
         await self.send(text_data=json.dumps({"message":message, "username":username, "target":target, "av": avatar}))
-    
+
+    async def TNotification(self, event):
+        action = event["action"]
+        owner = event["owner"]
+        target = event["target"]
+        players = event["players"]
+        Slobby = event["Slobby"]
+        await self.send(text_data=json.dumps({"action":action, "owner":owner, "target":target, "players":players, "Slobby":Slobby}))
+
+    async def TMatchups(self, event):
+        action = event["action"]
+        players = event["players"]
+        owner = event["owner"]
+        Slobby = event["Slobby"]
+        await self.send(text_data=json.dumps({"action":action, "players":players, "owner":owner, "Slobby":Slobby}))
+
     async def Notification(self, event):
         action = event["action"]
         username = event["username"]

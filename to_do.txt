@@ -23,12 +23,11 @@ MINOR:
 		//global chat aint refreshing
 
 TODO:
-- q manager needs to be looped
 - backend loads (still in question)
 - when you delete messages, they get deleted as they should in the backend and db, however since we're loading them for the user manually they stay there until refresh
 - decide what to do with ai name
-- log stats
-- Left notes in gamePvP.js, the game result wont work/be saved until we address those problems
+- log stats (popilate them in lobbys)
+- make sure that when someone leaves torni CAROUSEL, it counts as ff, and the matchups/games continue as normal, and his opp auto wins.
 
 fixing:
 Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.

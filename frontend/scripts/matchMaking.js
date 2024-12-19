@@ -185,6 +185,7 @@ export function acceptRefuse() {
 	};
 	setTimeout(function () {
 		if(!hebssmodal) {
+			console.log('slm'); // hna make sure hebssmodal tweli false
 			sendQueueStatus(false);
 			navigateTo('profile', null);
 			modal.remove();

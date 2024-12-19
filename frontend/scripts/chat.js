@@ -21,12 +21,12 @@ document.body.appendChild(contextMenu);
 import { endGameStats } from "./pong.js"
 import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket  } from "./gameSystem.js";
-import { startTournamentSocket } from "./gameSystemT.js";
+import { displayTourniLobby, generateTournamentCarousel } from "./gameSystemT.js";
 import { getFriends, loadFriends } from "./populateFriends.js";
 let tar;
 let toastgame;
 
-export function handleSend(username, r_name=null, action, gameend=null) {
+export function handleSend(username=null, r_name=null, action, gameend=null, tournament=null, owner=null) {
 	// if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
 	// 	if (window.userData?.socket) {
 	// 		window.userData.socket.close();
@@ -42,6 +42,14 @@ export function handleSend(username, r_name=null, action, gameend=null) {
 	// 	navigateTo('login', null);
 	// 	return ;
 	// }
+	if (tournament && action === 'TMatchups') {
+		window.userData.socket.send(JSON.stringify({action:action, Slobby:r_name, players:tournament, owner:owner}));
+		return ;
+	}
+	if (tournament) {
+		window.userData.socket.send(JSON.stringify({action:action, target: username,Slobby: r_name ,players: tournament, owner:owner}));
+		return;
+	}
 	chatInput.focus();
 	const message = chatInput.value;
 	chatInput.value = '';
@@ -185,6 +193,48 @@ export async function	launchSocket() {
 		
 		window.userData.socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
+			if (data.action === 'TMatchups' && data.players.some(matchup => matchup.some(player => player.username === window.userData.username))) {
+				generateTournamentCarousel(data.players, data.owner);
+				return ;
+			}
+			if (data.action === 'TNotification') {
+				if (data.players.some(player => player.username === window.userData.username)) {
+					displayTourniLobby(data.Slobby, data.players, data.owner);
+					return ;
+				}
+				if (window.userData.username === data.target) {
+					if (gameaccept) {
+						gameaccept = null;
+						gameaccept = document.createElement('button');
+					}
+					TGameNotification('Game Action', "Invited you to a Tournament pong game!", data.owner);
+					gameaccept.addEventListener('click', function () {
+						if (window.userData['guest'] === true) {
+							Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+							return ;
+						}
+						if (data.players.some(player => player.username === window.userData.username)) {
+							return ;
+						}
+						toastgame.hide();
+						data.players.push({
+							"avatar": window.userData.avatar,
+							"ready": false,
+							"username": window.userData.username,
+						})
+						navigateTo('PONG', null);
+						menu.style.display = 'none';
+						ai_menu.style.display = 'none';
+						inv_menu.style.display = 'none';
+						Instructions.style.display = 'none';
+						Tlobby.style.display = 'block';
+						displayTourniLobby(data.Slobby, data.players, data.owner);
+						handleSend(null, data.Slobby, 'TNotification', null, data.players, data.owner);
+						return ;
+					})
+				}
+				return ;
+			}
 			if (data.action == 'online_status') {
 				window.userData['online'] = data.users;
 				try {
@@ -218,7 +268,6 @@ export async function	launchSocket() {
 						return ;
 				  }
 				  	toastgame.hide();
-					if (data.room_name.includes("tournament")) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');
 						if (!accessToken) {
@@ -226,26 +275,6 @@ export async function	launchSocket() {
 							return ;
 						}
 						navigateTo('PONG', null);
-						const gameSocket = new WebSocket(`ws://${u.host}/ws/tournament/${data.room_name}/?token=${accessToken}`);
-						window.userData['pong_socket'] = gameSocket;
-						window.userData.r_name = data.room_name;
-						menu.style.display = 'none';
-						ai_menu.style.display = 'none';
-						inv_menu.style.display = 'none';
-						Instructions.style.display = 'none';
-						lobby.style.display = 'none';
-						Tlobby.style.display = 'block';
-						window.lobbySettings = data.lobbySettings;
-						startTournamentSocket();
-						return ;
-					} else {
-						const u = new URL(baseUrl);
-						const accessToken = localStorage.getItem('accessToken');
-						if (!accessToken) {
-							Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
-							return ;
-						}
-						window.navigateTo('PONG', null);
 						const screenHeight = canvass.clientHeight;
 						const screenWidth = canvass.clientWidth;
 						const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
@@ -260,7 +289,6 @@ export async function	launchSocket() {
 						window.lobbySettings = data.lobbySettings;
 						startGameSocket();
 						return ;
-					}
 				});
 				return ;
 			}
@@ -506,6 +534,69 @@ function GameNotification(title, message, target) {
 
 	gameaccept.type = 'button';
 	gameaccept.textContent = 'Accept Game Invite!';
+	gameaccept.classList.add('btn');
+	gameaccept.style.backgroundColor = 'rgba(76, 39, 133, 0.5)';
+	gameaccept.style.padding = '0.25rem 0.5rem'; 
+	gameaccept.style.fontSize = '0.75rem';
+	gameaccept.style.marginLeft = '10px';
+	gameaccept.style.id = 'game-btn' + target;
+
+	header.appendChild(header_msg);
+	header.appendChild(gameaccept);
+	header.appendChild(msg_close);
+
+	const msg_content = document.createElement('div');
+	msg_content.classList.add('toast-body');
+	const holder = ': ';
+	msg_content.textContent = target + holder + message;  
+
+
+	msg_container.appendChild(header);
+	msg_container.appendChild(msg_content);
+	main_welcome.appendChild(msg_container);
+	mainpage.appendChild(main_welcome);
+
+	toastgame = new bootstrap.Toast(msg_container);
+	toastgame.show();
+	tar = target;
+	setTimeout(() => {
+		toastgame.hide();
+	}, 10000);
+}
+
+function TGameNotification(title, message, target) {	
+	var mainpage = document.getElementById('mainTwo');
+
+	const main_welcome = document.createElement('div');
+	main_welcome.classList.add("position-fixed", "p-3", "top-0", "end-0");
+	main_welcome.style.zIndex = '100';
+
+	const msg_container = document.createElement('div');
+	msg_container.id = 'WELCOME';
+	msg_container.classList.add('toast');
+	msg_container.setAttribute('role', 'alert');
+	msg_container.setAttribute('aria-live', 'assertive');
+	msg_container.setAttribute('aria-atomic', 'true');
+
+	const header = document.createElement('div');
+
+	header.style.backgroundColor = 'rgba(76, 39, 133, 0.5)';            
+	header.classList.add('toast-header');
+	header.style.textAlign = 'center';
+
+	const header_msg = document.createElement('strong');
+	header_msg.classList.add('me-auto');
+	header_msg.textContent = title;
+	header_msg.style.color = 'black'; 
+
+	const msg_close = document.createElement('button');
+	msg_close.type = 'button';
+	msg_close.classList.add('btn-close');
+	msg_close.setAttribute('aria-label', 'Close');
+	msg_close.setAttribute('data-bs-dismiss', 'toast');
+
+	gameaccept.type = 'button';
+	gameaccept.textContent = 'Accept Tournament Invite!';
 	gameaccept.classList.add('btn');
 	gameaccept.style.backgroundColor = 'rgba(76, 39, 133, 0.5)';
 	gameaccept.style.padding = '0.25rem 0.5rem'; 

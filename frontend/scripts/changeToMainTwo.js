@@ -1,6 +1,6 @@
 import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
-import { launchSocket, loadMessages, getMessages  } from "./chat.js";
+import { launchSocket, loadMessages, getMessages, handleSend  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
 import { Habess } from "./gamePvP.js";
 let userEmail;
@@ -840,6 +840,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	async function showView(view, data) {
+		if (window.userData?.tournoi && window.userData.tournoi.in === true) {
+			window.userData.tournoi.players = window.userData.tournoi.players.filter(player => player.username !== window.userData.username);
+			if (window.userData.tournoi.owner === window.userData.username) {
+				window.userData.tournoi.owner = window.userData.tournoi.players[0].username;
+			}
+			handleSend(null, window.userData.tournoi.Slobby, 'TNotification', null, window.userData.tournoi.players, window.userData.tournoi.owner);
+			window.userData.tournoi = null;
+		}
 		if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
 			if (window.userData?.socket) {
 				window.userData.socket.close();
