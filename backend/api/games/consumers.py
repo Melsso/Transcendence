@@ -303,9 +303,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 						start = False
 						break
 				if start == True:
-					if user.username == players_keys[0]:
-						task = asyncio.create_task(self.move_ball(self.room_group_name))
-						self.game_rooms[self.room_group_name]["task"] = task
+					task = asyncio.create_task(self.move_ball(self.room_group_name))
+					self.game_rooms[self.room_group_name]["task"] = task
 			elif action == 'queue_status':
 				await self.update_player_ready(player, state)
 				players_in_room = await self.get_players_in_room()
