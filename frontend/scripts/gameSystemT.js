@@ -281,11 +281,23 @@ export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 }
 
 
-function sendTRoomName(room_name, matchup, lobbyS) {
+export function sendTRoomName(room_name, matchup, lobbyS=null) {
 	const users = {
 		'player1':matchup[0].username,
 		'player2':matchup[1].username,
 	}
 
 	window.userData.socket.send(JSON.stringify({action:'TournoiRoom', room_name:room_name, Slobby:lobbyS, players:users}));
+}
+
+export function sendTGameResult(winner, loser, players) {
+	// fix players first
+	players.forEach(player => {
+		if (player.username === winner) {
+			player.result = "WIN";
+		} else if (player.username === loser) {
+			player.result = 'LOST';
+		}
+	});
+	window.userData.socket.send(JSON.stringify({action:'TournoiGameRes', players:players}));
 }

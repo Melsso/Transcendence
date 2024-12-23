@@ -23,8 +23,33 @@ import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket, startQueueGame } from "./gameSystem.js";
 import { displayTourniLobby, generateTournamentCarousel } from "./gameSystemT.js";
 import { getFriends, loadFriends } from "./populateFriends.js";
+import { sendTRoomName } from "./gameSystemT.js";
 let tar;
 let toastgame;
+async function getTournamentRoomName(targ=null) {
+    const access_token = localStorage.getItem('accessToken');
+    if (!access_token) {
+        Notification();
+        return ;
+    }
+    const url = baseUrl + 'api/games/create-game-room/';
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'Content-Type': 'application/json',
+			'TargetUsername': targ,
+		},
+    });
+
+    if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+    }
+    const data = await response.json();
+    return data;
+}
+
 
 export function handleSend(username=null, r_name=null, action, gameend=null, tournament=null, owner=null) {
 	// if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
@@ -120,7 +145,7 @@ function showContextMenu(event, username) {
 
 async function handleGameInvite(username) {
 	if (window.userData.socket) {
-		if (window.userData.pong_socket) {
+		if (window.userData.pong_socket && !resizeGame) {
 			handleSend(username, window.userData.r_name, 'Notification');
 			Notification('Game Action', 'You Have Successfuly Sent A Game Invitation!', 2, 'invite');
 		}
@@ -180,6 +205,15 @@ function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function checkFirstRound(players) {
+	if (players.length === 4)
+		return true;
+	else if (players.length === 2)
+		return true;
+	else
+		return false;
+}
+
 export async function	launchSocket() {
 		window.userData.socket.onopen = function(e) {
 			console.log("CHATSOCKET--ON");
@@ -189,9 +223,46 @@ export async function	launchSocket() {
 			console.log("CHATSOCKET--OFF");
 		}
 		
-		
 		window.userData.socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
+			if (data.action === 'TournoiGameRes') {
+				let op = null;
+				let slmslm;
+				var matchup = [];
+				data.players = data.players.filter(player => player.result === 'Win');
+				const currentPlayer = data.players.find(player => player.username === window.userData.username);
+				if (!currentPlayer)
+					return;
+				window.userData.tournoi.players = data.players;
+				if (checkFirstRound(window.userData.tournoi.players)) {
+					for (let i = 0; i < data.players.length; i += 2) {
+						if (window.userData.username === data.players[i].username) {
+							try {
+								const res = await getTournamentRoomName(data.players[i].username);
+								window.userData.r_name = res['room_name'];
+								op = data.players[i + 1].username;
+								slmslm = op;
+								matchup.push(
+									{ username: window.userData.username },{ username: op } 
+								);
+							} catch (error) {
+								Notification('Fatal Action', 'You Have Successfully Triggered Some Nonesense, Please Contact One Of The Developers Immediately.', 2, 'alert');
+								return;
+							}
+						} else if (window.userData.username === data.players[i + 1]){
+							slmslm = data.players[i].username;
+						}
+					}
+					
+					Notification('Tournament Action', `You Are Being Redirected To Your Next Game vs ${slmslm}! Best Of Luck!`, 2, 'request');
+					await sleep(5000);
+					// check the styling and everything take him somewhere or bring him from somewhere
+					if (op !== null) { 
+						sendTRoomName(window.userData.r_name, matchup, null);
+					}
+				}
+				return ;
+			}
 			if (data.action === 'TournoiRoom' && Object.values(data.players).includes(window.userData.username)) {
 				if (data.players['player2'] === window.userData.username) {
 					await sleep(1000);
@@ -204,14 +275,14 @@ export async function	launchSocket() {
 					}
 					const accessToken = localStorage.getItem('accessToken');
 					if (!accessToken) {
-						 Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
-						 return ;
+						Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+						return ;
 					}
 					window.userData.r_name = data.room_name;
 					const u = new URL(baseUrl);
 					const screenHeight = canvass.clientHeight;
 					const screenWidth = canvass.clientWidth;
-					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+					const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
 					window.userData['pong_socket'] = gameSocket;
 					startGameSocket();
 					if (data.players['player1'] === window.userData.username) {
@@ -314,7 +385,7 @@ export async function	launchSocket() {
 						navigateTo('PONG', null);
 						const screenHeight = canvass.clientHeight;
 						const screenWidth = canvass.clientWidth;
-						const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+						const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
 						window.userData['pong_socket'] = gameSocket;
 						window.userData.r_name = data.room_name;
 						menu.style.display = 'none';

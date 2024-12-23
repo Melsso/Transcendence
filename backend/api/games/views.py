@@ -58,7 +58,10 @@ class CreateTournamentRoomView(generics.CreateAPIView):
 
     def get(self, request, *args, **kwargs):
         uname = request.user.username
-        tournament_room_name = f'tournament_{uname}_{str(uuid.uuid4())}'
+        targ = request.header.get('TargetUsername')
+        if targ:
+            uname = targ
+        tournament_room_name = f"{uname}_{str(uuid.uuid4())}"
         return Response({'status':'success', 'detail':'Tournament Room Name Generated', 'tournament_room_name': tournament_room_name}, status=HTTP_200_OK)
     
 class GameResultView(generics.CreateAPIView):

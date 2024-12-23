@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Message
 from users.models import UserProfile
-import jwt
+import random
 import aioredis
 import json
 import logging
@@ -147,6 +147,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         elif action == 'TournoiRoom':
             Slobby = text_data_json.get("Slobby")
+            if not Slobby:
+                Slobby = {
+                    "mode": random.choice(['Default Mode', 'Buff Mode']),
+			        "map": random.choice(['Map 1', 'Map 2', 'Map 3'])
+                }
             players = text_data_json.get("players")
             room_name = text_data_json.get("room_name")
             await self.channel_layer.group_send(
@@ -160,6 +165,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
             return
 
+        elif action == 'TournoiGameRes':
+            players = text_data_json.get("players")
+            await self.channel_layer.group_send(
+                self.roomGroupName, {
+                    "type": "TGameRes",
+                    "action": action,
+                    "players": players,
+                }
+            )
 
         message = text_data_json["message"]
         avatar = text_data_json["av"]
@@ -190,14 +204,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    async def sendMessage(self, event) :
+    async def sendMessage(self, event):
         message = event["message"]
         username = event["username"]
         target = event["target"]
         avatar = event["av"]
         await self.send(text_data=json.dumps({"message":message, "username":username, "target":target, "av": avatar}))
 
-    async def TRoom(self, event) :
+    async def TGameRes(self, event):
+        action = event["action"]
+        players = event["players"]
+        await self.send(text_data=json.dumps({"action":action, "players":players}))
+
+    async def TRoom(self, event):
         action = event["action"]
         players = event["players"]
         Slobby = event["Slobby"]

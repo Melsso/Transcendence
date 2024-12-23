@@ -1,3 +1,5 @@
+import { sendTGameResult } from "./gameSystemT.js";
+
 window.canvas = document.getElementById('pongCanvas');
 window.ctx = canvas.getContext('2d');
 const gameModal = document.getElementById('gameModal');
@@ -900,11 +902,19 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null, 
     try {
         game_data.map = setting.map;
         game_data.game_mode = setting.mode;
+        if (room_name.includes("tournoi")) {
+            console.log('rana hna khawti');
+            console.log(window.userData.tournoi);
+            if (window.userData.username === winner.name)
+                Notification('Tournament Action', 'You Just Won A Game, Please Standby Until The Others Finish As Well', 2, 'request');
+            else
+                Notification('Tournament Action', 'You Just Lost A Game, The Tournament Is Over For You', 2, 'alert');    
+            sendTGameResult(winner.name, loser.name, window.userData.tournoi.players);
+        }
         const result = await sendGameResult(exp, winner.name, loser.name, game_data, forfeit, room_name);
     } catch (error) {
         Notification('Game Action', `Error: ${error}`, 2, 'alert');
     }
-    //data.gameStats.average_round_time = calculateAverageRoundTime(); MAYBE WILL BE USED!!
 }
 
 export async function sendGameResult(exp, winner, loser, game_data, forfeit=null, room_name=null) {
