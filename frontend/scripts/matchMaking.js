@@ -17,17 +17,48 @@ function getWinPercentage(wins, losses) {
 	return totalGames ? ((wins / totalGames) * 100).toFixed(0) : 0;
 }
 
-qBtn.addEventListener('click', function() {
+function getWinsLosses(games) {
+	var stats = {
+        Wins: 0,
+        Losses: 0,
+    };
+    games.forEach(game => {
+        const gameKey = Object.keys(game)[0];
+        const { ally, enemy } = game[gameKey];
+
+        const isPve = enemy.user.username.includes('Easy AI') || enemy.user.username.includes('Hard AI') || enemy.user.username.includes('Medium AI');
+        if (ally.is_win) {
+            if (!isPve)
+                stats.Wins++;
+        } else {
+            if (!isPve)
+                stats.Losses++;
+        }
+	});
+    return stats;
+}
+
+qBtn.addEventListener('click', async function() {
+	var gameLogs;
+	try {
+		const result = await getMatchHistory();
+		gameLogs = getWinsLosses(result['match_history']);
+
+	} catch (error) {
+		Notification('Game Action', `Failed to fecth game logs! ${error}`, 2, 'alert');
+		gameLogs.Wins = 0;
+		gameLogs.Losses = 0;
+	}
 	if (window.userData['guest'] === true) {
 		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 		return ;
-  }
-  const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
-  const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
-  setting = {
+	}
+	const gameMode = document.querySelector('input[name="attackMode"]:checked').nextElementSibling.innerText;
+	const selectedMap = document.querySelector('input[name="mapSelection"]:checked').nextElementSibling.innerText;
+	setting = {
 		mode: gameMode,
 		map: selectedMap
-  };
+	};
 	menu.style.display = 'none';
 	ai_menu.style.display = 'none';
 	inv_menu.style.display = 'none';
@@ -77,14 +108,14 @@ qBtn.addEventListener('click', function() {
 	playerInfo.appendChild(expBarContainer);
 
 	const winLossParagraph = document.createElement('p');
-	winLossParagraph.textContent = `W/L: ${window.userData.wins}-${window.userData.losses}`;
+	winLossParagraph.textContent = `W/L: ${gameLogs.Wins}-${gameLogs.Losses}`;
 	playerInfo.appendChild(winLossParagraph);
 	const winrateBarContainer = document.createElement('div');
 	winrateBarContainer.classList.add('winrate-bar-container');
 
 	const winrateBar = document.createElement('div');
 	winrateBar.classList.add('winrate-bar');
-	winrateBar.style.width = `${getWinPercentage(window.userData.wins, window.userData.losses)}%`;
+	winrateBar.style.width = `${getWinPercentage(gameLogs.Wins, gameLogs.Losses)}%`;
 	winrateBarContainer.appendChild(winrateBar);
 	playerInfo.appendChild(winrateBarContainer);
 	gContainer.appendChild(avatarDiv);
