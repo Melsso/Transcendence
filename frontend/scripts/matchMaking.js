@@ -17,7 +17,7 @@ function getWinPercentage(wins, losses) {
 	return totalGames ? ((wins / totalGames) * 100).toFixed(0) : 0;
 }
 
-function getWinsLosses(games) {
+export function getWinsLosses(games) {
 	var stats = {
         Wins: 0,
         Losses: 0,

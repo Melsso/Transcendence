@@ -1,6 +1,6 @@
 import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
-import { acceptRefuse } from "./matchMaking.js";
+import { acceptRefuse, getWinsLosses } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound, handleQuitting } from "./gamePvP.js";
 import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
 import { sendQueueStatus } from "./matchMaking.js"
@@ -324,15 +324,28 @@ document.getElementById('PONG-button').addEventListener('click', function () {
     };
 });
 
-function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
+async function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     const lobbyContainer = document.getElementById('pong-inv-container');
     
-    // const gamer1Stats = computeStats(gamer1.match_history);
-    const gamer1Wins = 20;
-    const gamer1Losses = 10;
+    try {
+        const result = await getMatchHistory();
+		const gameLogs = getWinsLosses(result['match_history']);
+        gamer1['wins'] = gameLogs.Wins;
+        gamer1['losses'] = gameLogs.Losses;
+        if (gamer2 !== null) {
+            const res = await getMatchHistory(gamer2.username);
+            const gameLog = getWinsLosses(res['match_history']);
+            gamer2['wins'] = gameLog.Wins;
+            gamer2['losses'] = gameLog.Losses;
+        }
+    } catch (error) {
+        Notification('Game Action', `Failed to fecth game logs! ${error}`, 2, 'alert');
+        gamer1['wins'] = 0;
+        gamer1['losses'] = 0;
+        gamer2['wins'] = 0;
+        gamer2['losses'] = 0;
+    }
     
-    const gamer2Wins = 9;
-    const gamer2Losses = 20;
     
     const lobbyNameElement = document.getElementById('lobby-name');
     lobbyNameElement.innerHTML = `
@@ -354,9 +367,9 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             <div class="exp-bar-container">
                 <div class="exp-bar" style="width: ${((gamer1.bar_exp_game1 - Math.floor(gamer1.bar_exp_game1)) * 100).toFixed(0)}%;"></div>
             </div>
-            <p>W/L: ${gamer1Wins}-${gamer1Losses} </p>
+            <p>W/L: ${gamer1.wins}-${gamer1.losses} </p>
             <div class="winrate-bar-container">
-                <div class="winrate-bar" style="width: ${getWinPercentage(gamer1Wins, gamer1Losses)}%;"></div>
+                <div class="winrate-bar" style="width: ${getWinPercentage(gamer1.wins, gamer1.losses)}%;"></div>
             </div>
             <button type="button" id="${btnid}" class="btn btn-ready">Not Ready</button>
         </div>
@@ -400,9 +413,9 @@ function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
             <div class="exp-bar-container">
                 <div class="exp-bar" style="width: ${((gamer2.bar_exp_game1 - Math.floor(gamer2.bar_exp_game1)) * 100).toFixed(0)}%;"></div>
             </div>
-            <p>W/L: ${gamer2Wins}-${gamer2Losses} </p>
+            <p>W/L: ${gamer2.wins}-${gamer2.losses} </p>
             <div class="winrate-bar-container">
-                <div class="winrate-bar" style="width: ${getWinPercentage(gamer2Wins, gamer2Losses)}%;"></div>
+                <div class="winrate-bar" style="width: ${getWinPercentage(gamer2.wins, gamer2.losses)}%;"></div>
             </div>
             <button type="button" id="${btnid2}" class="btn btn-ready">Not Ready</button>
         </div>
