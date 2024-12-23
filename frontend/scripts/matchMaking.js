@@ -11,6 +11,7 @@ window.hebssmodal =false;
 window.mod = null;
 const lobby = document.getElementById('pong-inv-container');
 import { getRoomName, startGameSocket } from "./gameSystem.js";
+import { getMatchHistory } from "./populatePageHelpers.js";
 
 function getWinPercentage(wins, losses) {
 	const totalGames = wins + losses;
@@ -95,15 +96,15 @@ qBtn.addEventListener('click', async function() {
 	playerInfo.appendChild(usernameHeading);
 
 	const levelParagraph = document.createElement('p');
-	levelParagraph.textContent = `Level ${Math.floor(window.userData.bar_exp_game1)}:`;
-	playerInfo.appendChild(levelParagraph);
+		levelParagraph.textContent = `Level ${Math.floor(window.userData.bar_exp_game1 / 1000)}:`;
+		playerInfo.appendChild(levelParagraph);
 
 	const expBarContainer = document.createElement('div');
 	expBarContainer.classList.add('exp-bar-container');
 
 	const expBar = document.createElement('div');
 	expBar.classList.add('exp-bar');
-	expBar.style.width = `${((window.userData.bar_exp_game1 - Math.floor(window.userData.bar_exp_game1)) * 100).toFixed(0)}%`;
+	expBar.style.width = `${((window.userData.bar_exp_game1 % 1000) / 10).toFixed(0)}%`;
 	expBarContainer.appendChild(expBar);
 	playerInfo.appendChild(expBarContainer);
 

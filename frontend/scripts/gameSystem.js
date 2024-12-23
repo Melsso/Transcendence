@@ -1,9 +1,9 @@
-import { computeStats } from "./populatePageHelpers.js";
 import { handleSend } from "./chat.js";
 import { acceptRefuse, getWinsLosses } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound, handleQuitting } from "./gamePvP.js";
 import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
 import { sendQueueStatus } from "./matchMaking.js"
+import { getMatchHistory } from "./populatePageHelpers.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const canvass = document.getElementById('pongCanvas');
 const CCtx = canvass.getContext('2d');
@@ -363,9 +363,9 @@ async function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         </div>
         <div class="player-info">
             <h3>${gamer1.username}</h3>
-            <p>Level ${Math.floor(gamer1.bar_exp_game1)}:</p>
+            <p>Level ${Math.floor(gamer1.bar_exp_game1 / 1000)}:</p>
             <div class="exp-bar-container">
-                <div class="exp-bar" style="width: ${((gamer1.bar_exp_game1 - Math.floor(gamer1.bar_exp_game1)) * 100).toFixed(0)}%;"></div>
+                <div class="exp-bar" style="width: ${((gamer1.bar_exp_game1 % 1000) / 10).toFixed(0)}%;"></div>
             </div>
             <p>W/L: ${gamer1.wins}-${gamer1.losses} </p>
             <div class="winrate-bar-container">
