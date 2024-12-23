@@ -174,6 +174,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "players": players,
                 }
             )
+            return
 
         message = text_data_json["message"]
         avatar = text_data_json["av"]
