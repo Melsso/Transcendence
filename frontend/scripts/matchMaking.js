@@ -244,7 +244,7 @@ async function creatQueueRoom() {
 		data.room_name = 'queue_' + data.room_name;
 		window.userData.r_name = data.room_name;
 		const u = new URL(baseUrl);
-		const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}`);
+		const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}`);
 		window.userData['pong_socket'] = gameSocket;
 		startGameSocket();
   	} catch (error) {

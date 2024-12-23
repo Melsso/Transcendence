@@ -9,7 +9,7 @@ else ifeq ($(shell uname), Linux)
 	IP_COMMAND = hostname -I | awk '{print $$1}'
 endif
 
-ACTIVE_HOST = http://$(shell $(IP_COMMAND)):80/
+ACTIVE_HOST = https://$(shell $(IP_COMMAND)):443/
 
 all: run
 

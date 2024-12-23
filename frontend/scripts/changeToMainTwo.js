@@ -949,7 +949,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					if (!sock || sock.readyState !== WebSocket.OPEN) {
 						const u = new URL(baseUrl);
 						const accessToken = localStorage.getItem('accessToken');
-						const chatSocket = new WebSocket(`ws://${u.host}/ws/?token=${accessToken}`);
+						const chatSocket = new WebSocket(`wss://${u.host}/ws/?token=${accessToken}`);
 						window.userData.socket = chatSocket;						
 						window.userData["target"] = "Global";
 						launchSocket();

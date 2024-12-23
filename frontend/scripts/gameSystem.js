@@ -66,7 +66,7 @@ lo.addEventListener('click', async function (){
         const u = new URL(baseUrl);
         const screenHeight = canvass.clientHeight;
         const screenWidth = canvass.clientWidth;
-        const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+        const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
         window.userData['pong_socket'] = gameSocket;
         startGameSocket();
     } catch (error) {
@@ -184,7 +184,7 @@ export async function startGameSocket() {
                         const u = new URL(baseUrl);
                         const screenHeight = canvass.clientHeight;
                         const screenWidth = canvass.clientWidth;
-                        const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+                        const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
                         if (window.userData.pong_socket) {
                             resizeGame = false;
                             window.userData.pong_socket.close();
@@ -342,8 +342,10 @@ async function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
         Notification('Game Action', `Failed to fecth game logs! ${error}`, 2, 'alert');
         gamer1['wins'] = 0;
         gamer1['losses'] = 0;
-        gamer2['wins'] = 0;
-        gamer2['losses'] = 0;
+        if (gamer2 !== null) {
+            gamer2['wins'] = 0;
+            gamer2['losses'] = 0;
+        }
     }
     
     

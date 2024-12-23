@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-#1lpaxezqj4l$57m3zw*rca08wxxz+u(%drcf7myn)iy9-f8=g
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 active_host = os.getenv('ACTIVE_HOST')
 parsed_url = urlparse(active_host)
 host_ip = parsed_url.hostname
@@ -97,7 +100,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,              
