@@ -120,7 +120,6 @@ function sendGameStatus(username, ready) {
 }
 
 export async function startGameSocket() {
-    console.log('DKHELNAAAAAAAAA');
     window.userData.pong_socket.onopen = function(e) {
         console.log("GAMESOCKET--ON");
         window.userData.screen_dimensions = {
@@ -255,7 +254,7 @@ export async function startGameSocket() {
     }
 }
 
-async function startQueueGame(players, sett=null, myff=null) {
+export async function startQueueGame(players, sett=null, myff=null) {
     const queue = document.getElementById('Queue');
     queue.style.display = 'none';
     const gameContainer = document.getElementById('gameContainer');
@@ -278,10 +277,14 @@ async function startQueueGame(players, sett=null, myff=null) {
 
     let countdown = 3;
     countdownOverlay.textContent = countdown;
-    console.log(players);
+    let g1, g2; 
     if (myff === true) {
-        let g1 = players['player1'];
-        let g2 = players['playr2'];
+        let t = document.getElementById('pong-tournament');
+        t.style.display = 'none';
+        g1= {}; 
+        g2 = {};
+        g1['username'] = players['player1'];
+        g2['username']= players['player2'];
         g1['set'] = false;
         g2['set'] = false;
         g1['score'] = 0;
@@ -297,8 +300,6 @@ async function startQueueGame(players, sett=null, myff=null) {
     if (sett) {
         window.lobbySettings = sett;
     }
-    console.log('SALAM');
-    // randomize lobby settings here
     const countdownInterval = setInterval(() => {
         countdown -= 1;
         if (countdown > 0) {

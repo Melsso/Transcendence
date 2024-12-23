@@ -1,5 +1,5 @@
 import { handleSend } from "./chat.js";
-import { getRoomName } from "./gameSystem.js";
+import { getRoomName , startGameSocket} from "./gameSystem.js";
 
 const baseUrl = process.env.ACTIVE_HOST;
 const inv_menu = document.getElementById('inv-menu');
@@ -265,8 +265,8 @@ export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 	});
 	setTimeout(async () => {
 		for (const matchup of matchups) {
+			carousel.style.display = 'none';
 			if (matchup[0].username === window.userData.username) {
-				carousel.style.display = 'none';
 				try {
 					const res = await getRoomName();
 					const room_name = 'tournoi_' + res.room_name;
@@ -279,6 +279,7 @@ export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 		}
 	}, 10000);
 }
+
 
 function sendTRoomName(room_name, matchup, lobbyS) {
 	const users = {

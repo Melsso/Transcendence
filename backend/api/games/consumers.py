@@ -82,6 +82,28 @@ class GameConsumer(AsyncWebsocketConsumer):
 				'players': serializer.data
 			}
 		)
+		
+	async def tournamentManager(self):
+		self.room_group_name = f'{self.room_name}'
+		user = self.scope['user']
+		if user.is_anonymous:
+			await self.close()
+		self.redis_key = self.redis_room_prefix + self.room_group_name
+		await self.add_player_to_queue_room(user.username)
+		await self.channel_layer.group_add(
+			self.room_group_name,
+			self.channel_name
+		)
+		await self.accept()
+		players_in_room = await self.get_players_in_room()
+		if len(players_in_room) == 1:
+			paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+			paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+			ball = { 'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0.005, 'radius': 0.0}
+			self.game_rooms[self.room_group_name] = {"paddle1": paddle1, "paddle2": paddle2, "ball": ball}
+		elif len(players_in_room) == 2:
+			task = asyncio.create_task(self.move_ball(self.room_group_name))
+			self.game_rooms[self.room_group_name]["task"] = task
 
 	async def matchPlayersWithClosestExp(self, user):
 		await asyncio.sleep(10)
@@ -151,18 +173,17 @@ class GameConsumer(AsyncWebsocketConsumer):
 		if "queue_" in self.room_name:
 			await self.queueManager()
 			return
+		if "tournoi_" in self.room_name:
+			await self.tournamentManager()
+			return
 		self.room_group_name = f'{self.room_name}'
 		user = self.scope['user']
 		if user.is_anonymous:
 			await self.close()
 
-		logger.warning('HEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEEREEEEEE')	
 		self.redis_key = self.redis_room_prefix + self.room_group_name
 		query_string = self.scope['query_string'].decode('utf-8')
 		query_params = parse_qs(query_string)
-		logger.warning(self.room_group_name)
-		logger.warning(self.redis_key)
-		logger.warning(user.username)
 		screen_width = query_params.get('width', [None])[0]
 		screen_height = query_params.get('height', [None])[0]
 		if screen_width and screen_height:
@@ -173,7 +194,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		if len(players_in_room) >= 2:
 			await self.close()
 			return
-		logger.warning(players_in_room)
 		await self.add_player_to_room(user.username, screen_width, screen_height)
 		await self.channel_layer.group_add(
 			self.room_group_name,
@@ -181,14 +201,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 		)
 		await self.accept()
 		players_in_room = await self.get_players_in_room()
-		logger.warning(players_in_room)
 		if len(players_in_room) == 1:
 			paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 			paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 			ball = { 'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0.005, 'radius': 0.0}
 			self.game_rooms[self.room_group_name] = {"paddle1": paddle1, "paddle2": paddle2, "ball": ball}
-		if 'tournoi_' in self.room_group_name:
-			return
 		await self.send_current_players(players_in_room)
 
 	async def disconnect(self, close_code):

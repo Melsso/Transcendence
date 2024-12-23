@@ -20,7 +20,7 @@ contextMenu.style.display = 'none';
 document.body.appendChild(contextMenu);
 import { endGameStats } from "./pong.js"
 import { userLookUp } from "./changeToMainTwo.js";
-import { startGameSocket  } from "./gameSystem.js";
+import { startGameSocket, startQueueGame } from "./gameSystem.js";
 import { displayTourniLobby, generateTournamentCarousel } from "./gameSystemT.js";
 import { getFriends, loadFriends } from "./populateFriends.js";
 let tar;
@@ -65,11 +65,6 @@ export function handleSend(username=null, r_name=null, action, gameend=null, tou
 	addMessage(message, true, null);
 }
 
-// mybtn.addEventListener('click', function () {
-// 	if (mybtn.getAttribute('aria-expanded') === true) {
-// 		messageContainer.innerHTML = '';
-// 	}
-// });
 
 globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
@@ -201,7 +196,6 @@ export async function	launchSocket() {
 				if (data.players['player2'] === window.userData.username) {
 					await sleep(1000);
 				}
-				console.log(window.userData.username);
 				try {
 					if (window.userData.pong_socket) {
 						 window.userData.pong_socket.close();
@@ -214,17 +208,16 @@ export async function	launchSocket() {
 						 return ;
 					}
 					window.userData.r_name = data.room_name;
-					console.log(data.players, window.userData.r_name);
 					const u = new URL(baseUrl);
 					const screenHeight = canvass.clientHeight;
 					const screenWidth = canvass.clientWidth;
 					const gameSocket = new WebSocket(`ws://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
 					window.userData['pong_socket'] = gameSocket;
-					console.log('HAYLA');
 					startGameSocket();
-					console.log('HAYLA2');
+					if (data.players['player1'] === window.userData.username) {
+						await sleep(1000);
+					}
 					startQueueGame(data.players, data.Slobby, true);
-					console.log('HAYLA3');
 			  } catch (error) {
 					Notification('Game Action', `Error: ${error.detail}HNA`, 2, 'alert');
 					window.userData.r_name = null;
