@@ -1,6 +1,6 @@
 import { handleSend } from "./chat.js";
 import { getRoomName , startGameSocket} from "./gameSystem.js";
-
+import { removeGscreen } from "./gamePvP.js";
 const baseUrl = process.env.ACTIVE_HOST;
 const inv_menu = document.getElementById('inv-menu');
 const ai_menu = document.getElementById('ai-menu');
@@ -226,10 +226,36 @@ export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 	Tcontainer.style.display = 'none';
 	lobbyNameElement.style.display = 'none';
 	carousel.style.display = 'flex';
+	removeGscreen();
 	const carouselInner = document.querySelector('#matchupCarousel .carousel-inner');
 	carouselInner.innerHTML = '';
 	window.userData.tournoi.in = false;
 	window.userData.tournoi.out = true;
+
+	const countdownElement = document.createElement('div');
+	countdownElement.id = 'countdown';
+	countdownElement.style.position = 'absolute';
+	countdownElement.style.top = '10px';
+	countdownElement.style.right = '10px';
+	countdownElement.style.fontSize = '24px';
+	countdownElement.style.color = '#ffffff';
+	countdownElement.style.backgroundColor = '#000000';
+	countdownElement.style.padding = '10px';
+	countdownElement.style.borderRadius = '5px';
+	carousel.appendChild(countdownElement);
+
+	let countdownValue = 10;
+	countdownElement.innerHTML = `Starting in: ${countdownValue}s`;
+
+	const countdownInterval = setInterval(() => {
+	    countdownValue--;
+	    countdownElement.innerHTML = `Starting in: ${countdownValue}s`;
+	
+	    if (countdownValue === 0) {
+	        clearInterval(countdownInterval);
+	        countdownElement.style.display = 'none';
+	    }
+	}, 1000); 
 	matchups.forEach((matchup, index) => {
 		const carouselItem = document.createElement('div');
 		carouselItem.classList.add('carousel-item');
@@ -266,6 +292,7 @@ export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 	setTimeout(async () => {
 		for (const matchup of matchups) {
 			carousel.style.display = 'none';
+			clearInterval(countdownInterval);
 			if (matchup[0].username === window.userData.username) {
 				try {
 					const res = await getRoomName();

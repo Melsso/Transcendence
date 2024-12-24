@@ -157,6 +157,9 @@ export async function startGameSocket() {
                 renderOP(data.state);
             }
         } else if (data.action === 'current_players') {
+            if (window.userData?.tournoi && window.userData.tournoi.out ===  true) {
+                return ;
+            }
             if (current_players.length === 0) {
                 current_players.push(window.userData.username);
             }
@@ -172,7 +175,7 @@ export async function startGameSocket() {
             if (current_players.length === 2) {
                 if (data.players.length == 1) {
                     if (freeWill === true) {
-                        reutrn ;
+                        return ;
                     }
                     const accessToken = localStorage.getItem('accessToken');
                     if (!accessToken) {

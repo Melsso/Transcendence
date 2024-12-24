@@ -88,7 +88,6 @@ export async function gameOScreenpvp() {
 		winner = gamer2.username;
 		loser = gamer1.username;
 	}
-	// settings doesnt exist, figure out how to get it
 
 	if (window.setting.mode == 'Default Mode') {
 		game_data['attack_accuracy'] = null;
@@ -168,7 +167,7 @@ export async function gameOScreenpvp() {
 	ctxx.fillStyle = '#ff0000';
 	ctxx.fillText('Please press Q to go back to main menu', canvass.width / 2, canvass.height * 0.85);
 }
-function	removeGscreen(){
+export function	removeGscreen(){
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	Gscreen = false;
 	freeWill = false;
