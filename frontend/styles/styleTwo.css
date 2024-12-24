@@ -142,6 +142,41 @@ overflow: hidden;
 	gap: 2%;
 }
 
+.star.bronze {
+	color: #8C5438 !important; 
+	text-shadow: 
+		 1px 1px 0px rgba(140, 84, 56, 0.6),  
+		 -1px -1px 0px rgba(255, 219, 186, 0.3) !important; 
+}
+
+.star.silver {
+	color: #A0A0A0 !important; 
+	text-shadow: 
+		 1px 1px 0px rgba(160, 160, 160, 0.6),  
+		 -1px -1px 0px rgba(220, 220, 220, 0.3) !important; 
+}
+
+.star.gold {
+	color: #E1B61A !important; 
+	text-shadow: 
+		 1px 1px 0px rgba(177, 122, 26, 0.6),  
+		 -1px -1px 0px rgba(255, 223, 101, 0.3) !important; 
+}
+
+.star.platinum {
+	color: #4FB3A4 !important; 
+	text-shadow: 
+		 1px 1px 0px rgba(39, 139, 118, 0.6),  
+		 -1px -1px 0px rgba(143, 224, 203, 0.3) !important; 
+}
+
+.star.diamond {
+	color: #5B8EF5 !important; 
+	text-shadow: 
+		 1px 1px 0px rgba(45, 75, 174, 0.6),  
+		 -1px -1px 0px rgba(138, 180, 255, 0.3) !important; 
+}
+
 .tournaments-won .star {
 	flex: 1;
 	font-size: calc(5vw / 5);
@@ -150,10 +185,6 @@ overflow: hidden;
 	text-shadow: 
 		1px 1px 0px rgba(0, 0, 0, 0.5),  
 		-1px -1px 0px rgba(255, 255, 255, 0.2);
-}
-
-.tournaments-won .star.filled {
-	color: gold;
 }
 
 .my-bar-two {

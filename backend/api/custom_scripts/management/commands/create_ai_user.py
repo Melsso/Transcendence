@@ -22,7 +22,8 @@ class Command(BaseCommand):
                 'email': 'deleted@my_pong_website.com',
                 'bar_exp_game1': 56120,
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    0
             },
             {
                 'username': 'Easy AI',
@@ -30,7 +31,8 @@ class Command(BaseCommand):
                 'email': 'easai@my_pong_website.com',
                 'bar_exp_game1': 1000,
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    0
             },
             {
                 'username': 'Hard AI',
@@ -38,7 +40,8 @@ class Command(BaseCommand):
                 'email': 'harai@my_pong_website.com',
                 'bar_exp_game1': 50000,
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    0
             },
             {
                 'username': 'Medium AI',
@@ -46,7 +49,8 @@ class Command(BaseCommand):
                 'email': 'medai@my_pong_website.com',
                 'bar_exp_game1': 5000,
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    0
             },
             {
                 'username': 'so',
@@ -54,7 +58,8 @@ class Command(BaseCommand):
                 'email': 'melsopv@gmail.com',
                 'bar_exp_game1': 2234,
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    30
             },
             {
                 'username': 'Sofiane',
@@ -62,7 +67,8 @@ class Command(BaseCommand):
                 'email': 'melsopvbb@gmail.com',
                 'bar_exp_game1': 0,
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    20
             },
             {
                 'username': 'Sadoon',
@@ -70,7 +76,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 234,
                 'email': 'alzubaidisadooon@gmail.com',
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    10
             },
             {
                 'username': 'laewie',
@@ -78,7 +85,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 3234,
                 'email': '1233216@gmail.com',
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    0
             },
                         {
                 'username': 'lhouma',
@@ -86,7 +94,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 3234,
                 'email': 'adsadasd6@gmail.com',
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    59
             },
                         {
                 'username': 'la3ziz',
@@ -94,7 +103,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 3234,
                 'email': 'sadads@gmail.com',
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    60
             },
                         {
                 'username': 'kho',
@@ -102,7 +112,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 3234,
                 'email': 'sadasdsad@gmail.com',
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    72
             },
                         {
                 'username': 'Rayan',
@@ -110,7 +121,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 3234,
                 'email': 'rayanmehadjeri6@gmail.com',
                 'is_verified': True,
-                'is_active': True
+                'is_active': True,
+                't_won':    80
             },
         ]
 
@@ -120,6 +132,7 @@ class Command(BaseCommand):
             email = user_info['email']
             is_verified = user_info['is_verified']
             xp = user_info['bar_exp_game1']
+            t_won = user_info['t_won']
             if not UserProfile.objects.filter(username=username).exists():
                 user = UserProfile.objects.create_user(
 					username=username, 
@@ -127,7 +140,8 @@ class Command(BaseCommand):
 					email=email,
                     bar_exp_game1=xp,
 					is_verified=is_verified,
-					is_active=user_info['is_active']
+					is_active=user_info['is_active'],
+                    t_won=t_won
 				)
                 self.stdout.write(self.style.SUCCESS(f'Successfully created user "{username}"'))
             else:
