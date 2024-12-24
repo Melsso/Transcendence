@@ -85,6 +85,8 @@ class GameResultView(generics.CreateAPIView):
         if forfeit is None:
             forfeit = False
         user = request.user
+        if exp >= 1000:
+            user.t_won += 1
         if user.username == winner_uname:
             user.bar_exp_game1 += exp
             win = True

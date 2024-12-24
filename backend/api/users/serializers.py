@@ -16,6 +16,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'bar_exp_game1',
             'biography',
             'Twofa_auth',
+            't_won',
         ]
         read_only_fields = ['id', 'email']
 

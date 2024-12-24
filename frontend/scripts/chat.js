@@ -1,3 +1,9 @@
+import { endGameStats } from "./pong.js"
+import { userLookUp } from "./changeToMainTwo.js";
+import { startGameSocket, startQueueGame } from "./gameSystem.js";
+import { displayTourniLobby, generateTournamentCarousel } from "./gameSystemT.js";
+import { getFriends, loadFriends } from "./populateFriends.js";
+import { Habess } from "./gamePvP.js";
 const messageContainer = document.getElementById('message-container');
 const chatInput = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
@@ -15,41 +21,12 @@ const lobby = document.getElementById('pong-inv-container');
 const Tlobby = document.getElementById('pong-tournament');
 const baseUrl = process.env.ACTIVE_HOST;
 const contextMenu = document.createElement('div');
+const cc = canvass.getContext('2d');
 contextMenu.className = 'custom-context-menu';
 contextMenu.style.display = 'none';
 document.body.appendChild(contextMenu);
-import { endGameStats } from "./pong.js"
-import { userLookUp } from "./changeToMainTwo.js";
-import { startGameSocket, startQueueGame } from "./gameSystem.js";
-import { displayTourniLobby, generateTournamentCarousel } from "./gameSystemT.js";
-import { getFriends, loadFriends } from "./populateFriends.js";
-import { sendTRoomName } from "./gameSystemT.js";
 let tar;
 let toastgame;
-async function getTournamentRoomName(targ=null) {
-    const access_token = localStorage.getItem('accessToken');
-    if (!access_token) {
-        Notification();
-        return ;
-    }
-    const url = baseUrl + 'api/games/create-game-room/';
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-            'Content-Type': 'application/json',
-			'TargetUsername': targ,
-		},
-    });
-
-    if (!response.ok) {
-        const errorResponse = await response.json();
-        throw errorResponse;
-    }
-    const data = await response.json();
-    return data;
-}
-
 
 export function handleSend(username=null, r_name=null, action, gameend=null, tournament=null, owner=null) {
 	// if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
@@ -143,6 +120,56 @@ function showContextMenu(event, username) {
 	  contextMenu.style.display = 'block';
 }
 
+function fixStyles(){
+	console.log('dkhelt style hna');
+	const mainOne = document.getElementById('mainOne');
+	const mainTwo = document.getElementById('mainTwo');
+	const mainBody = document.getElementById('mainTwo-body');
+	const mainSettings = document.getElementById('setting-page');
+	const mainPONGgame = document.getElementById('PONG-game');
+	const inv_menu = document.getElementById('inv-menu');
+	const facontainer = document.getElementById('Tfa-container');
+	const ai_menu = document.getElementById('ai-menu');
+	const Instructions = document.getElementById('Instructions-box');
+	const lobby = document.getElementById('pong-inv-container');
+	const menu = document.getElementById('menuuu');
+	const qContainer = document.getElementById('Queue');
+	const moreSettings = document.getElementById('Additional-settings-form');
+	const Tlobby = document.getElementById('pong-tournament');
+	const deleteModal = document.getElementById('deleteModal');
+	const delMsgModal = document.getElementById('deleteMsgModal');
+	const delGamesModal = document.getElementById('deleteGamesModal');
+	const delPrivMsgModal = document.getElementById('deletePrvMsgModal');
+	const changePolicyModal = document.getElementById('changePrivacyModal');
+	cc.clearRect(0, 0, canvass.width, canvass.height);
+	moreSettings.style.display = 'none';
+	qContainer.style.display = 'none';
+	mainTwo.style.display = 'none';
+	mainBody.style.display = 'none';
+	mainSettings.style.display = 'none';
+	mainPONGgame.style.display = 'none';
+	facontainer.style.display = 'none';
+	deleteModal.style.display = 'none';
+	delPrivMsgModal.style.display = 'none';
+	delMsgModal.style.display = 'none';
+	delGamesModal.style.display = 'none';
+	changePolicyModal.style.display = 'none';
+	qContainer.style.display = 'none';
+	mainOne.style.display = 'none';
+	mainTwo.style.display = 'none';
+	mainBody.style.display = 'none';
+	mainSettings.style.display = 'none';
+	mainPONGgame.style.display = 'none';
+	inv_menu.style.display = 'none';
+	ai_menu.style.display = 'none';
+	Instructions.style.display = 'none';
+	lobby.style.display = 'none';
+	menu.style.display = 'none';
+	mainTwo.style.display = 'flex';
+	mainPONGgame.style.display = 'flex';
+	Tlobby.style.display = 'block';
+}
+
 async function handleGameInvite(username) {
 	if (window.userData.socket) {
 		if (window.userData.pong_socket && !resizeGame) {
@@ -226,39 +253,36 @@ export async function	launchSocket() {
 		window.userData.socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
 			if (data.action === 'TournoiGameRes') {
-				let op = null;
-				let slmslm;
-				var matchup = [];
-				data.players = data.players.filter(player => player.result === 'Win');
 				const currentPlayer = data.players.find(player => player.username === window.userData.username);
 				if (!currentPlayer)
 					return;
+				var matchups = [];
+				data.players = data.players.filter(player => player.result !== 'LOST');
+				if (!(data.players.some(player => player.username === window.userData.username))) {
+					window.userData.tournoi = null;
+					navigateTo('profile', null);
+					return;
+				}
 				window.userData.tournoi.players = data.players;
 				if (checkFirstRound(window.userData.tournoi.players)) {
-					for (let i = 0; i < data.players.length; i += 2) {
-						if (window.userData.username === data.players[i].username) {
-							try {
-								const res = await getTournamentRoomName(data.players[i].username);
-								window.userData.r_name = res['room_name'];
-								op = data.players[i + 1].username;
-								slmslm = op;
-								matchup.push(
-									{ username: window.userData.username },{ username: op } 
-								);
-							} catch (error) {
-								Notification('Fatal Action', 'You Have Successfully Triggered Some Nonesense, Please Contact One Of The Developers Immediately.', 2, 'alert');
-								return;
-							}
-						} else if (window.userData.username === data.players[i + 1]){
-							slmslm = data.players[i].username;
-						}
-					}
-					
-					Notification('Tournament Action', `You Are Being Redirected To Your Next Game vs ${slmslm}! Best Of Luck!`, 2, 'request');
-					await sleep(5000);
-					// check the styling and everything take him somewhere or bring him from somewhere
-					if (op !== null) { 
-						sendTRoomName(window.userData.r_name, matchup, null);
+					Habess();
+					fixStyles();
+					if (window.userData.username === data.players[0].username && data.players.length === 4) {
+						matchups.push([
+							{ username: window.userData.username }, 
+							{ username: data.players[1].username }
+						  ]);
+						  matchups.push([
+							{ username: data.players[2].username }, 
+							{ username: data.players[3].username }
+						  ]);
+						handleSend(null, null, 'TMatchups', null, matchups, window.userData.username);
+					} else if (window.userData.username === data.players[0].username && data.players.length === 2) {
+						matchups.push([
+							{ username: window.userData.username }, 
+							{ username: data.players[1].username }
+						  ]);
+						  handleSend(null, null, 'TMatchups', null, matchups, window.userData.username);
 					}
 				}
 				return ;
@@ -269,9 +293,9 @@ export async function	launchSocket() {
 				}
 				try {
 					if (window.userData.pong_socket) {
-						 window.userData.pong_socket.close();
-						 window.userData.pong_socket = null;
-					 window.userData.r_name = null;
+						window.userData.pong_socket.close();
+						window.userData.pong_socket = null;
+						window.userData.r_name = null;
 					}
 					const accessToken = localStorage.getItem('accessToken');
 					if (!accessToken) {
@@ -545,12 +569,10 @@ export async function getMessages(uname=null) {
 	if (!access_token) {
 		throw new Error('User is not authenticated');
 	}
-
 	let url = baseUrl + `api/MessageList/`;
 	if (uname && uname !== 'Global') { 
 		url = baseUrl + `api/MessageList/${uname}/`;
 	}
-
 	const response = await fetch(url, {
 		method: 'GET',
 		headers: {
@@ -558,12 +580,10 @@ export async function getMessages(uname=null) {
 			'Content-Type': 'application/json',
 		},
 	});
-
 	if (!response.ok) {
 		const errorResponse = await response.json();
 		throw errorResponse;
 	}
-
 	const data = await response.json();
 	return data;
 }

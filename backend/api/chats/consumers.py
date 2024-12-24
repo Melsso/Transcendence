@@ -132,6 +132,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         elif action == 'TMatchups':
             Slobby = text_data_json.get("Slobby")
+            if not Slobby:
+                Slobby = {
+                    "mode": random.choice(['Default Mode', 'Buff Mode']),
+			        "map": random.choice(['Map 1', 'Map 2', 'Map 3'])
+                }
             players = text_data_json.get("players")
             owner = text_data_json.get("owner")
             await self.channel_layer.group_send(

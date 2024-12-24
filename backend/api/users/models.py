@@ -9,6 +9,7 @@ class UserProfile(AbstractUser):
     verification_code = models.CharField(max_length=64, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     Twofa_auth = models.BooleanField(default=False)
+    t_won = models.IntegerField(default=0)
 
     def __str__(self):
         return self.username

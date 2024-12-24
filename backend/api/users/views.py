@@ -19,7 +19,6 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_200_OK,
-    HTTP_205_RESET_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_401_UNAUTHORIZED,

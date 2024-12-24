@@ -543,7 +543,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 					"y": game['ball']['y']
 				}
 			)
-			await asyncio.sleep(0.016)
+			await asyncio.sleep(0.032)
 
 	async def empty_action(self, event):
 		action = event['action']
