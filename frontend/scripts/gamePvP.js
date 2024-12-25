@@ -569,8 +569,8 @@ function setDimensions() {
 
 	sphere.radius = widthScale / 100;
 	sphere.x = (widthScale / 2);
-	// sphere.dx = 0.005 * widthScale;
-	// sphere.dy = 0;
+	sphere.dx = 0.005 * widthScale;
+	sphere.dy = 0;
 	sx = sphere.x;
 	sphere.y = (heightScale / 2);
 	sy = sphere.y;

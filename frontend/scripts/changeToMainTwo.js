@@ -664,6 +664,7 @@ async function logoutUser() {
 		return ;
 	}
 	if (resizeGame) {
+		Habess();
 		handleQuitting();
 	}
 	let url = baseUrl + 'api/logout/';
