@@ -149,6 +149,7 @@ qBtn.addEventListener('click', async function() {
 });
 
 export function acceptRefuse() {
+	hebssmodal = false;
 	const gContainer = document.getElementById('Queue-container-me');
 	const modal = document.createElement('div');
 	mod = modal;
@@ -190,6 +191,7 @@ export function acceptRefuse() {
 	modal.style.display = 'flex';
  
 	acceptButton.onclick = function () {
+		hebssmodal = true;
 		acceptButton.disabled = true;
 		refuseButton.disabled = true;
 		acceptButton.classList.add('grayed-out');
@@ -198,17 +200,18 @@ export function acceptRefuse() {
 	};
  
 	refuseButton.onclick = function () {
+		hebssmodal = true;
 		acceptButton.disabled = true;
 		refuseButton.disabled = true;
 		acceptButton.classList.add('grayed-out');
 		refuseButton.classList.add('grayed-out');
-
 		sendQueueStatus(false);
 		navigateTo('profile', null);
 	};
  
 	window.onclick = function (event) {
 		if (event.target == modal) {
+			hebssmodal = true;
 			modal.style.display = 'none';
 			modal.remove();
 			sendQueueStatus(false);
@@ -217,7 +220,7 @@ export function acceptRefuse() {
 	};
 	setTimeout(function () {
 		if(!hebssmodal) {
-			console.log('slm'); // hna make sure hebssmodal tweli false
+			hebssmodal = true;
 			sendQueueStatus(false);
 			navigateTo('profile', null);
 			modal.remove();

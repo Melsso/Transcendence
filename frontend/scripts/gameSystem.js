@@ -148,6 +148,7 @@ export async function startGameSocket() {
                 }
                 startQueueGame(data.players, data.settings);
             } else {
+                hebssmodal = true;
                 resizeGame = false;
                 navigateTo('PONG', null);
             }
