@@ -2,7 +2,7 @@ import { loadProfile } from "./populatePageHelpers.js";
 import { loadFriends, getFriends } from "./populateFriends.js";
 import { launchSocket, loadMessages, getMessages, handleSend  } from "./chat.js";
 import { adjustAccordionHeight, setAccordionMaxHeight } from "./confirm-password.js";
-import { Habess } from "./gamePvP.js";
+import { Habess, handleQuitting } from "./gamePvP.js";
 let userEmail;
 let flag = false;
 let myflag = false;
@@ -662,6 +662,9 @@ async function logoutUser() {
 	if (!access_token) {
 		Notification('Profile Action', "No access Token!", 2, 'alert');
 		return ;
+	}
+	if (resizeGame) {
+		handleQuitting();
 	}
 	let url = baseUrl + 'api/logout/';
 	if (window.userData.guest === true) {
