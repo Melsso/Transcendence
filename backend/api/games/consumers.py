@@ -418,15 +418,25 @@ class GameConsumer(AsyncWebsocketConsumer):
 		angleX = 1
 		angleY = 0
 		buff1= 0
+		how_many = 0
 		buff2 = 0
 		buff3 = 0
 		howmanyspeeds = 0
 		speed = 0.0005
 		last_hit = None
-		await asyncio.sleep(3.5)
+		await asyncio.sleep(4.18)
 		new_start = time.time()
+		await self.channel_layer.group_send(
+		self.room_group_name,
+			{
+				"type": 'ball_position',
+				"action": 'ball_movment',
+				"x":  angleX * 0.005,
+				"y":  angleY * 0.005
+			}
+		)
 		while True:
-			base_speed = 0.005 + (speed * howmanyspeeds)
+			base_speed = 0.005
 			current_time = time.time()
 			if current_time - new_start >= 8:
 				if howmanyspeeds < 5:
@@ -435,6 +445,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			game['ball']['dy'] = angleY * base_speed
 			game['ball']['x'] += game['ball']['dx']
 			game['ball']['y'] += game['ball']['dy']
+			how_many += 1
 			if current_time - new_start >= 13 and buff1 == 0:
 				buff1 = 1
 				await self.channel_layer.group_send(
@@ -467,7 +478,16 @@ class GameConsumer(AsyncWebsocketConsumer):
 				)
 			if game['ball']['y'] <= 0.06 or game['ball']['y'] >= 0.99:
 				angleY = -angleY
-			elif game['ball']['x'] <= 0.02 and game['paddle1']['y'] <= game['ball']['y'] <= game['paddle1']['y'] + 0.11:
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'ball_position',
+						"action": 'ball_movment',
+						"x":  angleX * base_speed,
+						"y":  angleY * base_speed
+					}
+				)
+			elif game['ball']['x'] <= 0.02 and game['paddle1']['y'] <= game['ball']['y'] <= game['paddle1']['y'] + 0.1:
 				angleX = abs(angleX)
 				impact_point = (game['ball']['y'] - game['paddle1']['y']) / game['paddle1']['height']
 				angleY = (impact_point - 0.5) * 2
@@ -480,7 +500,16 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"paddle": last_hit,
 					}
 				)
-			elif game['ball']['x'] >= 0.98 and game['paddle2']['y'] <= game['ball']['y'] <= game['paddle2']['y'] + 0.11:
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'ball_position',
+						"action": 'ball_movment',
+						"x":  angleX * base_speed,
+						"y":  angleY * base_speed
+					}
+				)
+			elif game['ball']['x'] >= 0.98 and game['paddle2']['y'] <= game['ball']['y'] <= game['paddle2']['y'] + 0.1:
 				angleX = -abs(angleX)
 				impact_point = (game['ball']['y'] - game['paddle2']['y']) / game['paddle2']['height']
 				angleY = (impact_point - 0.5) * 2
@@ -491,6 +520,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"type": 'paddle_hit',
 						"action": 'paddle_hit',
 						"paddle": last_hit,
+					}
+				)
+				await self.channel_layer.group_send(
+				self.room_group_name,
+					{
+						"type": 'ball_position',
+						"action": 'ball_movment',
+						"x":  angleX * base_speed,
+						"y":  angleY * base_speed
 					}
 				)
 			elif game['ball']['x'] <= 0.01 or game['ball']['x'] >= 0.99:
@@ -534,16 +572,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 				await asyncio.sleep(4)
 				new_start = time.time()
 				continue
-			await self.channel_layer.group_send(
-			self.room_group_name,
-				{
-					"type": 'ball_position',
-					"action": 'ball_movment',
-					"x": game['ball']['x'],
-					"y": game['ball']['y']
-				}
-			)
-			await asyncio.sleep(0.032)
+			await asyncio.sleep(0.016)
 
 	async def empty_action(self, event):
 		action = event['action']

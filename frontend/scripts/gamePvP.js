@@ -75,6 +75,7 @@ function drawScore(pvp1, pvp2) {
 export async function gameOScreenpvp() {
 	var winner;
 	var loser;
+	console.log('this is to prove to sofianr that its an fps issue',a);
 	Gscreen = true;
 	freeWill = true;
 	var game_data = {'score1':0, 'score2':0, 'attack_accuracy': 0.0, 'game_duration':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
@@ -345,6 +346,8 @@ export function newRound() {
 	sphere.radius = widthScale / 100;
 	sx = (widthScale / 2);
 	sy = (heightScale / 2);
+	sphere.dx = 0.005 * widthScale;
+	sphere.dy = 0;
 	fullTime += reseTpvp;
 	// reseTpvp = Date.now();
 }
@@ -566,6 +569,8 @@ function setDimensions() {
 
 	sphere.radius = widthScale / 100;
 	sphere.x = (widthScale / 2);
+	// sphere.dx = 0.005 * widthScale;
+	// sphere.dy = 0;
 	sx = sphere.x;
 	sphere.y = (heightScale / 2);
 	sy = sphere.y;
@@ -652,8 +657,10 @@ export function renderOP(y) {
 }
 
 export function changeSphereVars(x, y) {
-	sphere.x = x * window.userData.screen_dimensions.width;
-	sphere.y = y * window.userData.screen_dimensions.height;
+	sphere.dx = x * window.userData.screen_dimensions.width;
+	sphere.dy = y * window.userData.screen_dimensions.height;
+	console.log(sphere.dx);
+	console.log(sphere.dy);
 }
 
 function	drawmap1(){
@@ -801,6 +808,8 @@ function drawmap3() {
 }
 grassposgenerator();
 
+let a = 0;
+
 export function drawAll(pvp1, pvp2, settings) {
 	reseTpvp = Date.now();
 	if (settings === null){
@@ -829,6 +838,9 @@ export function drawAll(pvp1, pvp2, settings) {
 			pvp2.set = true;
 		}
 	}
+	sphere.x += sphere.dx;
+	sphere.y += sphere.dy;
+	a++;
 	reseTpvp = Math.floor((Date.now() - timerpvp) / 1000);
 	gamer1 = pvp1;
 	gamer2 = pvp2;
