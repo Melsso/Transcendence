@@ -129,6 +129,8 @@ function	redotheGame(){
 	wasdPaddle.dy = 7;
 	ARPaddle.dy = 7;
 	Balls.dy = 6;
+	Balls.x = Canvaas.width / 2;
+	Balls.y = Canvaas.height / 2;
 	Powerup.visible = false;
 	Attacking.visible = false;
 	BiggerPaddle.visible = false;

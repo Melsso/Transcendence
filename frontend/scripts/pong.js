@@ -91,7 +91,7 @@ window.scoreboard = {
     x: 0,
     y: 0, // Assuming the scoreboard starts at the top of the canvas
     width: canvas.width,
-    height: 50 // Height of the scoreboard, adjust as necessary
+    height: canvas.height * 0.05 // Height of the scoreboard, adjust as necessary
 };
 
 window.ResetTime = null;
@@ -242,9 +242,9 @@ async function altFfour(){
     fflag = 0;
 	AttackCount = 0;
 	BigPadCount = 0;
-    playerPaddle.dy = 7;
-	aiPaddle.dy = 7;
-	ball.dy = 6;
+    playerPaddle.dy = canvas.height / 165;
+	aiPaddle.dy = canvas.height / 165;
+	ball.dy = canvas.height / 192;
 	buff.visible = false;
 	Attack.visible = false;
 	PaddleBigger.visible = false;
@@ -295,11 +295,11 @@ function restartGame(difficulty) {
     crossCount = 0;
     AttackCount = 0;
     BigPadCount = 0;
-    playerPaddle.dy = 7;
+    playerPaddle.dy = canvas.height / 165;
     flag = 0;
     fflag = 0;
-    aiPaddle.dy = 7;
-    ball.dy = 6;
+    aiPaddle.dy = canvas.height / 165;
+    ball.dy = canvas.height / 192;
     playerPaddle.hasanattack = 0;
     aiPaddle.aihasanattack = 0;
     buff.visible = false;
@@ -327,7 +327,7 @@ window.resizeCanvas();
 window.addEventListener('resize', kickPlayer);
 
 function movePlayerPaddle() {
-    if (upPressed && playerPaddle.y > 50) {
+    if (upPressed && playerPaddle.y > canvas.height * 0.05) {
         playerPaddle.y -= playerPaddle.dy;
     } else if (downPressed && playerPaddle.y < canvas.height - playerPaddle.height) {
         playerPaddle.y += playerPaddle.dy;

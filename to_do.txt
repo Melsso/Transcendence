@@ -50,8 +50,5 @@ pressing 'enter' when you're typing inside a field f settings basically refreshe
 uploading a picture that's too big gives you an error: undefined
 deleting all games doesnt remove the field to type password
 
-pongloc tests:
-pressing replay will spawn the ball somewhere around where it hit when you initially lost, so yeah ball.x and ball.y to be reset after game ends
-
 ai tests:
 leaving a game gives you notif, but nothing for match history
