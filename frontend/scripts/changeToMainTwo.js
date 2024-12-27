@@ -933,6 +933,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					if (result['user'].Twofa_auth === true && !toggle.classList.contains('on')) {
 						toggle.classList.toggle('on');
+					} else {
+						toggle.classList.remove('on');
 					}
 					if (window.userData?.guest  && window.userData.guest === true) {
 						guest = true;
@@ -1192,10 +1194,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		const v_code = document.getElementById('2fa-input').value;
 		document.getElementById('2fa-input').value = '';
 		const l1 = document.getElementById('2fa-yes');
-		if (window.userData?.accessToken || localStorage.getItem('accessToken')) {
-			navigateTo('profile', null);
-			return;
-		}
 		const r_value = l1.checked;
 		try {
 			const result = await addToKnownLocation(v_code, r_value);

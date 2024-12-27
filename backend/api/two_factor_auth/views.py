@@ -45,6 +45,8 @@ class CheckKnownHostDeviceView(generics.GenericAPIView):
 		user_agent = request.META.get('HTTP_USER_AGENT')
 		code = request.data.get('code')
 		remember = request.data.get('remember')
+		if code is None:
+			return Response({'status':'error', 'detail':'Wrong Verification Code!'}, status=HTTP_400_BAD_REQUEST)
 		if code != user.verification_code:
 			return Response({'status':'error', 'detail':'Wrong Verification Code!'}, status=HTTP_401_UNAUTHORIZED)
 		user.verification_code = ''

@@ -425,7 +425,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 	
 	async def move_ball(self, key):
 		game = self.game_rooms[key]
-		game['ball'] = {'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0.005, 'radius': 0.01}
+		game['ball'] = {'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0, 'radius': 0.01}
 		game['paddle1'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 		game['paddle2'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 		if game['mode'] is "Default Mode":
@@ -437,118 +437,52 @@ class GameConsumer(AsyncWebsocketConsumer):
 		buff1= 0
 		buff2 = 0
 		buff3 = 0
+		b_r = game['ball']['radius']
+		b_x = game['ball']['x']
+		b_y = game['ball']['y']
+		b_dx = game['ball']['dx']
+		b_dy = game['ball']['dy']
+		p1_y = game['paddle1']['y']
+		p1_h = game['paddle1']['height']
+		p1_s = game['paddle1']['score']
+		p2_y = game['paddle2']['y']
+		p2_h = game['paddle2']['height']
+		p2_s = game['paddle2']['score']
+		last = 1
 		await asyncio.sleep(4.18)
-		if buff_mode:
-			new_start = time.time()
-		await self.channel_layer.group_send(
-		self.room_group_name,
-			{
-				"type": 'ball_position',
-				"action": 'ball_movment',
-				"x":  angleX * 0.005,
-				"y":  angleY * 0.005
-			}
-		)
+		new_start = time.time() if buff_mode else None
+		buffs = [0, 0, 0]
+		speed_scale = 1.05
+		max_speed = 0.02
 		base_speed = 0.005
 		while True:
+			p1_y = game['paddle1']['y']
+			p1_h = game['paddle1']['height']
+			p2_y = game['paddle2']['y']
+			p2_h = game['paddle2']['height']
 			if buff_mode:
 				current_time = time.time()
-			game['ball']['dx'] = angleX * base_speed
-			game['ball']['dy'] = angleY * base_speed
-			game['ball']['x'] += game['ball']['dx']
-			game['ball']['y'] += game['ball']['dy']
-			if buff_mode and current_time - new_start >= 13 and buff1 == 0:
-				buff1 = 1
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'demandPowerUP',
-						"action": 'Buff',
-						"flag": 1
-					}
-				)
-			if buff_mode and current_time - new_start >= 3 and buff2 == 0:
-				buff2 = 1
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'demandPowerUP',
-						"action": 'Buff',
-						"flag": 2
-					}
-				)
-			if buff_mode and current_time - new_start >= 23 and buff3 == 0:
-				buff3 = 1
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'demandPowerUP',
-						"action": 'Buff',
-						"flag": 3
-					}
-				)
-			if game['ball']['y'] <= 0.06 or game['ball']['y'] >= 0.99:
-				angleY = -angleY
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'ball_position',
-						"action": 'ball_movment',
-						"x":  angleX * base_speed,
-						"y":  angleY * base_speed
-					}
-				)
-			elif game['ball']['x'] <= 0.02 and game['paddle1']['y'] <= game['ball']['y'] <= game['paddle1']['y'] + game['paddle1']['height'] + game['ball'['radius']]:
-				impact_point = (game['ball']['y'] - game['paddle1']['y']) / game['paddle1']['height']
-				logger.warning("zebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiii")
-				logger.warning(impact_point)
-				angleY = self.get_angle_y(impact_point)
-				angleX = abs(angleX)
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'paddle_hit',
-						"action": 'paddle_hit',
-						"paddle": 1
-					}
-				)
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'ball_position',
-						"action": 'ball_movment',
-						"x":  angleX * base_speed,
-						"y":  angleY * base_speed
-					}
-				)
-			elif game['ball']['x'] >= 0.98 and game['paddle2']['y'] <= game['ball']['y'] <= game['paddle2']['y'] + game['paddle2']['height'] + game['ball']['radius']:
-				impact_point = (game['ball']['y'] - game['paddle2']['y']) / game['paddle2']['height']
-				logger.warning("zebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooo")
-				logger.warning(impact_point)
-				angleY = self.get_angle_y(impact_point)		
-				angleX = -abs(angleX)
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'paddle_hit',
-						"action": 'paddle_hit',
-						"paddle": 2
-					}
-				)
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'ball_position',
-						"action": 'ball_movment',
-						"x":  angleX * base_speed,
-						"y":  angleY * base_speed
-					}
-				)
-			elif game['ball']['x'] <= 0.01 or game['ball']['x'] >= 0.99:
-				logger.warning("zebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooo")
-				logger.warning("iri")
-				logger.warning(game['ball']['x'])
-				if game['ball']['x'] <= 0.01:
+				for i, buff_time in enumerate([13, 3, 23]):
+					if buffs[i] == 0 and current_time - new_start >= buff_time:
+						buffs[i] = 1
+						await self.channel_layer.group_send(
+						   self.room_group_name,
+						   {"type": 'demandPowerUP', "action": 'Buff', "flag": i + 1}
+						)
+			if b_y <= 0.06 or b_y >= 0.99:
+				b_dy *= -1
+			elif b_x <= 0.02 and p1_y <= b_y <= p1_y + p1_h + b_r:
+				impact_point = (b_y - p1_y - p1_h / 2) / (p1_h / 2)
+				b_dy = impact_point * base_speed * 1.5
+				b_dx = -b_dx * min(speed_scale, max_speed / abs(b_dx))
+				last = 1
+			elif b_x >= 0.98 and p2_y <= b_y <= p2_y + p2_h + b_r:
+				impact_point = (b_y - p2_y - p2_h / 2) / (p2_h / 2)
+				b_dy = impact_point * base_speed * 1.5
+				b_dx = -b_dx * min(speed_scale, max_speed / abs(b_dx))
+				last = 2
+			elif b_x <= 0.01 or b_x >= 0.99:
+				if b_x <= 0.01:
 					game['paddle2']['score'] += 1
 				else:
 					game['paddle1']['score'] += 1
@@ -560,34 +494,43 @@ class GameConsumer(AsyncWebsocketConsumer):
 							"type": 'r_round',
 							"action": 'restart_round',
 							"state": 'end',
+							"score1":	game['paddle1']['score'],
+							"score2": game['paddle2']['score']
 						}
 					)
 					break
 				
-				game['ball']['x'] = 0.5
-				game['ball']['y'] = 0.5
-				game['ball']['dx'] = 0.005
-				game['ball']['dy'] = 0.005
+				b_x, b_y, b_dx, b_dy = 0.5, 0.5, 0.005, 0
 				game['paddle1']['y'] = 0.45
 				game['paddle2']['y'] = 0.45
-				angleX = 1
-				angleY = 0
-				if buff_mode:
-					buff1 = 0
-					buff2 = 0
-					buff3 = 0
+				buffs = [0, 0, 0]
+				last = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
 					{
 						"type": 'r_round',
 						"action": 'restart_round',
 						"state": 'restart',
+						"score1":	game['paddle1']['score'],
+						"score2": game['paddle2']['score']
 					}
 				)
 				await asyncio.sleep(4)
 				if buff_mode:
 					new_start = time.time()
 				continue
+			b_x += b_dx
+			b_y += b_dy
+			await self.channel_layer.group_send(
+			self.room_group_name,
+				{
+					"type": 'ball_position',
+					"action": 'ball_movment',
+					"x":  b_x,
+					"y":  b_y,
+					"last": last
+				}
+			)
 			await asyncio.sleep(0.016)
 
 	async def empty_action(self, event):
@@ -610,35 +553,18 @@ class GameConsumer(AsyncWebsocketConsumer):
          "type": "restart_round",
 			'action': action,
 			"state": state,
+			"score1": event["score1"],
+			"score2": event["score2"]
         }))
-	async def maybe(self):
-		await self.channel_layer.group_send(
-		self.room_group_name,
-			{
-				"type": 'r_round',
-				"action": 'restart_round',
-				"state": 'end',
-			}
-		)
-
 
 	async def ball_position(self, event):
 		action = event['action']
 		await self.send(text_data=json.dumps({
-            "type": "ballState",
 				'action': action,
             "x": event["x"],
-            "y": event["y"]
+            "y": event["y"],
+				"last": event["last"]
         }))
-
-	async def paddle_hit(self, event):
-		action = event['action']
-		paddle = event['paddle']
-		await self.send(text_data=json.dumps({
-				'action': action,
-				'paddle': paddle
-		}))
-
 
 	async def player_action(self, event):
 		action = event['action']

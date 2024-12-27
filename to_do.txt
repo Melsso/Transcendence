@@ -40,3 +40,18 @@ things to be done for he project to be done:
 - Sending the end game stats and saving them and adding correct Exp to the user, to be handled by Saadoun.
 - Tournamnet logic to be done , handled by Saadoun and Sofiane.
 - checkig bugs, to be Handled by Rayan.
+
+
+
+NEW BUGS ta3 lyoum:
+bronze stars for new accounts, should be empty
+changing your name, then trying to rename to the same username you had y9ollek you're using the same shit
+pressing 'enter' when you're typing inside a field f settings basically refreshes the website ??
+uploading a picture that's too big gives you an error: undefined
+deleting all games doesnt remove the field to type password
+
+pongloc tests:
+pressing replay will spawn the ball somewhere around where it hit when you initially lost, so yeah ball.x and ball.y to be reset after game ends
+
+ai tests:
+leaving a game gives you notif, but nothing for match history
