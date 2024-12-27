@@ -364,11 +364,12 @@ canvas {
 
 .Instructions {
 	width: 70%;
-	height: 60%;
+	height: 66%;
 	position: absolute;
 	top: 20%;
 	left: 15%;
-	background-color: rgba(4, 88, 185, 0.8);
+	background-color: #7255a8;
+	overflow-y: hidden;
 	color: white; 
 	display: flex;
 	flex-direction: column;
