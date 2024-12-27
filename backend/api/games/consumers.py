@@ -6,7 +6,7 @@ from urllib.parse import parse_qs
 import aioredis
 import json
 import random
-import uuid
+import math
 import string
 import logging
 import asyncio
@@ -109,6 +109,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		await asyncio.sleep(10)
 		current_players = await self.get_players_in_room()
 		if len(current_players) >= 2:
+			self.checker_loop.cancel()
 			return
 		rooms = await self.get_all_rooms()
 		exp = user.bar_exp_game1 / 1000
@@ -126,15 +127,16 @@ class GameConsumer(AsyncWebsocketConsumer):
 					min_exp_diff = exp_diff
 					closest_room = room_name
 		if closest_room:
-			self.redis_key = room_name
 			await self.remove_player_from_room(user.username)
+			self.redis_key = closest_room
 			await self.add_player_to_queue_room(user.username)
-			self.room_group_name = room_name.replace("game_room_", "")
+			self.room_group_name = closest_room.replace("game_room_", "")
 			await self.channel_layer.group_add(
 				self.room_group_name,
 				self.channel_name
 			)
 			await self.notifyPlayers()
+			self.checker_loop.cancel()
 		else:
 			await self.channel_layer.group_send(
 				self.room_group_name,
@@ -153,7 +155,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 		room_name = self.find_match_room(user, rooms)
 		if room_name is None:
 			await self.create_queue_room(user.username)
-			rooms = await self.get_all_rooms()
 			self.checker_loop = asyncio.create_task(self.matchPlayersWithClosestExp(user))
 		else:
 			self.redis_key = room_name
@@ -184,17 +185,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 		self.redis_key = self.redis_room_prefix + self.room_group_name
 		query_string = self.scope['query_string'].decode('utf-8')
 		query_params = parse_qs(query_string)
-		screen_width = query_params.get('width', [None])[0]
-		screen_height = query_params.get('height', [None])[0]
-		if screen_width and screen_height:
-			screen_width = int(screen_width)
-			screen_height = int(screen_height)
+		mode_selected = query_params.get('mode', [None])[0]
 
 		players_in_room = await self.get_players_in_room()
 		if len(players_in_room) >= 2:
 			await self.close()
 			return
-		await self.add_player_to_room(user.username, screen_width, screen_height)
+		await self.add_player_to_room(user.username, mode_selected)
 		await self.channel_layer.group_add(
 			self.room_group_name,
 			self.channel_name
@@ -205,7 +202,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 			paddle1 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 			paddle2 = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 			ball = { 'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0.005, 'radius': 0.0}
-			self.game_rooms[self.room_group_name] = {"paddle1": paddle1, "paddle2": paddle2, "ball": ball}
+			mode_s = players_in_room[user.username]['mode']
+			self.game_rooms[self.room_group_name] = {"paddle1": paddle1, "paddle2": paddle2, "ball": ball, "mode": mode_s}
 		await self.send_current_players(players_in_room)
 
 	async def disconnect(self, close_code):
@@ -292,8 +290,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 				ready_status = state['ready']
 				await self.update_player_ready(username, ready_status)
 				players_in_room = await self.get_players_in_room()
-				players_keys = list(players_in_room.keys())
-				user = self.scope['user']
 				await self.send_current_players(players_in_room)
 				start = True
 				if len(players_in_room) != 2:
@@ -308,11 +304,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 			elif action == 'queue_status':
 				await self.update_player_ready(player, state)
 				players_in_room = await self.get_players_in_room()
-				players_keys = list(players_in_room.keys())
 				if len(players_in_room) != 2:
 					return
 				start = True
-				user = self.scope['user']
 				for player in players_in_room:
 					if players_in_room[player]['ready'] == "UNDECIDED":
 						start = False
@@ -320,11 +314,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 					elif players_in_room[player]['ready'] == False:
 						start = False
 						self.remove_player_from_room(player)
-						players_in_room = await self.get_players_in_room()
 						return
 				if start == True:
 					players_in_room = await self.get_players_in_room()
 					await self.send_currents(players_in_room)
+				return
 
 			elif action == 'game_start':
 				task = asyncio.create_task(self.move_ball(self.room_group_name))
@@ -409,23 +403,43 @@ class GameConsumer(AsyncWebsocketConsumer):
 			# here delete the asgi key and this room and whatever else, this shouldnt be reached anyway
 			pass
 
-
+	def get_angle_y(self, perc):
+		if 0.2 >= perc >= 0:
+			ang_y = math.radians(60)
+			return -math.sin(ang_y)
+		elif 0.4 >= perc > 0.2:
+			ang_y = math.radians(45)
+			return -math.sin(ang_y)
+		elif 0.5 >= perc > 0.4:
+			ang_y = math.radians(30)
+			return math.sin(ang_y)
+		elif 0.6 >= perc > 0.5:
+			ang_y = math.radians(30)
+			return -math.sin(ang_y)
+		elif 0.8 >= perc > 0.6:
+			ang_y = math.radians(45)
+			return math.sin(ang_y)
+		elif 1 >= perc > 0.8:
+			ang_y = math.radians(60)
+			return math.sin(ang_y)
+	
 	async def move_ball(self, key):
 		game = self.game_rooms[key]
-		game['ball'] = {'x': 0.5, 'y': 0.5,  'dx': 0.005,'dy': 0.005,'radius': 0.01 }
-		game['paddle1'] = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
-		game['paddle2'] = {'y': 0.45,'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+		game['ball'] = {'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0.005, 'radius': 0.01}
+		game['paddle1'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+		game['paddle2'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
+		if game['mode'] is "Default Mode":
+			buff_mode = False
+		else:
+			buff_mode = True
 		angleX = 1
 		angleY = 0
 		buff1= 0
-		how_many = 0
 		buff2 = 0
 		buff3 = 0
-		howmanyspeeds = 0
-		speed = 0.0005
-		last_hit = None
 		await asyncio.sleep(4.18)
-		new_start = time.time()
+		if buff_mode:
+			new_start = time.time()
 		await self.channel_layer.group_send(
 		self.room_group_name,
 			{
@@ -435,18 +449,15 @@ class GameConsumer(AsyncWebsocketConsumer):
 				"y":  angleY * 0.005
 			}
 		)
+		base_speed = 0.005
 		while True:
-			base_speed = 0.005
-			current_time = time.time()
-			if current_time - new_start >= 8:
-				if howmanyspeeds < 5:
-					howmanyspeeds += 1
+			if buff_mode:
+				current_time = time.time()
 			game['ball']['dx'] = angleX * base_speed
 			game['ball']['dy'] = angleY * base_speed
 			game['ball']['x'] += game['ball']['dx']
 			game['ball']['y'] += game['ball']['dy']
-			how_many += 1
-			if current_time - new_start >= 13 and buff1 == 0:
+			if buff_mode and current_time - new_start >= 13 and buff1 == 0:
 				buff1 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -456,7 +467,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 1
 					}
 				)
-			if current_time - new_start >= 3 and buff2 == 0:
+			if buff_mode and current_time - new_start >= 3 and buff2 == 0:
 				buff2 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -466,7 +477,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"flag": 2
 					}
 				)
-			if current_time - new_start >= 23 and buff3 == 0:
+			if buff_mode and current_time - new_start >= 23 and buff3 == 0:
 				buff3 = 1
 				await self.channel_layer.group_send(
 				self.room_group_name,
@@ -487,17 +498,18 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"y":  angleY * base_speed
 					}
 				)
-			elif game['ball']['x'] <= 0.02 and game['paddle1']['y'] <= game['ball']['y'] <= game['paddle1']['y'] + 0.1:
-				angleX = abs(angleX)
+			elif game['ball']['x'] <= 0.02 and game['paddle1']['y'] <= game['ball']['y'] <= game['paddle1']['y'] + game['paddle1']['height'] + game['ball'['radius']]:
 				impact_point = (game['ball']['y'] - game['paddle1']['y']) / game['paddle1']['height']
-				angleY = (impact_point - 0.5) * 2
-				last_hit = 1
+				logger.warning("zebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiiizebiiiiii")
+				logger.warning(impact_point)
+				angleY = self.get_angle_y(impact_point)
+				angleX = abs(angleX)
 				await self.channel_layer.group_send(
 				self.room_group_name,
 					{
 						"type": 'paddle_hit',
 						"action": 'paddle_hit',
-						"paddle": last_hit,
+						"paddle": 1
 					}
 				)
 				await self.channel_layer.group_send(
@@ -509,17 +521,18 @@ class GameConsumer(AsyncWebsocketConsumer):
 						"y":  angleY * base_speed
 					}
 				)
-			elif game['ball']['x'] >= 0.98 and game['paddle2']['y'] <= game['ball']['y'] <= game['paddle2']['y'] + 0.1:
-				angleX = -abs(angleX)
+			elif game['ball']['x'] >= 0.98 and game['paddle2']['y'] <= game['ball']['y'] <= game['paddle2']['y'] + game['paddle2']['height'] + game['ball']['radius']:
 				impact_point = (game['ball']['y'] - game['paddle2']['y']) / game['paddle2']['height']
-				angleY = (impact_point - 0.5) * 2
-				last_hit = 2
+				logger.warning("zebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooo")
+				logger.warning(impact_point)
+				angleY = self.get_angle_y(impact_point)		
+				angleX = -abs(angleX)
 				await self.channel_layer.group_send(
 				self.room_group_name,
 					{
 						"type": 'paddle_hit',
 						"action": 'paddle_hit',
-						"paddle": last_hit,
+						"paddle": 2
 					}
 				)
 				await self.channel_layer.group_send(
@@ -532,6 +545,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 					}
 				)
 			elif game['ball']['x'] <= 0.01 or game['ball']['x'] >= 0.99:
+				logger.warning("zebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooozebooooooooooo")
+				logger.warning("iri")
+				logger.warning(game['ball']['x'])
 				if game['ball']['x'] <= 0.01:
 					game['paddle2']['score'] += 1
 				else:
@@ -554,13 +570,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 				game['ball']['dy'] = 0.005
 				game['paddle1']['y'] = 0.45
 				game['paddle2']['y'] = 0.45
-				howmanyspeeds = 0
-				base_speed = 0.005
 				angleX = 1
 				angleY = 0
-				buff1 = 0
-				buff2 = 0
-				buff3 = 0
+				if buff_mode:
+					buff1 = 0
+					buff2 = 0
+					buff3 = 0
 				await self.channel_layer.group_send(
 				self.room_group_name,
 					{
@@ -570,7 +585,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 					}
 				)
 				await asyncio.sleep(4)
-				new_start = time.time()
+				if buff_mode:
+					new_start = time.time()
 				continue
 			await asyncio.sleep(0.016)
 
@@ -644,15 +660,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 		}))
 	
 
-	async def add_player_to_room(self, player_name, screen_width, screen_height):
+	async def add_player_to_room(self, player_name, mode_selected):
 		redis = await aioredis.from_url("redis://redis:6379")
 		player_data = {
 			"username": player_name,
 			"ready": False,
-			"screen_dimensions": {
-				"width": screen_width,
-				"height": screen_height
-			}
+			"mode": mode_selected
 		}
 		await redis.hset(self.redis_key, player_name, json.dumps(player_data))
 		await redis.close()
@@ -752,6 +765,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 			"mode": random.choice(['Default Mode', 'Buff Mode']),
 			"map": random.choice(['Map 1', 'Map 2', 'Map 3'])
 		}
+		self.game_rooms[self.room_group_name]['mode'] = settings['mode']
 		await self.channel_layer.group_send(
 			self.room_group_name,
             {

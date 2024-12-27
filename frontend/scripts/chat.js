@@ -385,7 +385,10 @@ export async function	launchSocket() {
 			}
 			if (data.action === 'Game_left' && window.userData.username === data.target) {
 				Notification('Game action', `Your oppponent: ${data.username} has left the game! therefore you win the match by default!`, 2, 'profile');
+				Habess();
+				resizeGame = false;
 				await endGameStats({'name':window.userData.username, 'score':0}, {'name':data.username, 'score':0}, false, window.userData.r_name, null);
+				navigateTo('PONG', null);
 				return;
 			}
 			if (data.action == 'Notification' && data.target == window.userData.username) {

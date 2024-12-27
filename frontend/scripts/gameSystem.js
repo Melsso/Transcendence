@@ -64,9 +64,8 @@ lo.addEventListener('click', async function (){
         const data = await getRoomName();
         window.userData.r_name = data.room_name;
         const u = new URL(baseUrl);
-        const screenHeight = canvass.clientHeight;
-        const screenWidth = canvass.clientWidth;
-        const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+        const mode_selected = window.lobbySettings.mode;
+        const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&mode=${mode_selected}`);
         window.userData['pong_socket'] = gameSocket;
         startGameSocket();
     } catch (error) {
@@ -149,7 +148,10 @@ export async function startGameSocket() {
                 startQueueGame(data.players, data.settings);
             } else {
                 hebssmodal = true;
-                resizeGame = false;
+                if (resizeGame) {
+                    Habess();
+                    resizeGame = false;
+                }
                 navigateTo('PONG', null);
             }
         }
@@ -186,9 +188,8 @@ export async function startGameSocket() {
                     try {
                         const data = await getRoomName();
                         const u = new URL(baseUrl);
-                        const screenHeight = canvass.clientHeight;
-                        const screenWidth = canvass.clientWidth;
-                        const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+                        const mode_selected = window.lobbySettings.mode;
+                        const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&mode=${mode_selected}`);
                         if (window.userData.pong_socket) {
                             resizeGame = false;
                             window.userData.pong_socket.close();
@@ -242,7 +243,6 @@ export async function startGameSocket() {
                 const target = data.target;
                 updatePaddlePvP(target);
             } else if (data.state === 'shield') {
-                const target = data.target;
                 Bigpadpower();
             }
         } else if (data.action === 'restart_round') {
@@ -294,8 +294,8 @@ export async function startQueueGame(players, sett=null, myff=null) {
         g1['score'] = 0;
         g2['score'] = 0;
     } else {
-        let g1 = players[0];
-        let g2 = players[1];
+        g1 = players[0];
+        g2 = players[1];
         g1['set'] = false;
         g2['set'] = false;
         g1['score'] = 0;
@@ -314,7 +314,7 @@ export async function startQueueGame(players, sett=null, myff=null) {
             setTimeout(() => {
                 countdownOverlay.remove();
                 drawAll(g1, g2, lobbySettings);
-            }, 1000);
+            }, 1180);
         }
     }, 1000);
 }
