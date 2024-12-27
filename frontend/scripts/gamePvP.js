@@ -61,7 +61,6 @@ function drawScore(pvp1, pvp2) {
 	ctxx.fillStyle = 'white';
 	ctxx.fillText(pvp1.username, 10*canvass.width/100, 30);
 	ctxx.fillText(pvp1.score, 18*canvass.width/100, 30);
-	// ctxx.drawImage(image2, canvass.width - 50, 5, 40, 40);
 	ctxx.font = '20px Arial';
 	ctxx.fillStyle = 'white'; 
 	ctxx.fillText(pvp2.username, 90*canvass.width/100, 30);
@@ -72,24 +71,16 @@ function drawScore(pvp1, pvp2) {
 	ctxx.textAlign = 'center';
 	ctxx.fillText(`${timerseconds}`, canvass.width / 2, canvass.height * 0.025);
 }
-export async function gameOScreenpvp() {
+export async function gameOScreenpvp(score1=null, score2=null) {
 	var winner;
 	var loser;
-	console.log('this is to prove to sofianr that its an fps issue',a);
 	Gscreen = true;
 	freeWill = true;
 	var game_data = {'score1':0, 'score2':0, 'attack_accuracy': 0.0, 'game_duration':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
-	if (sphere.x >= canvass.width - (playerPaddle2.width * 2)){
-		gamer1.score++;
-		winner = gamer1.username;
-		loser = gamer2.username;
+	if (score1 !== null && score2 !== null) {
+		gamer1.score = score1;
+		gamer2.score = score2;
 	}
-	else{
-		gamer2.score++;
-		winner = gamer2.username;
-		loser = gamer1.username;
-	}
-
 	if (window.setting.mode == 'Default Mode') {
 		game_data['attack_accuracy'] = null;
 		game_data['attack_powerup'] = null;
@@ -280,6 +271,7 @@ export function drawBigpadpvp(x){
 	ctxx.globalAlpha = 1.0;
 }
 
+
 export function Habess() {
 	for (let i = 0; i < animation.length; i++) {
 		cancelAnimationFrame(animation[i]);
@@ -346,15 +338,10 @@ export function newRound() {
 	sphere.radius = widthScale / 100;
 	sx = (widthScale / 2);
 	sy = (heightScale / 2);
-	sphere.dx = 0.005 * widthScale;
-	sphere.dy = 0;
 	fullTime += reseTpvp;
 	// reseTpvp = Date.now();
 }
 
-export function changeLast(last) {
-	last_hit = last;
-}
 
 export function triggerShootPvP(target) {
 	if (target === 1) {
@@ -656,11 +643,12 @@ export function renderOP(y) {
 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
 }
 
-export function changeSphereVars(x, y) {
-	sphere.dx = x * window.userData.screen_dimensions.width;
-	sphere.dy = y * window.userData.screen_dimensions.height;
-	console.log(sphere.dx);
-	console.log(sphere.dy);
+export function changeSphereVars(x, y, last=null) {
+	sphere.x = x * window.userData.screen_dimensions.width;
+	sphere.y = y * window.userData.screen_dimensions.height;
+	if (last !== null) {
+		last_hit = last;
+	}
 }
 
 function	drawmap1(){
@@ -808,8 +796,6 @@ function drawmap3() {
 }
 grassposgenerator();
 
-let a = 0;
-
 export function drawAll(pvp1, pvp2, settings) {
 	reseTpvp = Date.now();
 	if (settings === null){
@@ -838,9 +824,6 @@ export function drawAll(pvp1, pvp2, settings) {
 			pvp2.set = true;
 		}
 	}
-	sphere.x += sphere.dx;
-	sphere.y += sphere.dy;
-	a++;
 	reseTpvp = Math.floor((Date.now() - timerpvp) / 1000);
 	gamer1 = pvp1;
 	gamer2 = pvp2;
@@ -900,7 +883,8 @@ export function drawAll(pvp1, pvp2, settings) {
 	animation.push(frame);
 }
 
-export function displayCountdown() {
+
+export function displayCountdown(score1=null, score2=null) {
 	let setts;
 	setts = window.setting
 	const gameContainer = document.getElementById('gameContainer');
@@ -926,10 +910,9 @@ export function displayCountdown() {
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	playerPaddle1.y = p1;
 	playerPaddle2.y = p2;
-	if (sphere.x >=  canvass.width - (playerPaddle2.width * 2)) {
-		gamer1.score += 1;
-	} else{
-		gamer2.score += 1;
+	if (score1 !== null && score2 !== null) {
+		gamer1.score = score1;
+		gamer2.score = score2;
 	}
 	if (setts.map === 'Map 2')
 		drawmap2();
@@ -953,7 +936,6 @@ export function displayCountdown() {
 		 }
 	}, 1000);
 }
-// window.displayCountdown = displayCountdown;
 
 window.addEventListener('resize', async function () {
 	if (resizeGame === true) {
@@ -969,7 +951,6 @@ window.addEventListener('resize', async function () {
 		}
 		handleSend(targetName, null, 'Game_left', true);
 		await endGameStats({'name':targetName}, {'name':window.userData.username}, true, room_name, null);
-		//send the game as an ff an show it in match history
 		return;
 	}
 });
