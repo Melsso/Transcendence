@@ -374,7 +374,6 @@ canvas {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
-	overflow: auto;
 	align-items: center;
 	border: 2px solid white;
 	padding: 20px;
