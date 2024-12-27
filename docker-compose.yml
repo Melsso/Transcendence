@@ -5,27 +5,16 @@ services:
       context: ./backend
       args:
         - ACTIVE_HOST=${ACTIVE_HOST}
-    container_name: pong-backend-container
-    command: > 
-      sh -c "
-      while ! nc -z database 5432; do 
-        echo 'Waiting for db...';
-        sleep 1; 
-      done; 
-      echo 'Db is up, running migrations...';
-      python3 api/manage.py makemigrations; 
-      python3 api/manage.py migrate;
-      python api/manage.py create_ai_user;
-      echo 'Starting Daphne...';
-      cd api && daphne -b 0.0.0.0 -p 8000 api.asgi:application"     
+    container_name: pong-backend-container    
     volumes:
-      - ./backend:/app # remove this line when no longer in dev
+      - ./backend:/app
       - media:/app/api/media
     depends_on:
       - database
+      - vault
       - redis
     env_file:
-      - .env
+     - .env
     networks:
       - pong-network
     restart: on-failure
@@ -39,6 +28,8 @@ services:
       - "0.0.0.0:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    depends_on:
+      - vault
     env_file:
       - .env
     networks:
@@ -76,16 +67,16 @@ services:
       context: ./vault
     container_name: pong-vault-container
     ports:
-      - "0.0.0.0:8200:8200"
+      - "8200:8200"
     environment:
       - VAULT_DEV_ROOT_TOKEN_ID=root
     volumes:
+      - ./vault/init-vault.sh:/docker-entrypoint-initdb.d/init-vault.sh
       - vault_data:/vault/data
-      - .vault/secrets/.env:/vault/secrets/.env
-      - ./vault/init-vault.sh:/init-vault.sh
+    env_file:
+      - .env
     networks:
       - pong-network
-    command: "sh /init-vault.sh && vault server -dev -dev-root-token-id=root -dev-listen-address=0.0.0.0:8200"
     restart: unless-stopped
 
 volumes:

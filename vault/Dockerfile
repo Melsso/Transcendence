@@ -1,17 +1,12 @@
-FROM hashicorp/vault:latest
+FROM hashicorp/vault:1.11.3
 
-ENV VAULT_ADDR=http://127.0.0.1:8200
-ENV VAULT_API_ADDR=http://localhost:8200
-ENV VAULT_STORAGE_FILE_PATH=/vault/data
-ENV VAULT_DEV_ROOT_TOKEN_ID=root  
+RUN apk update && apk add --no-cache curl bash openssl
 
-EXPOSE 8200
+COPY ./start-vault.sh /docker-entrypoint-initdb.d/start-vault.sh
+COPY ./configure-vault.sh /docker-entrypoint-initdb.d/configure-vault.sh
 
-COPY vault-config.hcl /vault/config/vault-config.hcl
-COPY vault-init.sh /vault/init/vault-init.sh
+RUN chmod +x /docker-entrypoint-initdb.d/start-vault.sh /docker-entrypoint-initdb.d/configure-vault.sh
 
-ENV VAULT_CONFIG_DIR=/vault/config
+RUN echo "Listing contents of /docker-entrypoint-initdb.d/:" && ls -l /docker-entrypoint-initdb.d/
 
-RUN chmod +x /vault/init/vault-init.sh
-
-ENTRYPOINT ["/bin/sh", "-c", "vault server -config=/vault/config/vault-config.hcl & sleep 5 && /vault/init/vault-init.sh && tail -f /dev/null"]
+CMD ["sh", "/docker-entrypoint-initdb.d/start-vault.sh"]
