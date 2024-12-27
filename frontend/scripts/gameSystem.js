@@ -1,7 +1,7 @@
 import { handleSend } from "./chat.js";
 import { acceptRefuse, getWinsLosses } from "./matchMaking.js";
 import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound, handleQuitting } from "./gamePvP.js";
-import { Habess, displayCountdown, ChangeFlag, changeLast, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
+import { Habess, displayCountdown, ChangeFlag, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
 import { sendQueueStatus } from "./matchMaking.js"
 import { getMatchHistory } from "./populatePageHelpers.js";
 const baseUrl = process.env.ACTIVE_HOST;
@@ -134,6 +134,7 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = async function(event) {
         const data = JSON.parse(event.data);
+        console.log(data);
         if (data.action === 'queue_start_game') {
             if (data.players.length == 2) {
                 hebssmodal = true;
@@ -220,7 +221,7 @@ export async function startGameSocket() {
             Habess();
             displayPongLobby(lobbySettings, data.players[0], data.players[1]);
         } else if (data.action === 'ball_movment') {
-            changeSphereVars(data.x, data.y);
+            changeSphereVars(data.x, data.y, data.last);
         } else if (data.action === 'notify_match') {
             acceptRefuse();
         } else if (data.action === 'no_match') {
@@ -229,8 +230,6 @@ export async function startGameSocket() {
             startQueueGame(data.players);
         } else if (data.action === 'Buff'){
             ChangeFlag(data.flag);
-        } else if (data.action === 'paddle_hit') {
-            changeLast(data.paddle);
         } else if (data.action === 'update_buff_state') {
             if (data.state === 'speed') {
                 Speedpower();
@@ -246,13 +245,14 @@ export async function startGameSocket() {
                 Bigpadpower();
             }
         } else if (data.action === 'restart_round') {
+            console.log('dkhelna', data);
             if (data.state === 'end') {
+                gameOScreenpvp(data.score1, data.score2);
                 Habess();
-                gameOScreenpvp();
             } else {
+                displayCountdown(data.score1, data.score2);
                 Habess();
                 newRound();
-                displayCountdown();
             }
         }
     }
