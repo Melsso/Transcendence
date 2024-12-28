@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export VAULT_ADDR='http://vault:8200'
-export VAULT_TOKEN='root'
-
 echo "Waiting for Vault to be ready..."
 until curl --silent --fail $VAULT_ADDR/v1/sys/health; do
   sleep 1
@@ -48,14 +45,6 @@ export POSTGRES_HOST
 export POSTGRES_PORT
 export EMAIL_HOST_USER
 export EMAIL_HOST_PASSWORD
-echo "PostgreSQL database: $POSTGRES_DB"
-echo "PostgreSQL user: $POSTGRES_USER"
-echo "PostgreSQL password: $POSTGRES_PASSWORD"
-echo "PostgreSQL host: $POSTGRES_HOST"
-echo "PostgreSQL port: $POSTGRES_PORT"
-echo "EMAIL_HOST_USER: $EMAIL_HOST_USER"
-echo "EMAIL_HOST_PASSWORD: $EMAIL_HOST_PASSWORD"
-
 
 while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do 
   echo 'Waiting for db...';

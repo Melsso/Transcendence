@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Set Vault URL and token
-export VAULT_ADDR='http://vault:8200'  # Ensure this points to the correct Vault address
-export VAULT_TOKEN='root'
-
 Wait for Vault to be ready
 echo "Waiting for Vault to be ready..."
 until curl --silent --fail $VAULT_ADDR/v1/sys/health; do
@@ -46,11 +42,5 @@ export POSTGRES_USER
 export POSTGRES_PASSWORD
 export POSTGRES_HOST
 export POSTGRES_PORT
-
-echo "PostgreSQL database: $POSTGRES_DB"
-echo "PostgreSQL user: $POSTGRES_USER"
-echo "PostgreSQL password: $POSTGRES_PASSWORD"
-echo "PostgreSQL host: $POSTGRES_HOST"
-echo "PostgreSQL port: $POSTGRES_PORT"
 
 exec docker-entrypoint.sh postgres
