@@ -299,8 +299,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 						start = False
 						break
 				if start == True:
-					task = asyncio.create_task(self.move_ball(self.room_group_name))
-					self.game_rooms[self.room_group_name]["task"] = task
+					# task = asyncio.create_task(self.move_ball(self.room_group_name))
+					self.game_rooms[self.room_group_name]["task"] = "Running"
 			elif action == 'queue_status':
 				await self.update_player_ready(player, state)
 				players_in_room = await self.get_players_in_room()
@@ -323,6 +323,31 @@ class GameConsumer(AsyncWebsocketConsumer):
 			elif action == 'game_start':
 				task = asyncio.create_task(self.move_ball(self.room_group_name))
 				self.game_rooms[self.room_group_name]["task"] = task
+			elif action == 'ball':
+				await self.channel_layer.group_send(
+					self.room_group_name,
+					{
+						'type': 'live_game',
+						'action': action,
+						'state': state
+					}
+				)
+				return
+			elif action == 'restart_round':
+				flag = 'restart'
+				if state['score1'] == 7 or state['score2'] == 7:
+					flag = 'end'
+				await self.channel_layer.group_send(
+					self.room_group_name,
+						{
+							"type": 'r_round',
+							"action": 'restart_round',
+							"state": flag,
+							"score1": state['score1'],
+							"score2": state['score2']
+						}
+					)
+				return
 			elif action == 'update_buff_state':
 				if player == 1:
 					if buff == 'speed':
@@ -403,32 +428,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 			# here delete the asgi key and this room and whatever else, this shouldnt be reached anyway
 			pass
 
-	def get_angle_y(self, perc):
-		if 0.2 >= perc >= 0:
-			ang_y = math.radians(60)
-			return -math.sin(ang_y)
-		elif 0.4 >= perc > 0.2:
-			ang_y = math.radians(45)
-			return -math.sin(ang_y)
-		elif 0.5 >= perc > 0.4:
-			ang_y = math.radians(30)
-			return math.sin(ang_y)
-		elif 0.6 >= perc > 0.5:
-			ang_y = math.radians(30)
-			return -math.sin(ang_y)
-		elif 0.8 >= perc > 0.6:
-			ang_y = math.radians(45)
-			return math.sin(ang_y)
-		elif 1 >= perc > 0.8:
-			ang_y = math.radians(60)
-			return math.sin(ang_y)
 	
 	async def move_ball(self, key):
 		game = self.game_rooms[key]
 		game['ball'] = {'x': 0.5, 'y': 0.5, 'dx': 0.005, 'dy': 0, 'radius': 0.01}
 		game['paddle1'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 		game['paddle2'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
-		if game['mode'] is "Default Mode":
+		if game['mode'] == "Default Mode":
 			buff_mode = False
 		else:
 			buff_mode = True
@@ -546,6 +552,7 @@ class GameConsumer(AsyncWebsocketConsumer):
          'flag': flag,
 			'action': action,
         }))
+
 	async def r_round(self, event):
 		action = event['action']
 		state = event['state']
@@ -585,6 +592,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 			'target': target
 		}))
 	
+	async def live_game(self, event):
+		action = event['action']
+		state = event['state']
+		await self.send(text_data=json.dumps({
+			'action': action,
+			'state': state,
+		}))
 
 	async def add_player_to_room(self, player_name, mode_selected):
 		redis = await aioredis.from_url("redis://redis:6379")

@@ -1,6 +1,6 @@
 const canvass = document.getElementById('pongCanvas');
 const ctxx = canvass.getContext('2d');
-import { sendGameState, sendBuffState } from "./gameSystem.js";
+import { sendGameState, sendBuffState, send_live_game_data } from "./gameSystem.js";
 import { handleSend } from "./chat.js";
 import { endGameStats } from "./pong.js";
 
@@ -796,6 +796,54 @@ function drawmap3() {
 }
 grassposgenerator();
 
+export function updateSphere(state) {
+	if (gamer1.username !== window.userData.username) {
+		const height = canvass.height;
+		const width = canvass.width;
+		sphere.x = state.x * width;
+		sphere.y = state.y * height;
+		sphere.dx = state.dx * width;
+		sphere.dy = state.dy * height;
+	}
+}
+
+function check_and_send_state() {
+	var state = null;
+	var action = null;
+	const height = canvass.height;
+	const width = canvass.width;
+	
+	if (sphere.x <= playerPaddle1.width){
+		if (sphere.y >= playerPaddle1.y && sphere.y <= playerPaddle1.y + playerPaddle1.height) {
+			sphere.dx = -sphere.dx;
+			action = 'ball';
+		} else {
+			gamer2.score++;
+			action = 'restart_round';
+		}
+	} else if (sphere.x >= width - playerPaddle2.width) {
+		if (sphere.y >= playerPaddle2.y && sphere.y <= playerPaddle2.y + playerPaddle2.height) {
+			sphere.dx = -sphere.dx;
+			action = 'ball';
+		} else {
+			gamer1.score++;
+			action = 'restart_round';
+		}
+	} else if (sphere.y + sphere.radius >= height || sphere.y - sphere.radius <= height * 0.05) {
+		action = 'ball';
+		sphere.dy = -sphere.dy;
+	}
+	if (action === 'ball') {
+		state = {'x':sphere.x/width, 'y':sphere.y/height, 'dx':sphere.dx/width, 'dy':sphere.dy/height};
+	} else if (action === 'restart_round') {
+		state = {'score1': gamer1.score, 'score2':gamer2.score};
+		send_live_game_data(action, state);
+		Habess();
+		return -1;
+	}
+	send_live_game_data(action, state);
+}
+
 export function drawAll(pvp1, pvp2, settings) {
 	reseTpvp = Date.now();
 	if (settings === null){
@@ -804,13 +852,13 @@ export function drawAll(pvp1, pvp2, settings) {
 	}
 	if (window.userData.username === pvp1.username){
 		if (pvp1.set === false ) {
-				resizeGame = true;
-				window.setting = settings;
-				setDimensions();
-				playerPaddle1.username = pvp1.username;
-				playerPaddle2.username = pvp2.username;
-				playingPvP = true;
-				pvp1.set = true;
+			resizeGame = true;
+			window.setting = settings;
+			setDimensions();
+			playerPaddle1.username = pvp1.username;
+			playerPaddle2.username = pvp2.username;
+			playingPvP = true;
+			pvp1.set = true;
 		}
 	}
 	else {
@@ -835,6 +883,15 @@ export function drawAll(pvp1, pvp2, settings) {
 	drawScore(pvp1, pvp2);
 	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
  	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+	drawSphere(sphere.x, sphere.y, sphere.radius);
+	sphere.x += sphere.dx;
+	sphere.y += sphere.dy;
+	if (gamer1.username === window.userData.username) {
+		if (check_and_send_state() === -1) {
+			return ;
+		}
+	}
+
 	if (settings.mode == 'Buff Mode') {
 		TrackballinBigpad();
 		Trackballinattack();
@@ -876,7 +933,6 @@ export function drawAll(pvp1, pvp2, settings) {
 			}
 		}
 	}	
-	drawSphere(sphere.x, sphere.y, sphere.radius);
 	movement(pvp1, pvp2);
 	drawShootPvP();
 	let frame = requestAnimationFrame(() => drawAll(pvp1, pvp2, settings));

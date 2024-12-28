@@ -1,6 +1,6 @@
 import { handleSend } from "./chat.js";
 import { acceptRefuse, getWinsLosses } from "./matchMaking.js";
-import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, countdownforRound, handleQuitting } from "./gamePvP.js";
+import { drawAll, renderOP, changeSphereVars, triggerShootPvP,newRound, Bigpadpower, updateSphere, handleQuitting } from "./gamePvP.js";
 import { Habess, displayCountdown, ChangeFlag, Speedpower, gameOScreenpvp, Attackpower, updatePaddlePvP } from "./gamePvP.js";
 import { sendQueueStatus } from "./matchMaking.js"
 import { getMatchHistory } from "./populatePageHelpers.js";
@@ -101,6 +101,15 @@ export function sendGameState(gameState, target, me) {
     }
 }
 
+
+export function send_live_game_data(action, state) {
+    if (window.userData.pong_socket) {
+        window.userData.pong_socket.send(JSON.stringify({
+            action: action,
+            state: state
+        }));
+    }
+}
 
 function sendGameStatus(username, ready) {
     if (window.userData.pong_socket) {
@@ -246,7 +255,7 @@ export async function startGameSocket() {
             }
         } else if (data.action === 'restart_round') {
             console.log('dkhelna', data);
-            if (data.state === 'end') {
+            if (data.score1 === 7 || data.score2 === 7) {
                 gameOScreenpvp(data.score1, data.score2);
                 Habess();
             } else {
@@ -254,6 +263,8 @@ export async function startGameSocket() {
                 Habess();
                 newRound();
             }
+        } else if (data.action === 'ball') {
+            updateSphere(data.state);
         }
     }
 }
