@@ -1509,7 +1509,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const result = await deleteGames(pswd);
 			if (result.status === 'success') {
 				Notification('Profile Action', 'All Games Have Been Deleted', 2, 'profile');
-				delMsgModal.style.display = 'none';
+				delGamesModal.style.display = 'none';
 			}
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
