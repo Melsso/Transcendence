@@ -334,6 +334,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 				)
 				return
 			elif action == 'restart_round':
+				game['paddle1']['y'] = 0.45;
+				game['paddle2']['y'] = 0.45;
+				game['paddle1']['height'] = 0.1;
+				game['paddle2']['height'] = 0.1;
+				game['paddle1']['dy'] = 0.01;
+				game['paddle2']['dy'] = 0.01;
 				flag = 'restart'
 				if state['score1'] == 7 or state['score2'] == 7:
 					flag = 'end'

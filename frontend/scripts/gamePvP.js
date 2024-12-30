@@ -80,6 +80,14 @@ export async function gameOScreenpvp(score1=null, score2=null) {
 	if (score1 !== null && score2 !== null) {
 		gamer1.score = score1;
 		gamer2.score = score2;
+		if (score1 > score2){
+			winner = gamer1.username;
+			loser = gamer2.username;
+		}
+		else{
+			winner = gamer2.username;
+			loser = gamer1.username;
+		}
 	}
 	if (window.setting.mode == 'Default Mode') {
 		game_data['attack_accuracy'] = null;
@@ -312,6 +320,11 @@ export function newRound() {
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle1.dy = heightScale / 100;
 	playerPaddle2.dy = heightScale / 100;
+	playerPaddle1.y = (heightScale / 2) - (playerPaddle1.height / 2);
+	playerPaddle2.y = (heightScale / 2) - (playerPaddle2.height / 2);
+	sphere.x = (widthScale / 2);
+	sphere.dx = 0.005 * widthScale;
+	sphere.dy = 0;
 	Buffpvp.visible = false;
 	Attackpvp.visible = false;
 	Bigpadpvp.visible = false;
@@ -798,8 +811,8 @@ grassposgenerator();
 
 export function updateSphere(state) {
 	if (gamer1.username !== window.userData.username) {
-		const height = canvass.height;
-		const width = canvass.width;
+		const height = window.userData.screen_dimensions.height;
+		const width = window.userData.screen_dimensions.width;
 		sphere.x = state.x * width;
 		sphere.y = state.y * height;
 		sphere.dx = state.dx * width;
@@ -810,8 +823,8 @@ export function updateSphere(state) {
 function check_and_send_state() {
 	var state = null;
 	var action = null;
-	const height = canvass.height;
-	const width = canvass.width;
+	const height = window.userData.screen_dimensions.height;
+	const width = window.userData.screen_dimensions.width;
 	
 	if (sphere.x <= playerPaddle1.width){
 		if (sphere.y >= playerPaddle1.y && sphere.y <= playerPaddle1.y + playerPaddle1.height) {
@@ -887,9 +900,9 @@ export function drawAll(pvp1, pvp2, settings) {
 	sphere.x += sphere.dx;
 	sphere.y += sphere.dy;
 	if (gamer1.username === window.userData.username) {
-		if (check_and_send_state() === -1) {
-			return ;
-		}
+			if (check_and_send_state() === -1) {
+				return ;
+			}
 	}
 
 	if (settings.mode == 'Buff Mode') {
