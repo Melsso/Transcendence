@@ -80,6 +80,13 @@ export async function gameOScreenpvp(score1=null, score2=null) {
 	if (score1 !== null && score2 !== null) {
 		gamer1.score = score1;
 		gamer2.score = score2;
+		if (score1 > score2) {
+			winner = gamer1.username;
+			loser = gamer2.username;
+		} else {
+			winner = gamer2.username;
+			loser = gamer1.username;
+		}
 	}
 	if (window.setting.mode == 'Default Mode') {
 		game_data['attack_accuracy'] = null;
