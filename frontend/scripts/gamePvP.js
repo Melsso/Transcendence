@@ -825,10 +825,17 @@ function check_and_send_state() {
 	var action = null;
 	const height = window.userData.screen_dimensions.height;
 	const width = window.userData.screen_dimensions.width;
+	const ballspeed = width / 220;
 	
 	if (sphere.x <= playerPaddle1.width){
 		if (sphere.y >= playerPaddle1.y && sphere.y <= playerPaddle1.y + playerPaddle1.height) {
-			sphere.dx = -sphere.dx;
+			var relativeIntersectY = (playerPaddle1.y + playerPaddle1.height / 2) - sphere.y;
+			var normrelIntersectY = relativeIntersectY / (playerPaddle1.height / 2);
+			var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+			sphere.dx = ballspeed * Math.cos(bounceAngle);
+			sphere.dy = - ballspeed * Math.sin(bounceAngle);
+			sphere.x = playerPaddle1.x + playerPaddle1.width + sphere.radius + 1;
+			sphere.dx = ballspeed * (sphere.dx > 0 ? 1 : -1);
 			action = 'ball';
 		} else {
 			gamer2.score++;
@@ -836,7 +843,13 @@ function check_and_send_state() {
 		}
 	} else if (sphere.x >= width - playerPaddle2.width) {
 		if (sphere.y >= playerPaddle2.y && sphere.y <= playerPaddle2.y + playerPaddle2.height) {
-			sphere.dx = -sphere.dx;
+			var relativeIntersectY = (playerPaddle2.y + playerPaddle2.height / 2) - sphere.y;
+			var normrelIntersectY = relativeIntersectY / (playerPaddle2.height / 2);
+			var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
+			sphere.dx = - ballspeed * Math.cos(bounceAngle);
+			sphere.dy = - ballspeed * Math.sin(bounceAngle);
+			sphere.x = playerPaddle2.x - sphere.radius - 1;
+			sphere.dx = ballspeed * (sphere.dx > 0 ? 1 : -1);
 			action = 'ball';
 		} else {
 			gamer1.score++;
