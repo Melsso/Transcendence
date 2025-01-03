@@ -299,8 +299,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 						start = False
 						break
 				if start == True:
-					# task = asyncio.create_task(self.move_ball(self.room_group_name))
-					self.game_rooms[self.room_group_name]["task"] = "Running"
+					task = asyncio.create_task(self.move_ball(self.room_group_name))
+					self.game_rooms[self.room_group_name]["task"] = task
 			elif action == 'queue_status':
 				await self.update_player_ready(player, state)
 				players_in_room = await self.get_players_in_room()
@@ -340,6 +340,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 				game['paddle2']['height'] = 0.1;
 				game['paddle1']['dy'] = 0.01;
 				game['paddle2']['dy'] = 0.01;
+				game['paddle1']['score'] = state['score1']
+				game['paddle2']['score'] = state['score2']
 				flag = 'restart'
 				if state['score1'] == 7 or state['score2'] == 7:
 					flag = 'end'
@@ -444,34 +446,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 			buff_mode = False
 		else:
 			buff_mode = True
-		angleX = 1
-		angleY = 0
-		buff1= 0
-		buff2 = 0
-		buff3 = 0
-		b_r = game['ball']['radius']
-		b_x = game['ball']['x']
-		b_y = game['ball']['y']
-		b_dx = game['ball']['dx']
-		b_dy = game['ball']['dy']
-		p1_y = game['paddle1']['y']
-		p1_h = game['paddle1']['height']
-		p1_s = game['paddle1']['score']
-		p2_y = game['paddle2']['y']
-		p2_h = game['paddle2']['height']
-		p2_s = game['paddle2']['score']
-		last = 1
 		await asyncio.sleep(4.18)
 		new_start = time.time() if buff_mode else None
 		buffs = [0, 0, 0]
-		speed_scale = 1.05
-		max_speed = 0.02
-		base_speed = 0.005
+		score1 = 0
+		score2 = 0
 		while True:
-			p1_y = game['paddle1']['y']
-			p1_h = game['paddle1']['height']
-			p2_y = game['paddle2']['y']
-			p2_h = game['paddle2']['height']
 			if buff_mode:
 				current_time = time.time()
 				for i, buff_time in enumerate([13, 3, 23]):
@@ -481,68 +461,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 						   self.room_group_name,
 						   {"type": 'demandPowerUP', "action": 'Buff', "flag": i + 1}
 						)
-			if b_y <= 0.06 or b_y >= 0.99:
-				b_dy *= -1
-			elif b_x <= 0.02 and p1_y <= b_y <= p1_y + p1_h + b_r:
-				impact_point = (b_y - p1_y - p1_h / 2) / (p1_h / 2)
-				b_dy = impact_point * base_speed * 1.5
-				b_dx = -b_dx * min(speed_scale, max_speed / abs(b_dx))
-				last = 1
-			elif b_x >= 0.98 and p2_y <= b_y <= p2_y + p2_h + b_r:
-				impact_point = (b_y - p2_y - p2_h / 2) / (p2_h / 2)
-				b_dy = impact_point * base_speed * 1.5
-				b_dx = -b_dx * min(speed_scale, max_speed / abs(b_dx))
-				last = 2
-			elif b_x <= 0.01 or b_x >= 0.99:
-				if b_x <= 0.01:
-					game['paddle2']['score'] += 1
-				else:
-					game['paddle1']['score'] += 1
-				
-				if game['paddle1']['score'] == 7 or game['paddle2']['score'] == 7:
-					await self.channel_layer.group_send(
-					self.room_group_name,
-						{
-							"type": 'r_round',
-							"action": 'restart_round',
-							"state": 'end',
-							"score1":	game['paddle1']['score'],
-							"score2": game['paddle2']['score']
-						}
-					)
-					break
-				
-				b_x, b_y, b_dx, b_dy = 0.5, 0.5, 0.005, 0
-				game['paddle1']['y'] = 0.45
-				game['paddle2']['y'] = 0.45
+			if score1 != game['paddle1']['score'] or score2 !=  game['paddle2']['score']:
+				game['paddle1']['score'] = score1
+				game['paddle2']['score'] = score2
 				buffs = [0, 0, 0]
-				last = 1
-				await self.channel_layer.group_send(
-				self.room_group_name,
-					{
-						"type": 'r_round',
-						"action": 'restart_round',
-						"state": 'restart',
-						"score1":	game['paddle1']['score'],
-						"score2": game['paddle2']['score']
-					}
-				)
 				await asyncio.sleep(4)
-				if buff_mode:
-					new_start = time.time()
-				continue
-			b_x += b_dx
-			b_y += b_dy
-			await self.channel_layer.group_send(
-			self.room_group_name,
-				{
-					"type": 'ball_position',
-					"action": 'ball_movment',
-					"x":  b_x,
-					"y":  b_y,
-					"last": last
-				}
-			)
+				new_start = time.time()
 			await asyncio.sleep(0.016)
 
 	async def empty_action(self, event):
