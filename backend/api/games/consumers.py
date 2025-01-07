@@ -443,7 +443,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 		game['paddle1'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 		game['paddle2'] = {'y': 0.45, 'height': 0.1, 'width':0.01, 'dy': 0.01, 'attack': 0, 'score': 0}
 		if game['mode'] == "Default Mode":
-			buff_mode = False
+			return
 		else:
 			buff_mode = True
 		await asyncio.sleep(4.18)
@@ -462,6 +462,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 						   {"type": 'demandPowerUP', "action": 'Buff', "flag": i + 1}
 						)
 			if score1 != game['paddle1']['score'] or score2 !=  game['paddle2']['score']:
+				if (score1 == 7 or score2 == 7):
+					return
 				game['paddle1']['score'] = score1
 				game['paddle2']['score'] = score2
 				buffs = [0, 0, 0]

@@ -143,7 +143,6 @@ export async function startGameSocket() {
     }
     window.userData.pong_socket.onmessage = async function(event) {
         const data = JSON.parse(event.data);
-        console.log(data);
         if (data.action === 'queue_start_game') {
             if (data.players.length == 2) {
                 hebssmodal = true;
@@ -160,6 +159,7 @@ export async function startGameSocket() {
                 hebssmodal = true;
                 if (resizeGame) {
                     Habess();
+                    // add stuff to clean the whole canvas
                     resizeGame = false;
                 }
                 navigateTo('PONG', null);
