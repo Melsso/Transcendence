@@ -462,10 +462,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 						   {"type": 'demandPowerUP', "action": 'Buff', "flag": i + 1}
 						)
 			if score1 != game['paddle1']['score'] or score2 !=  game['paddle2']['score']:
-				if (score1 == 7 or score2 == 7):
+				if (game['paddle1']['score'] == 7 or game['paddle2']['score'] == 7):
 					return
-				game['paddle1']['score'] = score1
-				game['paddle2']['score'] = score2
+				score1 = game['paddle1']['score']
+				score2 = game['paddle2']['score']
 				buffs = [0, 0, 0]
 				await asyncio.sleep(4)
 				new_start = time.time()
