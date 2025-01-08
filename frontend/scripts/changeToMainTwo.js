@@ -784,6 +784,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	force.style.display = 'none';
 	qContainer.style.display = 'none';
 	mainOne.style.display = 'none';
+	lobby.style.display = 'none';
 	log1.style.display = 'none';
 	forgotcontainer.style.display = 'none';
 	newpass.style.display = 'none';
@@ -874,7 +875,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 		if (myflag === false && !window.userData?.acessToken && localStorage.getItem('accessToken')) {
 			myflag = true;
-			if (window.userData.pong_socket) {
+			if (window.userData?.pong_socket) {
 				window.userData.tmp_room = window.userData.r_name;
 				window.userData.pong_socket.close();
 				window.userData.pong_socket = null;
@@ -883,7 +884,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			navigateTo('profile', null);
 			return ;
 		}
-		if (window.userData.pong_socket) {
+		if (window.userData?.pong_socket) {
 			window.userData.tmp_room = window.userData.r_name;
 			window.userData.pong_socket.close();
 			window.userData.pong_socket = null;

@@ -185,7 +185,7 @@ export async function startGameSocket() {
                     }
                 }
             }
-            if (current_players.length === 2) {
+            else if (current_players.length === 2) {
                 if (data.players.length == 1) {
                     if (freeWill === true) {
                         return ;
@@ -220,6 +220,7 @@ export async function startGameSocket() {
                     }
                     current_players = [];
                     current_players.push(window.userData.username);
+                    return ;
                 }
             }
             menu.style.display = 'none';
@@ -254,7 +255,6 @@ export async function startGameSocket() {
                 Bigpadpower();
             }
         } else if (data.action === 'restart_round') {
-            console.log('dkhelna', data);
             if (data.score1 === 7 || data.score2 === 7) {
                 gameOScreenpvp(data.score1, data.score2);
                 Habess();
@@ -341,7 +341,6 @@ document.getElementById('PONG-button').addEventListener('click', function () {
 
 async function displayPongLobby(lobbySettings, gamer1, gamer2 = null) {
     const lobbyContainer = document.getElementById('pong-inv-container');
-    
     try {
         const result = await getMatchHistory();
 		const gameLogs = getWinsLosses(result['match_history']);

@@ -21,7 +21,7 @@ let sphereinBigpad = false;
 let SpeedCounting = 0;
 let attackcount = 0;
 let bigpadcount = 0;
-let last_hit = 0;
+let last_hit = 1;
 let speeddoubled = 0;
 let playerheight2 = 0;
 let nocurrentGame = false;
@@ -237,6 +237,7 @@ function drawSphere(x, y, radius) {
 
 export function ChangeFlag(flag) {
 	BuffFlag = flag;
+	console.log(BuffFlag);
 	if (BuffFlag === 1){
 		Buffpvp.visible = true;
 		Attackpvp.visible = false;
@@ -334,7 +335,7 @@ export function newRound() {
 	Attackpvp.x = (widthScale / 2);
 	Bigpadpvp.y = heightScale;
 	Bigpadpvp.x = (widthScale / 2);
-	last_hit = null;
+	last_hit = 1;
 	up1 = true;
 	up2 = true;
 	up3 = true;
@@ -444,10 +445,10 @@ function	Trackballinattack() {
 				sphereinattack = true;
 			}
 		}
-	else	{
-			if (sphereinattack){
-				sphereinattack = false;
-				attackcount++;
+	else {
+		if (sphereinattack) {
+			sphereinattack = false;
+			attackcount++;
 				if (last_hit === 1) {
 					if (window.userData.username === playerPaddle1.username) {
 						sendBuffState('attack', last_hit);
@@ -457,8 +458,8 @@ function	Trackballinattack() {
 						sendBuffState('attack', last_hit);
 					}
 				}
-			}
 		}
+	}
 	if (attackcount === 2){
 		Attackpvp.visible = false;
 	}
@@ -527,6 +528,10 @@ function	TrackballinBigpad(){
 function setDimensions() {
 	canvass.width = canvass.getBoundingClientRect().width;
 	canvass.height = canvass.getBoundingClientRect().height;
+	window.userData.screen_dimensions = {
+		width: canvass.getBoundingClientRect().width,
+		height: canvass.getBoundingClientRect().height
+  };
 	const widthScale = window.userData.screen_dimensions.width;
 	const heightScale = window.userData.screen_dimensions.height;
 	timerpvp = Date.now();
@@ -810,14 +815,13 @@ function drawmap3() {
 grassposgenerator();
 
 export function updateSphere(state) {
-	if (gamer1.username !== window.userData.username) {
-		const height = window.userData.screen_dimensions.height;
-		const width = window.userData.screen_dimensions.width;
-		sphere.x = state.x * width;
-		sphere.y = state.y * height;
-		sphere.dx = state.dx * width;
-		sphere.dy = state.dy * height;
-	}
+	const height = window.userData.screen_dimensions.height;
+	const width = window.userData.screen_dimensions.width;
+	sphere.x = state.x * width;
+	sphere.y = state.y * height;
+	sphere.dx = state.dx * width;
+	sphere.dy = state.dy * height;
+	last_hit = state.lh;
 }
 
 function check_and_send_state() {
@@ -836,6 +840,7 @@ function check_and_send_state() {
 			sphere.dy = - ballspeed * Math.sin(bounceAngle);
 			sphere.x = playerPaddle1.x + playerPaddle1.width + sphere.radius + 1;
 			sphere.dx = ballspeed * (sphere.dx > 0 ? 1 : -1);
+			last_hit = 1;
 			action = 'ball';
 		} else {
 			gamer2.score++;
@@ -850,6 +855,7 @@ function check_and_send_state() {
 			sphere.dy = - ballspeed * Math.sin(bounceAngle);
 			sphere.x = playerPaddle2.x - sphere.radius - 1;
 			sphere.dx = ballspeed * (sphere.dx > 0 ? 1 : -1);
+			last_hit = 2;
 			action = 'ball';
 		} else {
 			gamer1.score++;
@@ -860,7 +866,7 @@ function check_and_send_state() {
 		sphere.dy = -sphere.dy;
 	}
 	if (action === 'ball') {
-		state = {'x':sphere.x/width, 'y':sphere.y/height, 'dx':sphere.dx/width, 'dy':sphere.dy/height};
+		state = {'x':sphere.x/width, 'y':sphere.y/height, 'dx':sphere.dx/width, 'dy':sphere.dy/height, 'lh': last_hit};
 	} else if (action === 'restart_round') {
 		state = {'score1': gamer1.score, 'score2':gamer2.score};
 		send_live_game_data(action, state);
@@ -885,6 +891,8 @@ export function drawAll(pvp1, pvp2, settings) {
 			playerPaddle2.username = pvp2.username;
 			playingPvP = true;
 			pvp1.set = true;
+		} else if (resizeGame === false && pvp1.set === true) {
+			return;
 		}
 	}
 	else {
@@ -896,6 +904,8 @@ export function drawAll(pvp1, pvp2, settings) {
 			playerPaddle2.username = pvp2.username;
 			playingPvP = true;
 			pvp2.set = true;
+		} else if (resizeGame === false && pvp2.set === true) {
+			return;
 		}
 	}
 	reseTpvp = Math.floor((Date.now() - timerpvp) / 1000);
