@@ -39,4 +39,3 @@ things to be done for he project to be done:
 
 NEW BUGS ta3 lyoum:
 pressing 'enter' when you're typing inside a field f settings basically refreshes the website ??
-uploading a picture that's too big gives you an error: undefined

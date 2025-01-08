@@ -1249,7 +1249,12 @@ document.addEventListener('DOMContentLoaded', function () {
 		const formData = new FormData();
 		formData.append('code', verification_code);
 		formData.append('email', userEmail);
-
+		const file = avatarInput.files[0];
+		const MAX_SIZE = 2 * 1024 * 1024; 
+		if (file.size > MAX_SIZE) {
+			Notification('Profile Action', 'The selected file is too large. Please select an image smaller than 2 MB.', 2, 'alert');
+			return;
+		}
 		if (avatarInput.files.length > 0) {
 			formData.append('avatar', avatarInput.files[0]);
 	  } else if (selectedImage) {
@@ -1590,6 +1595,12 @@ updateAvatarbtn.addEventListener('click',async function () {
 	const avatarInput = document.getElementById('new-avatar');
 	if (avatarInput.files.length === 0) {
 		Notification('Profile Action', 'Please select an avatar image to upload.',2, 'alert');
+		return;
+	}
+	const file = avatarInput.files[0];
+	const MAX_SIZE = 2 * 1024 * 1024; 
+	if (file.size > MAX_SIZE) {
+		Notification('Profile Action', 'The selected file is too large. Please select an image smaller than 2 MB.', 2, 'alert');
 		return;
 	}
 	const formData = new FormData();
