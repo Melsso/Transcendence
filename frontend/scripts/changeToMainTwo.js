@@ -1236,11 +1236,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	registerButton.addEventListener('click', async function () {
-		// if (!consentPrompt) {
-		// 	Notification('User Action', 'You Have Not Consented To Our Privacy Policy, Please Log In As A Guest.', 1, 'alert');
-		// 	return ;
-		// 	// maybe display the consent prompt or take him back to login probably the latter
-		// }
 		const termsCheckbox = document.getElementById('terms-checkbox');
 		if (!termsCheckbox.checked) {
 			Notification('Register Action', 'You Have Not Agreed To Terms And Conditions, Please Agree To Complete Registration!', 1, 'alert');
@@ -1296,6 +1291,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	searchButton.addEventListener('click', async function () {
 		const uname = document.getElementById('search-user-input').value;
+		if (uname.trim() === "") {
+			Notification('Search Action', 'Please fill the input field!', 2, 'alert');
+			return ;
+		}
 		document.getElementById('search-user-input').value = '';
 		if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
 			if (window.userData?.socket) {
@@ -1322,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				Notification('Search', 'No such user found!', 2, 'alert');
 			}
 		} catch (error) {
-			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');// check
+			Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 		}
 	});
 
@@ -1352,21 +1351,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 
 	});
-	// sendFriendRequestButton.addEventListener('click', async function () {
-	// 	if (window.userData.guest === true) {
-	// 		Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
-	// 		return ;
-	//   }
-	// 	const target = document.getElementById('username');
-	// 	const target_id = target.getAttribute('user_id');
-	// 	try {
-	
-	// 		const result = await sendFriendRequest(target_id);
-	// 		Notification('Friend Action', 'You have sent a friend request!', 2,'request');
-	// 	} catch (error) {
-	// 		Notification('Friend Action', `Error: ${error.detail}`, 2, 'alert');
-	// 	}
-	// });
 
 	settingButton.addEventListener('click', function () {
 		navigateTo('settings', null); 
@@ -1395,6 +1379,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		try {
 			const result = await updateUsername(username);
 			Notification('Profile Action', 'You have updated your username!',2, 'profile');
+			navigateTo('profile', null);
 		} catch (error) {
 			Notification('Profile Action', `Error: ${error.detail}`,2, 'alert');
 		}
