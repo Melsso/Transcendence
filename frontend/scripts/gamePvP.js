@@ -204,12 +204,10 @@ document.addEventListener('keydown', function launch(event) {
 				playerPaddle2.Att = 0;
 				sendBuffState('attack_launch', 2);
 				p2shooting = false;
-				document.removeEventListener('keydown', launch);
 			} else if (playerPaddle1.username === window.userData.username && block1.visible && playerPaddle1.Att === 1) {
 				playerPaddle1.Att = 0;
 				sendBuffState('attack_launch', 1);
 				p1shooting = false;
-				document.removeEventListener('keydown', launch);
 			}
 			return;
 		}
@@ -262,6 +260,10 @@ export function ChangeFlag(flag) {
 }
 
 export function drawBuffpvp(x){
+	if (Buffpvp.y >= window.userData.screen_dimensions.height) {
+		Buffpvp.visible = false;
+		return ;
+	}
 	ctxx.globalAlpha = 0.5;
 	ctxx.fillStyle = "gold";
 	ctxx.fillRect(x * window.userData.screen_dimensions.width, Buffpvp.y, Buffpvp.width, Buffpvp.height);
@@ -269,12 +271,20 @@ export function drawBuffpvp(x){
 }
 
 export function drawAttackpvp(x){
+	if (Attackpvp.y >= window.userData.screen_dimensions.height) {
+		Attackpvp.visible = false;
+		return ;
+	}
 	ctxx.globalAlpha = 0.5;
 	ctxx.fillStyle = "red";
 	ctxx.fillRect(x * window.userData.screen_dimensions.width, Attackpvp.y, Attackpvp.width, Attackpvp.height);
 	ctxx.globalAlpha = 1.0;
 }
 export function drawBigpadpvp(x){
+	if (Bigpadpvp.y >= window.userData.screen_dimensions.height) {
+		Bigpadpvp.visible = false;
+		return ;
+	}
 	ctxx.globalAlpha = 0.5;
 	ctxx.fillStyle = "cyan";
 	ctxx.fillRect(x * window.userData.screen_dimensions.width, Bigpadpvp.y, Bigpadpvp.width, Bigpadpvp.height);
@@ -330,11 +340,11 @@ export function newRound() {
 	Buffpvp.visible = false;
 	Attackpvp.visible = false;
 	Bigpadpvp.visible = false;
-	Buffpvp.y = heightScale;
+	Buffpvp.y = heightScale - heightScale / 90;
 	Buffpvp.x = (widthScale / 2);
-	Attackpvp.y = heightScale;
+	Attackpvp.y = heightScale - heightScale / 90;
 	Attackpvp.x = (widthScale / 2);
-	Bigpadpvp.y = heightScale;
+	Bigpadpvp.y = heightScale - heightScale / 90;
 	Bigpadpvp.x = (widthScale / 2);
 	last_hit = 1;
 	up1 = true;
@@ -388,11 +398,7 @@ export function Speedpower(){
 }
 
 function Trackballinspeed() {
-	if (Buffpvp.visible &&
-		sphere.x - sphere.radius <= Buffpvp.x + Buffpvp.width &&
-		sphere.x + sphere.radius >= Buffpvp.x &&
-		sphere.y - sphere.radius <= Buffpvp.y + Buffpvp.height && 
-		sphere.y + sphere.radius >= Buffpvp.y )
+	if (Buffpvp.visible && sphere.x + sphere.radius >= Buffpvp.x && sphere.x - sphere.radius <= Buffpvp.x + Buffpvp.width && sphere.y - sphere.radius <= Buffpvp.y + Buffpvp.height && sphere.y + sphere.radius >= Buffpvp.y)
 		{
 			if (!sphereinspeed) {
 				sphereinspeed = true;
@@ -421,6 +427,10 @@ function Trackballinspeed() {
 }
 
 export function Attackpower() {
+	if (playerPaddle1.Att === 1 && last_hit === 1)
+		return ;
+	if (playerPaddle2.Att === 1 && last_hit === 2)
+		return ;
 	if (last_hit === 1) {
 		playerPaddle1.Att = 1;
 		playerPaddle1.ABR++;
@@ -431,18 +441,10 @@ export function Attackpower() {
 		playerPaddle2.ABR++;
 		block2.visible = true;
 	}
-	if (playerPaddle1.Att === 1 && last_hit === 1)
-		return ;
-	if (playerPaddle2.Att === 1 && last_hit === 2)
-		return ;
 }
 
 function	Trackballinattack() {	
-	if (Attackpvp.visible &&
-		sphere.x + sphere.radius >= Attackpvp.x &&
-		sphere.x - sphere.radius <= Attackpvp.x + Attackpvp.width &&
-		sphere.y + sphere.radius >= Attackpvp.y &&
-		sphere.y - sphere.radius <= Attackpvp.y + Attackpvp.height) 
+	if (Attackpvp.visible && sphere.x + sphere.radius >= Attackpvp.x && sphere.x - sphere.radius <= Attackpvp.x + Attackpvp.width && sphere.y - sphere.radius <= Attackpvp.y + Attackpvp.height && sphere.y + sphere.radius >= Attackpvp.y)
 		{
 			if (!sphereinattack) {
 				sphereinattack = true;
@@ -499,11 +501,7 @@ export function Bigpadpower(){
 	}
 }
 function	TrackballinBigpad(){
-	if (Bigpadpvp.visible &&
-		sphere.x + sphere.radius >= Bigpadpvp.x &&
-		sphere.x - sphere.radius <= Bigpadpvp.x + Bigpadpvp.width &&
-		sphere.y + sphere.radius >= Bigpadpvp.y &&
-		sphere.y - sphere.radius <= Bigpadpvp.y + Bigpadpvp.height)
+	if (Bigpadpvp.visible && sphere.x + sphere.radius >= Bigpadpvp.x && sphere.x - sphere.radius <= Bigpadpvp.x + Bigpadpvp.width && sphere.y - sphere.radius <= Bigpadpvp.y + Bigpadpvp.height && sphere.y + sphere.radius >= Bigpadpvp.y)
 		{
 			if (!sphereinBigpad){
 				sphereinBigpad = true;
@@ -547,17 +545,17 @@ function setDimensions() {
 	playerPaddle1.dy = heightScale / 100;
 	speeddoubled = playerPaddle1.dy * 1.75;
 	playerheight2 =  ((heightScale / 10) * 2);
-	Buffpvp.width = widthScale / 20;
-	Buffpvp.height = heightScale / 120;
-	Attackpvp.width = widthScale / 20;
-	Attackpvp.height = heightScale / 120;
-	Bigpadpvp.width = widthScale / 20;
-	Bigpadpvp.height = heightScale / 120;
-	Buffpvp.y = heightScale;
+	Buffpvp.width = widthScale / 18;
+	Buffpvp.height = heightScale / 35;
+	Attackpvp.width = widthScale / 18;
+	Attackpvp.height = heightScale / 35;
+	Bigpadpvp.width = widthScale / 18;
+	Bigpadpvp.height = heightScale / 35;
+	Buffpvp.y = heightScale - heightScale / 90;
 	Buffpvp.x = (widthScale / 2);
-	Attackpvp.y = heightScale;
+	Attackpvp.y = heightScale - heightScale / 90;
 	Attackpvp.x = (widthScale / 2);
-	Bigpadpvp.y = heightScale;
+	Bigpadpvp.y = heightScale - heightScale / 90;
 	Bigpadpvp.x = (widthScale / 2);
 
 	playerPaddle2.width = widthScale / 100;
@@ -937,11 +935,11 @@ export function drawAll(pvp1, pvp2, settings) {
 		Trackballinspeed();
 		if (BuffFlag === 1) {
 			if (Buffpvp.visible === true){
-				drawBuffpvp(0.45);
+				drawBuffpvp(0.475);
 				if (up1)
-					Buffpvp.y -= Buffpvp.height / 2;
+					Buffpvp.y -= Buffpvp.height / 3;
 				else if (!up1)
-					Buffpvp.y += Buffpvp.height / 2;
+					Buffpvp.y += Buffpvp.height / 3;
 				if (Buffpvp.y <= canvass.height * 0.05){
 					up1 = false;
 				}
@@ -949,11 +947,11 @@ export function drawAll(pvp1, pvp2, settings) {
 		}
 		else if (BuffFlag === 2) {
 			if (Attackpvp.visible === true){
-				drawAttackpvp(0.45);
+				drawAttackpvp(0.475);
 				if (up2)
-					Attackpvp.y -= Attackpvp.height / 2;
+					Attackpvp.y -= Attackpvp.height / 3;
 				else if (!up2)
-					Attackpvp.y += Attackpvp.height / 2;
+					Attackpvp.y += Attackpvp.height / 3;
 				if (Attackpvp.y <= canvass.height * 0.05){
 					up2 = false;
 				}
@@ -961,11 +959,11 @@ export function drawAll(pvp1, pvp2, settings) {
 		}
 		else if (BuffFlag === 3) {
 			if (Bigpadpvp.visible === true){
-				drawBigpadpvp(0.45);
+				drawBigpadpvp(0.475);
 				if (up3)
-					Bigpadpvp.y -= Bigpadpvp.height / 2;
+					Bigpadpvp.y -= Bigpadpvp.height / 3;
 				else if (!up3)
-					Bigpadpvp.y += Bigpadpvp.height / 2;
+					Bigpadpvp.y += Bigpadpvp.height / 3;
 				if (Bigpadpvp.y <= canvass.height * 0.05) {
 					up3 = false;
 				}
