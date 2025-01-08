@@ -68,7 +68,7 @@ class Command(BaseCommand):
                 'bar_exp_game1': 0,
                 'is_verified': True,
                 'is_active': True,
-                't_won':    20
+                't_won':    0
             },
             {
                 'username': 'Sadoon',
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 'email': 'alzubaidisadooon@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    10
+                't_won':    11
             },
             {
                 'username': 'laewie',
@@ -95,7 +95,7 @@ class Command(BaseCommand):
                 'email': 'adsadasd6@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    59
+                't_won':    30
             },
                         {
                 'username': 'la3ziz',
@@ -122,7 +122,7 @@ class Command(BaseCommand):
                 'email': 'rayanmehadjeri6@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    80
+                't_won':    2
             },
         ]
 

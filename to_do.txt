@@ -24,29 +24,20 @@ MINOR:
 
 TODO:
 - backend loads (still in question)
-- when you delete messages, they get deleted as they should in the backend and db, however since we're loading them for the user manually they stay there until refresh
 - decide what to do with ai name// ban _ in names
 - make sure that when someone leaves torni CAROUSEL, it counts as ff, and the matchups/games continue as normal, and his opp auto wins.
 
 fixing:
-Instructions need to be changed, nothing is blue anymore, and the style of writing is shit.
 speedlimit on the ball
 friend request: when someone sends you a friend request and you try to send a request it says already sent a request
 
 things to be done for he project to be done:
 - Firewall.
-- PVP: now runs in the frontend, p1 computes and sends regular updates, right now buggy because of gameOScreen function, it passes uninitalized winner and loser
-to endGameStats in case where the game ends normally, other than that i've not noticed bugs in front side.
-in back side i left the loop for now, we need to create task based on if its a buff or default game, if buff probably just sleep for each duration and send buff
-spawn message. with this pvp will be computed from frontend and we can use it in tournament.
-
-- Tournamnet logic to be updated, handled by !!!! and !!!!! and !!!!!.
 - checkig bugs, to be Handled by Rayan.
 
 
 
 NEW BUGS ta3 lyoum:
-bronze stars for new accounts, should be empty
 changing your name, then trying to rename to the same username you had y9ollek you're using the same shit
 pressing 'enter' when you're typing inside a field f settings basically refreshes the website ??
 uploading a picture that's too big gives you an error: undefined

@@ -122,25 +122,28 @@ function loadProfileInfo(user) {
     stars.forEach((star) => {
         star.classList.remove('gold', 'bronze', 'silver', 'platinum', 'diamond');
     });
-    let colorClass = "";
-    if (user.t_won <= 10) {
-        colorClass = "bronze";
-    } else if (user.t_won <= 20) {
-        colorClass = "silver";
-    } else if (user.t_won <= 30) {
-        colorClass = "gold";
-    } else if (user.t_won <= 40) {
-        colorClass = "platinum";
-    } else {
-        colorClass = "diamond";
-    }
-
-    let starsToFill = user.t_won % 10 === 0 ? 10 : user.t_won % 10; 
-    stars.forEach((star, index) => {
-        if (index < starsToFill) {
-            star.classList.add(colorClass);
+    
+    if (user.t_won > 0) {
+        let colorClass = "";
+        if (user.t_won <= 10) {
+            colorClass = "bronze";
+        } else if (user.t_won <= 20) {
+            colorClass = "silver";
+        } else if (user.t_won <= 30) {
+            colorClass = "gold";
+        } else if (user.t_won <= 40) {
+            colorClass = "platinum";
+        } else {
+            colorClass = "diamond";
         }
-    });
+    
+        let starsToFill = user.t_won % 10 === 0 ? 10 : user.t_won % 10;
+        stars.forEach((star, index) => {
+            if (index < starsToFill) {
+                star.classList.add(colorClass);
+            }
+        });
+    }
     profileUsername.textContent = user.username;
     profileUsername.setAttribute('user_id', user.id);
     avatarElement.style.backgroundImage = `url(${user.avatar})`;
