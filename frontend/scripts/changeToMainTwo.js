@@ -926,12 +926,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			mainOne.style.display = 'flex';
 			mainTwo.style.display = 'none';
 		} else if (view === 'profile') {
+			mainTwo.style.display = 'flex';
+			mainBody.style.display = 'flex';
+			setAccordionMaxHeight();
+			adjustAccordionHeight();
 			try {
-				let guest;
+				let guest = null;
 				if (data === null) {
-
 					const result = await homepageData();
-
 					if (result['user'].Twofa_auth === true && !toggle.classList.contains('on')) {
 						toggle.classList.toggle('on');
 					} else {
@@ -965,6 +967,7 @@ document.addEventListener('DOMContentLoaded', function () {
 						window.userData.socket = sock;
 					}
 					profileMenu.innerHTML = '';
+
 					loadProfile(result);
 					const res = await getMessages();
 					loadMessages(res["list"]);
@@ -980,11 +983,6 @@ document.addEventListener('DOMContentLoaded', function () {
 					}
 					loadProfile(data);						
 				}
-				
-				mainTwo.style.display = 'flex';
-				mainBody.style.display = 'flex';
-				setAccordionMaxHeight();
-				adjustAccordionHeight();
 			} catch (error) {
 				// check if error is unauthorized
 				// call the refresh function
@@ -1046,8 +1044,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	window.addEventListener('popstate', function (event) {
 		if (event.state && event.state.view) {
-			showView(event.state.view);
-		}
+			showView(event.state.view, null);
+		} else  if (localStorage.getItem('accessToken')){
+			showView('profile', null);
+	  } else {
+			showView('login', null);
+	  }
 	});
 
 
