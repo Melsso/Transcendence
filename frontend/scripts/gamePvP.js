@@ -203,10 +203,12 @@ document.addEventListener('keydown', function launch(event) {
 			if (playerPaddle2.username === window.userData.username && block2.visible && playerPaddle2.Att === 1) {
 				playerPaddle2.Att = 0;
 				sendBuffState('attack_launch', 2);
+				p2shooting = false;
 				document.removeEventListener('keydown', launch);
 			} else if (playerPaddle1.username === window.userData.username && block1.visible && playerPaddle1.Att === 1) {
 				playerPaddle1.Att = 0;
 				sendBuffState('attack_launch', 1);
+				p1shooting = false;
 				document.removeEventListener('keydown', launch);
 			}
 			return;
@@ -237,7 +239,6 @@ function drawSphere(x, y, radius) {
 
 export function ChangeFlag(flag) {
 	BuffFlag = flag;
-	console.log(BuffFlag);
 	if (BuffFlag === 1){
 		Buffpvp.visible = true;
 		Attackpvp.visible = false;
@@ -341,6 +342,8 @@ export function newRound() {
 	up3 = true;
 	SpeedCounting = 0;
 	attackcount = 0;
+	p1shooting = false;
+	p2shooting = false;
 	bigpadcount = 0;
 	goldenExperience = 0;
 	goldenExperience2 = 0;
@@ -367,10 +370,10 @@ export function triggerShootPvP(target) {
 
 export function Speedpower(){
 	if (playerPaddle1.dy === speeddoubled && last_hit === 1) {
-		playerPaddle1.dy = speeddoubled;
+		return ;
 	}
 	if (playerPaddle2.dy === speeddoubled && last_hit === 2) {
-		playerPaddle2.dy = speeddoubled;
+		return ;
 	}
 	if (last_hit === 1) {
 		playerPaddle1.dy = speeddoubled;
@@ -429,9 +432,9 @@ export function Attackpower() {
 		block2.visible = true;
 	}
 	if (playerPaddle1.Att === 1 && last_hit === 1)
-		playerPaddle1.Att = 1;
+		return ;
 	if (playerPaddle2.Att === 1 && last_hit === 2)
-		playerPaddle2.Att = 1;
+		return ;
 }
 
 function	Trackballinattack() {	
