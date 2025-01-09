@@ -1,14 +1,12 @@
 MAJOR:
 
 - use a framework for the backend. done
-- store the score of a tourni in the blockchain ?????
 - Standard user management, authentication, users across tournaments. done
 - Remote players YYYYYYYY
 - Live chat done
 - Introduce an AI Opponent done
 - Implement WAF/ModSecurity with Hardened Configuration and HashiCorp Vault for Secrets Management. YYYYYYYYY
 - Implement Two-Factor Authentication (2FA) and JWT done
-- Designing the Backend as Microservices. YYYYYYYY
 
 
 MINOR:
@@ -16,26 +14,21 @@ MINOR:
 - use a framework for the frontend done
 - use a database for the backend done
 - Game Customization Options done
-- User and Game Stats Dashboards ????
 - GDPR Compliance Options with User Anonymization, Local Data Management, and Account Deletion done
 - Expanding Browser Compatibility done
 
-		//global chat aint refreshing
 
 TODO:
 - backend loads (still in question)
-- decide what to do with ai name// ban _ in names
 - make sure that when someone leaves torni CAROUSEL, it counts as ff, and the matchups/games continue as normal, and his opp auto wins.
+- need to redirect http to https
 
-fixing:
-speedlimit on the ball
-friend request: when someone sends you a friend request and you try to send a request it says already sent a request
+Fixing:
+-speedlimit on the ball
 
-things to be done for he project to be done:
+Things to be done for he project to be done:
 - Firewall.
 - checkig bugs, to be Handled by Rayan.
-
-
 
 NEW BUGS ta3 lyoum:
 pressing 'enter' when you're typing inside a field f settings basically refreshes the website ??

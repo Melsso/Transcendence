@@ -112,7 +112,7 @@ class FriendRequestManager(generics.ListAPIView):
         existing_request = Friend.objects.filter(user=user, friend=target_user).first()
         if existing_request:
             if existing_request.status == 'PENDING':
-                return Response({'status':'error', 'detail':'Already Sent A Request'}, status=HTTP_400_BAD_REQUEST)
+                return Response({'status':'error', 'detail':'You Already Have Either Sent A Friend Request Of Have Received One From This User!'}, status=HTTP_400_BAD_REQUEST)
             elif existing_request.status == 'BLOCKED':
                 return Response({'status':'error', 'detail':'You Blocked This User, Please Unblock Them First.'}, status=HTTP_400_BAD_REQUEST)
             elif existing_request.status == 'FRIENDS':

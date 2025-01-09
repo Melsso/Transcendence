@@ -1218,6 +1218,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('username-R').value = '';
 		document.getElementById('password-R').value = '';
 		document.getElementById('email-R').value = '';
+		if (username.includes('_')) {
+			Notification('Profile Action', 'The Character \'_\' Is not allowed!');
+			return ;
+		}
 		try {
 			const result = await registerUser(username, password, email);
 			userEmail = result.user_email;
