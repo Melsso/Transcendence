@@ -367,6 +367,12 @@ export function newRound() {
 	const heightScale = window.userData.screen_dimensions.height;
 	const widthScale = window.userData.screen_dimensions.width;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	let lobbySet = window.setting;
+	if (lobbySet.map === 'Map 2')
+		drawmap2();
+	if (lobbySet.map === 'Map 3')
+		drawmap3();
+	drawScore()
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle1.dy = heightScale / 100;
@@ -1013,6 +1019,7 @@ export function displayCountdown(score1=null, score2=null) {
 		drawmap2();
 	if (setts.map === 'Map 3')
 		drawmap3();
+	drawScore();
 	const gameContainer = document.getElementById('gameContainer');
 	const countdownOverlay = document.createElement('div');
 	countdownOverlay.classList.add('countdown-overlay');
@@ -1047,12 +1054,14 @@ export function displayCountdown(score1=null, score2=null) {
 		drawmap2();
 	if (setts.map === 'Map 3')
 		drawmap3();
+	drawScore();
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	const countdownInterval = setInterval(() => {
 		if (setts.map === 'Map 2')
 			drawmap2();
 		if (setts.map === 'Map 3')
 			drawmap3();
+		drawScore();
 		 countdown -= 1;
 		 if (countdown > 0) {
 			  countdownOverlay.textContent = countdown;
