@@ -226,11 +226,43 @@ function drawPlayerPaddle2(x, y, width, height) {
 		ctxx.fillRect(block2.x, block2.y, block2.width, block2.height);
 	}
 }
+function drawPlayerPaddle1B(x, y, width, height) {
+	ctxx.fillStyle = 'Black';
+	if(goldenExperience2)
+		ctxx.fillStyle = 'gold';
+	ctxx.fillRect(x, y, width, height);
+	if (block2.visible && playerPaddle2.Att === 1 && p2shooting === false) {
+		ctxx.fillStyle = 'blue';
+		block2.x = playerPaddle2.x - block2.width + playerPaddle2.width;
+		block2.y = playerPaddle2.height / 2 + playerPaddle2.y - block2.height / 2;
+		ctxx.fillRect(block2.x, block2.y, block2.width, block2.height);
+	}
+}
+function drawPlayerPaddle2B(x, y, width, height) {
+	ctxx.fillStyle = 'Black';
+	if(goldenExperience2)
+		ctxx.fillStyle = 'gold';
+	ctxx.fillRect(x, y, width, height);
+	if (block2.visible && playerPaddle2.Att === 1 && p2shooting === false) {
+		ctxx.fillStyle = 'blue';
+		block2.x = playerPaddle2.x - block2.width + playerPaddle2.width;
+		block2.y = playerPaddle2.height / 2 + playerPaddle2.y - block2.height / 2;
+		ctxx.fillRect(block2.x, block2.y, block2.width, block2.height);
+	}
+}
 
 function drawSphere(x, y, radius) {
 	ctxx.beginPath();
 	ctxx.arc(x, y, radius, 0, Math.PI * 2);
 	ctxx.fillStyle = 'white';
+	ctxx.fill();
+	ctxx.closePath();
+}
+
+function drawSphereB(x, y, radius) {
+	ctxx.beginPath();
+	ctxx.arc(x, y, radius, 0, Math.PI * 2);
+	ctxx.fillStyle = 'Black';
 	ctxx.fill();
 	ctxx.closePath();
 }
@@ -300,19 +332,26 @@ export function Habess() {
 }
 
 export function countdownforRound(callback){
+	let set = window.setting;
 	if (nocurrentGame)
 		return;
 	let cooldown = 3;
+	if (set.map === 'Map 2')
+		drawmap2()
+	else if (set.map === 'Map 3'){
+		drawmap3();
+		console.log("dkhelna hna");
+	}
 	const intID = setInterval(() => {
 		if (nocurrentGame) {
 			clearInterval(intID);
 			cooldown = 3;
 			return;
 		}
-		ctxx.clearRect(0, 0, canvass.width, canvass.height);
-		drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
-		drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
-		drawSphere(sphere.x, sphere.y, sphere.radius);
+		// ctxx.clearRect(0, 0, canvass.width, canvass.height);
+		// drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
+		// drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+		// drawSphere(sphere.x, sphere.y, sphere.radius);
 		displayCountdown();
 		cooldown--;
 
@@ -328,6 +367,12 @@ export function newRound() {
 	const heightScale = window.userData.screen_dimensions.height;
 	const widthScale = window.userData.screen_dimensions.width;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	let lobbySet = window.setting;
+	if (lobbySet.map === 'Map 2')
+		drawmap2();
+	if (lobbySet.map === 'Map 3')
+		drawmap3();
+	drawScore()
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle1.dy = heightScale / 100;
@@ -684,9 +729,8 @@ const treecol = [
 ];
 
 function drawmap2() {
-	// Define gheightArray as static values based on a proportion of canvass.height
 	const gheightArray = Array.from({ length: canvass.width }, (_, i) => 
-		 canvass.height * 0.9 // Adjust the 0.7 multiplier as needed for desired ground height
+		 canvass.height * 0.9
 	);
 	const trees = Array.from({ length: 7 }, (_, i) => {
 		const x = [canvass.width * 0.9, canvass.width * 0.75, canvass.width * 0.64, canvass.width * 0.52, canvass.width * 0.4, canvass.width * 0.25, canvass.width * 0.1];
@@ -705,8 +749,6 @@ function drawmap2() {
 		ctxx.fillStyle = '#1b2e1b';
 		ctxx.beginPath();
 		ctxx.moveTo(0, gheightArray[0]);
-	
-		// Draw ground
 		for (let i = 1; i < canvass.width; i++) {
 			ctxx.lineTo(i, gheightArray[i]);
 		}
@@ -714,19 +756,13 @@ function drawmap2() {
 		ctxx.lineTo(0, canvass.height);
 		ctxx.closePath();
 		ctxx.fill();
-	
-		// Add gradient
 		let gradient = ctxx.createLinearGradient(0, gheightArray[0], 0, 0);
 		gradient.addColorStop(0, '#2e4d2f');
 		gradient.addColorStop(1, '#7a9b7a');
 		ctxx.fillStyle = gradient;
 		ctxx.fillRect(0, 0, canvass.width, gheightArray[0]);
-	
-		// Draw trees
 		trees.forEach(tree => {
 			ctxx.fillStyle = treecol[tree.colorIndex];
-	
-			// Use static gheightArray value (convert tree.x to index)
 			const baseHeight = gheightArray[Math.floor(tree.x)];
 	
 			ctxx.beginPath();
@@ -739,8 +775,6 @@ function drawmap2() {
 			ctxx.lineTo(tree.x - tree.width / 4, baseHeight - tree.height);
 			ctxx.closePath();
 			ctxx.fill();
-	
-			// Add branches
 			ctxx.lineWidth = 2;
 			ctxx.strokeStyle = treecol[tree.colorIndex];
 			ctxx.beginPath();
@@ -754,59 +788,42 @@ function drawmap2() {
 			ctxx.lineTo(tree.x + tree.x * 0.01, baseHeight - tree.height * 0.8);
 			ctxx.stroke();
 		});
-	
-		// Add overlay
 		ctxx.fillStyle = 'rgba(120, 200, 120, 0.1)';
 		ctxx.fillRect(0, 0, canvass.width, canvass.height);
 	}
 function grassposgenerator() {
-	const grassSpacing = 5; // Closer spacing between grass blades
-	const maxGrassPerX = 3; // Max grass blades at the same X position
-	const maxHeightVariation = 15; // Max height variation for each grass blade
-
-	// Clear the previous positions
+	const grassSpacing = 5; 
+	const maxGrassPerX = 3;
+	const maxHeightVariation = 15;
 	let grassPositions = [];
-
-	// Iterate through the width of the canvass to create grass blades
 	for (let x = 0; x < canvass.width; x += grassSpacing) {
-		 const baseHeight = canvass.height * 0.9 ; // Base height for the grass
-
-		 // Randomly determine the number of grass blades at this X position (up to maxGrassPerX)
+		 const baseHeight = canvass.height * 0.9 ;
 		 const numGrassBlades = Math.floor(Math.random() * maxGrassPerX) + 1;
 
 		 for (let i = 0; i < numGrassBlades; i++) {
-			  // Generate a random height within a range, ensuring it's below the baseHeight
 			  const randomY = Math.floor(baseHeight - (Math.random() * maxHeightVariation + 5)); // Adjusting range for random heights
-			  grassPositions.push({ x, y: randomY }); // Store the position and height
+			  grassPositions.push({ x, y: randomY });
 		 }
 	}
 }
 
 function drawmap3() {
-	const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
-	const numTriangles = 36; // Number of triangles/wedges
+	const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B'];
+	const numTriangles = 36;
 	const centerX =canvass.width / 2;
 	const centerY =canvass.height / 2;
-	const radius = Math.hypot(canvass.width,canvass.height); // Ensures triangles extend beyond canvass
+	const radius = Math.hypot(canvass.width,canvass.height);
 	const angleIncrement = (2 * Math.PI) / numTriangles;
 
 	for (let i = 0; i < numTriangles; i++) {
 		 const angle = i * angleIncrement;
-		 
-		 // Set color for each triangle
 		ctxx.fillStyle = colors[i % colors.length];
-		 
-		 // Start drawing the triangle
 		ctxx.beginPath();
-		ctxx.moveTo(centerX, centerY); // Center point
-
-		 // Calculate points at the edge of the canvass
+		ctxx.moveTo(centerX, centerY);
 		 const x1 = centerX + radius * Math.cos(angle);
 		 const y1 = centerY + radius * Math.sin(angle);
 		 const x2 = centerX + radius * Math.cos(angle + angleIncrement);
 		 const y2 = centerY + radius * Math.sin(angle + angleIncrement);
-
-		 // Draw the triangle wedge
 		ctxx.lineTo(x1, y1);
 		ctxx.lineTo(x2, y2);
 		ctxx.closePath();
@@ -824,58 +841,72 @@ export function updateSphere(state) {
 	sphere.dy = state.dy * height;
 	last_hit = state.lh;
 }
-
 function check_and_send_state() {
 	var state = null;
 	var action = null;
 	const height = window.userData.screen_dimensions.height;
 	const width = window.userData.screen_dimensions.width;
-	const ballspeed = width / 220;
-	
-	if (sphere.x <= playerPaddle1.width){
-		if (sphere.y >= playerPaddle1.y && sphere.y <= playerPaddle1.y + playerPaddle1.height) {
-			var relativeIntersectY = (playerPaddle1.y + playerPaddle1.height / 2) - sphere.y;
-			var normrelIntersectY = relativeIntersectY / (playerPaddle1.height / 2);
-			var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
-			sphere.dx = ballspeed * Math.cos(bounceAngle);
-			sphere.dy = - ballspeed * Math.sin(bounceAngle);
-			sphere.x = playerPaddle1.x + playerPaddle1.width + sphere.radius + 1;
-			sphere.dx = ballspeed * (sphere.dx > 0 ? 1 : -1);
-			last_hit = 1;
-			action = 'ball';
-		} else {
-			gamer2.score++;
-			action = 'restart_round';
-		}
+
+	let step = (Date.now() - reseTpvp) / 1000;
+	let baseSpeed = width / 200;
+	let speedMultiplier = 1 + Math.floor(step / 5) * 0.1;
+	let ballspeed = baseSpeed * speedMultiplier;
+	ballspeed = Math.min(ballspeed, baseSpeed * 1.5);
+	if (sphere.x <= playerPaddle1.width) {
+		 if (sphere.y >= playerPaddle1.y && sphere.y <= playerPaddle1.y + playerPaddle1.height) {
+			  var relativeIntersectY = (playerPaddle1.y + playerPaddle1.height / 2) - sphere.y;
+			  var normrelIntersectY = relativeIntersectY / (playerPaddle1.height / 2);
+			  var bounceAngle = normrelIntersectY * (45 * (Math.PI / 180));
+			  sphere.dx = Math.abs(ballspeed * Math.cos(bounceAngle));
+			  sphere.dy = -ballspeed * Math.sin(bounceAngle);
+			  sphere.x = playerPaddle1.x + playerPaddle1.width + sphere.radius + 1;
+
+			  last_hit = 1;
+			  action = 'ball';
+		 } else {
+			  gamer2.score++;
+			  action = 'restart_round';
+		 }
 	} else if (sphere.x >= width - playerPaddle2.width) {
-		if (sphere.y >= playerPaddle2.y && sphere.y <= playerPaddle2.y + playerPaddle2.height) {
-			var relativeIntersectY = (playerPaddle2.y + playerPaddle2.height / 2) - sphere.y;
-			var normrelIntersectY = relativeIntersectY / (playerPaddle2.height / 2);
-			var bounceAngle = normrelIntersectY * (75 * (Math.PI / 180));
-			sphere.dx = - ballspeed * Math.cos(bounceAngle);
-			sphere.dy = - ballspeed * Math.sin(bounceAngle);
-			sphere.x = playerPaddle2.x - sphere.radius - 1;
-			sphere.dx = ballspeed * (sphere.dx > 0 ? 1 : -1);
-			last_hit = 2;
-			action = 'ball';
-		} else {
-			gamer1.score++;
-			action = 'restart_round';
-		}
+		 if (sphere.y >= playerPaddle2.y && sphere.y <= playerPaddle2.y + playerPaddle2.height) {
+			  var relativeIntersectY = (playerPaddle2.y + playerPaddle2.height / 2) - sphere.y;
+			  var normrelIntersectY = relativeIntersectY / (playerPaddle2.height / 2);
+			  var bounceAngle = normrelIntersectY * (45 * (Math.PI / 180));
+			  sphere.dx = -Math.abs(ballspeed * Math.cos(bounceAngle));
+			  sphere.dy = -ballspeed * Math.sin(bounceAngle);
+			  sphere.x = playerPaddle2.x - sphere.radius - 1;
+
+			  last_hit = 2;
+			  action = 'ball';
+		 } else {
+			  gamer1.score++;
+			  action = 'restart_round';
+		 }
 	} else if (sphere.y + sphere.radius >= height || sphere.y - sphere.radius <= height * 0.05) {
-		action = 'ball';
-		sphere.dy = -sphere.dy;
+		 action = 'ball';
+		 sphere.dy = -sphere.dy;
 	}
+
 	if (action === 'ball') {
-		state = {'x':sphere.x/width, 'y':sphere.y/height, 'dx':sphere.dx/width, 'dy':sphere.dy/height, 'lh': last_hit};
+		 state = {
+			  'x': sphere.x / width,
+			  'y': sphere.y / height,
+			  'dx': sphere.dx / width,
+			  'dy': sphere.dy / height,
+			  'lh': last_hit
+		 };
 	} else if (action === 'restart_round') {
-		state = {'score1': gamer1.score, 'score2':gamer2.score};
-		send_live_game_data(action, state);
-		Habess();
-		return -1;
+		 state = {
+			  'score1': gamer1.score,
+			  'score2': gamer2.score
+		 };
+		 send_live_game_data(action, state);
+		 Habess();
+		 return -1;
 	}
 	send_live_game_data(action, state);
 }
+
 
 export function drawAll(pvp1, pvp2, settings) {
 	reseTpvp = Date.now();
@@ -913,14 +944,18 @@ export function drawAll(pvp1, pvp2, settings) {
 	gamer1 = pvp1;
 	gamer2 = pvp2;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
+	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
+	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+	drawSphere(sphere.x, sphere.y, sphere.radius);
 	if (settings.map === 'Map 2')
 		drawmap2();
-	if (settings.map === 'Map 3')
+	if (settings.map === 'Map 3'){
 		drawmap3();
+		drawSphereB(sphere.x, sphere.y, sphere.radius);
+		drawPlayerPaddle1B(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
+		drawPlayerPaddle2B(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+	}
 	drawScore(pvp1, pvp2);
-	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
- 	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
-	drawSphere(sphere.x, sphere.y, sphere.radius);
 	sphere.x += sphere.dx;
 	sphere.y += sphere.dy;
 	if (gamer1.username === window.userData.username) {
@@ -980,6 +1015,11 @@ export function drawAll(pvp1, pvp2, settings) {
 export function displayCountdown(score1=null, score2=null) {
 	let setts;
 	setts = window.setting
+	if (setts.map === 'Map 2')
+		drawmap2();
+	if (setts.map === 'Map 3')
+		drawmap3();
+	drawScore();
 	const gameContainer = document.getElementById('gameContainer');
 	const countdownOverlay = document.createElement('div');
 	countdownOverlay.classList.add('countdown-overlay');
@@ -1007,14 +1047,21 @@ export function displayCountdown(score1=null, score2=null) {
 		gamer1.score = score1;
 		gamer2.score = score2;
 	}
+	sphere.x = sx;
+	sphere.y = sy;
+	drawScore(gamer1, gamer2);
 	if (setts.map === 'Map 2')
 		drawmap2();
 	if (setts.map === 'Map 3')
 		drawmap3();
-	sphere.x = sx;
-	sphere.y = sy;
-	drawScore(gamer1, gamer2);
+	drawScore();
+	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	const countdownInterval = setInterval(() => {
+		if (setts.map === 'Map 2')
+			drawmap2();
+		if (setts.map === 'Map 3')
+			drawmap3();
+		drawScore();
 		 countdown -= 1;
 		 if (countdown > 0) {
 			  countdownOverlay.textContent = countdown;
