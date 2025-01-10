@@ -1,5 +1,5 @@
 import { endGameStats } from "./pong.js"
-import { userLookUp } from "./changeToMainTwo.js";
+import { userLookUp, blockedUsers } from "./changeToMainTwo.js";
 import { startGameSocket, startQueueGame } from "./gameSystem.js";
 import { displayTourniLobby, generateTournamentCarousel, sendTGameResult } from "./gameSystemT.js";
 import { getFriends, loadFriends } from "./populateFriends.js";
@@ -441,19 +441,25 @@ export async function launchSocket() {
 				return ;				
 			}
 			else {
-				SpecialNotification('You received a message!',  data.message , 'Global');
 				return ;
 			}
 		}
 		if (data.target === window.userData.username || data.target === 'Global') {
 			if (data.target === 'Global' && window.userData.target !== 'Global') {
-				SpecialNotification('You received a message!',  data.message , 'Global');
 				return ;
 			}
 			else if (data.target === window.userData.username && window.userData.target !== data.username) {
 				SpecialNotification('You received a message!',  data.message , data.username);
 			}
 			else {
+				if (data.target === 'Global') {
+					const blocked = await blockedUsers();
+					const block_list = blocked.blocked_list;
+					const isUsernamePresent = block_list.some(item => item.friend_data.username === data.username);
+					if (isUsernamePresent) {
+						return ;
+					}
+				}
 				addMessage(data.message, false, data);
 			}
 		}
@@ -593,7 +599,13 @@ export async function getMessages(uname=null) {
 
 export async function loadMessages(data) {
 	messageContainer.innerHTML = '';
+	const blocked = await blockedUsers();
+	const block_list = blocked.blocked_list;
 	data.forEach(message => {
+		const isUsernamePresent = block_list.some(item => item.friend_data.username === message.username);
+		if (isUsernamePresent) {
+			return ;
+		}
 		if (message.content.trim() === '') return;
 		const messageElement = document.createElement('div');
 		messageElement.classList.add('message');

@@ -20,11 +20,6 @@ MINOR:
 
 TODO:
 - backend loads (still in question)
-- make sure that when someone leaves torni CAROUSEL, it counts as ff, and the matchups/games continue as normal, and his opp auto wins.
-- need to redirect http to https
-
-Fixing:
--speedlimit on the ball
 
 Things to be done for he project to be done:
 - Firewall.
@@ -32,9 +27,6 @@ Things to be done for he project to be done:
 
 NEW BUGS ta3 lyoum:
 pressing 'enter' when you're typing inside a field f settings basically refreshes the website ??
-properly delete the account when they refuse the terms and conditions.
-when you block someone you can still receive messages from him, depending on what i read you shouldn't be able to read messages global or private but not sure
 when the ball hits outside and you instantly click on the play pong or whatever, you bypass the forfait and you lose no exp
-
 when you're in the tournamenet lobby you cant change view ?
 profile: make the email a little lower compared to the name, my name is merging with the email.

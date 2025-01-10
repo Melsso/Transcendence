@@ -9,7 +9,7 @@ let myflag = false;
 let consentPrompt = false;
 const baseUrl = process.env.ACTIVE_HOST;
 
-async function blockedUsers() {
+export async function blockedUsers() {
 	const access_token = localStorage.getItem('accessToken');
 	if (!access_token) {
 		throw new Error("No access token found.");
