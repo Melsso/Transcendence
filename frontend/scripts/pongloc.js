@@ -661,10 +661,10 @@ function countdownfornewRound(callback) {
             return;
         }
         ctxx.clearRect(0, 0, Canvaas.width, Canvaas.height);
-		  mapchoice();
         drawingPaddle(wasdPaddle.x, wasdPaddle.y, wasdPaddle.width, wasdPaddle.height);
         drawingPaddle(ARPaddle.x, ARPaddle.y, ARPaddle.width, ARPaddle.height);
         drawingBall(Balls.x, Balls.y, Balls.radius);
+		  mapchoice();
         drawScore();
         ctxx.font = '48px sans-serif'; 
         ctxx.fillStyle = '#fff';
@@ -1041,7 +1041,6 @@ function    mapchoice(){
 	if (sett.map === 'Map 1'){
 		const cont = document.getElementById('gameContainer');
 		ctxx.fillStyle = 'black';
-		window.ctx.clearRect(0, 0, Canvaas.width, Canvaas.height);
 	}
 	else if (sett.map === 'Map 2'){
 		map2();
