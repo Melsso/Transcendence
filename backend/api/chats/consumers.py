@@ -42,6 +42,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             how_many = len(user_list)
             user.bar_exp_game1 -= 500 * how_many
             user.save()
+            for u in user_list:
+                if u['username'] == uname:
+                    continue
+                tmp_user = UserProfile.objects.get(username=u['username'])
+                tmp_user.bar_exp_game1 += 250
+                tmp_user.save()
         except Exception as e:
             pass
     
