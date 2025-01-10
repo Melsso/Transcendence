@@ -149,10 +149,6 @@ async function kickPlayer() {
             winner['score'] = 0;    
         }
         await endGameStats(winner, {'name':window.userData.username, 'score': 0}, true, window.userData.r_name, null);
-        if (window.userData?.tournoi && window.userData.tournoi.out) {
-			sendTGameResult(winner['name'], window.userData.username, window.userData.tournoi.players);
-			window.userData.tournoi = null;
-		}
         Notification('Game Action', 'You have left an active game, therefore the game will be counted as a forfeit from your side!', 2, 'alert');
         navigateTo('profile', null);
         return ;
@@ -910,7 +906,7 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null, 
             if (room_name.includes("tournoi")) {
                 if (window.userData.username === winner.name) {
                     window.userData.tournoi.games_won += 1;
-                    if (window.userData.tournoi.players.length === 2 && window.userData.tournoi.games_won === 2) {
+                    if (window.userData.tournoi.players.length === 2 && window.userData.tournoi.games_won === 3) {
                         Notification('Tournament Action', 'You Just Won The Whole Tournament!!!! Congrats!', 2, 'request');
                         exp += 1000;
                     } else {

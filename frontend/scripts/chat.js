@@ -232,7 +232,7 @@ function checkFirstRound(players) {
 		return false;
 }
 
-export async function	launchSocket() {
+export async function launchSocket() {
 	window.userData.socket.onopen = function(e) {
 		console.log("CHATSOCKET--ON");
 	}
@@ -267,7 +267,7 @@ export async function	launchSocket() {
 					matchups.push([
 						{ username: window.userData.username },
 						{ username: data.players[1].username }
-					  ]);
+					]);
 					matchups.push([
 						{ username: data.players[2].username }, 
 						{ username: data.players[3].username }
@@ -310,7 +310,7 @@ export async function	launchSocket() {
 				}
 				startQueueGame(data.players, data.Slobby, true);
 		  } catch (error) {
-				Notification('Game Action', `Yakhotnaket Error: ${error.detail}`, 2, 'alert');
+				Notification('Game Action', `Error: ${error.detail}`, 2, 'alert');
 				window.userData.r_name = null;
 				if (window.userData.pong_socket) {
 					window.userData.pong_socket.close();
@@ -400,27 +400,27 @@ export async function	launchSocket() {
 					return ;
 			  }
 			  	toastgame.hide();
-					const u = new URL(baseUrl);
-					const accessToken = localStorage.getItem('accessToken');
-					if (!accessToken) {
-						Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
-						return ;
-					}
-					navigateTo('PONG', null);
-					const screenHeight = canvass.clientHeight;
-					const screenWidth = canvass.clientWidth;
-					const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
-					window.userData['pong_socket'] = gameSocket;
-					window.userData.r_name = data.room_name;
-					menu.style.display = 'none';
-					ai_menu.style.display = 'none';
-					inv_menu.style.display = 'none';
-					Instructions.style.display = 'none';
-					Tlobby.style.display = 'none';
-					lobby.style.display = 'flex';
-					window.lobbySettings = data.lobbySettings;
-					startGameSocket();
+				const u = new URL(baseUrl);
+				const accessToken = localStorage.getItem('accessToken');
+				if (!accessToken) {
+					Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
 					return ;
+				}
+				navigateTo('PONG', null);
+				const screenHeight = canvass.clientHeight;
+				const screenWidth = canvass.clientWidth;
+				const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+				window.userData['pong_socket'] = gameSocket;
+				window.userData.r_name = data.room_name;
+				menu.style.display = 'none';
+				ai_menu.style.display = 'none';
+				inv_menu.style.display = 'none';
+				Instructions.style.display = 'none';
+				Tlobby.style.display = 'none';
+				lobby.style.display = 'flex';
+				window.lobbySettings = data.lobbySettings;
+				startGameSocket();
+				return ;
 			});
 			return ;
 		}

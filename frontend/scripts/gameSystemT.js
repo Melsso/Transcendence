@@ -50,7 +50,7 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 		<h1>Tournament</h1>
 		<div class="mode">Mode:   ${lobbysettings.mode}</div>
 	`;
-	for (let i = 0; i < 4; i++) {
+	for (let i = 0; i < 8; i++) {
 		let player = TourniPlayers[i];
 		let playerContainer = document.createElement('div');
 		playerContainer.classList.add('pong-tournament-players');
@@ -78,7 +78,7 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 			}
 			playerButton.addEventListener('click', function () {
 			const username = playerButton.id.split('-').pop();
-			if (username === window.userData.username && TourniPlayers.length === 4) {
+			if (username === window.userData.username && TourniPlayers.length === 8) {
 				if (playerButton.classList.contains('ready')) {
 					readyPlayers--;
 					playerButton.classList.remove('ready');
@@ -107,7 +107,6 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 			
 			let pongPC = document.createElement('div');
 			pongPC.id = 'pong-p-c';
-			
 			
 			let pongModal = document.createElement('div');
 			pongModal.id = 'pong-modal-' + i;
@@ -193,14 +192,14 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 		}
 		Tcontainer.appendChild(playerContainer);
 	}
-	if (TourniPlayers.length === 4){
+	if (TourniPlayers.length === 8){
 		let a = 0;
-		for (let i =0;i < 4;i++) {
+		for (let i = 0; i < 8; i++) {
 			if (TourniPlayers[i]?.ready && TourniPlayers[i].ready === true) {
 				a++;
 			}
 		}
-		if (a === 4) {
+		if (a === 8) {
 			checkReadyStatus(TourniPlayers, lobbysettings);
 		}
 	}
@@ -211,7 +210,7 @@ function checkReadyStatus(TourniPlayers, Slobby) {
 		let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
 		let matchups = [];
 		
-		for (let i = 0; i < 4; i += 2) {
+		for (let i = 0; i < 8; i += 2) {
 			matchups.push([
 				shuffledPlayers[i] || { username: shuffledPlayers[i].username, avatar: shuffledPlayers[i].avatar }, 
 				shuffledPlayers[i + 1] || { username: shuffledPlayers[i + 1].username, avatar: shuffledPlayers[i + 1].avatar }
