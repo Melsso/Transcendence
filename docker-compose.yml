@@ -45,6 +45,7 @@ services:
     volumes:
       - media:/usr/share/nginx/html/media
     ports:
+      - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
     depends_on:
       - backend
