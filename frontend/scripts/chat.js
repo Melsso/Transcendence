@@ -1,7 +1,7 @@
 import { endGameStats } from "./pong.js"
 import { userLookUp } from "./changeToMainTwo.js";
 import { startGameSocket, startQueueGame } from "./gameSystem.js";
-import { displayTourniLobby, generateTournamentCarousel } from "./gameSystemT.js";
+import { displayTourniLobby, generateTournamentCarousel, sendTGameResult } from "./gameSystemT.js";
 import { getFriends, loadFriends } from "./populateFriends.js";
 import { Habess } from "./gamePvP.js";
 const messageContainer = document.getElementById('message-container');
@@ -67,7 +67,6 @@ export function handleSend(username=null, r_name=null, action, gameend=null, tou
 	addMessage(message, true, null);
 }
 
-
 globalbtn.addEventListener('click', async function(event) {
 	event.preventDefault();
 	var collapseElement = document.getElementById('collapseTwo');
@@ -104,24 +103,22 @@ function showContextMenu(event, username) {
 	event.preventDefault();
 	contextMenu.innerHTML = '';
 	const menuOptions = [
-		{ text: 'View Profile', action: () => handleProfileView(username) },
-		{ text: 'invite to game', action: () => handleGameInvite(username) }
+		{text: 'View Profile', action: () => handleProfileView(username)},
+		{text: 'invite to game', action: () => handleGameInvite(username)}
 	];
 	menuOptions.forEach(option => {
-			const menuItem = document.createElement('div');
-			menuItem.className = 'context-menu-item';
-			menuItem.textContent = option.text;
-			menuItem.addEventListener('click', option.action);
-			contextMenu.appendChild(menuItem);
-	  });
- 
-	  contextMenu.style.left = `${event.pageX}px`;
-	  contextMenu.style.top = `${event.pageY}px`;
-	  contextMenu.style.display = 'block';
+		const menuItem = document.createElement('div');
+		menuItem.className = 'context-menu-item';
+		menuItem.textContent = option.text;
+		menuItem.addEventListener('click', option.action);
+		contextMenu.appendChild(menuItem);
+	});
+	contextMenu.style.left = `${event.pageX}px`;
+	contextMenu.style.top = `${event.pageY}px`;
+	contextMenu.style.display = 'block';
 }
 
 function fixStyles(){
-	console.log('dkhelt style hna');
 	const mainOne = document.getElementById('mainOne');
 	const mainTwo = document.getElementById('mainTwo');
 	const mainBody = document.getElementById('mainTwo-body');
@@ -201,27 +198,21 @@ async function handleProfileView(username) {
 async function addMessage(message, isSender = false, data) {
 	if (message.trim() === '') return;
 	const messageElement = document.createElement('div');
-
 	messageElement.classList.add('message');
 	messageElement.classList.add(isSender ? 'right' : 'left');
-	 
 	const avatarElement = document.createElement('img');
 	avatarElement.src = isSender ? window.userData.avatar : data.av;
 	avatarElement.alt = isSender ? window.userData.username : data.username;
-
 	avatarElement.addEventListener('contextmenu', (event) => showContextMenu(event, avatarElement.alt));
 	document.addEventListener('click', () => {
 		contextMenu.style.display = 'none';
   	});
-	
 	const contentElement = document.createElement('div');
 	contentElement.classList.add('message-content');
 	contentElement.textContent = message;
-
 	messageElement.appendChild(contentElement);
 	messageElement.appendChild(avatarElement);
 	messageContainer.appendChild(messageElement);
-
 	if (messageContainer.children.length > 1) {
 		noChat.style.display = 'none';
 	}
@@ -242,222 +233,227 @@ function checkFirstRound(players) {
 }
 
 export async function	launchSocket() {
-		window.userData.socket.onopen = function(e) {
-			console.log("CHATSOCKET--ON");
-		}
-		
-		window.userData.socket.onclose = function(e) {
-			console.log("CHATSOCKET--OFF");
-		}
-		
-		window.userData.socket.onmessage = async function(e) {
-			const data = JSON.parse(e.data);
-			if (data.action === 'TournoiGameRes') {
-				const currentPlayer = data.players.find(player => player.username === window.userData.username);
-				if (!currentPlayer)
-					return;
-				var matchups = [];
-				data.players = data.players.filter(player => player.result !== 'LOST');
-				if (!(data.players.some(player => player.username === window.userData.username))) {
-					window.userData.tournoi = null;
-					navigateTo('profile', null);
-					return;
-				}
-				window.userData.tournoi.players = data.players;
-				if (checkFirstRound(window.userData.tournoi.players)) {
-					Habess();
-					fixStyles();
-					if (window.userData.username === data.players[0].username && data.players.length === 4) {
-						matchups.push([
-							{ username: window.userData.username }, 
-							{ username: data.players[1].username }
-						  ]);
-						  matchups.push([
-							{ username: data.players[2].username }, 
-							{ username: data.players[3].username }
-						  ]);
-						handleSend(null, null, 'TMatchups', null, matchups, window.userData.username);
-					} else if (window.userData.username === data.players[0].username && data.players.length === 2) {
-						matchups.push([
-							{ username: window.userData.username }, 
-							{ username: data.players[1].username }
-						  ]);
-						  handleSend(null, null, 'TMatchups', null, matchups, window.userData.username);
-					}
-				}
-				return ;
+	window.userData.socket.onopen = function(e) {
+		console.log("CHATSOCKET--ON");
+	}
+	
+	window.userData.socket.onclose = function(e) {
+		console.log("CHATSOCKET--OFF");
+	}
+	
+	window.userData.socket.onmessage = async function(e) {
+		const data = JSON.parse(e.data);
+		if (data.action === 'TournoiGameRes') {
+			if (window.userData.tournoi === null) return;
+			const currentPlayer = data.players.find(player => player.username === window.userData.username);
+			if (!currentPlayer)
+				return;
+			var matchups = [];
+			data.players = data.players.filter(player => player.result !== 'LOST');
+			if (!(data.players.some(player => player.username === window.userData.username))) {
+				window.userData.tournoi = null;
+				navigateTo('profile', null);
+				return;
 			}
-			if (data.action === 'TournoiRoom' && Object.values(data.players).includes(window.userData.username)) {
-				if (data.players['player2'] === window.userData.username) {
+			window.userData.tournoi.players = data.players;
+			if (window.userData.tournoi.players.length === 1) {
+				window.userData.tournoi = null;
+				return;
+			}
+			if (checkFirstRound(window.userData.tournoi.players)) {
+				Habess();
+				fixStyles();
+				if (window.userData.username === data.players[0].username && data.players.length === 4) {
+					matchups.push([
+						{ username: window.userData.username },
+						{ username: data.players[1].username }
+					  ]);
+					matchups.push([
+						{ username: data.players[2].username }, 
+						{ username: data.players[3].username }
+					]);
+					handleSend(null, null, 'TMatchups', null, matchups, window.userData.username);
+				} else if (window.userData.username === data.players[0].username && data.players.length === 2) {
+					matchups.push([
+						{ username: window.userData.username }, 
+						{ username: data.players[1].username }
+					]);
+					handleSend(null, null, 'TMatchups', null, matchups, window.userData.username);
+				}
+			}
+			return ;
+		}
+		if (data.action === 'TournoiRoom' && window.userData.tournoi && Object.values(data.players).includes(window.userData.username)) {
+			if (data.players['player2'] === window.userData.username) {
+				await sleep(1000);
+			}
+			try {
+				if (window.userData.pong_socket) {
+					window.userData.pong_socket.close();
+					window.userData.pong_socket = null;
+					window.userData.r_name = null;
+				}
+				const accessToken = localStorage.getItem('accessToken');
+				if (!accessToken) {
+					Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
+					return ;
+				}
+				window.userData.r_name = data.room_name;
+				const u = new URL(baseUrl);
+				const screenHeight = canvass.clientHeight;
+				const screenWidth = canvass.clientWidth;
+				const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+				window.userData['pong_socket'] = gameSocket;
+				startGameSocket();
+				if (data.players['player1'] === window.userData.username) {
 					await sleep(1000);
 				}
-				try {
-					if (window.userData.pong_socket) {
-						window.userData.pong_socket.close();
-						window.userData.pong_socket = null;
-						window.userData.r_name = null;
-					}
-					const accessToken = localStorage.getItem('accessToken');
-					if (!accessToken) {
-						Notification('Profile Action', 'You Are Not Currently Logged In', 2, 'alert');
-						return ;
-					}
-					window.userData.r_name = data.room_name;
-					const u = new URL(baseUrl);
-					const screenHeight = canvass.clientHeight;
-					const screenWidth = canvass.clientWidth;
-					const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
-					window.userData['pong_socket'] = gameSocket;
-					startGameSocket();
-					if (data.players['player1'] === window.userData.username) {
-						await sleep(1000);
-					}
-					startQueueGame(data.players, data.Slobby, true);
-			  } catch (error) {
-					Notification('Game Action', `Error: ${error.detail}HNA`, 2, 'alert');
+				startQueueGame(data.players, data.Slobby, true);
+		  } catch (error) {
+				Notification('Game Action', `Yakhotnaket Error: ${error.detail}`, 2, 'alert');
+				window.userData.r_name = null;
+				if (window.userData.pong_socket) {
+					window.userData.pong_socket.close();
 					window.userData.r_name = null;
-					if (window.userData.pong_socket) {
-						 window.userData.pong_socket.close();
-						 window.userData.r_name = null;
-					}
-					window.userData.pong_socket = null;
-					return ;
-			  }
-				return ;
-			}
-			if (data.action === 'TMatchups' && data.players.some(matchup => matchup.some(player => player.username === window.userData.username))) {
-				generateTournamentCarousel(data.players, data.owner, data.Slobby);
-				return ;
-			}
-			if (data.action === 'TNotification') {
-				if (data.players.some(player => player.username === window.userData.username)) {
-					displayTourniLobby(data.Slobby, data.players, data.owner);
-					return ;
 				}
-				if (window.userData.username === data.target) {
-					if (gameaccept) {
-						gameaccept = null;
-						gameaccept = document.createElement('button');
-					}
-					TGameNotification('Game Action', "Invited you to a Tournament pong game!", data.owner);
-					gameaccept.addEventListener('click', function () {
-						if (window.userData['guest'] === true) {
-							Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
-							return ;
-						}
-						if (data.players.some(player => player.username === window.userData.username)) {
-							return ;
-						}
-						toastgame.hide();
-						data.players.push({
-							"avatar": window.userData.avatar,
-							"ready": false,
-							"username": window.userData.username,
-						})
-						navigateTo('PONG', null);
-						menu.style.display = 'none';
-						ai_menu.style.display = 'none';
-						inv_menu.style.display = 'none';
-						Instructions.style.display = 'none';
-						Tlobby.style.display = 'block';
-						displayTourniLobby(data.Slobby, data.players, data.owner);
-						handleSend(null, data.Slobby, 'TNotification', null, data.players, data.owner);
-						return ;
-					})
-				}
+				window.userData.pong_socket = null;
+				window.userData.tournoi = null;
+				return ;
+		  }
+			return ;
+		}
+		if (data.action === 'TMatchups' && data.players.some(matchup => matchup.some(player => player.username === window.userData.username))) {
+			generateTournamentCarousel(data.players, data.owner, data.Slobby);
+			return ;
+		}
+		if (data.action === 'TNotification') {
+			if (data.players.some(player => player.username === window.userData.username)) {
+				displayTourniLobby(data.Slobby, data.players, data.owner);
 				return ;
 			}
-			if (data.action == 'online_status') {
-				window.userData['online'] = data.users;
-				try {
-					if (window.userData?.guest && window.userData.guest === true) {
-						return ;
-					}
-					const result = await getFriends();
-					loadFriends(result, window.userData.id); 
-				} catch (error) {
-					Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
-				}
-				return;
-			}
-			if (window.userData.username === data.username) {
-				return ;
-			}
-			if (data.action === 'Game_left' && window.userData.username === data.target) {
-				Notification('Game action', `Your oppponent: ${data.username} has left the game! therefore you win the match by default!`, 2, 'profile');
-				Habess();
-				resizeGame = false;
-				await endGameStats({'name':window.userData.username, 'score':0}, {'name':data.username, 'score':0}, false, window.userData.r_name, null);
-				navigateTo('PONG', null);
-				return;
-			}
-			if (data.action == 'Notification' && data.target == window.userData.username) {
+			if (window.userData.username === data.target) {
 				if (gameaccept) {
 					gameaccept = null;
 					gameaccept = document.createElement('button');
 				}
-				GameNotification('Game Action', "Invited you to a pong game!", data.username);
-				gameaccept.addEventListener('click', async function () {
+				TGameNotification('Game Action', "Invited you to a Tournament pong game!", data.owner);
+				gameaccept.addEventListener('click', function () {
 					if (window.userData['guest'] === true) {
 						Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 						return ;
-				  }
-				  	toastgame.hide();
-						const u = new URL(baseUrl);
-						const accessToken = localStorage.getItem('accessToken');
-						if (!accessToken) {
-							Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
-							return ;
-						}
-						navigateTo('PONG', null);
-						const screenHeight = canvass.clientHeight;
-						const screenWidth = canvass.clientWidth;
-						const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
-						window.userData['pong_socket'] = gameSocket;
-						window.userData.r_name = data.room_name;
-						menu.style.display = 'none';
-						ai_menu.style.display = 'none';
-						inv_menu.style.display = 'none';
-						Instructions.style.display = 'none';
-						Tlobby.style.display = 'none';
-						lobby.style.display = 'flex';
-						window.lobbySettings = data.lobbySettings;
-						startGameSocket();
+					}
+					if (data.players.some(player => player.username === window.userData.username)) {
 						return ;
-				});
-				return ;
+					}
+					toastgame.hide();
+					data.players.push({
+						"avatar": window.userData.avatar,
+						"ready": false,
+						"username": window.userData.username,
+					})
+					navigateTo('PONG', null);
+					menu.style.display = 'none';
+					ai_menu.style.display = 'none';
+					inv_menu.style.display = 'none';
+					Instructions.style.display = 'none';
+					Tlobby.style.display = 'block';
+					displayTourniLobby(data.Slobby, data.players, data.owner);
+					handleSend(null, data.Slobby, 'TNotification', null, data.players, data.owner);
+					return ;
+				})
 			}
-			if (data.target !== "Global" && data.target !== window.userData.username) {
-				return ;
+			return ;
+		}
+		if (data.action == 'online_status') {
+			window.userData['online'] = data.users;
+			try {
+				if (window.userData?.guest && window.userData.guest === true) {
+					return ;
+				}
+				const result = await getFriends();
+				loadFriends(result, window.userData.id); 
+			} catch (error) {
+				Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 			}
-			var Chat = document.getElementById('collapseTwo');
-			if (Chat.classList.contains('show') && (data.target === window.userData.username || window.userData.target === 'Global')) {
-				;
+			return;
+		}
+		if (window.userData.username === data.username) {
+			return ;
+		}
+		if (data.action === 'Game_left' && window.userData.username === data.target) {
+			Notification('Game action', `Your oppponent: ${data.username} has left the game! therefore you win the match by default!`, 2, 'profile');
+			Habess();
+			resizeGame = false;
+			await endGameStats({'name':window.userData.username, 'score':0}, {'name':data.username, 'score':0}, false, window.userData.r_name, null);
+			navigateTo('PONG', null);
+			return;
+		}
+		if (data.action == 'Notification' && data.target == window.userData.username) {
+			if (gameaccept) {
+				gameaccept = null;
+				gameaccept = document.createElement('button');
+			}
+			GameNotification('Game Action', "Invited you to a pong game!", data.username);
+			gameaccept.addEventListener('click', async function () {
+				if (window.userData['guest'] === true) {
+					Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
+					return ;
+			  }
+			  	toastgame.hide();
+					const u = new URL(baseUrl);
+					const accessToken = localStorage.getItem('accessToken');
+					if (!accessToken) {
+						Notification('Game Action', "Failed To Accept Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
+						return ;
+					}
+					navigateTo('PONG', null);
+					const screenHeight = canvass.clientHeight;
+					const screenWidth = canvass.clientWidth;
+					const gameSocket = new WebSocket(`wss://${u.host}/ws/game/${data['room_name']}/?token=${accessToken}&width=${screenWidth}&height=${screenHeight}`);
+					window.userData['pong_socket'] = gameSocket;
+					window.userData.r_name = data.room_name;
+					menu.style.display = 'none';
+					ai_menu.style.display = 'none';
+					inv_menu.style.display = 'none';
+					Instructions.style.display = 'none';
+					Tlobby.style.display = 'none';
+					lobby.style.display = 'flex';
+					window.lobbySettings = data.lobbySettings;
+					startGameSocket();
+					return ;
+			});
+			return ;
+		}
+		if (data.target !== "Global" && data.target !== window.userData.username) {
+			return ;
+		}
+		var Chat = document.getElementById('collapseTwo');
+		if (Chat.classList.contains('show') && (data.target === window.userData.username || window.userData.target === 'Global')) {
+			;
+		}
+		else {
+			if (data.target !== 'Global') {
+				SpecialNotification('You received a message!',  data.message , data.username);
+				return ;				
 			}
 			else {
-				if (data.target !== 'Global') {
-					SpecialNotification('You received a message!',  data.message , data.username);
-					return ;				
-				}
-				else {
-					SpecialNotification('You received a message!',  data.message , 'Global');
-					return ;
-				}
-			}
-			if (data.target === window.userData.username || data.target === 'Global') {
-				if (data.target === 'Global' && window.userData.target !== 'Global') {
-					SpecialNotification('You received a message!',  data.message , 'Global');
-					return ;
-				}
-				else if (data.target === window.userData.username && window.userData.target !== data.username) {
-					SpecialNotification('You received a message!',  data.message , data.username);
-				}
-				else {
-
-					addMessage(data.message, false, data);
-				}
+				SpecialNotification('You received a message!',  data.message , 'Global');
+				return ;
 			}
 		}
+		if (data.target === window.userData.username || data.target === 'Global') {
+			if (data.target === 'Global' && window.userData.target !== 'Global') {
+				SpecialNotification('You received a message!',  data.message , 'Global');
+				return ;
+			}
+			else if (data.target === window.userData.username && window.userData.target !== data.username) {
+				SpecialNotification('You received a message!',  data.message , data.username);
+			}
+			else {
+				addMessage(data.message, false, data);
+			}
+		}
+	}
 
 	chatInput.addEventListener('keydown', function(event) {
 		if (event.key === 'Enter') {

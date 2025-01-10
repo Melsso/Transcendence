@@ -3,6 +3,7 @@ const ctxx = canvass.getContext('2d');
 import { sendGameState, sendBuffState, send_live_game_data } from "./gameSystem.js";
 import { handleSend } from "./chat.js";
 import { endGameStats } from "./pong.js";
+import { sendTGameResult } from "./gameSystemT.js";
 
 window.resizeGame = false;
 let goldenExperience = 0;
@@ -340,7 +341,6 @@ export function countdownforRound(callback){
 		drawmap2()
 	else if (set.map === 'Map 3'){
 		drawmap3();
-		console.log("dkhelna hna");
 	}
 	const intID = setInterval(() => {
 		if (nocurrentGame) {
@@ -348,18 +348,12 @@ export function countdownforRound(callback){
 			cooldown = 3;
 			return;
 		}
-		// ctxx.clearRect(0, 0, canvass.width, canvass.height);
-		// drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
-		// drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
-		// drawSphere(sphere.x, sphere.y, sphere.radius);
 		displayCountdown();
 		cooldown--;
-
 		if(cooldown < 0){
 			clearInterval(intID);
 			callback();
 		}
-
 	}, 1000);
 }
 

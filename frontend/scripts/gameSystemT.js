@@ -36,11 +36,12 @@ const lobbyNameElement = document.getElementById('tournament-name');
 
 export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 	window.userData.tournoi = {
-		"players":TourniPlayers,
-		"owner":owner,
+		"players": TourniPlayers,
+		"owner": owner,
 		"Slobby": lobbysettings,
 		"in": false,
 		"out": false,
+		"games_won": 0,
 	};
 	window.userData.tournoi.in = true;
 	Tcontainer.innerHTML = '';
@@ -49,9 +50,8 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 		<h1>Tournament</h1>
 		<div class="mode">Mode:   ${lobbysettings.mode}</div>
 	`;
-	for (let i = 0; i < 8; i++) {
+	for (let i = 0; i < 4; i++) {
 		let player = TourniPlayers[i];
-		let gameMaster = owner;
 		let playerContainer = document.createElement('div');
 		playerContainer.classList.add('pong-tournament-players');
 		if (player) {
@@ -78,7 +78,7 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 			}
 			playerButton.addEventListener('click', function () {
 			const username = playerButton.id.split('-').pop();
-			if (username === window.userData.username && TourniPlayers.length === 8) {
+			if (username === window.userData.username && TourniPlayers.length === 4) {
 				if (playerButton.classList.contains('ready')) {
 					readyPlayers--;
 					playerButton.classList.remove('ready');
@@ -182,26 +182,25 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 			playerContainer.appendChild(pongPC);
 
 			submitButton.addEventListener('click', function ()  {
-            if (window.userData.socket) {
-						handleSend(searchInput.value , lobbysettings, 'TNotification', null, TourniPlayers, owner);
-						Notification('Game Action', 'You Have Successfuly Sent A Tournament Game Invitation!', 2, 'invite');
+				if (window.userData.socket) {
+					handleSend(searchInput.value , lobbysettings, 'TNotification', null, TourniPlayers, owner);
+					Notification('Game Action', 'You Have Successfuly Sent A Tournament Game Invitation!', 2, 'invite');
 				}
 				else {
 					Notification('Game Action', "Failed To Send Tournament Game Invitation, Please Log Out And Log Back In!", 2, 'alert');
 				}				
 			});
 		}
-
 		Tcontainer.appendChild(playerContainer);
 	}
-	if (TourniPlayers.length === 8){
+	if (TourniPlayers.length === 4){
 		let a = 0;
-		for (let i =0;i < 8;i++) {
+		for (let i =0;i < 4;i++) {
 			if (TourniPlayers[i]?.ready && TourniPlayers[i].ready === true) {
 				a++;
 			}
 		}
-		if (a === 8) {
+		if (a === 4) {
 			checkReadyStatus(TourniPlayers, lobbysettings);
 		}
 	}
@@ -212,7 +211,7 @@ function checkReadyStatus(TourniPlayers, Slobby) {
 		let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
 		let matchups = [];
 		
-		for (let i = 0; i < 8; i += 2) {
+		for (let i = 0; i < 4; i += 2) {
 			matchups.push([
 				shuffledPlayers[i] || { username: shuffledPlayers[i].username, avatar: shuffledPlayers[i].avatar }, 
 				shuffledPlayers[i + 1] || { username: shuffledPlayers[i + 1].username, avatar: shuffledPlayers[i + 1].avatar }
@@ -287,7 +286,6 @@ export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 		matchupContainer.appendChild(player2Div);
 		carouselItem.appendChild(matchupContainer);
 		carouselInner.appendChild(carouselItem);
-		
 	});
 	setTimeout(async () => {
 		for (const matchup of matchups) {
@@ -318,7 +316,6 @@ export function sendTRoomName(room_name, matchup, lobbyS=null) {
 }
 
 export function sendTGameResult(winner, loser, players) {
-	// fix players first
 	players.forEach(player => {
 		if (player.username === winner) {
 			player.result = "WIN";

@@ -295,6 +295,7 @@ export async function startQueueGame(players, sett=null, myff=null) {
     let g1, g2; 
     if (myff === true) {
         let t = document.getElementById('pong-tournament');
+
         t.style.display = 'none';
         g1= {}; 
         g2 = {};
