@@ -2,7 +2,6 @@ import { getMessages, loadMessages, handleSend } from "./chat.js";
 import { userLookUp, deleteMessages } from "./changeToMainTwo.js";
 
 const baseUrl = process.env.ACTIVE_HOST;
-
 const delPrivMsgModal = document.getElementById('deletePrvMsgModal');
 const confirmDelPrivMsgBtn = document.getElementById('confirmPrvMsgBtn');
 const cancelDelPrivMsgBtn = document.getElementById('cancelPrvMsgBtn');
@@ -132,7 +131,6 @@ export async function loadFriends(data, userid) {
 				
 				refuseButton.addEventListener('click', async function () {
 					const nature = 'refuse';
-
 					try {
 						const result = await respondFriendRequest(friend_data.id, nature);
 						const r1 = await getFriends();
@@ -145,7 +143,6 @@ export async function loadFriends(data, userid) {
 
 				acceptButton.addEventListener('click', async function () {
 					const nature = 'accept';
-
 					try {
 						const result = await respondFriendRequest(friend_data.id, nature);
 						const r1 = await getFriends();
@@ -188,14 +185,14 @@ async function handleAction(action, targetId, userid, targetUname) {
 				loadFriends(r1, userid);
 				Notification('Friend Action', 'You have deleted a friend!', 2,'request');
 			} catch (error) {
-					Notification('Friend Action', `Error: ${error.detail}`,2,'alert');
+				Notification('Friend Action', `Error: ${error.detail}`,2,'alert');
 			}
 			break;
 		case 'Send a Message':
 			var name = document.getElementById('chatName');
 			var collapseElement = document.getElementById('collapseTwo');
 			var bsCollapse = new bootstrap.Collapse(collapseElement, {
-			toggle: false
+				toggle: false
 			});			 
 			if (collapseElement.classList.contains('show') && targetUname !== window.userData.target) {
 				bsCollapse.hide();
@@ -220,17 +217,17 @@ async function handleAction(action, targetId, userid, targetUname) {
 				}
 			}
 			break;
-			case 'View Profile':
-				try {
-					const result = await userLookUp(targetUname);
-					if (result['user'] !== null) {
-						navigateTo('profile', result);
-					} else {
-						Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
-					}
-				} catch (error) {
-					Notification('Profile Action', `Failed to load friend\'s profile: ${error.detail}`, 2, 'alert');
+		case 'View Profile':
+			try {
+				const result = await userLookUp(targetUname);
+				if (result['user'] !== null) {
+					navigateTo('profile', result);
+				} else {
+					Notification('Profile Action', 'Failed to load friend\'s profile!', 2, 'alert');
 				}
+			} catch (error) {
+				Notification('Profile Action', `Failed to load friend\'s profile: ${error.detail}`, 2, 'alert');
+			}
 			break;
 		case 'Invite To Game':
 			if (window.userData.socket) {
@@ -253,7 +250,6 @@ async function handleAction(action, targetId, userid, targetUname) {
 				cancelDelPrivMsgBtn.removeEventListener('click', cancelDelHandler);
 			};
 			cancelDelPrivMsgBtn.addEventListener('click', cancelDelHandler);
-
 			const confirmDeleteHandler = async function() {
 				const delPassElement = document.getElementById('confirmPassPrvMsgField');
 				const delPass = delPassElement.value;
@@ -269,7 +265,6 @@ async function handleAction(action, targetId, userid, targetUname) {
 				}
 			};
 			confirmDelPrivMsgBtn.addEventListener('click', confirmDeleteHandler);
-			
 			break ;
 	}
 }

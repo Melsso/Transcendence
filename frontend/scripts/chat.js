@@ -29,21 +29,11 @@ let tar;
 let toastgame;
 
 export function handleSend(username=null, r_name=null, action, gameend=null, tournament=null, owner=null) {
-	// if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
-	// 	if (window.userData?.socket) {
-	// 		window.userData.socket.close();
-	// 		window.userData.socket = null;
-	// 		window.userData.target = null;
-	// 	}
-	// 	if (window.userData?.pong_socket) {
-	// 		window.userData.pong_socket.close();
-	// 		window.userData.pong_socket = null;
-	// 		window.userData.r_name = null;
-	// 	}
-	// 	window.userData = {};
-	// 	navigateTo('login', null);
-	// 	return ;
-	// }
+	if (action === 'Tourni_over') {
+		console.log("jina hna");
+		window.userData.socket.send(JSON.stringify({action:action, username:window.userData.username, target:window.userData.tournoi.players}));
+		return ;
+	}
 	if (tournament && action === 'TMatchups') {
 		window.userData.socket.send(JSON.stringify({action:action, Slobby:r_name, players:tournament, owner:owner}));
 		return ;
@@ -243,6 +233,16 @@ export async function launchSocket() {
 	
 	window.userData.socket.onmessage = async function(e) {
 		const data = JSON.parse(e.data);
+		if (data.action === 'Tourni_over' && window.userData?.tournoi) {
+			if (window.userData.tournoi.players.find(player => player.username === data.username)) {
+				resizeGame = false;
+				Habess();
+				window.userData.tournoi = null;
+				navigateTo('profile', null);
+				Notification('Tournament Action', `${data.username} has left the tournament which caused it to be cancelled!`,2 ,'alert');
+				return ;
+			}
+		}
 		if (data.action === 'TournoiGameRes') {
 			if (window.userData.tournoi === null) return;
 			const currentPlayer = data.players.find(player => player.username === window.userData.username);
@@ -288,6 +288,8 @@ export async function launchSocket() {
 				await sleep(1000);
 			}
 			try {
+				if (window.userData.tournoi === null)
+					return ;
 				if (window.userData.pong_socket) {
 					window.userData.pong_socket.close();
 					window.userData.pong_socket = null;
@@ -323,6 +325,7 @@ export async function launchSocket() {
 			return ;
 		}
 		if (data.action === 'TMatchups' && data.players.some(matchup => matchup.some(player => player.username === window.userData.username))) {
+			console.log(data.players);
 			generateTournamentCarousel(data.players, data.owner, data.Slobby);
 			return ;
 		}
@@ -384,8 +387,9 @@ export async function launchSocket() {
 			Notification('Game action', `Your oppponent: ${data.username} has left the game! therefore you win the match by default!`, 2, 'profile');
 			Habess();
 			resizeGame = false;
-			await endGameStats({'name':window.userData.username, 'score':0}, {'name':data.username, 'score':0}, false, window.userData.r_name, null);
+			const tmp = window.userData.r_name;
 			navigateTo('PONG', null);
+			await endGameStats({'name':window.userData.username, 'score':0}, {'name':data.username, 'score':0}, false, tmp, null);
 			return;
 		}
 		if (data.action == 'Notification' && data.target == window.userData.username) {

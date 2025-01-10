@@ -2,10 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	const presetAvatarInput = document.getElementById('preset-avatar');
 	const avatarInput = document.getElementById('avatar');
 	const avatarSelectionResult = document.getElementById('avatar-selection-result');
-
 	window.presetAvatarInput = presetAvatarInput;
 	window.avatarInput = avatarInput;
-
 	const avatarPreviews = document.querySelectorAll('.avatar-preview');
 	avatarPreviews.forEach(avatar => {
 		avatar.addEventListener('click', () => {
@@ -16,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			modal.hide();
 		});
 	});
-
 	avatarInput.addEventListener('change', (event) => {
 		const file = event.target.files[0];
 		if (file) {
@@ -29,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			fileReader.readAsDataURL(file);
 		}
 	});
-
 	document.getElementById('register-form').addEventListener('submit', function (e) {
 		if (!presetAvatarInput.value && !avatarInput.value) {
 			Notification('Registration Action', 'Please Select Or Upload An Avatar', 1, 'alert');

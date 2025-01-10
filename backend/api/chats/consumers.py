@@ -129,7 +129,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
             return
-
+        elif action == 'Tourni_over':
+            # user = UserProfile.objects.get(username=username)
+            # len = len(target)
+            # user.bar_exp_game1 -= (500 * len)
+            # user.save()
+            await self.channel_layer.group_send(
+                self.roomGroupName, {
+                    "type": "sendGameLeft",
+                    "action": action,
+                    "username": username,
+                    "target": target,
+                }
+            )
+            return
         elif action == 'TMatchups':
             Slobby = text_data_json.get("Slobby")
             if not Slobby:

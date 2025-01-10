@@ -45,12 +45,14 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 	};
 	window.userData.tournoi.in = true;
 	Tcontainer.innerHTML = '';
+	Tcontainer.style.display = 'flex';
+	lobbyNameElement.style.display ='flex';
 	lobbyNameElement.innerHTML = `
 		<div class="map">Map:   ${lobbysettings.map}</div>
 		<h1>Tournament</h1>
 		<div class="mode">Mode:   ${lobbysettings.mode}</div>
 	`;
-	for (let i = 0; i < 8; i++) {
+	for (let i = 0; i < 4; i++) {
 		let player = TourniPlayers[i];
 		let playerContainer = document.createElement('div');
 		playerContainer.classList.add('pong-tournament-players');
@@ -78,7 +80,7 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 			}
 			playerButton.addEventListener('click', function () {
 			const username = playerButton.id.split('-').pop();
-			if (username === window.userData.username && TourniPlayers.length === 8) {
+			if (username === window.userData.username && TourniPlayers.length === 4) {
 				if (playerButton.classList.contains('ready')) {
 					readyPlayers--;
 					playerButton.classList.remove('ready');
@@ -192,14 +194,14 @@ export function displayTourniLobby(lobbysettings, TourniPlayers, owner=null) {
 		}
 		Tcontainer.appendChild(playerContainer);
 	}
-	if (TourniPlayers.length === 8){
+	if (TourniPlayers.length === 4){
 		let a = 0;
-		for (let i = 0; i < 8; i++) {
+		for (let i = 0; i < 4; i++) {
 			if (TourniPlayers[i]?.ready && TourniPlayers[i].ready === true) {
 				a++;
 			}
 		}
-		if (a === 8) {
+		if (a === 4) {
 			checkReadyStatus(TourniPlayers, lobbysettings);
 		}
 	}
@@ -210,7 +212,7 @@ function checkReadyStatus(TourniPlayers, Slobby) {
 		let shuffledPlayers = [...TourniPlayers].sort(() => 0.5 - Math.random());
 		let matchups = [];
 		
-		for (let i = 0; i < 8; i += 2) {
+		for (let i = 0; i < 4; i += 2) {
 			matchups.push([
 				shuffledPlayers[i] || { username: shuffledPlayers[i].username, avatar: shuffledPlayers[i].avatar }, 
 				shuffledPlayers[i + 1] || { username: shuffledPlayers[i + 1].username, avatar: shuffledPlayers[i + 1].avatar }
@@ -223,12 +225,15 @@ function checkReadyStatus(TourniPlayers, Slobby) {
 export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 	Tcontainer.style.display = 'none';
 	lobbyNameElement.style.display = 'none';
+	menu.style.display = 'none';
+	Tlobby.style.display = 'block';
 	carousel.style.display = 'flex';
 	removeGscreen();
 	const carouselInner = document.querySelector('#matchupCarousel .carousel-inner');
 	carouselInner.innerHTML = '';
 	window.userData.tournoi.in = false;
 	window.userData.tournoi.out = true;
+	window.userData.tournoi.car = true;
 
 	const countdownElement = document.createElement('div');
 	countdownElement.id = 'countdown';
@@ -290,13 +295,15 @@ export async function generateTournamentCarousel(matchups, owner, lobbyS) {
 		for (const matchup of matchups) {
 			carousel.style.display = 'none';
 			clearInterval(countdownInterval);
-			if (matchup[0].username === window.userData.username) {
-				try {
-					const res = await getRoomName();
-					const room_name = 'tournoi_' + res.room_name;
-					sendTRoomName(room_name, matchup, lobbyS);
-				} catch (error) {
-					Notification('Game Action', `Something went wrong; please relog! error: ${error.detail}`, 2, 'alert');
+			if (window.userData?.tournoi) {
+				if (matchup[0].username === window.userData.username) {
+					try {
+						const res = await getRoomName();
+						const room_name = 'tournoi_' + res.room_name;
+							sendTRoomName(room_name, matchup, lobbyS);
+					} catch (error) {
+						Notification('Game Action', `Something went wrong; please relog! error: ${error.detail}`, 2, 'alert');
+					}
 				}
 				break;
 			}
@@ -310,7 +317,6 @@ export function sendTRoomName(room_name, matchup, lobbyS=null) {
 		'player1':matchup[0].username,
 		'player2':matchup[1].username,
 	}
-
 	window.userData.socket.send(JSON.stringify({action:'TournoiRoom', room_name:room_name, Slobby:lobbyS, players:users}));
 }
 

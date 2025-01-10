@@ -906,7 +906,7 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null, 
             if (room_name.includes("tournoi")) {
                 if (window.userData.username === winner.name) {
                     window.userData.tournoi.games_won += 1;
-                    if (window.userData.tournoi.players.length === 2 && window.userData.tournoi.games_won === 3) {
+                    if (window.userData.tournoi.players.length === 2) {
                         Notification('Tournament Action', 'You Just Won The Whole Tournament!!!! Congrats!', 2, 'request');
                         exp += 1000;
                     } else {
@@ -923,6 +923,7 @@ export async function endGameStats(winner, loser, forfeit=null, room_name=null, 
         Notification('Game Action', `Error: ${error}`, 2, 'alert');
     }
 }
+
 
 export async function sendGameResult(exp, winner, loser, game_data, forfeit=null, room_name=null) {
     const access_token = localStorage.getItem('accessToken');

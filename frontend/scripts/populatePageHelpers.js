@@ -11,33 +11,33 @@ function createChart(ctx, label, data, chartType) {
         pveChart.destroy();
     }
     const myChart = new Chart(ctx, {
-		 type: 'line',
-		 data: {
-			  labels: data.games,
-			  datasets: [{
-					label: label,
-					data: data.wins,
-					borderColor: 'rgba(0, 123, 255, 0.8)',
-					backgroundColor: 'rgba(0, 123, 255, 0.1)',
-					fill: true
-			  }]
-		 },
-		 options: {
-			  scales: {
-					x: {
-						 title: {
-							  display: true,
-							  text: 'Number Of Games'
-						 }
-					},
-					y: {
-						 title: {
-							  display: true,
-							  text: 'Number Of Wins'
-						 },
-						 beginAtZero: true
+		type: 'line',
+		data: {
+			labels: data.games,
+			datasets: [{
+				label: label,
+				data: data.wins,
+				borderColor: 'rgba(0, 123, 255, 0.8)',
+				backgroundColor: 'rgba(0, 123, 255, 0.1)',
+				fill: true
+			}]
+		},
+		options: {
+			scales: {
+				x: {
+					title: {
+					    display: true,
+					    text: 'Number Of Games'
 					}
-			  }
+				},
+				y: {
+					title: {
+						display: true,
+						text: 'Number Of Wins'
+						},
+					beginAtZero: true
+				}
+			}
 		 }
 	});
     if (chartType === 'pve') {
@@ -82,6 +82,7 @@ export async function loadProfile(requestData) {
         loadProfileInfo(user);
     }
     else {
+        // this is not enough here do somethign relevant, probably nav to login 
         console.error("Error: No User Data Found!");
     }
 
@@ -155,9 +156,7 @@ function loadProfileInfo(user) {
         email.textContent = '';
     }
     const expGame1Percentage = Math.max((user.bar_exp_game1 % 1000) / 10, 1);
-    
     const levelGame1 = Math.floor(user.bar_exp_game1 / 1000);
-
     expBar1.style.width = `${expGame1Percentage}%`;
     expText1.textContent = `Level ${levelGame1}`;
     expBar1.setAttribute('aria-valuenow', expGame1Percentage);
@@ -193,7 +192,6 @@ export function computeStats(games) {
     games.forEach(game => {
         const gameKey = Object.keys(game)[0];
         const { ally, enemy } = game[gameKey];
-
         const isPve = enemy.user.username.includes('Easy AI') || enemy.user.username.includes('Hard AI') || enemy.user.username.includes('Medium AI');
         gameCount++;
         if (ally.is_win) {
@@ -230,13 +228,11 @@ export function computeStats(games) {
         stats.mapStatistics[ally.map_name].wins += ally.is_win ? 1 : 0;
         stats.mapStatistics[ally.map_name].losses += ally.is_win ? 0 : 1;
     });
-
     return stats;
 }
 
 function loadStats(games) {
     const stats = computeStats(games);
-    
     const pveWinRate = stats.pveWins + stats.pveLosses > 0 ? (stats.pveWins / (stats.pveWins + stats.pveLosses)) * 100 : 0;
     const pvpWinRate = stats.pvpWins + stats.pvpLosses > 0 ? (stats.pvpWins / (stats.pvpWins + stats.pvpLosses)) * 100 : 0;
     const totalWins = stats.pveWins + stats.pvpWins;
@@ -249,49 +245,37 @@ function loadStats(games) {
         ? (stats.mapStatistics['Map 2'].wins / (stats.mapStatistics['Map 2'].wins + stats.mapStatistics['Map 2'].losses)) * 100 : 0;
     const map3WinRate = stats.mapStatistics['Map 3'].wins + stats.mapStatistics['Map 3'].losses > 0
         ? (stats.mapStatistics['Map 3'].wins / (stats.mapStatistics['Map 3'].wins + stats.mapStatistics['Map 3'].losses)) * 100 : 0;
-    
     const pveWinrateElem = document.getElementById('pve-winrate');
     pveWinrateElem.style.width = pveWinRate + '%';
     pveWinrateElem.textContent = pveWinRate + '%';
     document.querySelectorAll('.win-loss')[0].innerHTML = `Wins: ${stats.pveWins} | Losses: ${stats.pveLosses}`;
-
     const pvpWinrateElem = document.getElementById('pvp-winrate');
 	pvpWinrateElem.style.width = pvpWinRate + '%';
 	pvpWinrateElem.textContent = pvpWinRate + '%';
 	document.querySelectorAll('.win-loss')[1].innerHTML = `Wins: ${stats.pvpWins} | Losses: ${stats.pvpLosses}`;
-
     const avgSuccessHistoryElem = document.getElementById('avg-success-history');
 	avgSuccessHistoryElem.style.width = totalWinRate + '%';
 	avgSuccessHistoryElem.textContent = totalWinRate + '%';
-
     const attackAccuracyElem = document.getElementById('attack-accuracy');
 	attackAccuracyElem.style.width = attackAccuracy + '%';
 	attackAccuracyElem.textContent = attackAccuracy + '%';
-
     const totalAttackElem = document.getElementById('total-attack');
     totalAttackElem.textContent = 'Number Of Picked Up Attack Buffs: ' + stats.TotalAttack;
-
     const totalShieldElem = document.getElementById('total-shield');
     totalShieldElem.textContent = 'Number Of Picked Up Shield Buffs: ' + stats.TotalShield;
-
     const totalSpeedElem = document.getElementById('total-speed');
     totalSpeedElem.textContent = 'Number Of Picked Up Speed Buffs: ' + stats.TotalSpeed;
-    
     const totalMatchDurationElem = document.getElementById('matches_duration');
 	totalMatchDurationElem.textContent = 'Total Minutes Played: ' + stats.TotalDuration;
-
     const map1WinrateElem = document.getElementById('map1-winrate');
 	map1WinrateElem.style.width = map1WinRate + '%';
 	map1WinrateElem.textContent = map1WinRate + '%';
-
 	const map2WinrateElem = document.getElementById('map2-winrate');
 	map2WinrateElem.style.width = map2WinRate + '%';
 	map2WinrateElem.textContent = map2WinRate + '%';
-
 	const map3WinrateElem = document.getElementById('map3-winrate');
 	map3WinrateElem.style.width = map3WinRate + '%';
 	map3WinrateElem.textContent = map3WinRate + '%';
-
     const mostUsedPowerupElem = document.getElementById('most-used-powerup');
     var favoritePowerup = {'name':'', 'value':0};
     const max = Math.max(stats.TotalAttack, stats.TotalShield, stats.TotalSpeed);
@@ -304,7 +288,6 @@ function loadStats(games) {
         favoritePowerup.name = 'Speed';
 	mostUsedPowerupElem.style.width = favoritePowerup.value + '%';
 	mostUsedPowerupElem.textContent = favoritePowerup.name;
-
 	createChart(document.getElementById('winLossChartPVE').getContext('2d'), 'PvE Win-Loss', stats.pveWinLossData, 'pve');
 	createChart(document.getElementById('winLossChartPVP').getContext('2d'), 'PvP Win-Loss', stats.pvpWinLossData, 'pvp');
 }
@@ -438,7 +421,7 @@ export function loadMatchHistory(games) {
                 <div class="game-name">${enemy.game_id}</div>
             </div>
         </div>
-    `;
+        `;
         container.appendChild(matchCard);
     });
 }

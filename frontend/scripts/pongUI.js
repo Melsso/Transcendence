@@ -2,36 +2,13 @@ window.player1 = {name: '', icon: '../frontend/assets/logo.jpg',  score: 0, aim:
 window.player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0, aim: 0, Btaken: 0, BBR: 0 , SBR: 0, ABR: 0, gothit: 0};
 import { endGameStats } from "./pong.js";
 // const play_again = document.getElementById('playAgain');
-const	change_difficulty = document.getElementById('diffy');
-const	backtomain = document.getElementById('goodbye')
+// vars declared never read
+const change_difficulty = document.getElementById('diffy');
+const backtomain = document.getElementById('goodbye')
 
-window.buff = {
-	x: 0,
-	y: 0,
-	width: 70,
-	height: 10,
-	speed: -2,
-	direction: -1,
-	visible: false
-};
-window.Attack = {
-	x: 0,
-	y: 0,
-	width: 70,
-	height: 10,
-	speed: -2,
-	direction: -1,
-	visible: false
-};
-window.PaddleBigger = {
-	x: 0,
-	y: 0,
-	width: 70,
-	height: 10,
-	speed: -2,
-	direction: -1,
-	visible: false
-};
+window.buff = { x: 0, y: 0, width: 70, height: 10, speed: -2, direction: -1, visible: false };
+window.Attack = { x: 0, y: 0, width: 70, height: 10, speed: -2, direction: -1, visible: false };
+window.PaddleBigger = { x: 0, y: 0, width: 70, height: 10, speed: -2, direction: -1, visible: false };
 
 window.block = {
 	x: 0,

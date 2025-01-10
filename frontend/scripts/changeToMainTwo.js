@@ -667,6 +667,9 @@ async function logoutUser() {
 		Habess();
 		handleQuitting();
 	}
+	if (resizeGame === false && window.userData?.tournoi && window.userData.tournoi.out === true) {
+		handleSend(window.userData.username, null,'Tourni_over');
+	}
 	let url = baseUrl + 'api/logout/';
 	if (window.userData.guest === true) {
 		url = baseUrl+ 'api/guest-logout/'
@@ -778,7 +781,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	const force = document.getElementById('force-container');
 	const insButton = document.getElementById('return-to-menu-ins');
 	const moreSettings = document.getElementById('Additional-settings-form');
+	const  carousel = document.getElementById('bracket-container');
+	const carouselInner = document.querySelector('#matchupCarousel .carousel-inner');
 
+	carousel.style.display = 'none';
+	if (carouselInner) {
+		carouselInner.innerHTML = '';
+	}
 	moreSettings.style.display = 'none';
 	insButton.style.display = 'none';
 	force.style.display = 'none';
@@ -847,11 +856,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	async function showView(view, data) {
 		if (window.userData?.tournoi && window.userData.tournoi.in === true) {
 			window.userData.tournoi.players = window.userData.tournoi.players.filter(player => player.username !== window.userData.username);
-			if (window.userData.tournoi.owner === window.userData.username) {
+			if (window.userData.tournoi.owner === window.userData.username && window.userData.tournoi.players.length > 1) {
 				window.userData.tournoi.owner = window.userData.tournoi.players[0].username;
 			}
 			handleSend(null, window.userData.tournoi.Slobby, 'TNotification', null, window.userData.tournoi.players, window.userData.tournoi.owner);
 			window.userData.tournoi = null;
+		}
+		if (resizeGame === false && window.userData?.tournoi && window.userData.tournoi.car === true) {
+			handleSend(window.userData.username, null,'Tourni_over');
 		}
 		if (!localStorage.getItem('accessToken') && window.userData?.accessToken) {
 			if (window.userData?.socket) {

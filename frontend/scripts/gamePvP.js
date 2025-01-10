@@ -326,6 +326,7 @@ export function drawBigpadpvp(x){
 
 
 export function Habess() {
+	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	for (let i = 0; i < animation.length; i++) {
 		cancelAnimationFrame(animation[i]);
   }
@@ -366,7 +367,7 @@ export function newRound() {
 		drawmap2();
 	if (lobbySet.map === 'Map 3')
 		drawmap3();
-	drawScore()
+	drawScore(gamer1, gamer2);
 	playerPaddle1.height = heightScale / 10;
 	playerPaddle2.height = heightScale / 10;
 	playerPaddle1.dy = heightScale / 100;
@@ -910,6 +911,9 @@ export function drawAll(pvp1, pvp2, settings) {
 	}
 	if (window.userData.username === pvp1.username){
 		if (pvp1.set === false ) {
+			if (window.userData?.tournoi) {
+				window.userData.tournoi.car = false;
+			}
 			resizeGame = true;
 			window.setting = settings;
 			setDimensions();
@@ -923,6 +927,9 @@ export function drawAll(pvp1, pvp2, settings) {
 	}
 	else {
 		if (pvp2.set === false ) {
+			if (window.userData?.tournoi) {
+				window.userData.tournoi.car = false;
+			}
 			resizeGame = true;
 			setDimensions();
 			window.setting = settings;
@@ -938,9 +945,6 @@ export function drawAll(pvp1, pvp2, settings) {
 	gamer1 = pvp1;
 	gamer2 = pvp2;
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
-	drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
-	drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
-	drawSphere(sphere.x, sphere.y, sphere.radius);
 	if (settings.map === 'Map 2')
 		drawmap2();
 	if (settings.map === 'Map 3'){
@@ -948,6 +952,10 @@ export function drawAll(pvp1, pvp2, settings) {
 		drawSphereB(sphere.x, sphere.y, sphere.radius);
 		drawPlayerPaddle1B(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
 		drawPlayerPaddle2B(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+	} else {
+		drawPlayerPaddle1(playerPaddle1.x, playerPaddle1.y, playerPaddle1.width, playerPaddle1.height);
+		drawPlayerPaddle2(playerPaddle2.x, playerPaddle2.y, playerPaddle2.width, playerPaddle2.height);
+		drawSphere(sphere.x, sphere.y, sphere.radius);
 	}
 	drawScore(pvp1, pvp2);
 	sphere.x += sphere.dx;
@@ -1013,7 +1021,6 @@ export function displayCountdown(score1=null, score2=null) {
 		drawmap2();
 	if (setts.map === 'Map 3')
 		drawmap3();
-	drawScore();
 	const gameContainer = document.getElementById('gameContainer');
 	const countdownOverlay = document.createElement('div');
 	countdownOverlay.classList.add('countdown-overlay');
@@ -1048,25 +1055,24 @@ export function displayCountdown(score1=null, score2=null) {
 		drawmap2();
 	if (setts.map === 'Map 3')
 		drawmap3();
-	drawScore();
 	ctxx.clearRect(0, 0, canvass.width, canvass.height);
 	const countdownInterval = setInterval(() => {
 		if (setts.map === 'Map 2')
 			drawmap2();
 		if (setts.map === 'Map 3')
 			drawmap3();
-		drawScore();
-		 countdown -= 1;
-		 if (countdown > 0) {
-			  countdownOverlay.textContent = countdown;
-		 } else {
-			  clearInterval(countdownInterval);
-			  countdownOverlay.textContent = 'Game Start!';
-			  setTimeout(() => {
-					countdownOverlay.remove();
-					timerpvp = Date.now();
-					drawAll(gamer1, gamer2, lobbySettings);
-			  }, 1000);
+		drawScore(gamer1, gamer2);
+		countdown -= 1;
+		if (countdown > 0) {
+			countdownOverlay.textContent = countdown;
+		} else {
+			clearInterval(countdownInterval);
+			countdownOverlay.textContent = 'Game Start!';
+			setTimeout(() => {
+				countdownOverlay.remove();
+				timerpvp = Date.now();
+				drawAll(gamer1, gamer2, lobbySettings);
+			}, 1000);
 		 }
 	}, 1000);
 }
@@ -1093,6 +1099,8 @@ window.addEventListener('beforeunload', function (event) {
     if (resizeGame === true) {
 		handleQuitting();
 		event.returnValue = '';
+	} else if (resizeGame === false && window.userData?.tournoi && window.userData.tournoi.out === true) {
+		handleSend(window.userData.username, null,'Tourni_over');
 	}
 });
 
