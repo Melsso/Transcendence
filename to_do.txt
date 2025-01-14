@@ -25,7 +25,3 @@ Things to be done for he project to be done:
 - Firewall.
 - checkig bugs, to be Handled by Rayan.
 
-NEW BUGS ta3 lyoum:
-pressing 'enter' when you're typing inside a field f settings basically refreshes the website ??
-when the ball hits outside and you instantly click on the play pong or whatever, you bypass the forfait and you lose no exp
-profile: make the email a little lower compared to the name, my name is merging with the email.

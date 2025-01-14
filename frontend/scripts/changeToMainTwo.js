@@ -760,6 +760,12 @@ async function sendFriendRequest(targetId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+	document.addEventListener('keydown', function (event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			return ;
+		}
+  });
 	const reg1 = document.getElementById('register-form-container');
     const log1 = document.getElementById('login-form-container');
     const reg2 = document.getElementById('second-reg-container');
@@ -1425,6 +1431,14 @@ document.addEventListener('DOMContentLoaded', function () {
 		const bio = document.getElementById('new-Bio').value;
 		document.getElementById('new-Bio').value = '';
 		const old_bio = document.getElementById('profile-bio').textContent;
+		if (bio.length >= 267) {
+			Notification('Profile Action', 'Bio Can\'t excceede 250 Characters!', 2,'alert');
+			return ;
+		}
+		if (bio.trim() === '') {
+			Notification('Profile Action', 'Bio Cannot be Empty!', 2, 'alert');
+			return ;
+		}
 		if (bio === old_bio) {
 			Notification('Profile Action', 'You are already using that bio', 2, 'alert');
 			return ;

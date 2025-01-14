@@ -94,7 +94,7 @@ overflow: hidden;
 
 .my-email-style {
 	position: absolute;
-	top: 20%;
+	top: 23%;
 	color: #9da5cf;
 	text-decoration: solid;
 	font:italic;
@@ -112,6 +112,10 @@ overflow: hidden;
 	position: absolute;
 	top: 35%;
 	color: #7982b2;
+	max-width: 95%;
+	max-height: 10%;
+	white-space: normal;
+	overflow-wrap: break-word;
 }
 
 .my-bar {
