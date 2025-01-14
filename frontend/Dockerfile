@@ -20,11 +20,14 @@ RUN mkdir -p /etc/nginx/ssl && \
     openssl req -x509 -nodes -days 365 \
     -subj "/CN=localhost" \
     -newkey rsa:2048 -keyout nginx.key -out nginx.crt
+ 
+    
+    
 
-
-FROM nginx:alpine
+FROM owasp/modsecurity:apache
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY modsecurity.conf /etc/modsecurity/modsecurity.conf
 COPY --from=builder /app/dist /usr/share/nginx/html/dist
 COPY --from=builder /app/bootstrap /usr/share/nginx/html/bootstrap
 COPY --from=builder /app/assets /usr/share/nginx/html/assets
