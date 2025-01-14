@@ -1,5 +1,5 @@
 import { sendTGameResult } from "./gameSystemT.js";
-
+window.habessGameLoop = false;
 window.canvas = document.getElementById('pongCanvas');
 window.ctx = canvas.getContext('2d');
 const gameModal = document.getElementById('gameModal');
@@ -89,9 +89,9 @@ window.ball = {
 
 window.scoreboard = {
     x: 0,
-    y: 0, // Assuming the scoreboard starts at the top of the canvas
+    y: 0,
     width: canvas.width,
-    height: canvas.height * 0.05 // Height of the scoreboard, adjust as necessary
+    height: canvas.height * 0.05
 };
 
 window.ResetTime = null;
@@ -187,7 +187,6 @@ function countdownBeforeRound(callback) {
     if (NOgame)
         return;
     let countdown = 3;
-    
     const intervalID = setInterval(() => {
         if (NOgame){
             clearInterval(intervalID);
@@ -203,7 +202,6 @@ function countdownBeforeRound(callback) {
         ctx.font = '48px sans-serif'; 
         ctx.fillStyle = '#fff';
         ctx.fillText(`Round starts in: ${countdown}`, canvas.width / 2 , canvas.height * 0.4);
-        
         countdown--;
 
         if (countdown < 0) {
@@ -405,20 +403,25 @@ addEventListener('resize', function () {
 });
 
 function restartRound() {
-    gameActive = true;
+    habessGameLoop = false;
     gameLoop(diffy, setting);
 }
 window.restartRound = restartRound;
 
 function newRound(){
+    habessGameLoop = true;
     const speedFactor = 1 + Math.floor(elapsedTime / speedIncreaseInterval) * speedIncrement;
-    if (ball.x - ball.radius <= 0) {
+    stopGameLoop();
+    drawScoreBoard();
+    if (ball.x - ball.radius < ball.radius / 2 ) {
         player2.score++;
-        if (player2.score === 5){
+        if (player2.score === 7){
             gameover = true;
+            habessGameLoop = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            gameOverScreen();
             return;
         }
-        stopGameLoop();
         if(tmp){
             fullTime += elapsedTime;
             tmp = false;
@@ -445,13 +448,15 @@ function newRound(){
         });
         return; 
     }
-    if (ball.x + ball.radius >= canvas.width) {
+    if (ball.x + ball.radius >= canvas.width + ball.radius / 6) {
         player1.score++;
-        if (player1.score === 5){
+        if (player1.score === 7){
             gameover = true;
+            habessGameLoop = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            gameOverScreen();
             return;
         }
-        stopGameLoop();
         if (tmp){
             fullTime += elapsedTime;
             tmp = false;
@@ -614,11 +619,9 @@ function drawMap() {
     window.ctx.lineTo(0, canvas.height);
     window.ctx.closePath();
     window.ctx.fill();
-
-    // Background gradient for the upper part of the canvas
     let gradient = window.ctx.createLinearGradient(0, groundHeightArray[0], 0, 0);
-    gradient.addColorStop(0, '#2e4d2f');  // Mid green just above the ground
-    gradient.addColorStop(1, '#7a9b7a');  // 
+    gradient.addColorStop(0, '#2e4d2f');
+    gradient.addColorStop(1, '#7a9b7a');
 
     window.ctx.fillStyle = gradient;
     window.ctx.fillRect(0, 0, canvas.width, groundHeightArray[0]);
@@ -656,30 +659,22 @@ function drawMap() {
 }
 window.drawMap = drawMap;
 function drawRetroTrianglePattern() {
-    const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B']; // Old American Diner colorsD08E48  C5652F BC5A2B
-    const numTriangles = 36; // Number of triangles/wedges
+    const colors = ['#D3984F', '#D08E48', '#C5652F', '#BC5A2B'];
+    const numTriangles = 36;
     const centerX =canvas.width / 2;
     const centerY =canvas.height / 2;
-    const radius = Math.hypot(window.canvas.width,canvas.height); // Ensures triangles extend beyond canvas
+    const radius = Math.hypot(window.canvas.width,canvas.height);
     const angleIncrement = (2 * Math.PI) / numTriangles;
 
     for (let i = 0; i < numTriangles; i++) {
         const angle = i * angleIncrement;
-        
-        // Set color for each triangle
        ctx.fillStyle = colors[i % colors.length];
-        
-        // Start drawing the triangle
        ctx.beginPath();
-       ctx.moveTo(centerX, centerY); // Center point
-
-        // Calculate points at the edge of the canvas
+       ctx.moveTo(centerX, centerY);
         const x1 = centerX + radius * Math.cos(angle);
         const y1 = centerY + radius * Math.sin(angle);
         const x2 = centerX + radius * Math.cos(angle + angleIncrement);
         const y2 = centerY + radius * Math.sin(angle + angleIncrement);
-
-        // Draw the triangle wedge
        ctx.lineTo(x1, y1);
        ctx.lineTo(x2, y2);
        ctx.closePath();
@@ -689,7 +684,6 @@ function drawRetroTrianglePattern() {
 window.drawRetroTrianglePattern = drawRetroTrianglePattern;
 
 function gameLoop(difficulty, setting) {
-    LastpaddletoHit = player1.name;
 	if (starter === false) {
         window.player1.name = window.userData.username;
 		canvas.width = canvas.clientWidth;
@@ -719,7 +713,6 @@ function gameLoop(difficulty, setting) {
             Attack.visible = true;
             Attack.y = canvas.height - Attack.height;
             Attack.x = canvas.width / 2;
-            // randomizeAttackX();
         }
         if (Attack.visible) {
             moveAttackbuff();
@@ -730,7 +723,6 @@ function gameLoop(difficulty, setting) {
             buff.visible = true;
             buff.y = canvas.height - buff.height;
             buff.x = canvas.width / 2;
-            // randomizeBuffX();
         }
         if (buff.visible) {
             movebuff();
@@ -741,7 +733,6 @@ function gameLoop(difficulty, setting) {
             PaddleBigger.visible = true;
             PaddleBigger.y = canvas.height - PaddleBigger.height;
             PaddleBigger.x = canvas.width / 2;
-            // randomizePadBigX();
         }
         if (PaddleBigger.visible) {
             movePadBigbuff();
@@ -769,9 +760,10 @@ function gameLoop(difficulty, setting) {
         drawPadBigBuff();
     }
     moveBall();
+    if (habessGameLoop === true)
+        return ;
     drawScoreBoard();
     drawTimer();
-    gameOverScreen();
     calculateAverageRoundTime();
     let frameID = requestAnimationFrame(() => gameLoop(difficulty, setting));
     animationFrameIDs.push(frameID);
@@ -857,30 +849,6 @@ ai_hard.addEventListener('click', function(event) {
     gameActive = true;
     gameLoop('hard', setting);
 });
-
-//  function applyBlurEffect() {
-//      const gameContainer = document.querySelector('.gameContainer');
-
-//      const mainTwo = document.getElementById('mainTwo');
-//      const allElements = mainTwo.children;
-
-//      for (let i = 0; i < allElements.length; i++) {
-//          if (!allElements[i].contains(gameContainer) || !allElements.contains(pongCanvas)) {
-//              allElements[i].classList.add('blur-effect');
-//          }
-//      }
-//  }
-
-//  function removeBlurEffect() {
-//      const mainTwo = document.getElementById('mainTwo');
-//      const allElements = mainTwo.children;
-
-//      for (let i = 0; i < allElements.length; i++) {
-//          allElements[i].classList.remove('blur-effect');
-//          allElements[i].classList.remove('no-blur');
-//          allElements[i].style.zIndex = '';  // Reset z-index
-//      }
-//  }
 
 function calculateAverageRoundTime(){
     let endScore = player1.score + player2.score;

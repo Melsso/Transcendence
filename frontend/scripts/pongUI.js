@@ -1,8 +1,6 @@
 window.player1 = {name: '', icon: '../frontend/assets/logo.jpg',  score: 0, aim: 0, Btaken: 0, BBR: 0 , SBR: 0, ABR: 0, gothit: 0};
 window.player2 = {name: 'player2', icon: '../frontend/assets/logo.jpg', score: 0, aim: 0, Btaken: 0, BBR: 0 , SBR: 0, ABR: 0, gothit: 0};
 import { endGameStats } from "./pong.js";
-// const play_again = document.getElementById('playAgain');
-// vars declared never read
 const change_difficulty = document.getElementById('diffy');
 const backtomain = document.getElementById('goodbye')
 
@@ -28,6 +26,7 @@ window.aiblock = {
 	visible: false
 };
 
+window.timerflag = true;
 window.wasHit = false;
 window.aiDidHit = false;
 window.crossCount = 0;
@@ -140,11 +139,11 @@ document.addEventListener('keydown', (event) => {
 });
 
 function stopGameLoop() {
-	gameActive = false;
 	for (let i = 0; i < animationFrameIDs.length; i++) {
 		 cancelAnimationFrame(animationFrameIDs[i]);
 	}
 	animationFrameIDs = [];
+	return ;
 }
 window.stopGameLoop = stopGameLoop;
 
@@ -333,24 +332,26 @@ window.movePadBigbuff = movePadBigbuff;
 
 
 function drawScoreBoard() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height * 0.0436);
-	ctx.fillStyle =  'black';
-	ctx.fillRect(0, 0, canvas.width, canvas.height * 0.0436);
-	const image1 = new Image();
-	const image2 = new Image();
-	image1.src = player1.icon;
-	image2.src = player2.icon;
-	ctx.drawImage(image1, 10, 5, 40, 40);
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white';
-	ctx.fillText(player1.name, 10*canvas.width/100, 30);
-	ctx.fillText(player1.score, 18*canvas.width/100, 30);
-	ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
-	
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white'; 
-	ctx.fillText(player2.name, 90*canvas.width/100, 30);
-	ctx.fillText(player2.score, 82*canvas.width/100, 30);
+	if (timerflag === true){
+		ctx.clearRect(0, 0, canvas.width, canvas.height * 0.0436);
+		ctx.fillStyle =  'black';
+		ctx.fillRect(0, 0, canvas.width, canvas.height * 0.0436);
+		const image1 = new Image();
+		const image2 = new Image();
+		image1.src = player1.icon;
+		image2.src = player2.icon;
+		ctx.drawImage(image1, 10, 5, 40, 40);
+		ctx.font = '20px Arial';
+		ctx.fillStyle = 'white';
+		ctx.fillText(player1.name, 10*canvas.width/100, 30);
+		ctx.fillText(player1.score, 18*canvas.width/100, 30);
+		ctx.drawImage(image2, canvas.width - 50, 5, 40, 40);
+		
+		ctx.font = '20px Arial';
+		ctx.fillStyle = 'white'; 
+		ctx.fillText(player2.name, 90*canvas.width/100, 30);
+		ctx.fillText(player2.score, 82*canvas.width/100, 30);
+	}
 }
 window.drawScoreBoard = drawScoreBoard;
 
@@ -506,11 +507,13 @@ function drawPadBigBuff() {
 window.drawPadBigBuff = drawPadBigBuff;
 
 function drawTimer() {
-	ctx.font = '20px Arial';
-	ctx.fillStyle = 'white';
-	ctx.textAlign = 'center';
-	let timeinsec = Math.floor(elapsedTime / 1000);
-	ctx.fillText(`${timeinsec}`, canvas.width /2, 30);
+	if (timerflag === true){
+		ctx.font = '20px Arial';
+		ctx.fillStyle = 'white';
+		ctx.textAlign = 'center';
+		let timeinsec = Math.floor(elapsedTime / 1000);
+		ctx.fillText(`${timeinsec}`, canvas.width /2, 30);
+	}
 }
 window.aitoop;
 function switchOffAI() {
@@ -587,9 +590,10 @@ function	expcounter(){
 }
 
 function gameOverScreen(){
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	var game_data = {'score1':0, 'score2':0, 'attack_accuracy': 0.0, 'game_duration':0.0, 'attack_powerup':0, 'shield_powerup':0, 'speed_powerup':0};
 	expcounter();
-	if (player1.score >= 5){
+	if (player1.score >= 7){
 		fullTime = elapsedTime;
 		GOscreen = true;
 		game_data['game_duration'] = fullTime / 1000 / 60;
@@ -618,7 +622,7 @@ function gameOverScreen(){
 		gameover = true;
 		isingame = false;
 	}
-	else if (player2.score >= 5){
+	else if (player2.score >= 7){
 		game_data['score1'] = player1.score;
 		game_data['score2'] = player2.score;
 		game_data['game_duration'] = fullTime / 1000 / 60;
@@ -649,15 +653,16 @@ function gameOverScreen(){
 window.gameOverScreen = gameOverScreen;
 
 function removeGameOverScreen() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-	GOscreen = false; // Hide game over screen
-	gameover = false; // Reset game over flag
-	isingame = false; // Set the game as active again
+	ctx.clearRect(0, 0, canvas.width, canvas.height); 
+	GOscreen = false;
+	gameover = false;
+	isingame = false;
 }
 window.removeGameOverScreen = removeGameOverScreen;
 
 
 function showGameOverScreen() {
+	timerflag = false;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillStyle = '#000';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
