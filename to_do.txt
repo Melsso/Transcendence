@@ -1,27 +1,19 @@
 MAJOR:
 
-- use a framework for the backend. done
-- Standard user management, authentication, users across tournaments. done
-- Remote players YYYYYYYY
-- Live chat done
-- Introduce an AI Opponent done
-- Implement WAF/ModSecurity with Hardened Configuration and HashiCorp Vault for Secrets Management. YYYYYYYYY
-- Implement Two-Factor Authentication (2FA) and JWT done
+- use a framework for the backend.
+- Standard user management, authentication, users across tournaments.
+- Remote players
+- Live chat
+- Introduce an AI Opponent
+- Implement Two-Factor Authentication	 (2FA) and JWT
 
 
 MINOR:
 
-- use a framework for the frontend done
-- use a database for the backend done
-- Game Customization Options done
-- GDPR Compliance Options with User Anonymization, Local Data Management, and Account Deletion done
-- Expanding Browser Compatibility done
-
-
-TODO:
-- backend loads (still in question)
-
-Things to be done for he project to be done:
-- Firewall.
-- checkig bugs, to be Handled by Rayan.
+- use a framework for the frontend
+- use a database for the backend
+- Game Customization Options
+- User and Game Stats Dashboards
+- GDPR Compliance Options with User Anonymization, Local Data Management, and Account Deletion
+- Expanding Browser Compatibility
 

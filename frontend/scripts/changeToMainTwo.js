@@ -1002,10 +1002,8 @@ document.addEventListener('DOMContentLoaded', function () {
 					loadProfile(data);						
 				}
 			} catch (error) {
-				// check if error is unauthorized
-				// call the refresh function
-				// refreshAccessToken();
-				// navigateTo('profile', data);
+				localStorage.removeItem('accessToken');
+				navigateTo('login', null);
 				Notification('Profile Action', `Error: ${error.detail}`, 2, 'alert');
 			}
 		} else if (view === 'settings') {
@@ -1084,7 +1082,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			Notification('Guest Action', "You can't access this feature with a guest account! Create a new account if you wanna use it!", 2, 'alert');
 			return ;
 		}
-		history.pushState({ view: view }, null, `#${view}`);
+		history.pushState({ view: view }, null, `${baseUrl}#${view}`);
 		showView(view, data);
 	}
 	window.navigateTo = navigateTo;
@@ -1171,10 +1169,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		const password = document.getElementById('password-login').value;
 		document.getElementById('username-login').value = '';
 		document.getElementById('password-login').value = '';
-		// if (!consentPrompt) {
-		// 	Notification('User Action', 'You Have Not Consented To Our Privacy Policy, Please Log In As A Guest.', 1, 'alert');
-		// 	return ;
-		// }
 		let loged_in = false;
 		try {
 			loged_in = await getLogs(username);
