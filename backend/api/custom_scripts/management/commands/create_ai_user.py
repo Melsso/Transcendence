@@ -23,7 +23,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 56120,
                 'is_verified': True,
                 'is_active': True,
-                't_won':    0
+                't_won':    0,
+                'avatar': 'avatars/easyAI.png'                
             },
             {
                 'username': 'Easy AI',
@@ -32,7 +33,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 1000,
                 'is_verified': True,
                 'is_active': True,
-                't_won':    0
+                't_won':    0,
+                'avatar': 'avatars/easyAI.png'
             },
             {
                 'username': 'Hard AI',
@@ -41,7 +43,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 50000,
                 'is_verified': True,
                 'is_active': True,
-                't_won':    0
+                't_won':    0,
+                'avatar': 'avatars/HardAI.png'
             },
             {
                 'username': 'Medium AI',
@@ -50,7 +53,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 5000,
                 'is_verified': True,
                 'is_active': True,
-                't_won':    0
+                't_won':    0,
+                'avatar': 'avatars/MediumAI.png'
             },
             {
                 'username': 'so',
@@ -59,7 +63,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 2234,
                 'is_verified': True,
                 'is_active': True,
-                't_won':    30
+                't_won':    30,
+                'avatar': 'avatars/easyAI.png'
             },
             {
                 'username': 'Sofiane',
@@ -68,7 +73,8 @@ class Command(BaseCommand):
                 'bar_exp_game1': 0,
                 'is_verified': True,
                 'is_active': True,
-                't_won':    0
+                't_won':    0,
+                'avatar': 'avatars/easyAI.png'
             },
             {
                 'username': 'Sadoon',
@@ -77,7 +83,8 @@ class Command(BaseCommand):
                 'email': 'alzubaidisadooon@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    11
+                't_won':    11,
+                'avatar': 'avatars/easyAI.png'
             },
             {
                 'username': 'laewie',
@@ -86,7 +93,8 @@ class Command(BaseCommand):
                 'email': '1233216@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    0
+                't_won':    0,
+                'avatar': 'avatars/easyAI.png'
             },
                         {
                 'username': 'lhouma',
@@ -95,7 +103,8 @@ class Command(BaseCommand):
                 'email': 'adsadasd6@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    30
+                't_won':    30,
+                'avatar': 'avatars/easyAI.png'
             },
                         {
                 'username': 'la3ziz',
@@ -104,7 +113,8 @@ class Command(BaseCommand):
                 'email': 'sadads@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    60
+                't_won':    60,
+                'avatar': 'avatars/easyAI.png'
             },
                         {
                 'username': 'kho',
@@ -113,7 +123,8 @@ class Command(BaseCommand):
                 'email': 'sadasdsad@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    72
+                't_won':    72,
+                'avatar': 'avatars/easyAI.png'
             },
                         {
                 'username': 'Rayan',
@@ -122,7 +133,8 @@ class Command(BaseCommand):
                 'email': 'rayanmehadjeri6@gmail.com',
                 'is_verified': True,
                 'is_active': True,
-                't_won':    2
+                't_won':    2,
+                'avatar': 'avatars/easyAI.png'
             },
         ]
 
@@ -133,6 +145,7 @@ class Command(BaseCommand):
             is_verified = user_info['is_verified']
             xp = user_info['bar_exp_game1']
             t_won = user_info['t_won']
+            avatar = user_info['avatar']
             if not UserProfile.objects.filter(username=username).exists():
                 user = UserProfile.objects.create_user(
 					username=username, 
@@ -141,7 +154,8 @@ class Command(BaseCommand):
                     bar_exp_game1=xp,
 					is_verified=is_verified,
 					is_active=user_info['is_active'],
-                    t_won=t_won
+                    t_won=t_won,
+                    avatar=avatar
 				)
                 self.stdout.write(self.style.SUCCESS(f'Successfully created user "{username}"'))
             else:
